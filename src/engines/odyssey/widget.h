@@ -150,9 +150,9 @@ protected:
 		Common::UString edge;
 		Common::UString fill;
 
-		uint32 fillStyle;
-		uint32 dimension;
-		uint32 innerOffset;
+		uint32_t fillStyle;
+		uint32_t dimension;
+		uint32_t innerOffset;
 
 		bool hasColor;
 		float r, g, b;
@@ -165,7 +165,7 @@ protected:
 	struct Text {
 		Common::UString font;
 		Common::UString text;
-		uint32 strRef;
+		uint32_t strRef;
 
 		float halign;
 		float valign;
@@ -188,7 +188,7 @@ protected:
 
 	float _width;
 	float _height;
-	uint32 _borderDimension;
+	uint32_t _borderDimension;
 
 	float _r, _g, _b, _a;
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;

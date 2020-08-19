@@ -166,7 +166,7 @@ void ShaderManager::deinit() {
 	status("Cleaning up shaders...");
 	glUseProgram(0);
 
-	for (uint32 i = 0; i < _shaderProgramArray.size(); ++i) {
+	for (uint32_t i = 0; i < _shaderProgramArray.size(); ++i) {
 		glDeleteProgram(_shaderProgramArray[i]->glid);
 		delete _shaderProgramArray[i];
 	}
@@ -323,11 +323,11 @@ void ShaderManager::bindShaderVariable(ShaderObject::ShaderObjectVariable &var, 
 
 void ShaderManager::bindShaderInstance(ShaderProgram *prog, const void **vertexVariables, const void **fragmentVariables) {
 	glUseProgram(prog->glid);
-	for (uint32 i = 0; i < prog->vertexObject->variablesCombined.size(); ++i) {
+	for (uint32_t i = 0; i < prog->vertexObject->variablesCombined.size(); ++i) {
 		bindShaderVariable(prog->vertexObject->variablesCombined[i], prog->vertexVariableLocations[i], vertexVariables[i]);
 	}
 
-	for (uint32 i = 0; i < prog->fragmentObject->variablesCombined.size(); ++i) {
+	for (uint32_t i = 0; i < prog->fragmentObject->variablesCombined.size(); ++i) {
 		bindShaderVariable(prog->fragmentObject->variablesCombined[i], prog->fragmentVariableLocations[i], fragmentVariables[i]);
 	}
 }
@@ -339,10 +339,10 @@ ShaderProgram *ShaderManager::getShaderProgram(ShaderObject *vertexObject, Shade
 		return NULL;
 	}
 
-	uint32 search_high = _shaderProgramArray.size() - 1;  // -1 is ok here, as a default shader will exist.
-	uint32 search_low = 0;
-	uint32 search_mid = _shaderProgramArray.size() >> 1;
-	uint64 key = (((uint64)(vertexObject->id)) << 32) | (uint64)(fragmentObject->id);
+	uint32_t search_high = _shaderProgramArray.size() - 1;  // -1 is ok here, as a default shader will exist.
+	uint32_t search_low = 0;
+	uint32_t search_mid = _shaderProgramArray.size() >> 1;
+	uint64_t key = (((uint64_t)(vertexObject->id)) << 32) | (uint64_t)(fragmentObject->id);
 	ShaderProgram *rvalue = 0;  // Default to nothing found.
 
 	while (search_high >= search_low) {
@@ -365,7 +365,7 @@ ShaderProgram *ShaderManager::getShaderProgram(ShaderObject *vertexObject, Shade
 
 void ShaderManager::registerShaderAttachment(GLuint progid, ShaderObject *obj) {
 	glAttachShader(progid, obj->glid);
-	for (uint32 i = 0; i < obj->subObjects.size(); ++i) {
+	for (uint32_t i = 0; i < obj->subObjects.size(); ++i) {
 		registerShaderAttachment(progid, obj->subObjects[i]);
 	}
 }
@@ -381,8 +381,8 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 	fragmentObject->usageCount++;
 
 	_programMutex.lock();
-	uint64 key = (((uint64)(vertexObject->id)) << 32) | (uint64)(fragmentObject->id);
-	uint32 searchIndex = 0;
+	uint64_t key = (((uint64_t)(vertexObject->id)) << 32) | (uint64_t)(fragmentObject->id);
+	uint32_t searchIndex = 0;
 	while ((searchIndex < _shaderProgramArray.size()) && (_shaderProgramArray[searchIndex]->id < key)) {
 		++searchIndex;
 	}
@@ -411,16 +411,16 @@ void ShaderManager::genShaderVariableList(ShaderObject *obj, std::vector<ShaderO
 	}
 
 	std::vector<ShaderObject *> shaderObjectStack;
-	std::map<Common::UString, uint32> shaderNameMap;
+	std::map<Common::UString, uint32_t> shaderNameMap;
 
 	do {
-		for (uint32 i = 0; i < obj->subObjects.size(); ++i) {
+		for (uint32_t i = 0; i < obj->subObjects.size(); ++i) {
 			shaderObjectStack.push_back(obj->subObjects[i]);
 		}
 
-		for (uint32 i = 0; i < obj->variablesSelf.size(); ++i) {
+		for (uint32_t i = 0; i < obj->variablesSelf.size(); ++i) {
 			if (shaderNameMap.find(obj->variablesSelf[i].name) == shaderNameMap.end()) {
-				shaderNameMap.insert(std::pair<Common::UString, uint32>(obj->variablesSelf[i].name, i));
+				shaderNameMap.insert(std::pair<Common::UString, uint32_t>(obj->variablesSelf[i].name, i));
 				vars.push_back(obj->variablesSelf[i]);
 			}
 		}
@@ -608,7 +608,7 @@ void ShaderManager::genGLProgram(ShaderProgram *program) {
 
 	program->glid = glid;
 
-	for (uint32 i = 0; i < vertexObject->variablesCombined.size(); ++i) {
+	for (uint32_t i = 0; i < vertexObject->variablesCombined.size(); ++i) {
 		GLint location;
 		if (vertexObject->variablesCombined[i].type != SHADER_UNIFORM_BUFFER)
 			location = glGetUniformLocation(glid, vertexObject->variablesCombined[i].name.c_str());
@@ -617,7 +617,7 @@ void ShaderManager::genGLProgram(ShaderProgram *program) {
 		program->vertexVariableLocations.push_back(location);
 	}
 
-	for (uint32 i = 0; i < fragmentObject->variablesCombined.size(); ++i) {
+	for (uint32_t i = 0; i < fragmentObject->variablesCombined.size(); ++i) {
 		GLint location;
 		if (fragmentObject->variablesCombined[i].type != SHADER_UNIFORM_BUFFER)
 			location = glGetUniformLocation(glid, fragmentObject->variablesCombined[i].name.c_str());

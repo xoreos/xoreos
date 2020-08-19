@@ -46,9 +46,9 @@ namespace Graphics {
 
 namespace Aurora {
 
-static uint32 convertToUTF32(byte c, Common::Encoding encoding) {
+static uint32_t convertToUTF32(byte c, Common::Encoding encoding) {
 	if ((encoding == Common::kEncodingInvalid) || (encoding == Common::kEncodingASCII))
-		return (uint32) c;
+		return (uint32_t) c;
 
 	byte data[2] = { c, 0x00 };
 
@@ -79,8 +79,8 @@ TextureFont::~TextureFont() {
 	delete _material;
 }
 
-float TextureFont::getWidth(uint32 c) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+float TextureFont::getWidth(uint32_t c) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 
 	if (cC == _chars.end())
 		cC = _chars.find('m');
@@ -113,8 +113,8 @@ void TextureFont::drawMissing() const {
 	glTranslatef(width + _spaceR, 0.0f, 0.0f);
 }
 
-void TextureFont::draw(uint32 c) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+void TextureFont::draw(uint32_t c) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 
 	if (cC == _chars.end()) {
 		drawMissing();
@@ -150,8 +150,8 @@ void TextureFont::renderBind(const glm::mat4 &transform) const {
 	glBindBuffer(GL_ARRAY_BUFFER, _mesh->getVertexBuffer()->getVBO());
 }
 
-void TextureFont::render(uint32 c, float &x, float &y, float *rgba) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+void TextureFont::render(uint32_t c, float &x, float &y, float *rgba) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 
 	if (cC == _chars.end()) {
 		//drawMissing();
@@ -190,7 +190,7 @@ void TextureFont::load() {
 	const TXI::Features &txiFeatures = texture.getTXI().getFeatures();
 
 	// Number of characters
-	uint32 charCount = txiFeatures.numChars;
+	uint32_t charCount = txiFeatures.numChars;
 	if (charCount == 0)
 		throw Common::Exception("Texture defines no characters");
 
@@ -216,11 +216,11 @@ void TextureFont::load() {
 	const Common::Encoding encoding = LangMan.getCurrentEncoding();
 
 	// Build the character texture and vertex coordinates
-	for (uint32 i = 0; i < charCount; i++) {
+	for (uint32_t i = 0; i < charCount; i++) {
 		if ((encoding != Common::kEncodingInvalid) && !Common::isValidCodepoint(encoding, i))
 			continue;
 
-		std::pair<std::map<uint32, Char>::iterator,bool> result;
+		std::pair<std::map<uint32_t, Char>::iterator,bool> result;
 
 		result = _chars.insert(std::make_pair(convertToUTF32((byte) i, encoding), Char()));
 		if (!result.second)

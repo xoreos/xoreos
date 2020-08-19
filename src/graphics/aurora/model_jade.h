@@ -58,18 +58,18 @@ private:
 
 		Common::UString texture;
 
-		uint32 offModelData;
+		uint32_t offModelData;
 
-		uint32 mdlSize;
+		uint32_t mdlSize;
 
-		uint32 mdxSizeVertices;
-		uint32 mdxSizeFaces;
-		uint32 mdxSize3;
+		uint32_t mdxSizeVertices;
+		uint32_t mdxSizeFaces;
+		uint32_t mdxSize3;
 
 		std::vector<Common::UString> names;
 
 		std::vector<float>  vertices;
-		std::vector<uint16> indices;
+		std::vector<uint16_t> indices;
 
 		std::vector<Common::UString> textures;
 
@@ -89,7 +89,7 @@ private:
 	void load(ParserContext &ctx);
 
 	void readStrings(Common::SeekableReadStream &mdl,
-			const std::vector<uint32> &offsets, uint32 offset,
+			const std::vector<uint32_t> &offsets, uint32_t offset,
 			std::vector<Common::UString> &strings);
 
 	friend class ModelNode_Jade;
@@ -107,39 +107,39 @@ public:
 private:
 
 	struct JadeMaterialData {
-		uint32 renderPathID;
-		uint32 opacity1;
-		uint32 opacity2;
+		uint32_t renderPathID;
+		uint32_t opacity1;
+		uint32_t opacity2;
 		float cubeMultiplier;
 		float bumpCoordMultiplier;
 		float terrainCoordMultiplier;
 		float falloff;
 		float waterAlpha;
-		uint8 bumpMapIsSpecular;
-		uint8 doubleSided;
+		uint8_t bumpMapIsSpecular;
+		uint8_t doubleSided;
 		// 2 bytes unknown (padding?)
 		float diffuseColor[3];
 		float ambientColor[3];
 		// 24 bytes unknown.
-		uint32 blending1;
-		uint32 blending2;
+		uint32_t blending1;
+		uint32_t blending2;
 		// 4 bytes unknown.
 	};
 
 	void readMesh(Model_Jade::ParserContext &ctx);
 
-	void readPlainIndices  (Common::SeekableReadStream &stream, std::vector<uint16> &indices,
-	                        uint32 offset, uint32 count);
-	void readChunkedIndices(Common::SeekableReadStream &stream, std::vector<uint16> &indices,
-	                        uint32 offset, uint32 count);
+	void readPlainIndices  (Common::SeekableReadStream &stream, std::vector<uint16_t> &indices,
+	                        uint32_t offset, uint32_t count);
+	void readChunkedIndices(Common::SeekableReadStream &stream, std::vector<uint16_t> &indices,
+	                        uint32_t offset, uint32_t count);
 
-	void unfoldFaces        (std::vector<uint16> &indices, uint32 meshType);
-	void unfoldTriangleStrip(std::vector<uint16> &indices);
-	void unfoldTriangleFan  (std::vector<uint16> &indices);
+	void unfoldFaces        (std::vector<uint16_t> &indices, uint32_t meshType);
+	void unfoldTriangleStrip(std::vector<uint16_t> &indices);
+	void unfoldTriangleFan  (std::vector<uint16_t> &indices);
 
 	void createMesh(Model_Jade::ParserContext &ctx);
 
-	void readMaterialTextures(uint32 materialID, std::vector<Common::UString> &textures);
+	void readMaterialTextures(uint32_t materialID, std::vector<Common::UString> &textures);
 
 	JadeMaterialData _jadeMaterialData;
 };

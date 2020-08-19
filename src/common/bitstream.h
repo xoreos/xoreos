@@ -58,13 +58,13 @@ public:
 	virtual void skip(size_t n) = 0;
 
 	/** Read a bit from the bit stream. */
-	virtual uint32 getBit() = 0;
+	virtual uint32_t getBit() = 0;
 
 	/** Read a multi-bit value from the bit stream. */
-	virtual uint32 getBits(size_t n) = 0;
+	virtual uint32_t getBits(size_t n) = 0;
 
 	/** Add a bit to the n-bit value x, making it an (n+1)-bit value. */
-	virtual void addBit(uint32 &x, size_t n) = 0;
+	virtual void addBit(uint32_t &x, size_t n) = 0;
 
 protected:
 	BitStream() {
@@ -86,11 +86,11 @@ class BitStreamImpl : boost::noncopyable, public BitStream {
 private:
 	DisposablePtr<SeekableReadStream> _stream; ///< The input stream.
 
-	uint64 _value;   ///< Current value.
-	uint8  _inValue; ///< Position within the current value.
+	uint64_t _value;   ///< Current value.
+	uint8_t  _inValue; ///< Position within the current value.
 
 	/** Read a data value. */
-	inline uint64 readData() {
+	inline uint64_t readData() {
 		if (isLE) {
 			if (valueBits ==  8)
 				return _stream->readByte();
@@ -150,7 +150,7 @@ public:
 	}
 
 	/** Read a bit from the bit stream. */
-	uint32 getBit() {
+	uint32_t getBit() {
 		// Check if we need the next value
 		if (_inValue == 0)
 			readValue();
@@ -175,7 +175,7 @@ public:
 	}
 
 	/** Read a multi-bit value from the bit stream. */
-	uint32 getBits(size_t n) {
+	uint32_t getBits(size_t n) {
 		if (n == 0)
 			return 0;
 
@@ -183,14 +183,14 @@ public:
 			throw Exception("Too many bits requested to be read");
 
 		// Read the number of bits
-		uint32 v = 0;
+		uint32_t v = 0;
 
 		if (isMSB2LSB) {
 			while (n-- > 0)
 				v = (v << 1) | getBit();
 		} else {
-			for (uint32 i = 0; i < n; i++)
-				v = (v >> 1) | (((uint32) getBit()) << 31);
+			for (uint32_t i = 0; i < n; i++)
+				v = (v >> 1) | (((uint32_t) getBit()) << 31);
 
 			v >>= (32 - n);
 		}
@@ -199,7 +199,7 @@ public:
 	}
 
 	/** Add a bit to the n-bit value x, making it an (n+1)-bit value. */
-	void addBit(uint32 &x, size_t n) {
+	void addBit(uint32_t &x, size_t n) {
 		if (n >= 32)
 			throw Exception("Too many bits requested to be read");
 

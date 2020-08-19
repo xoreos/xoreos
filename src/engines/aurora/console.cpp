@@ -25,6 +25,7 @@
 #include <cassert>
 #include <cstdarg>
 #include <cstdio>
+#include <cstddef>
 
 #include <functional>
 
@@ -64,7 +65,7 @@
 #include "src/graphics/shader/materialman.h"
 
 
-static const uint32 kDoubleClickTime = 500;
+static const uint32_t kDoubleClickTime = 500;
 
 static const char *kPrompt = "> ";
 
@@ -587,7 +588,7 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 	if (pass == Graphics::kRenderPassOpaque)
 		return;
 
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 	if ((now - _lastCursorBlink) > 500) {
 		_cursorBlinkState = !_cursorBlinkState;
 		_lastCursorBlink = now;
@@ -638,7 +639,7 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 }
 
 void ConsoleWindow::renderImmediate(const glm::mat4 &parentTransform) {
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 	if ((now - _lastCursorBlink) > 500) {
 		_cursorBlinkState = !_cursorBlinkState;
 		_lastCursorBlink = now;
@@ -879,9 +880,9 @@ bool Console::processEvent(const Events::Event &event) {
 
 	if (event.type == Events::kEventMouseDown) {
 
-		const uint8 button     = event.button.button;
-		const uint8 pasteMask1 = SDL_BUTTON_MMASK;
-		const uint8 pasteMask2 = SDL_BUTTON_LMASK | SDL_BUTTON_RMASK;
+		const uint8_t button     = event.button.button;
+		const uint8_t pasteMask1 = SDL_BUTTON_MMASK;
+		const uint8_t pasteMask2 = SDL_BUTTON_LMASK | SDL_BUTTON_RMASK;
 
 		// Pasting the current buffer with the middle (or left+right) mouse button
 		if (((button & pasteMask1) == pasteMask1) || ((button & pasteMask2) == pasteMask2)) {
@@ -909,7 +910,7 @@ bool Console::processEvent(const Events::Event &event) {
 
 	if (event.type == Events::kEventMouseUp) {
 
-		uint32 curTime = EventMan.getTimestamp();
+		uint32_t curTime = EventMan.getTimestamp();
 
 		if (((curTime - _lastClickTime) < kDoubleClickTime) &&
 		    (_lastClickButton == event.button.button) &&
@@ -1463,7 +1464,7 @@ void Console::cmdGetString(const CommandLine &cl) {
 		return;
 	}
 
-	uint32 strRef = 0xFFFFFFFF;
+	uint32_t strRef = 0xFFFFFFFF;
 	try {
 		Common::parseString(cl.args, strRef);
 	} catch (...) {

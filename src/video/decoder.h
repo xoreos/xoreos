@@ -78,7 +78,7 @@ public:
 	 *
 	 * @return the width of the video's frames
 	 */
-	virtual uint32 getWidth() const;
+	virtual uint32_t getWidth() const;
 
 	/**
 	 * Returns the height of the video's frames.
@@ -89,7 +89,7 @@ public:
 	 *
 	 * @return the height of the video's frames
 	 */
-	virtual uint32 getHeight() const;
+	virtual uint32_t getHeight() const;
 
 	/** Start playing the video. */
 	void start();
@@ -116,10 +116,10 @@ public:
 	bool endOfVideoTracks() const;
 
 	/** Returns the time position (in ms) of the current video. */
-	uint32 getTime() const;
+	uint32_t getTime() const;
 
 	/** Return the time, in milliseconds, to the next frame. */
-	uint32 getTimeToNextFrame() const;
+	uint32_t getTimeToNextFrame() const;
 
 	// Renderable
 	void calculateDistance();
@@ -234,12 +234,12 @@ protected:
 		/**
 		 * Get the width of this track.
 		 */
-		virtual uint32 getWidth() const = 0;
+		virtual uint32_t getWidth() const = 0;
 
 		/**
 		 * Get the height of this track.
 		 */
-		virtual uint32 getHeight() const = 0;
+		virtual uint32_t getHeight() const = 0;
 
 		/**
 		 * Get the current frame of this track
@@ -332,7 +332,7 @@ protected:
 		 * Get the time the AudioStream behind this track has been
 		 * running
 		 */
-		uint32 getRunningTime() const;
+		uint32_t getRunningTime() const;
 
 		/**
 		 * Mute the track
@@ -485,13 +485,13 @@ private:
 
 
 	/** The start time of the video, or -1 for not set */
-	uint32 _startTime;
+	uint32_t _startTime;
 
 	/** The pause level of the video; 0 for not paused. */
-	uint32 _pauseLevel;
+	uint32_t _pauseLevel;
 
 	/** The time when the track was first paused. */
-	uint32 _pauseStartTime;
+	uint32_t _pauseStartTime;
 
 	/** Update the video, if necessary. */
 	void update();

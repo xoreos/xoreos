@@ -25,6 +25,7 @@
 #define SDL_MAIN_HANDLED
 
 #include <cassert>
+#include <climits>
 #include <cstdio>
 
 #include <vector>

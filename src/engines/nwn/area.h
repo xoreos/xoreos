@@ -87,13 +87,13 @@ public:
 
 	// Music/Sound
 
-	uint32 getMusicDayTrack   () const; ///< Return the music track ID playing by day.
-	uint32 getMusicNightTrack () const; ///< Return the music track ID playing by night.
-	uint32 getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
+	uint32_t getMusicDayTrack   () const; ///< Return the music track ID playing by day.
+	uint32_t getMusicNightTrack () const; ///< Return the music track ID playing by night.
+	uint32_t getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
 
-	void setMusicDayTrack   (uint32 track); ///< Set the music track ID playing by day.
-	void setMusicNightTrack (uint32 track); ///< Set the music track ID playing by night.
-	void setMusicBattleTrack(uint32 track); ///< Set the music track ID playing in battle.
+	void setMusicDayTrack   (uint32_t track); ///< Set the music track ID playing by day.
+	void setMusicNightTrack (uint32_t track); ///< Set the music track ID playing by night.
+	void setMusicBattleTrack(uint32_t track); ///< Set the music track ID playing in battle.
 
 	void stopSound();        ///< Stop all sounds.
 	void stopAmbientMusic(); ///< Stop the ambient music.
@@ -138,13 +138,13 @@ private:
 
 	/** A tile. */
 	struct Tile {
-		uint32 tileID; ///< The ID of the tile within the tileset.
+		uint32_t tileID; ///< The ID of the tile within the tileset.
 
-		uint32 height; ///< The number of height transitions the tile is shifted up.
+		uint32_t height; ///< The number of height transitions the tile is shifted up.
 		Orientation orientation; ///< The orientation of the tile.
 
-		uint8 mainLight[2]; ///< Overall colored lighting effects.
-		uint8  srcLight[2]; ///< Flaming light sources.
+		uint8_t mainLight[2]; ///< Overall colored lighting effects.
+		uint8_t  srcLight[2]; ///< Flaming light sources.
 
 		bool animLoop[3]; ///< Should the tile's AnimLoop0[123] play?
 
@@ -154,7 +154,7 @@ private:
 	};
 
 	typedef Common::PtrList<NWN::Object> ObjectList;
-	typedef std::map<uint32, NWN::Object *> ObjectMap;
+	typedef std::map<uint32_t, NWN::Object *> ObjectMap;
 
 
 	Module *_module; ///< The module this area is in.
@@ -166,9 +166,9 @@ private:
 	Common::UString _ambientDay;   ///< Ambient sound that plays by day.
 	Common::UString _ambientNight; ///< Ambient sound that plays by night.
 
-	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
-	uint32 _musicNightTrack;  ///< Music track ID that plays by night.
-	uint32 _musicBattleTrack; ///< Music track ID that plays in battle.
+	uint32_t _musicDayTrack;    ///< Music track ID that plays by day.
+	uint32_t _musicNightTrack;  ///< Music track ID that plays by night.
+	uint32_t _musicBattleTrack; ///< Music track ID that plays in battle.
 
 	Common::UString _musicDay;    ///< Music that plays by day.
 	Common::UString _musicNight;  ///< Music that plays by night.
@@ -185,8 +185,8 @@ private:
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
-	uint32 _width;  ///< Width  of the area in tiles, as seen from top-down.
-	uint32 _height; ///< Height of the area in tiles, as seen from top-down.
+	uint32_t _width;  ///< Width  of the area in tiles, as seen from top-down.
+	uint32_t _height; ///< Height of the area in tiles, as seen from top-down.
 
 	Common::UString _tilesetName; ///< Name of the tileset.
 	std::unique_ptr<Tileset> _tileset; ///< The actual tileset.

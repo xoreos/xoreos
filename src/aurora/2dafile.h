@@ -68,9 +68,9 @@ public:
 	const Common::UString &getString(const Common::UString &column) const;
 
 	/** Return the contents of a cell as an int. */
-	int32 getInt(size_t column) const;
+	int32_t getInt(size_t column) const;
 	/** Return the contents of a cell as an int. */
-	int32 getInt(const Common::UString &column) const;
+	int32_t getInt(const Common::UString &column) const;
 
 	/** Return the contents of a cell as a float. */
 	float getFloat(size_t column) const;
@@ -167,7 +167,7 @@ private:
 	typedef std::map<Common::UString, size_t, Common::UString::iless> HeaderMap;
 
 	Common::UString _defaultString; ///< The default string to return should a cell not exist.
-	int32           _defaultInt;    ///< The default int to return should a cell not exist.
+	int32_t         _defaultInt;    ///< The default int to return should a cell not exist.
 	float           _defaultFloat;  ///< The default float to return should a cell not exist.
 
 	std::vector<Common::UString> _headers;
@@ -196,7 +196,7 @@ private:
 
 	void createHeaderMap();
 
-	static int32 parseInt(const Common::UString &str);
+	static int32_t parseInt(const Common::UString &str);
 	static float parseFloat(const Common::UString &str);
 
 	friend class TwoDARow;

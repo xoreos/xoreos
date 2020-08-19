@@ -454,8 +454,8 @@ GTEST_TEST_F(IFOFile, getStartTime) {
 	Aurora::IFOFile ifo;
 	ifo.load(new Common::MemoryReadStream(kIFOFile));
 
-	uint8 hour, day, month;
-	uint32 year;
+	uint8_t hour, day, month;
+	uint32_t year;
 
 	ifo.getStartTime(hour, day, month, year);
 

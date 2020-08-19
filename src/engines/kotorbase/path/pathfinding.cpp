@@ -46,7 +46,7 @@ Pathfinding::Pathfinding(const std::vector<bool> &walkableProp) :
 void Pathfinding::addRoom(Room *room) {
 	_startFace.push_back(_faces.size() / 3);
 
-	std::map<uint32, uint32> adjRooms;
+	std::map<uint32_t, uint32_t> adjRooms;
 	_walkmeshLoader.load(Aurora::kFileTypeWOK, room->getResRef(), glm::mat4(),
 	                     _vertices, _faces, _faceProperty, _adjFaces, adjRooms,
 	                     this);
@@ -62,29 +62,29 @@ void Pathfinding::connectRooms() {
 	_facesCount = _faces.size() / 3;
 
 	for (size_t r = 0; r < _adjRooms.size(); ++r) {
-		for (std::map<uint32, uint32>::iterator ar = _adjRooms[r].begin();
+		for (std::map<uint32_t, uint32_t>::iterator ar = _adjRooms[r].begin();
 		     ar != _adjRooms[r].end(); ++ar) {
 			if (ar->second == UINT32_MAX)
 				continue;
 
-			uint32 currFace = getFaceFromEdge(ar->first, r);
+			uint32_t currFace = getFaceFromEdge(ar->first, r);
 			// Get adjacent face from the other room.
-			uint32 otherRoom = ar->second;
-			for (std::map<uint32, uint32>::iterator oF = _adjRooms[otherRoom].begin();
+			uint32_t otherRoom = ar->second;
+			for (std::map<uint32_t, uint32_t>::iterator oF = _adjRooms[otherRoom].begin();
 			     oF != _adjRooms[otherRoom].end(); ++oF) {
 				// Get only faces adjacent to the current room (r).
 				if (oF->second != r)
 					continue;
 
-				uint32 otherFace = getFaceFromEdge(oF->first, otherRoom);
+				uint32_t otherFace = getFaceFromEdge(oF->first, otherRoom);
 				// Check if at least two vertices are the same.
 				std::vector<glm::vec3> currVerts;
 				std::vector<glm::vec3> othVerts;
 				getVertices(currFace, currVerts);
 				getVertices(otherFace, othVerts);
 
-				const uint32 cEdge = ar->first % 3;
-				const uint32 oEdge = oF->first % 3;
+				const uint32_t cEdge = ar->first % 3;
+				const uint32_t oEdge = oF->first % 3;
 				const glm::vec3 &cVert1 = currVerts[cEdge];
 				const glm::vec3 &cVert2 = currVerts[(cEdge + 1) % 3];
 				const glm::vec3 &oVert1 = othVerts[oEdge];
@@ -105,7 +105,7 @@ void Pathfinding::connectRooms() {
 	}
 }
 
-uint32 Pathfinding::getFaceFromEdge(uint32 edge, uint32 room) const {
+uint32_t Pathfinding::getFaceFromEdge(uint32_t edge, uint32_t room) const {
 	if (edge == UINT32_MAX)
 		error("Edge is not valid");
 

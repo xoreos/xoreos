@@ -74,9 +74,9 @@ public:
 private:
 	/** A packet within a TRX file. */
 	struct Packet {
-		uint32 type;   ///< Type of the packet (TRWH, TRRN, WATR, ASWM).
-		uint32 offset; ///< Offset to the contents of the packet.
-		uint32 size;   ///< Size of the packet.
+		uint32_t type;   ///< Type of the packet (TRWH, TRRN, WATR, ASWM).
+		uint32_t offset; ///< Offset to the contents of the packet.
+		uint32_t size;   ///< Size of the packet.
 	};
 
 	typedef Common::PtrList<Graphics::Aurora::GeometryObject> ObjectList;
@@ -84,8 +84,8 @@ private:
 
 	bool _visible;
 
-	uint32 _width;
-	uint32 _height;
+	uint32_t _width;
+	uint32_t _height;
 
 	ObjectList _terrain;
 	ObjectList _water;

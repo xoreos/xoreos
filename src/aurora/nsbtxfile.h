@@ -52,10 +52,10 @@ public:
 	const ResourceList &getResources() const;
 
 	/** Return the size of a resource. */
-	uint32 getResourceSize(uint32 index) const;
+	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
+	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
 
 private:
 	enum Format {
@@ -78,12 +78,12 @@ private:
 
 	struct Texture {
 		Common::UString name;
-		uint32 offset;
+		uint32_t offset;
 
 		Format format;
 
-		uint16 width;
-		uint16 height;
+		uint16_t width;
+		uint16_t height;
 
 		bool wrapX; ///< true: wrap, false: clamp.
 		bool wrapY; ///< true: wrap, false: clamp.
@@ -96,7 +96,7 @@ private:
 
 	struct Palette {
 		Common::UString name;
-		uint32 offset;
+		uint32_t offset;
 	};
 
 	struct ReadContext {
@@ -121,13 +121,13 @@ private:
 	/** External list of resource names and types. */
 	ResourceList _resources;
 
-	uint32 _textureOffset;
+	uint32_t _textureOffset;
 
-	uint32 _textureInfoOffset;
-	uint32 _paletteInfoOffset;
+	uint32_t _textureInfoOffset;
+	uint32_t _paletteInfoOffset;
 
-	uint32 _textureDataOffset;
-	uint32 _paletteDataOffset;
+	uint32_t _textureDataOffset;
+	uint32_t _paletteDataOffset;
 
 	Textures _textures;
 	Palettes _palettes;
@@ -146,7 +146,7 @@ private:
 	const Palette *findPalette(const Texture &texture) const;
 	void getPalette(ReadContext &ctx) const;
 
-	static uint32 getITEXSize(const Texture &texture);
+	static uint32_t getITEXSize(const Texture &texture);
 
 	static void writeITEXHeader(const ReadContext &ctx);
 	static void writePixel(const ReadContext &ctx, byte r, byte g, byte b, byte a);

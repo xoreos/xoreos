@@ -113,13 +113,13 @@ void MeshFont::render(float *pos, float *uv, float *rgba) {
 	 */
 
 	float *verts = static_cast<float *>(_vertexBuffer.getData());
-	for (uint32 i = 0; i < 12; ++i) {
+	for (uint32_t i = 0; i < 12; ++i) {
 		verts[i] = pos[i];
 	}
-	for (uint32 i = 0; i < 8; ++i) {
+	for (uint32_t i = 0; i < 8; ++i) {
 		verts[i+12] = uv[i];
 	}
-	for (uint32 i = 0; i < 16; ++i) {
+	for (uint32_t i = 0; i < 16; ++i) {
 		verts[i+20] = rgba[i];
 	}
 	_vertexBuffer.updateGLBound();

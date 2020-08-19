@@ -103,12 +103,12 @@ enum MatroskaTrackType {
 };
 
 struct MatroskaElementOffset {
-	uint64 offset;
-	uint64 size;
+	uint64_t offset;
+	uint64_t size;
 };
 
-uint32 readElementID(Common::SeekableReadStream &stream) {
-	uint32 x = stream.readByte();
+uint32_t readElementID(Common::SeekableReadStream &stream) {
+	uint32_t x = stream.readByte();
 	if ((x & 0x80) != 0)
 		return x;
 	if ((x & 0x40) != 0)
@@ -124,8 +124,8 @@ uint32 readElementID(Common::SeekableReadStream &stream) {
 	throw Common::Exception("Invalid EBML element ID: %d", x);
 }
 
-uint64 readElementSize(Common::SeekableReadStream &stream) {
-	uint64 size = stream.readByte();
+uint64_t readElementSize(Common::SeekableReadStream &stream) {
+	uint64_t size = stream.readByte();
 	if ((size & 0x80) != 0)
 		return size & 0x7F;
 	if ((size & 0x40) != 0)
@@ -143,18 +143,18 @@ uint64 readElementSize(Common::SeekableReadStream &stream) {
 	if ((size & 0x04) != 0) {
 		size &= 0x03;
 		size <<= 40;
-		size |= static_cast<uint64>(stream.readByte()) << 32;
+		size |= static_cast<uint64_t>(stream.readByte()) << 32;
 		return size | stream.readUint32BE();
 	}
 	if ((size & 0x02) != 0) {
 		size &= 0x01;
 		size <<= 48;
-		size |= static_cast<uint64>(stream.readUint16BE()) << 32;
+		size |= static_cast<uint64_t>(stream.readUint16BE()) << 32;
 		return size | stream.readUint32BE();
 	}
 	if ((size & 0x01) != 0) {
-		size = static_cast<uint64>(stream.readByte()) << 48;
-		size |= static_cast<uint64>(stream.readUint16BE()) << 32;
+		size = static_cast<uint64_t>(stream.readByte()) << 48;
+		size |= static_cast<uint64_t>(stream.readUint16BE()) << 32;
 		return size | stream.readUint32BE();
 	}
 
@@ -166,8 +166,8 @@ enum EBMLParseMode {
 	kEBMLParseRequired
 };
 
-void readEBMLEntry(uint64 &value, Common::SeekableReadStream &stream, uint64 UNUSED(filePos)) {
-	if (stream.size() > sizeof(uint64))
+void readEBMLEntry(uint64_t &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
+	if (stream.size() > sizeof(uint64_t))
 		throw Common::Exception("Invalid EBML integer size %u", (uint)stream.size());
 
 	value = 0;
@@ -194,15 +194,15 @@ void readEBMLString(T &value, Common::SeekableReadStream &stream) {
 	// TODO: May need to check for NUL character
 }
 
-void readEBMLEntry(std::string &value, Common::SeekableReadStream &stream, uint64 UNUSED(filePos)) {
+void readEBMLEntry(std::string &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
 	readEBMLString(value, stream);
 }
 
-void readEBMLEntry(Common::UString &value, Common::SeekableReadStream &stream, uint64 UNUSED(filePos)) {
+void readEBMLEntry(Common::UString &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
 	readEBMLString(value, stream);
 }
 
-void readEBMLEntry(double &value, Common::SeekableReadStream &stream, uint64 UNUSED(filePos)) {
+void readEBMLEntry(double &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
 	// Read based on the size of the stream
 	switch (stream.size()) {
 	case 0:
@@ -219,20 +219,20 @@ void readEBMLEntry(double &value, Common::SeekableReadStream &stream, uint64 UNU
 	}
 }
 
-void readEBMLEntry(std::shared_ptr<Common::SeekableReadStream> &value, Common::SeekableReadStream &stream, uint64 UNUSED(filePos)) {
+void readEBMLEntry(std::shared_ptr<Common::SeekableReadStream> &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
 	if (stream.size() > 0x10000000)
 		throw Common::Exception("Invalid EBML binary size %u", (int)stream.size());
 
 	value.reset(stream.readStream(stream.size()));
 }
 
-void readEBMLEntry(MatroskaElementOffset &value, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaElementOffset &value, Common::SeekableReadStream &stream, uint64_t filePos) {
 	value.offset = filePos;
 	value.size = stream.size();
 }
 
 template<typename T>
-void readEBMLEntry(std::vector<T> &value, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(std::vector<T> &value, Common::SeekableReadStream &stream, uint64_t filePos) {
 	T object;
 	readEBMLEntry(object, stream, filePos);
 	value.push_back(object);
@@ -241,7 +241,7 @@ void readEBMLEntry(std::vector<T> &value, Common::SeekableReadStream &stream, ui
 class EBMLBaseEntryReader {
 public:
 	virtual ~EBMLBaseEntryReader() {}
-	virtual void read(Common::SeekableReadStream &stream, uint64 filePos) = 0;
+	virtual void read(Common::SeekableReadStream &stream, uint64_t filePos) = 0;
 	virtual void setDefaultValue() = 0;
 	virtual EBMLBaseEntryReader *clone() const = 0;
 };
@@ -257,7 +257,7 @@ class EBMLEntryReader : public EBMLBaseEntryReader {
 public:
 	EBMLEntryReader(T &object) : _object(object) {}
 
-	void read(Common::SeekableReadStream &stream, uint64 filePos) {
+	void read(Common::SeekableReadStream &stream, uint64_t filePos) {
 		readEBMLEntry(_object, stream, filePos);
 	}
 
@@ -278,7 +278,7 @@ class EBMLEntryReaderDefault : public EBMLBaseEntryReader {
 public:
 	EBMLEntryReaderDefault(T &object, const T &defaultValue) : _object(object), _defaultValue(defaultValue) {}
 
-	void read(Common::SeekableReadStream &stream, uint64 filePos) {
+	void read(Common::SeekableReadStream &stream, uint64_t filePos) {
 		readEBMLEntry(_object, stream, filePos);
 	}
 
@@ -316,7 +316,7 @@ public:
 
 	EBMLID getID() const { return _id; }
 	EBMLParseMode getMode() const { return _mode; }
-	void read(Common::SeekableReadStream &stream, uint64 filePos) { _reader->read(stream, filePos); }
+	void read(Common::SeekableReadStream &stream, uint64_t filePos) { _reader->read(stream, filePos); }
 	void setDefaultValue() { _reader->setDefaultValue(); }
 
 private:
@@ -326,14 +326,14 @@ private:
 };
 
 template<size_t N>
-void readEBMLNode(EBMLSyntaxReader (&readers)[N], Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLNode(EBMLSyntaxReader (&readers)[N], Common::SeekableReadStream &stream, uint64_t filePos) {
 	bool foundEntry[N];
 	for (size_t i = 0; i < N; i++)
 		foundEntry[i] = false;
 
 	while (stream.pos() < stream.size()) {
-		uint32 id = readElementID(stream);
-		uint64 size = readElementSize(stream);
+		uint32_t id = readElementID(stream);
+		uint64_t size = readElementSize(stream);
 
 		// Check for void/crc and ignore it
 		if (id == kEBMLIDVoid || id == kEBMLIDCRC32) {
@@ -379,16 +379,16 @@ void readEBMLNode(EBMLSyntaxReader (&readers)[N], Common::SeekableReadStream &st
 }
 
 struct EBMLHeader {
-	uint64 version;
-	uint64 readVersion;
-	uint64 maxIDLength;
-	uint64 maxSizeLength;
+	uint64_t version;
+	uint64_t readVersion;
+	uint64_t maxIDLength;
+	uint64_t maxSizeLength;
 	std::string docType;
-	uint64 docTypeVersion;
-	uint64 docTypeReadVersion;
+	uint64_t docTypeVersion;
+	uint64_t docTypeReadVersion;
 };
 
-void readEBMLEntry(EBMLHeader &header, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(EBMLHeader &header, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kEBMLIDVersion, kEBMLParseRequired, header.version),
 		EBMLSyntaxReader(kEBMLIDReadVersion, kEBMLParseRequired, header.readVersion),
@@ -404,10 +404,10 @@ void readEBMLEntry(EBMLHeader &header, Common::SeekableReadStream &stream, uint6
 
 struct MatroskaSeek {
 	std::shared_ptr<Common::SeekableReadStream> seekID;
-	uint64 seekPosition;
+	uint64_t seekPosition;
 };
 
-void readEBMLEntry(MatroskaSeek &seek, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaSeek &seek, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDSeekID, kEBMLParseRequired, seek.seekID),
 		EBMLSyntaxReader(kMatroskaIDSeekPosition, kEBMLParseRequired, seek.seekPosition)
@@ -420,7 +420,7 @@ struct MatroskaSeekHead {
 	std::vector<MatroskaSeek> seeks;
 };
 
-void readEBMLEntry(MatroskaSeekHead &seekHead, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaSeekHead &seekHead, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDSeek, kEBMLParseRequired, seekHead.seeks)
 	};
@@ -429,13 +429,13 @@ void readEBMLEntry(MatroskaSeekHead &seekHead, Common::SeekableReadStream &strea
 }
 
 struct MatroskaInfo {
-	uint64 timeCodeScale;
+	uint64_t timeCodeScale;
 	double duration;
 	Common::UString muxingApp;
 	Common::UString writingApp;
 };
 
-void readEBMLEntry(MatroskaInfo &info, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaInfo &info, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDTimeCodeScale, kEBMLParseRequired, info.timeCodeScale),
 		EBMLSyntaxReader(kMatroskaIDDuration, kEBMLParseOptional, info.duration, 0.0),
@@ -448,11 +448,11 @@ void readEBMLEntry(MatroskaInfo &info, Common::SeekableReadStream &stream, uint6
 
 struct MatroskaVideo {
 	MatroskaVideo() : pixelWidth(0), pixelHeight(0) {}
-	uint64 pixelWidth;
-	uint64 pixelHeight;
+	uint64_t pixelWidth;
+	uint64_t pixelHeight;
 };
 
-void readEBMLEntry(MatroskaVideo &video, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaVideo &video, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDPixelWidth, kEBMLParseRequired, video.pixelWidth),
 		EBMLSyntaxReader(kMatroskaIDPixelHeight, kEBMLParseRequired, video.pixelHeight)
@@ -463,11 +463,11 @@ void readEBMLEntry(MatroskaVideo &video, Common::SeekableReadStream &stream, uin
 
 struct MatroskaAudio {
 	MatroskaAudio() : channels(0), samplingFrequency(0.0) {}
-	uint64 channels;
+	uint64_t channels;
 	double samplingFrequency;
 };
 
-void readEBMLEntry(MatroskaAudio &audio, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaAudio &audio, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDChannels, kEBMLParseRequired, audio.channels),
 		EBMLSyntaxReader(kMatroskaIDSamplingFrequency, kEBMLParseRequired, audio.samplingFrequency)
@@ -477,19 +477,19 @@ void readEBMLEntry(MatroskaAudio &audio, Common::SeekableReadStream &stream, uin
 }
 
 struct MatroskaTrackEntry {
-	uint64 trackNumber;
-	uint64 trackUID;
-	uint64 trackType;
-	uint64 flagLacing;
+	uint64_t trackNumber;
+	uint64_t trackUID;
+	uint64_t trackType;
+	uint64_t flagLacing;
 	std::string language;
 	std::string codecID;
-	uint64 defaultDuration;
+	uint64_t defaultDuration;
 	std::shared_ptr<Common::SeekableReadStream> codecPrivate;
 	MatroskaVideo video;
 	MatroskaAudio audio;
 };
 
-void readEBMLEntry(MatroskaTrackEntry &trackEntry, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaTrackEntry &trackEntry, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDTrackNumber, kEBMLParseRequired, trackEntry.trackNumber),
 		EBMLSyntaxReader(kMatroskaIDTrackUID, kEBMLParseRequired, trackEntry.trackUID),
@@ -510,7 +510,7 @@ struct MatroskaTracks {
 	std::vector<MatroskaTrackEntry> tracks;
 };
 
-void readEBMLEntry(MatroskaTracks &tracks, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaTracks &tracks, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDTrackEntry, kEBMLParseRequired, tracks.tracks)
 	};
@@ -526,7 +526,7 @@ struct MatroskaSegment {
 };
 
 
-void readEBMLEntry(MatroskaSegment &segment, Common::SeekableReadStream &stream, uint64 filePos) {
+void readEBMLEntry(MatroskaSegment &segment, Common::SeekableReadStream &stream, uint64_t filePos) {
 	EBMLSyntaxReader syntax[] = {
 		EBMLSyntaxReader(kMatroskaIDSeekHead, kEBMLParseOptional, segment.seekHead),
 		EBMLSyntaxReader(kMatroskaIDInfo, kEBMLParseRequired, segment.info),
@@ -539,11 +539,11 @@ void readEBMLEntry(MatroskaSegment &segment, Common::SeekableReadStream &stream,
 
 template<typename T>
 void readEBMLEntrySingle(T &object, EBMLID id, Common::SeekableReadStream &stream) {
-	uint32 checkedID = readElementID(stream);
+	uint32_t checkedID = readElementID(stream);
 	if (id != checkedID)
 		throw Common::Exception("Failed to find EBML ID %d", id);
 
-	uint64 elementSize = readElementSize(stream);
+	uint64_t elementSize = readElementSize(stream);
 
 	size_t startPos = stream.pos();
 	Common::SeekableSubReadStream element(&stream, startPos, startPos + elementSize);
@@ -568,7 +568,7 @@ enum {
 	kEBMLVersion = 1
 };
 
-Common::Timestamp makeTimestamp(uint64 nanoseconds) {
+Common::Timestamp makeTimestamp(uint64_t nanoseconds) {
 	return Common::Timestamp(0, nanoseconds, UINT64_C(1000000000));
 }
 
@@ -588,9 +588,9 @@ void Matroska::load() {
 	// Validate the header
 	if (header.version > kEBMLVersion)
 		throw Common::Exception("Unhandled EBML version: %u", (uint)header.version);
-	if (header.maxSizeLength > sizeof(uint64))
+	if (header.maxSizeLength > sizeof(uint64_t))
 		throw Common::Exception("Unhandled EBML max size: %u", (uint)header.maxSizeLength);
-	if (header.maxIDLength > sizeof(uint32))
+	if (header.maxIDLength > sizeof(uint32_t))
 		throw Common::Exception("Unhandled EBML ID length: %u", (uint)header.maxIDLength);
 	if (!isValidDocType(header.docType))
 		throw Common::Exception("Unhandled EBML doc type: %s", header.docType.c_str());
@@ -668,7 +668,7 @@ void Matroska::decodeNextTrackFrame(VideoTrack &track) {
 	MatroskaVideoTrack &videoTrack = static_cast<MatroskaVideoTrack &>(track);
 
 	// Get the next packet for the track
-	uint64 nextTimestamp;
+	uint64_t nextTimestamp;
 	std::unique_ptr<Common::SeekableReadStream> packet(getNextPacket(videoTrack.getTrackNumber(), nextTimestamp));
 
 	// If we didn't get a packet, we're done.
@@ -688,11 +688,11 @@ void Matroska::checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endT
 	// Loop until we have enough audio queued
 	while (audioTrack.canBufferData() && makeTimestamp(audioTrack.getLastTimestamp()) < endTime) {
 		// Fetch the packet
-		uint64 nextTimestamp;
+		uint64_t nextTimestamp;
 		std::unique_ptr<Common::SeekableReadStream> packet(getNextPacket(audioTrack.getTrackNumber(), nextTimestamp));
 
 		// If we fetched no packet or we have detected no further packets, we're at the end
-		if (!packet || nextTimestamp == std::numeric_limits<uint64>::max()) {
+		if (!packet || nextTimestamp == std::numeric_limits<uint64_t>::max()) {
 			audioTrack.finish();
 			break;
 		}
@@ -705,7 +705,7 @@ void Matroska::checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endT
 	}
 }
 
-Common::SeekableReadStream *Matroska::getNextPacket(uint64 trackNumber, uint64 &nextTimestamp) {
+Common::SeekableReadStream *Matroska::getNextPacket(uint64_t trackNumber, uint64_t &nextTimestamp) {
 	// Fetch the status for the current track
 	TrackStatus &status = _status[trackNumber];
 
@@ -730,7 +730,7 @@ Common::SeekableReadStream *Matroska::getNextPacket(uint64 trackNumber, uint64 &
 	return packet.release();
 }
 
-void Matroska::findNextPacket(uint64 trackNumber, TrackStatus& status) {
+void Matroska::findNextPacket(uint64_t trackNumber, TrackStatus& status) {
 	Packet &packet = status.nextPacket;
 
 	// If we don't have a cluster, start us off at the first one
@@ -748,9 +748,9 @@ void Matroska::findNextPacket(uint64 trackNumber, TrackStatus& status) {
 
 		// Look until we get to the block
 		while (_fd->pos() < status.curCluster->offset + status.curCluster->size) {
-			uint32 id = readElementID(*_fd);
-			uint64 size = readElementSize(*_fd);
-			uint64 endPos = _fd->pos() + size;
+			uint32_t id = readElementID(*_fd);
+			uint64_t size = readElementSize(*_fd);
+			uint64_t endPos = _fd->pos() + size;
 
 			// Block group, should contain one block, so nest into it
 			if (id == kMatroskaIDBlockGroup) {
@@ -766,8 +766,8 @@ void Matroska::findNextPacket(uint64 trackNumber, TrackStatus& status) {
 			}
 
 			// Read the simple block header
-			uint64 blockTrackNumber = readElementSize(*_fd);
-			int16 blockTimeCode = _fd->readSint16BE();
+			uint64_t blockTrackNumber = readElementSize(*_fd);
+			int16_t blockTimeCode = _fd->readSint16BE();
 			byte blockFlags = _fd->readByte();
 
 			// If the block isn't ours, continue on
@@ -806,17 +806,17 @@ void Matroska::findNextPacket(uint64 trackNumber, TrackStatus& status) {
 
 	// No more packets left; mark it as such
 	packet = Packet();
-	packet.timestamp = std::numeric_limits<uint64>::max();
+	packet.timestamp = std::numeric_limits<uint64_t>::max();
 }
 
-Matroska::MatroskaVideoTrack::MatroskaVideoTrack(uint64 trackNumber, uint32 width, uint32 height, uint64 defaultDuration) : _trackNumber(trackNumber), _width(width), _height(height), _defaultDuration(defaultDuration), _curFrame(-1), _finished(false), _timestamp(0) {
+Matroska::MatroskaVideoTrack::MatroskaVideoTrack(uint64_t trackNumber, uint32_t width, uint32_t height, uint64_t defaultDuration) : _trackNumber(trackNumber), _width(width), _height(height), _defaultDuration(defaultDuration), _curFrame(-1), _finished(false), _timestamp(0) {
 }
 
-void Matroska::MatroskaVideoTrack::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &frameData, uint64 timestamp) {
+void Matroska::MatroskaVideoTrack::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &frameData, uint64_t timestamp) {
 	_videoCodec->decodeFrame(surface, frameData);
 	_curFrame++;
 
-	if (timestamp == std::numeric_limits<uint64>::max())
+	if (timestamp == std::numeric_limits<uint64_t>::max())
 		_timestamp += _defaultDuration;
 	else
 		_timestamp = timestamp;
@@ -841,7 +841,7 @@ Common::Timestamp Matroska::MatroskaVideoTrack::getNextFrameStartTime() const {
 	return makeTimestamp(_timestamp);
 }
 
-Matroska::MatroskaAudioTrack::MatroskaAudioTrack(uint64 trackNumber, uint32 channelCount, uint32 sampleRate, const std::string &codec, Common::SeekableReadStream *extraData) : _trackNumber(trackNumber), _lastTimestamp(0) {
+Matroska::MatroskaAudioTrack::MatroskaAudioTrack(uint64_t trackNumber, uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData) : _trackNumber(trackNumber), _lastTimestamp(0) {
 	_audioStream.reset(createStream(channelCount, sampleRate, codec, extraData));
 }
 
@@ -861,7 +861,7 @@ Sound::AudioStream *Matroska::MatroskaAudioTrack::getAudioStream() const {
 	return _audioStream.get();
 }
 
-Sound::PacketizedAudioStream *Matroska::MatroskaAudioTrack::createStream(uint32 UNUSED(channelCount), uint32 UNUSED(sampleRate), const std::string &codec, Common::SeekableReadStream *extraData) const {
+Sound::PacketizedAudioStream *Matroska::MatroskaAudioTrack::createStream(uint32_t UNUSED(channelCount), uint32_t UNUSED(sampleRate), const std::string &codec, Common::SeekableReadStream *extraData) const {
 	if (codec == "A_VORBIS") {
 		if (!extraData)
 			throw Common::Exception("Missing Vorbis extra data");

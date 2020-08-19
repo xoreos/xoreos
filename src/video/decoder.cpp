@@ -69,8 +69,8 @@ void VideoDecoder::deinit() {
 }
 
 void VideoDecoder::initVideo() {
-	uint32 width = getWidth();
-	uint32 height = getHeight();
+	uint32_t width = getWidth();
+	uint32_t height = getHeight();
 
 	// The real texture dimensions. Have to be a power of 2
 	int realWidth  = NEXTPOWER2(width);
@@ -87,7 +87,7 @@ void VideoDecoder::initVideo() {
 	rebuild();
 }
 
-uint32 VideoDecoder::getWidth() const {
+uint32_t VideoDecoder::getWidth() const {
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if ((*it)->getTrackType() == Track::kTrackTypeVideo)
 			return boost::static_pointer_cast<const VideoTrack>(*it)->getWidth();
@@ -95,7 +95,7 @@ uint32 VideoDecoder::getWidth() const {
 	return 0;
 }
 
-uint32 VideoDecoder::getHeight() const {
+uint32_t VideoDecoder::getHeight() const {
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if ((*it)->getTrackType() == Track::kTrackTypeVideo)
 			return boost::static_pointer_cast<const VideoTrack>(*it)->getHeight();
@@ -408,7 +408,7 @@ void VideoDecoder::abort() {
 	stopAudio();
 }
 
-uint32 VideoDecoder::getTime() const {
+uint32_t VideoDecoder::getTime() const {
 	if (!isPlaying())
 		return 0;
 
@@ -420,12 +420,12 @@ uint32 VideoDecoder::getTime() const {
 	return EventMan.getTimestamp() - _startTime;
 }
 
-uint32 VideoDecoder::getTimeToNextFrame() const {
+uint32_t VideoDecoder::getTimeToNextFrame() const {
 	if (!_nextVideoTrack || endOfVideo())
 		return 0;
 
-	uint32 currentTime = getTime();
-	uint32 nextFrameStartTime = _nextVideoTrack->getNextFrameStartTime().msecs();
+	uint32_t currentTime = getTime();
+	uint32_t nextFrameStartTime = _nextVideoTrack->getNextFrameStartTime().msecs();
 
 	if (nextFrameStartTime <= currentTime)
 		return 0;
@@ -503,9 +503,9 @@ void VideoDecoder::AudioTrack::stop() {
 	SoundMan.stopChannel(_handle);
 }
 
-uint32 VideoDecoder::AudioTrack::getRunningTime() const {
+uint32_t VideoDecoder::AudioTrack::getRunningTime() const {
 	if (SoundMan.isPlaying(_handle))
-		return (uint32)SoundMan.getChannelDurationPlayed(_handle);
+		return (uint32_t)SoundMan.getChannelDurationPlayed(_handle);
 
 	return 0;
 }

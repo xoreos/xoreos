@@ -71,9 +71,9 @@ protected:
 	/** The placeable's model. */
 	std::unique_ptr<Graphics::Aurora::Model> _model;
 
-	uint32 _placeableID;  ///< The placeable's identifer from GFF.
-	uint32 _typeID;       ///< The placeable's type.
-	uint32 _appearanceID; ///< The placeable's appearance.
+	uint32_t _placeableID;  ///< The placeable's identifer from GFF.
+	uint32_t _typeID;       ///< The placeable's type.
+	uint32_t _appearanceID; ///< The placeable's appearance.
 
 	/** The name of the model representing this placeable. */
 	Common::UString _modelName;

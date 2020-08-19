@@ -46,10 +46,10 @@ namespace Engines {
 
 namespace DragonAge {
 
-static const uint32 kRMLID     = MKTAG('R', 'M', 'L', ' ');
-static const uint32 kVersion40 = MKTAG('V', '4', '.', '0');
+static const uint32_t kRMLID     = MKTAG('R', 'M', 'L', ' ');
+static const uint32_t kVersion40 = MKTAG('V', '4', '.', '0');
 
-static const uint32 kMDLID     = MKTAG('M', 'D', 'L', ' ');
+static const uint32_t kMDLID     = MKTAG('M', 'D', 'L', ' ');
 
 using ::Aurora::GFF4File;
 using ::Aurora::GFF4Struct;
@@ -71,7 +71,7 @@ Room::~Room() {
 	clean();
 }
 
-int32 Room::getID() const {
+int32_t Room::getID() const {
 	return _id;
 }
 

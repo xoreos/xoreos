@@ -68,16 +68,16 @@ IGNORE_UNUSED_VARIABLES
 
 namespace Video {
 
-static const uint32 kEscapeCodeLuma   = 119;
-static const uint32 kEscapeCodeChroma = 119;
+static const uint32_t kEscapeCodeLuma   = 119;
+static const uint32_t kEscapeCodeChroma = 119;
 
-static const uint8 kSkipTypeNone = 0;
-static const uint8 kSkipTypeMPEG = 1;
-static const uint8 kSkipTypeRow  = 2;
-static const uint8 kSkipTypeCol  = 3;
+static const uint8_t kSkipTypeNone = 0;
+static const uint8_t kSkipTypeMPEG = 1;
+static const uint8_t kSkipTypeRow  = 2;
+static const uint8_t kSkipTypeCol  = 3;
 
 
-XMVWMV2Codec::CBP::CBP(uint32 cbp) {
+XMVWMV2Codec::CBP::CBP(uint32_t cbp) {
 	decode(cbp);
 }
 
@@ -100,11 +100,11 @@ void XMVWMV2Codec::CBP::set(int block, bool coded) {
 	_cbp |=   coded << (5 - block);
 }
 
-void XMVWMV2Codec::CBP::decode(uint32 cbp) {
+void XMVWMV2Codec::CBP::decode(uint32_t cbp) {
 	_cbp = cbp & 0x3F;
 }
 
-void XMVWMV2Codec::CBP::decode(uint32 cbp, const CBP &topLeft, const CBP &top,
+void XMVWMV2Codec::CBP::decode(uint32_t cbp, const CBP &topLeft, const CBP &top,
                                            const CBP &left) {
 	const CBP x(cbp);
 
@@ -151,7 +151,7 @@ XMVWMV2Codec::DecodeContext::DecodeContext(Common::BitStream &b) : bits(b),
 	}
 }
 
-void XMVWMV2Codec::DecodeContext::setQScale(int32 qS) {
+void XMVWMV2Codec::DecodeContext::setQScale(int32_t qS) {
 	qScale = qS;
 
 	dcStepSize = 8;
@@ -161,11 +161,11 @@ void XMVWMV2Codec::DecodeContext::setQScale(int32 qS) {
 	defaultPredictor = (1024 + (dcStepSize / 2)) / dcStepSize;
 
 	if (acQuantTop[0] && acQuantTop[1] && acQuantTop[2]) {
-		std::memset(acQuantTop[0], 0, sizeof(int32) * block[0].planePitch);
-		std::memset(acQuantTop[1], 0, sizeof(int32) * block[4].planePitch);
-		std::memset(acQuantTop[2], 0, sizeof(int32) * block[5].planePitch);
+		std::memset(acQuantTop[0], 0, sizeof(int32_t) * block[0].planePitch);
+		std::memset(acQuantTop[1], 0, sizeof(int32_t) * block[4].planePitch);
+		std::memset(acQuantTop[2], 0, sizeof(int32_t) * block[5].planePitch);
 
-		for (uint32 x = 0; x < (block[0].planePitch / block[0].blockPitch); x++) {
+		for (uint32_t x = 0; x < (block[0].planePitch / block[0].blockPitch); x++) {
 			acQuantTop[0][x * block[0].blockPitch + block[4].blockPitch] = defaultPredictor;
 			acQuantTop[0][x * block[0].blockPitch                      ] = defaultPredictor;
 
@@ -182,7 +182,7 @@ void XMVWMV2Codec::DecodeContext::startRow() {
 	for (int i = 4; i < 6; i++)
 		block[i].acQuantTop = acQuantTop[i - 3];
 
-	std::memset(acQuantLeft, 0, sizeof(int32) * kBlockSize * 4);
+	std::memset(acQuantLeft, 0, sizeof(int32_t) * kBlockSize * 4);
 
 	acQuantLeft[0][0] = defaultPredictor;
 	acQuantLeft[1][0] = defaultPredictor;
@@ -206,7 +206,7 @@ void XMVWMV2Codec::DecodeContext::finishRow() {
 	}
 }
 
-void XMVWMV2Codec::DecodeContext::startMacroBlock(uint32 cbp) {
+void XMVWMV2Codec::DecodeContext::startMacroBlock(uint32_t cbp) {
 	cbpTop = curCBP[0];
 
 	curCBP[0].decode(cbp, cbpTopLeft, cbpTop, curCBP[-1]);
@@ -225,7 +225,7 @@ void XMVWMV2Codec::DecodeContext::finishMacroBlock() {
 }
 
 
-XMVWMV2Codec::XMVWMV2Codec(uint32 width, uint32 height,
+XMVWMV2Codec::XMVWMV2Codec(uint32_t width, uint32_t height,
                            Common::SeekableReadStream &extraData) :
 	_width(width), _height(height), _currentFrame(0) {
 
@@ -282,9 +282,9 @@ void XMVWMV2Codec::init() {
 
 
 	// AC predictors
-	_predAC[0] = std::make_unique<int32[]>(_lumaWidth);
-	_predAC[1] = std::make_unique<int32[]>(_chromaWidth);
-	_predAC[2] = std::make_unique<int32[]>(_chromaWidth);
+	_predAC[0] = std::make_unique<int32_t[]>(_lumaWidth);
+	_predAC[1] = std::make_unique<int32_t[]>(_chromaWidth);
+	_predAC[2] = std::make_unique<int32_t[]>(_chromaWidth);
 
 
 	// AC decoders
@@ -322,7 +322,7 @@ void XMVWMV2Codec::decodeFrame(Graphics::Surface &surface,
 		ctx.bits.skip(7);
 
 	// Quantizer scale
-	int32 qScale = ctx.bits.getBits(5);
+	int32_t qScale = ctx.bits.getBits(5);
 
 	ctx.setQScale(qScale);
 
@@ -356,7 +356,7 @@ void XMVWMV2Codec::parseExtraData(Common::SeekableReadStream &extraData) {
 	if (extraData.size() < 4)
 		throw Common::Exception("XMVWMV2Codec::parseExtraData(): Extra data too small");
 
-	uint32 data = extraData.readUint32LE();
+	uint32_t data = extraData.readUint32LE();
 
 	// Read the various decoder flags
 
@@ -383,7 +383,7 @@ void XMVWMV2Codec::initDecodeContext(DecodeContext &ctx) {
 	ctx.acQuantTop[2] = _predAC[2].get();
 
 	for (int i = 0; i < 4; i++) {
-		const uint32 offset = kBlockSize * (i & 1) + kBlockSize * _lumaWidth * (i >> 1);
+		const uint32_t offset = kBlockSize * (i & 1) + kBlockSize * _lumaWidth * (i >> 1);
 
 		ctx.block[i].refPlane = _oldPlanes[0].get() + offset;
 		ctx.block[i].curPlane = _curPlanes[0].get() + offset;
@@ -420,23 +420,23 @@ void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 	}
 
 	// DC Huffman table index
-	uint8 dcTableIndex = ctx.bits.getBit();
+	uint8_t dcTableIndex = ctx.bits.getBit();
 
 	ctx.huffDC[0] = _huffDC[0][dcTableIndex].get();
 	ctx.huffDC[1] = _huffDC[1][dcTableIndex].get();
 
 
 	// Decode the macro blocks, row-major order
-	for (uint32 y = 0; y < _mbCountHeight; y++) {
+	for (uint32_t y = 0; y < _mbCountHeight; y++) {
 
 		ctx.startRow();
 
 		// Decode all macro blocks on the current row
-		for (uint32 x = 0; x < _mbCountWidth; x++) {
+		for (uint32_t x = 0; x < _mbCountWidth; x++) {
 
 			// CBP
 
-			uint32 cbp = _huffCBP[0]->getSymbol(ctx.bits);
+			uint32_t cbp = _huffCBP[0]->getSymbol(ctx.bits);
 
 			ctx.startMacroBlock(cbp);
 
@@ -446,7 +446,7 @@ void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 
 			// Read the AC Huffman table indices for this macro block
 			if (ctx.hasACPerMacroBlock && !ctx.curCBP[0].empty()) {
-				uint32 index = getTrit(ctx.bits);
+				uint32_t index = getTrit(ctx.bits);
 
 				ctx.decoderAC[0] = &_decoderAC[0][index];
 				ctx.decoderAC[1] = &_decoderAC[1][index];
@@ -485,7 +485,7 @@ void XMVWMV2Codec::decodePFrame(DecodeContext &UNUSED(ctx)) {
 }
 
 void XMVWMV2Codec::decodeIMacroBlock(DecodeContext &ctx) {
-	int32 dcTopLeftNext = ctx.block[1].acQuantTop[0];
+	int32_t dcTopLeftNext = ctx.block[1].acQuantTop[0];
 
 	*ctx.block[3].dcTopLeft = ctx.block[0].acQuantLeft[0];
 
@@ -494,7 +494,7 @@ void XMVWMV2Codec::decodeIMacroBlock(DecodeContext &ctx) {
 
 		block.hasACCoeffs = ctx.curCBP[0].isSet(i);
 
-		int32 dcTop = block.acQuantTop[0];
+		int32_t dcTop = block.acQuantTop[0];
 
 		decodeIBlock(ctx, block);
 
@@ -508,13 +508,13 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 	// Check which predictor we're using
 	bool  isPredictedLeft = abs(*block.dcTopLeft - block.acQuantTop [0]) <=
 	                        abs(*block.dcTopLeft - block.acQuantLeft[0]);
-	int32 dcPredictor     = isPredictedLeft ? block.acQuantLeft[0] : block.acQuantTop[0];
+	int32_t dcPredictor   = isPredictedLeft ? block.acQuantLeft[0] : block.acQuantTop[0];
 
 	// Decode the DC differential
-	int32 dcDiff = (*block.huffDC)->getSymbol(ctx.bits);
+	int32_t dcDiff = (*block.huffDC)->getSymbol(ctx.bits);
 	assert(dcDiff >= 0);
 
-	if (((uint32) dcDiff) == block.dcEscapeCode) {
+	if (((uint32_t) dcDiff) == block.dcEscapeCode) {
 		// Escaped value, directly encoded
 
 		dcDiff = ctx.bits.getBits(8);
@@ -527,38 +527,38 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 		dcDiff = -dcDiff;
 
 	// Init AC coefficient prediction
-	const uint8 *zigZag = 0;
+	const uint8_t *zigZag = 0;
 	if (ctx.hasACPrediction) {
 
 		if (isPredictedLeft) {
-			std::memset(block.acQuantTop, 0, sizeof(int32) * kBlockSize);
+			std::memset(block.acQuantTop, 0, sizeof(int32_t) * kBlockSize);
 
 			zigZag = wmv2ZigZagVertical;
 		} else {
-			std::memset(block.acQuantLeft, 0, sizeof(int32) * kBlockSize);
+			std::memset(block.acQuantLeft, 0, sizeof(int32_t) * kBlockSize);
 
 			zigZag = wmv2ZigZagHorizontal;
 		}
 
 	} else {
-		std::memset(block.acQuantTop , 0, sizeof(int32) * kBlockSize);
-		std::memset(block.acQuantLeft, 0, sizeof(int32) * kBlockSize);
+		std::memset(block.acQuantTop , 0, sizeof(int32_t) * kBlockSize);
+		std::memset(block.acQuantLeft, 0, sizeof(int32_t) * kBlockSize);
 
 		zigZag = wmv2ZigZagNormal;
 	}
 
-	int32 dcQuantCoeff = dcPredictor + dcDiff;
+	int32_t dcQuantCoeff = dcPredictor + dcDiff;
 
 	block.acQuantTop [0] = dcQuantCoeff;
 	block.acQuantLeft[0] = dcQuantCoeff;
 
-	int32 acReconCoeffs[kBlockSize * kBlockSize];
+	int32_t acReconCoeffs[kBlockSize * kBlockSize];
 	std::memset(acReconCoeffs, 0, sizeof(acReconCoeffs));
 
 	acReconCoeffs[0] = dcQuantCoeff * ctx.dcStepSize;
 
-	int32 qScaleOdd = (ctx.qScale & 1) ? ctx.qScale : (ctx.qScale - 1);
-	int32 qScale2   =  ctx.qScale * 2;
+	int32_t qScaleOdd = (ctx.qScale & 1) ? ctx.qScale : (ctx.qScale - 1);
+	int32_t qScale2   =  ctx.qScale * 2;
 
 
 	// Decode AC coefficients (using run level encoding)
@@ -569,15 +569,15 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 		      Common::Huffman        &acHuff  = *(*block.decoderAC)->huffman;
 		const WMV2ACCoefficientTable &acTable = *(*block.decoderAC)->parameters;
 
-		uint32 coeffCount = 1;
+		uint32_t coeffCount = 1;
 
 		bool done = false;
 		while (!done) {
-			uint32 run   = 0;
-			 int32 level = 0;
+			uint32_t run   = 0;
+			 int32_t level = 0;
 
 			// Read the run and level table index
-			uint32 index = acHuff.getSymbol(ctx.bits);
+			uint32_t index = acHuff.getSymbol(ctx.bits);
 			if (index > acTable.escapeCode)
 				throw Common::Exception("XMVWMV2Codec::decodeIBlock(): Broken AC index");
 
@@ -674,7 +674,7 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 				                        "Overrun while deRLEing AC coefficients");
 
 			// deZigZag the current coefficient position
-			uint32 coeffIndex = zigZag[coeffCount];
+			uint32_t coeffIndex = zigZag[coeffCount];
 
 			if        ((coeffIndex / kBlockSize) == 0) {
 				// This is the first row
@@ -700,8 +700,8 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 	}
 
 	// deQuantize and propagate the first row and column
-	for (uint32 i = 1; i < kBlockSize; i++) {
-		int32 acQuantCoeff = block.acQuantLeft[i];
+	for (uint32_t i = 1; i < kBlockSize; i++) {
+		int32_t acQuantCoeff = block.acQuantLeft[i];
 
 		if      (acQuantCoeff == 0)
 			acReconCoeffs[i * kBlockSize] = 0;
@@ -724,15 +724,15 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 	IDCTPut(block.curPlane, acReconCoeffs, block.planePitch);
 }
 
-void XMVWMV2Codec::IDCTPut(byte *dest, int32 *block, uint32 pitch) {
+void XMVWMV2Codec::IDCTPut(byte *dest, int32_t *block, uint32_t pitch) {
 	IDCT(block);
 
-	for (uint32 i = 0; i < 8; i++, dest += pitch, block += 8)
-		for (uint32 j = 0; j < 8; j++)
+	for (uint32_t i = 0; i < 8; i++, dest += pitch, block += 8)
+		for (uint32_t j = 0; j < 8; j++)
 			dest[j] = CLIP(block[j], 0, 255);
 }
 
-void XMVWMV2Codec::IDCT(int32 *block) {
+void XMVWMV2Codec::IDCT(int32_t *block) {
 	for (int i = 0; i < 64; i += 8)
 		IDCTRow(block + i);
 
@@ -749,7 +749,7 @@ void XMVWMV2Codec::IDCT(int32 *block) {
 #define W6 1108 /* 2048*sqrt (2)*cos (6*pi/16) */
 #define W7  565 /* 2048*sqrt (2)*cos (7*pi/16) */
 
-void XMVWMV2Codec::IDCTRow(int32 *b) {
+void XMVWMV2Codec::IDCTRow(int32_t *b) {
 	// Step 1
 	int a1 = (W1 * b[1]) + (W7 * b[7]);
 	int a7 = (W7 * b[1]) - (W1 * b[7]);
@@ -775,7 +775,7 @@ void XMVWMV2Codec::IDCTRow(int32 *b) {
 	b[7] = (a0 + a2 - a1 - a5 + (1 << 7)) >> 8;
 }
 
-void XMVWMV2Codec::IDCTCol(int32 *b) {
+void XMVWMV2Codec::IDCTCol(int32_t *b) {
 	// Step 1, with extended precision
 	int a1 = ((W1 * b[8 * 1]) + (W7 * b[8 * 7]) + 4) >> 3;
 	int a7 = ((W7 * b[8 * 1]) - (W1 * b[8 * 7]) + 4) >> 3;
@@ -802,10 +802,10 @@ void XMVWMV2Codec::IDCTCol(int32 *b) {
 	b[8 * 7] = (a0 + a2 - a1 - a5 + (1 << 13)) >> 14;
 }
 
-uint8 XMVWMV2Codec::getTrit(Common::BitStream &bits) {
+uint8_t XMVWMV2Codec::getTrit(Common::BitStream &bits) {
 	// 0 -> 0;  10 -> 1;  11 -> 2
 
-	uint8 n = bits.getBit();
+	uint8_t n = bits.getBit();
 	if (n == 0)
 		return n;
 

@@ -58,7 +58,7 @@ public:
 	~Creature();
 
 	/** Last time info was changed that's displayed in the GUI. */
-	uint32 lastChangedGUIDisplay() const;
+	uint32_t lastChangedGUIDisplay() const;
 
 	// Basic visuals
 
@@ -83,9 +83,9 @@ public:
 	bool isFemale() const;
 
 	/** Return the creature's race value. */
-	uint32 getRace() const;
+	uint32_t getRace() const;
 	/** Set the creature's race. */
-	void setRace(uint32 race);
+	void setRace(uint32_t race);
 
 	/** Set the creature's portrait. */
 	void setPortrait(const Common::UString &portrait);
@@ -103,11 +103,11 @@ public:
 	const Common::UString &getSubRace() const;
 
 	/** Get the creature's class and level at that class slot position. */
-	void getClass(uint32 position, uint32 &classID, uint16 &level) const;
+	void getClass(uint32_t position, uint32_t &classID, uint16_t &level) const;
 	/** Get the creature's level for this class. */
-	uint16 getClassLevel(uint32 classID) const;
+	uint16_t getClassLevel(uint32_t classID) const;
 	/** Set the creature's level for this class. */
-	void changeClassLevel(uint32 classID, int16 levelChange);
+	void changeClassLevel(uint32_t classID, int16_t levelChange);
 
 	/** Return the creature's class as needed in conversations, e.g. "Barbarian". */
 	const Common::UString &getConvClass() const;
@@ -120,83 +120,83 @@ public:
 	Common::UString getClassString() const;
 
 	/** Returns the number of hit dice, which is effectively the total number of levels. */
-	uint8 getHitDice() const;
+	uint8_t getHitDice() const;
 
 	/** Return a creature's ability score. */
-	uint8 getAbility(Ability ability) const;
+	uint8_t getAbility(Ability ability) const;
 	/** Set the creature's ability score. */
-	void setAbility(Ability ability, uint8 score);
+	void setAbility(Ability ability, uint8_t score);
 	/** Return the creature's rank in this skill. */
-	int8 getSkillRank(uint32 skill) const;
+	int8_t getSkillRank(uint32_t skill) const;
 	/** Set the creature's skill rank. */
-	void setSkillRank(size_t skill, uint8 rank);
+	void setSkillRank(size_t skill, uint8_t rank);
 	/** Append a feat to the creature. */
-	void setFeat(uint32 feat);
+	void setFeat(uint32_t feat);
 	/** Does the creature have this feat? */
-	bool hasFeat(uint32 feat) const;
+	bool hasFeat(uint32_t feat) const;
 
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 
 	/** Get the creature's good-evil alignment. */
-	uint8 getGoodEvil() const;
+	uint8_t getGoodEvil() const;
 	/** Set the creature's good-evil alignment. */
-	void setGoodEvil(uint8 goodness);
+	void setGoodEvil(uint8_t goodness);
 	/** Get the creature's law-chaos alignment. */
-	uint8 getLawChaos() const;
+	uint8_t getLawChaos() const;
 	/** Set the creature's law-chaos alignment. */
-	void setLawChaos(uint8 lawfulness);
+	void setLawChaos(uint8_t lawfulness);
 
 	/** Set the creature's sound set. */
-	void setSoundSet(uint32 soundSet);
+	void setSoundSet(uint32_t soundSet);
 
 	bool isPC() const; ///< Is the creature a player character?
 	bool isDM() const; ///< Is the creature a dungeon master?
 
 	/** Return the creature's age. */
-	uint32 getAge() const;
+	uint32_t getAge() const;
 
 	/** Return the creature's XP. */
-	uint32 getXP() const;
+	uint32_t getXP() const;
 
 	/** Return the current HP this creature has. */
-	int32 getCurrentHP() const;
+	int32_t getCurrentHP() const;
 	/** Return the max HP this creature can have. */
-	int32 getMaxHP() const;
+	int32_t getMaxHP() const;
 
 	/** Return the creature's starting package. */
-	uint8 getStartingPackage() const;
+	uint8_t getStartingPackage() const;
 	/** Set the creature's starting package. */
-	void setStartingPackage(uint8 package);
+	void setStartingPackage(uint8_t package);
 
 	/** Get clerical domains. */
-	void getDomains(uint32 classID, uint8 &domain1, uint8 &domain2);
+	void getDomains(uint32_t classID, uint8_t &domain1, uint8_t &domain2);
 	/** Set clerical domains. */
-	void setDomains(uint32 classID, uint8 domain1, uint8 domain2);
+	void setDomains(uint32_t classID, uint8_t domain1, uint8_t domain2);
 
 	/** Do the creature know the spell? */
-	bool hasSpell(uint32 classID, size_t spellLevel, uint16 spell);
+	bool hasSpell(uint32_t classID, size_t spellLevel, uint16_t spell);
 	/** Set the creature's school. */
-	void setSchool(uint32 classID, uint8 school);
+	void setSchool(uint32_t classID, uint8_t school);
 	/** Set a creature's known spell. */
-	void setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell);
+	void setKnownSpell(uint32_t classID, size_t spellLevel, uint16_t spell);
 	/** Set a creature's memorized spell. */
-	void setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell);
+	void setMemorizedSpell(uint32_t classID, size_t spellLevel, uint16_t spell);
 
 	/** Set the creature's appearance. */
-	void setAppearance(uint32 appearanceID);
+	void setAppearance(uint32_t appearanceID);
 	/** Set the creature's phenotype. */
-	void setPhenotype(uint32 phenotype);
+	void setPhenotype(uint32_t phenotype);
 	/** Set the creature's color skin. */
-	void setColorSkin(uint32 colorSkin);
+	void setColorSkin(uint32_t colorSkin);
 	/** Set the creature's color hair. */
-	void setColorHair(uint32 colorHair);
+	void setColorHair(uint32_t colorHair);
 	/** Set the creature's color tattoo 1. */
-	void setColorTatto1(uint32 colorTattoo1);
+	void setColorTatto1(uint32_t colorTattoo1);
 	/** Set the creature's color tatto 2. */
-	void setColorTatto2(uint32 colorTattoo2);
+	void setColorTatto2(uint32_t colorTattoo2);
 	/** Set the creature's head. */
-	void setHead(uint32 headID);
+	void setHead(uint32_t headID);
 
 	/** Add an equippement to the creature. */
 	void addEquippedItem(Item *item);
@@ -284,16 +284,16 @@ private:
 
 	/** A class. */
 	struct Class {
-		uint32 classID; ///< Index into classes.2da.
-		uint16 level;   ///< Levels of that class.
+		uint32_t classID; ///< Index into classes.2da.
+		uint16_t level;   ///< Levels of that class.
 
-		uint8 domain1; ///< Cleric's domain.
-		uint8 domain2; ///< Cleric's domain.
+		uint8_t domain1; ///< Cleric's domain.
+		uint8_t domain2; ///< Cleric's domain.
 
-		uint8 school; ///< Wizard's spell school.
+		uint8_t school; ///< Wizard's spell school.
 
-		std::vector<std::vector<uint16> > knownList;     ///< Known spells list.
-		std::vector<std::vector<uint16> > memorizedList; ///< Memorized spells list
+		std::vector<std::vector<uint16_t> > knownList;     ///< Known spells list.
+		std::vector<std::vector<uint16_t> > memorizedList; ///< Memorized spells list
 
 		Class();
 	};
@@ -308,8 +308,8 @@ private:
 
 	/** A part of a creature body. */
 	struct BodyPart {
-		uint32 id;      ///< Index of the part variant.
-		uint32 idArmor; ///< Index of the part variant when armour equipped.
+		uint32_t id;      ///< Index of the part variant.
+		uint32_t idArmor; ///< Index of the part variant when armour equipped.
 
 		Common::UString modelName;   ///< Name of the model.
 		Common::UString textureName; ///< Name of the texture.
@@ -321,44 +321,44 @@ private:
 	};
 
 	/** The time a GUI relevant property was changed last. */
-	uint32 _lastChangedGUIDisplay;
+	uint32_t _lastChangedGUIDisplay;
 
 	Common::UString _firstName; ///< The creature's first name.
 	Common::UString _lastName;  ///< The creature's last name.
 
-	Gender _gender; ///< The creature's gender.
-	uint32 _race;   ///< The creature's race.
+	Gender   _gender; ///< The creature's gender.
+	uint32_t _race;   ///< The creature's race.
 
 	Common::UString _subRace; ///< The creature's subrace.
 
 	bool _isPC; ///< Is the creature a PC?
 	bool _isDM; ///< Is the creature a DM?
 
-	uint32 _age; ///< The creature's age.
+	uint32_t _age; ///< The creature's age.
 
-	uint32 _xp; ///< The creature's experience.
+	uint32_t _xp; ///< The creature's experience.
 
-	int32 _baseHP;    ///< The creature's base maximum health points.
-	int32 _bonusHP;   ///< The creature's bonus health points.
-	int32 _currentHP; ///< The creature's current health points.
+	int32_t _baseHP;    ///< The creature's base maximum health points.
+	int32_t _bonusHP;   ///< The creature's bonus health points.
+	int32_t _currentHP; ///< The creature's current health points.
 
-	uint8 _abilities[kAbilityMAX]; ///< The creature's abilities.
+	uint8_t _abilities[kAbilityMAX]; ///< The creature's abilities.
 
-	std::vector<Class>  _classes; ///< The creature's classes.
-	std::vector<int8>   _skills;  ///< The creature's skills.
-	std::vector<uint32> _feats;   ///< The creature's feats.
+	std::vector<Class>    _classes; ///< The creature's classes.
+	std::vector<int8_t>   _skills;  ///< The creature's skills.
+	std::vector<uint32_t> _feats;   ///< The creature's feats.
 
-	uint8 _hitDice; ///< The creature's hit dice.
+	uint8_t _hitDice; ///< The creature's hit dice.
 
 	Common::UString _deity; ///< The creature's deity.
 
-	uint8 _goodEvil; ///< The creature's good/evil value (0-100).
-	uint8 _lawChaos; ///< The creature's law/chaos value (0-100).
+	uint8_t _goodEvil; ///< The creature's good/evil value (0-100).
+	uint8_t _lawChaos; ///< The creature's law/chaos value (0-100).
 
-	uint32 _appearanceID; ///< The creature's general appearance.
-	uint32 _phenotype;    ///< The creature's phenotype.
+	uint32_t _appearanceID; ///< The creature's general appearance.
+	uint32_t _phenotype;    ///< The creature's phenotype.
 
-	uint8 _startingPackage; ///< The package chosen at creature's creation.
+	uint8_t _startingPackage; ///< The package chosen at creature's creation.
 
 	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
 
@@ -368,17 +368,17 @@ private:
 
 	Common::UString _environmentMap; ///< The environment map override to use on the model.
 
-	uint32 _colorSkin;    ///< The color of the creature's skin.
-	uint32 _colorHair;    ///< The color of the creature's hair.
-	uint32 _colorTattoo1; ///< The 1. color of the creature's tattoo.
-	uint32 _colorTattoo2; ///< The 2. color of the creature's tattoo.
+	uint32_t _colorSkin;    ///< The color of the creature's skin.
+	uint32_t _colorHair;    ///< The color of the creature's hair.
+	uint32_t _colorTattoo1; ///< The 1. color of the creature's tattoo.
+	uint32_t _colorTattoo2; ///< The 2. color of the creature's tattoo.
 
-	uint32 _colorMetal1; ///< The 1. color of the creature's metal armor.
-	uint32 _colorMetal2; ///< The 2. color of the creature's metal armor.
-	uint32 _colorLeather1; ///< The 1. color of the creature's leather armor.
-	uint32 _colorLeather2; ///< The 2. color of the creature's leather armor.
-	uint32 _colorCloth1; ///< The 1. color of the creature's cloth armor.
-	uint32 _colorCloth2; ///< The 2. color of the creature's cloth armor.
+	uint32_t _colorMetal1;   ///< The 1. color of the creature's metal armor.
+	uint32_t _colorMetal2;   ///< The 2. color of the creature's metal armor.
+	uint32_t _colorLeather1; ///< The 1. color of the creature's leather armor.
+	uint32_t _colorLeather2; ///< The 2. color of the creature's leather armor.
+	uint32_t _colorCloth1;   ///< The 1. color of the creature's cloth armor.
+	uint32_t _colorCloth2;   ///< The 2. color of the creature's cloth armor.
 
 	Creature *_master;                ///< The creature's master.
 	std::list<Associate> _associates; ///< The creature's associates.
@@ -406,19 +406,19 @@ private:
 	static void loadPortrait(const Aurora::GFF3Struct &gff, Common::UString &portrait);
 	/** Load the creature's classes. */
 	static void loadClasses (const Aurora::GFF3Struct &gff,
-	                         std::vector<Class> &classes, uint8 &hitDice);
+	                         std::vector<Class> &classes, uint8_t &hitDice);
 
 	void loadEquippedItems(const Aurora::GFF3Struct &gff);
 
 	/** Construct the resource name of a body part files. */
-	void constructPartName(const Common::UString &type, uint32 id,
+	void constructPartName(const Common::UString &type, uint32_t id,
 	                                 const Common::UString &gender,
 	                                 const Common::UString &race,
 	                                 const Common::UString &phenoType,
 	                                 Common::UString &part);
 
 	/** Construct the resource name of a body part files. */
-	void constructPartName(const Common::UString &type, uint32 id,
+	void constructPartName(const Common::UString &type, uint32_t id,
 	                                 const Common::UString &gender,
 	                                 const Common::UString &race,
 	                                 const Common::UString &phenoType,
@@ -427,7 +427,7 @@ private:
 	                                 Common::UString &part);
 
 	/** Construct the resource name of a body part files. */
-	void constructModelName(const Common::UString &type, uint32 id,
+	void constructModelName(const Common::UString &type, uint32_t id,
 	                        const Common::UString &gender,
 	                        const Common::UString &race,
 	                        const Common::UString &phenoType,
@@ -439,7 +439,7 @@ private:
 	void getArmorModels(); ///< Populate the armor info for body parts.
 
 	/** Find the creature's class if any. */
-	Class *findClass(uint32 classID);
+	Class *findClass(uint32_t classID);
 
 	/** Finished those paletted textures. */
 	void finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts);

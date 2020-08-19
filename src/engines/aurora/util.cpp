@@ -137,9 +137,9 @@ void checkConfigDouble(const Common::UString &key, double min, double max) {
 	ConfigMan.setDouble(key, def);
 }
 
-bool longDelay(uint32 ms) {
+bool longDelay(uint32_t ms) {
 	while ((ms > 0) && !EventMan.quitRequested()) {
-		uint32 delay = MIN<uint32>(ms, 10);
+		uint32_t delay = MIN<uint32_t>(ms, 10);
 
 		EventMan.delay(delay);
 
@@ -150,7 +150,7 @@ bool longDelay(uint32 ms) {
 }
 
 Aurora::GFF3File *loadOptionalGFF3(const Common::UString &gff3, Aurora::FileType type,
-                                   uint32 id, bool repairNWNPremium) {
+                                   uint32_t id, bool repairNWNPremium) {
 
 	try {
 		return new Aurora::GFF3File(gff3, type, id, repairNWNPremium);
@@ -161,7 +161,7 @@ Aurora::GFF3File *loadOptionalGFF3(const Common::UString &gff3, Aurora::FileType
 }
 
 Aurora::GFF4File *loadOptionalGFF4(const Common::UString &gff4,
-                                   Aurora::FileType fileType, uint32 type) {
+                                   Aurora::FileType fileType, uint32_t type) {
 
 	try {
 		return new Aurora::GFF4File(gff4, fileType, type);

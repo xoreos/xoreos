@@ -90,7 +90,7 @@ void Mesh::init() {
 				if (maxx < vx) maxx = vx;
 				if (maxy < vy) maxy = vy;
 				if (maxz < vz) maxz = vz;
-				if (decl[0].stride > (int32)(3 * sizeof(float))) {
+				if (decl[0].stride > (int32_t)(3 * sizeof(float))) {
 					vertices += (decl[0].stride / sizeof(float)) - 3;
 				}
 			}
@@ -120,7 +120,7 @@ void Mesh::initGL() {
 		const VertexDecl &decl = _vertexBuffer.getVertexDecl();
 
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer.getVBO());
-		for (uint32 i = 0; i < decl.size(); ++i) {
+		for (uint32_t i = 0; i < decl.size(); ++i) {
 			// Using intptr_t to ensure correct bit length for the architecture.
 			intptr_t offset = (intptr_t) (decl[i].pointer);
 			offset -= (intptr_t) (_vertexBuffer.getData());
@@ -269,7 +269,7 @@ void Mesh::useDecrement() {
 	}
 }
 
-uint32 Mesh::useCount() const {
+uint32_t Mesh::useCount() const {
 	return _usageCount;
 }
 

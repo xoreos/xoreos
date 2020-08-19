@@ -27,6 +27,10 @@
 
 #include <vector>
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
 #include "src/common/fallthrough.h"
 START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL.h>

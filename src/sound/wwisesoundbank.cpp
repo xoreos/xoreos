@@ -59,7 +59,7 @@ WwiseSoundBank::WwiseSoundBank(const Common::UString &name) : _bankID(0), _dataO
 	load(*_bnk);
 }
 
-WwiseSoundBank::WwiseSoundBank(uint64 hash) : _bankID(0), _dataOffset(SIZE_MAX) {
+WwiseSoundBank::WwiseSoundBank(uint64_t hash) : _bankID(0), _dataOffset(SIZE_MAX) {
 	_bnk.reset(ResMan.getResource(hash));
 	if (!_bnk)
 		throw Common::Exception("No such BNK resource \"%s\"", Common::formatHash(hash).c_str());
@@ -93,28 +93,28 @@ const WwiseSoundBank::Sound &WwiseSoundBank::getSoundStruct(size_t index) const 
 	return _sounds[index];
 }
 
-uint32 WwiseSoundBank::getFileID(size_t index) const {
+uint32_t WwiseSoundBank::getFileID(size_t index) const {
 	return getFileStruct(index).id;
 }
 
-uint32 WwiseSoundBank::getSoundID(size_t index) const {
+uint32_t WwiseSoundBank::getSoundID(size_t index) const {
 	return getSoundStruct(index).id;
 }
 
-uint32 WwiseSoundBank::getSoundFileID(size_t index) const {
+uint32_t WwiseSoundBank::getSoundFileID(size_t index) const {
 	return getSoundStruct(index).fileID;
 }
 
-size_t WwiseSoundBank::findFileByID(uint32 id) const {
-	std::map<uint32, size_t>::const_iterator index = _fileIDs.find(id);
+size_t WwiseSoundBank::findFileByID(uint32_t id) const {
+	std::map<uint32_t, size_t>::const_iterator index = _fileIDs.find(id);
 	if (index == _fileIDs.end())
 		return SIZE_MAX;
 
 	return index->second;
 }
 
-size_t WwiseSoundBank::findSoundByID(uint32 id) const {
-	std::map<uint32, size_t>::const_iterator index = _soundIDs.find(id);
+size_t WwiseSoundBank::findSoundByID(uint32_t id) const {
+	std::map<uint32_t, size_t>::const_iterator index = _soundIDs.find(id);
 	if (index == _soundIDs.end())
 		return SIZE_MAX;
 
@@ -184,7 +184,7 @@ Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
 
 	// Sound file is embedded in another bank
 
-	std::map<uint32, Common::UString>::const_iterator bankName = _banks.find(sound.fileSource);
+	std::map<uint32_t, Common::UString>::const_iterator bankName = _banks.find(sound.fileSource);
 	if (bankName == _banks.end())
 		throw Common::Exception("WwiseSoundBank::getSoundData(): Externally embedded file (%s, %u, %u, %u) "
 		                        "without a bank name", Common::composeString(index).c_str(),
@@ -201,11 +201,11 @@ Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
 	return bank->readStream(sound.fileSize);
 }
 
-static constexpr uint32 kSectionBankHeader  = MKTAG('B', 'K', 'H', 'D');
-static constexpr uint32 kSectionDataIndex   = MKTAG('D', 'I', 'D', 'X');
-static constexpr uint32 kSectionData        = MKTAG('D', 'A', 'T', 'A');
-static constexpr uint32 kSectionObjects     = MKTAG('H', 'I', 'R', 'C');
-static constexpr uint32 kSectionSoundTypeID = MKTAG('S', 'T', 'I', 'D');
+static constexpr uint32_t kSectionBankHeader  = MKTAG('B', 'K', 'H', 'D');
+static constexpr uint32_t kSectionDataIndex   = MKTAG('D', 'I', 'D', 'X');
+static constexpr uint32_t kSectionData        = MKTAG('D', 'A', 'T', 'A');
+static constexpr uint32_t kSectionObjects     = MKTAG('H', 'I', 'R', 'C');
+static constexpr uint32_t kSectionSoundTypeID = MKTAG('S', 'T', 'I', 'D');
 
 enum class ObjectType {
 	Settings               =  1,
@@ -231,7 +231,7 @@ enum class ObjectType {
 
 void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 	bnk.seek(0);
-	const uint32 id = bnk.readUint32BE();
+	const uint32_t id = bnk.readUint32BE();
 	if (id != kSectionBankHeader)
 		throw Common::Exception("Not a BNK file (%s)", Common::debugTag(id).c_str());
 
@@ -239,17 +239,17 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 
 	bnk.seek(0);
 	while (!bnk.eos() && (bnk.pos() != bnk.size())) {
-		const uint32 sectionType  = bnk.readUint32BE();
-		const size_t sectionSize  = bnk.readUint32LE();
-		const size_t sectionStart = bnk.pos();
-		const size_t sectionEnd   = sectionStart + sectionSize;
+		const uint32_t sectionType  = bnk.readUint32BE();
+		const size_t   sectionSize  = bnk.readUint32LE();
+		const size_t   sectionStart = bnk.pos();
+		const size_t   sectionEnd   = sectionStart + sectionSize;
 
 		debugC(Common::kDebugSound, 3, "- Section \"%s\" (%s)", Common::debugTag(sectionType).c_str(),
 		                               Common::composeString(sectionSize).c_str());
 
 		switch (sectionType) {
 			case kSectionBankHeader: {
-				const uint32 version = bnk.readUint32LE();
+				const uint32_t version = bnk.readUint32LE();
 				_bankID = bnk.readUint32LE();
 
 				if (version != 48)
@@ -295,7 +295,7 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 					const size_t start = bnk.pos();
 					const size_t end   = start + size;
 
-					const uint32 objectID = bnk.readUint32LE();
+					const uint32_t objectID = bnk.readUint32LE();
 
 					debugC(Common::kDebugSound, 3, "    - %s/%s: %u, %u (%s)", Common::composeString(i).c_str(),
 					                               Common::composeString(count).c_str(),
@@ -309,7 +309,7 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 						sound.id = objectID;
 
 						bnk.skip(4); // Unknown
-						const uint32 embedded = bnk.readUint32LE();
+						const uint32_t embedded = bnk.readUint32LE();
 
 						sound.isEmbedded  = embedded == 0;
 						sound.zeroLatency = embedded == 2;
@@ -341,7 +341,7 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 
 						bnk.skip(8); // Unknown
 
-						const uint32 embedded = bnk.readUint32LE();
+						const uint32_t embedded = bnk.readUint32LE();
 
 						music.isEmbedded  = embedded == 0;
 						music.zeroLatency = embedded == 2;
@@ -375,8 +375,8 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 				bnk.skip(4); // Unknown
 				const size_t count = bnk.readUint32LE();
 				for (size_t i = 0; i < count; i++) {
-					const uint32 bankID = bnk.readUint32LE();
-					const uint8 bankNameLength = bnk.readByte();
+					const uint32_t bankID = bnk.readUint32LE();
+					const uint8_t bankNameLength = bnk.readByte();
 
 					_banks[bankID] = Common::readStringFixed(bnk, Common::kEncodingASCII, bankNameLength);
 					debugC(Common::kDebugSound, 3, "~> %u, \"%s\"", bankID, _banks[bankID].c_str());

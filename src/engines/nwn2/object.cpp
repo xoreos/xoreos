@@ -52,8 +52,8 @@
 #include "src/engines/nwn2/item.h"
 #include "src/engines/nwn2/faction.h"
 
-static const uint8 kRepEnemyMax  = 10; // Maximum reputation for an enemy
-static const uint8 kRepFriendMin = 90; // Minimum reputation for a friend
+static const uint8_t kRepEnemyMax  = 10; // Maximum reputation for an enemy
+static const uint8_t kRepFriendMin = 90; // Minimum reputation for a friend
 
 namespace Engines {
 
@@ -132,7 +132,7 @@ bool Object::getHasInventory() const {
 	return _container;
 }
 
-const std::list<uint32> &Object::getIDs() const {
+const std::list<uint32_t> &Object::getIDs() const {
 	return _ids;
 }
 
@@ -184,7 +184,7 @@ void Object::setOrientation(float x, float y, float z, float angle) {
 }
 
 Item *Object::createItemOnObject(const Common::UString &UNUSED(blueprint),
-	uint16 UNUSED(stackSize), const Common::UString &UNUSED(tag)) {
+	uint16_t UNUSED(stackSize), const Common::UString &UNUSED(tag)) {
 	return 0;
 }
 
@@ -222,7 +222,7 @@ void Object::loadSSF() {
 void Object::readVarTable(const Aurora::GFF3List &varTable) {
 	for (Aurora::GFF3List::const_iterator v = varTable.begin(); v != varTable.end(); ++v) {
 		const Common::UString name  = (*v)->getString ("Name");
-		const int32           type  = (*v)->getSint   ("Type");
+		const int32_t           type  = (*v)->getSint   ("Type");
 
 		if (name.empty())
 			continue;
@@ -233,7 +233,7 @@ void Object::readVarTable(const Aurora::GFF3List &varTable) {
 				break;
 
 			case  1:
-				setVariable(name, (int32) (*v)->getSint("Value"));
+				setVariable(name, (int32_t) (*v)->getSint("Value"));
 				break;
 
 			case  2:
@@ -245,7 +245,7 @@ void Object::readVarTable(const Aurora::GFF3List &varTable) {
 				break;
 
 			case  4:
-				setVariable(name, (int32)((uint32) (*v)->getUint("Value")));
+				setVariable(name, (int32_t)((uint32_t) (*v)->getUint("Value")));
 				break;
 
 			case  5:
@@ -264,7 +264,7 @@ void Object::readVarTable(const Aurora::GFF3Struct &gff) {
 		readVarTable(gff.getList("VarTable"));
 }
 
-void Object::speakString(const Common::UString &string, uint32 UNUSED(volume)) {
+void Object::speakString(const Common::UString &string, uint32_t UNUSED(volume)) {
 	// TODO: Object::speakString(): Show the string in a speech bubble
 
 	status("<%s> \"%s\"", getName().c_str(), string.c_str());
@@ -312,12 +312,12 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 }
 
 /** Return this object's faction. */
-uint32 Object::getFaction() const {
+uint32_t Object::getFaction() const {
 	return _faction;
 }
 
 /** Return this object's reputation with the source. */
-uint8 Object::getReputation(Object *source) const {
+uint8_t Object::getReputation(Object *source) const {
 	assert(source);
 	if (getArea())
 		return getArea()->getModule().getFactions().getReputation(source, getFaction());
@@ -331,7 +331,7 @@ uint8 Object::getReputation(Object *source) const {
  */
 
 bool Object::getIsEnemy(Object *source) const {
-	uint8 repute = getReputation(source);
+	uint8_t repute = getReputation(source);
 	return (repute <= kRepEnemyMax);
 }
 
@@ -340,7 +340,7 @@ bool Object::getIsEnemy(Object *source) const {
  * the source is in the range [kRepFriendMin, 100].
  */
 bool Object::getIsFriend(Object *source) const {
-	uint8 repute = getReputation(source);
+	uint8_t repute = getReputation(source);
 	return (repute >= kRepFriendMin);
 }
 
@@ -349,7 +349,7 @@ bool Object::getIsFriend(Object *source) const {
  * the source is in the range (kRepEnemyMax, kRepFriendMin).
  */
 bool Object::getIsNeutral(Object *source) const {
-	uint8 repute = getReputation(source);
+	uint8_t repute = getReputation(source);
 	return ((repute > kRepEnemyMax) && (repute < kRepFriendMin));
 }
 
@@ -361,12 +361,12 @@ void Object::setListening(bool listen) {
 	_listen = listen;
 }
 
-int32 Object::getListenPatternNumber(const Common::UString &pattern) {
+int32_t Object::getListenPatternNumber(const Common::UString &pattern) {
 	auto search = _patterns.find(pattern);
 	return (search != _patterns.end()) ? search->second : 0;
 }
 
-void Object::setListenPattern(const Common::UString &pattern, int32 number) {
+void Object::setListenPattern(const Common::UString &pattern, int32_t number) {
 	_patterns[pattern] = number;
 }
 

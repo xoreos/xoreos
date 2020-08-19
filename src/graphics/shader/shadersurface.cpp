@@ -47,9 +47,9 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 
 	vertShader->usageCount++;
 
-	uint32 varCount = vertShader->variablesCombined.size();
+	uint32_t varCount = vertShader->variablesCombined.size();
 	_variableData.resize(varCount);
-	for (uint32 i = 0; i < varCount; ++i) {
+	for (uint32_t i = 0; i < varCount; ++i) {
 		_variableData[i].flags = 0;
 		genSurfaceVar(i);
 
@@ -70,7 +70,7 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 }
 
 ShaderSurface::~ShaderSurface() {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		delSurfaceVar(i);
 	}
 	// The surface doesn't own UBO's in the _uboArray, and so does not delete them.
@@ -84,31 +84,31 @@ Shader::ShaderObject *ShaderSurface::getVertexShader() const {
 	return _vertShader;
 }
 
-uint32 ShaderSurface::getFlags() const {
+uint32_t ShaderSurface::getFlags() const {
 	return _flags;
 }
 
-void ShaderSurface::setFlags(uint32 flags) {
+void ShaderSurface::setFlags(uint32_t flags) {
 	_flags = flags;
 }
 
-uint32 ShaderSurface::getVariableCount() const {
+uint32_t ShaderSurface::getVariableCount() const {
 	return _vertShader->variablesCombined.size();
 	// return _variableData.size(); // Should be equal to the frag shader variable count.
 }
 
-Shader::ShaderVariableType ShaderSurface::getVariableType(uint32 index) const {
+Shader::ShaderVariableType ShaderSurface::getVariableType(uint32_t index) const {
 	return _vertShader->variablesCombined[index].type;
 }
 
-void *ShaderSurface::getVariableData(uint32 index) const {
+void *ShaderSurface::getVariableData(uint32_t index) const {
 	return _variableData[index].data;
 }
 
 void *ShaderSurface::getVariableData(const Common::UString &name) const {
 	void *rval = 0;
 
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_vertShader->variablesCombined[i].name == name) {
 			rval = _variableData[i].data;
 			break;
@@ -118,21 +118,21 @@ void *ShaderSurface::getVariableData(const Common::UString &name) const {
 	return rval;
 }
 
-const Common::UString &ShaderSurface::getVariableName(uint32 index) const {
+const Common::UString &ShaderSurface::getVariableName(uint32_t index) const {
 	return _vertShader->variablesCombined[index].name;
 }
 
-uint32 ShaderSurface::getVariableFlags(uint32 index) const {
+uint32_t ShaderSurface::getVariableFlags(uint32_t index) const {
 	return _variableData[index].flags;
 }
 
-void ShaderSurface::setVariableExternal(uint32 index, void *loc) {
+void ShaderSurface::setVariableExternal(uint32_t index, void *loc) {
 	delSurfaceVar(index);
 	_variableData[index].data = loc;
 }
 
 void ShaderSurface::setVariableExternal(const Common::UString &name, void *loc) {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_vertShader->variablesCombined[i].name == name) {
 			delSurfaceVar(i);
 			_variableData[i].data = loc;
@@ -141,12 +141,12 @@ void ShaderSurface::setVariableExternal(const Common::UString &name, void *loc) 
 	}
 }
 
-void ShaderSurface::setVariableInternal(uint32 index) {
+void ShaderSurface::setVariableInternal(uint32_t index) {
 	genSurfaceVar(index);
 }
 
 void ShaderSurface::setVariableInternal(const Common::UString &name) {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_vertShader->variablesCombined[i].name == name) {
 			genSurfaceVar(i);
 			break;
@@ -154,13 +154,13 @@ void ShaderSurface::setVariableInternal(const Common::UString &name) {
 	}
 }
 
-bool ShaderSurface::isVariableOwned(uint32 index) const {
+bool ShaderSurface::isVariableOwned(uint32_t index) const {
 	return (_variableData[index].flags & SHADER_SURFACE_VARIABLE_OWNED) ? true : false;
 }
 
 bool ShaderSurface::isVariableOwned(const Common::UString &name) const {
 	bool rval = false;
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_vertShader->variablesCombined[i].name == name) {
 			rval = (_variableData[i].flags & SHADER_SURFACE_VARIABLE_OWNED) ? true : false;
 			break;
@@ -170,18 +170,18 @@ bool ShaderSurface::isVariableOwned(const Common::UString &name) const {
 	return rval;
 }
 
-void ShaderSurface::addUBO(uint32 index, GLuint glid) {
+void ShaderSurface::addUBO(uint32_t index, GLuint glid) {
 	_uboArray.push_back(Shader::ShaderUBO(index, glid));
 }
 
 void ShaderSurface::bindProgram(Shader::ShaderProgram *program) {
-	for (uint32 i = 0; i < _variableData.size(); i++) {
+	for (uint32_t i = 0; i < _variableData.size(); i++) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], _variableData[i].data);
 	}
 }
 
 void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	for (uint32 i = 0; i < _variableData.size(); i++) {
+	for (uint32_t i = 0; i < _variableData.size(); i++) {
 		if (_objectModelviewIndex == i) {
 			ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], t);
 		} else {
@@ -219,7 +219,7 @@ void ShaderSurface::bindGLState() {
 		glDisable(GL_CULL_FACE);
 	}
 
-	for (uint32 i = 0; i < _uboArray.size(); ++i) {
+	for (uint32_t i = 0; i < _uboArray.size(); ++i) {
 		glBindBufferBase(GL_UNIFORM_BUFFER, _uboArray[i].index, _uboArray[i].glid);
 	}
 }
@@ -235,12 +235,12 @@ void ShaderSurface::unbindGLState() {
 void ShaderSurface::restoreGLState() {
 }
 
-void *ShaderSurface::genSurfaceVar(uint32 index) {
+void *ShaderSurface::genSurfaceVar(uint32_t index) {
 	if (_variableData[index].flags & SHADER_SURFACE_VARIABLE_OWNED)
 		return 0;
 
 	void *rval = 0;
-	uint32 count = _vertShader->variablesCombined[index].count;
+	uint32_t count = _vertShader->variablesCombined[index].count;
 
 	switch (_vertShader->variablesCombined[index].type) {
 		case SHADER_FLOAT: rval = new float[count];     break;
@@ -295,7 +295,7 @@ void *ShaderSurface::genSurfaceVar(uint32 index) {
 	return rval;
 }
 
-void ShaderSurface::delSurfaceVar(uint32 index)
+void ShaderSurface::delSurfaceVar(uint32_t index)
 {
 	if (!(_variableData[index].flags & SHADER_SURFACE_VARIABLE_OWNED))
 		return;
@@ -363,7 +363,7 @@ void ShaderSurface::useDecrement() {
 	}
 }
 
-uint32 ShaderSurface::useCount() const {
+uint32_t ShaderSurface::useCount() const {
 	return _usageCount;
 }
 

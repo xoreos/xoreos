@@ -56,8 +56,8 @@
 #include "src/graphics/images/ncgr.h"
 #include "src/graphics/images/nclr.h"
 
-static const uint32 kNCGRID = MKTAG('N', 'C', 'G', 'R');
-static const uint32 kCHARID = MKTAG('C', 'H', 'A', 'R');
+static const uint32_t kNCGRID = MKTAG('N', 'C', 'G', 'R');
+static const uint32_t kCHARID = MKTAG('C', 'H', 'A', 'R');
 
 namespace Graphics {
 
@@ -70,7 +70,7 @@ NCGR::NCGRFile::~NCGRFile() {
 }
 
 
-NCGR::NCGR(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 width, uint32 height,
+NCGR::NCGR(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32_t width, uint32_t height,
            Common::SeekableReadStream &nclr) {
 
 	try {
@@ -93,7 +93,7 @@ NCGR::NCGR(Common::SeekableReadStream &ncgr, Common::SeekableReadStream &nclr) {
 	}
 }
 
-void NCGR::load(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 width, uint32 height,
+void NCGR::load(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32_t width, uint32_t height,
                 Common::SeekableReadStream &nclr) {
 
 	if ((width * height) != ncgrs.size())
@@ -129,28 +129,28 @@ void NCGR::load(NCGRFile &ctx) {
 }
 
 void NCGR::readHeader(NCGRFile &ctx) {
-	const uint32 tag = ctx.ncgr->readUint32();
+	const uint32_t tag = ctx.ncgr->readUint32();
 	if (tag != kNCGRID)
 		throw Common::Exception("Invalid NCGR file (%s)", Common::debugTag(tag).c_str());
 
-	const uint16 bom = ctx.ncgr->readUint16();
+	const uint16_t bom = ctx.ncgr->readUint16();
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: %u", bom);
 
-	const uint8 versionMinor = ctx.ncgr->readByte();
-	const uint8 versionMajor = ctx.ncgr->readByte();
+	const uint8_t versionMinor = ctx.ncgr->readByte();
+	const uint8_t versionMajor = ctx.ncgr->readByte();
 	if ((versionMajor != 1) || (versionMinor != 1))
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
-	const uint32 fileSize = ctx.ncgr->readUint32();
+	const uint32_t fileSize = ctx.ncgr->readUint32();
 	if (fileSize > ctx.ncgr->size())
 		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)ctx.ncgr->size());
 
-	const uint16 headerSize = ctx.ncgr->readUint16();
+	const uint16_t headerSize = ctx.ncgr->readUint16();
 	if (headerSize != 16)
 		throw Common::Exception("Invalid header size (%u)", headerSize);
 
-	const uint16 sectionCount = ctx.ncgr->readUint16();
+	const uint16_t sectionCount = ctx.ncgr->readUint16();
 	if ((sectionCount != 1) && (sectionCount != 2))
 		throw Common::Exception("Invalid number of sections (%u)", sectionCount);
 
@@ -162,7 +162,7 @@ void NCGR::readChar(NCGRFile &ctx) {
 
 	ctx.ncgr->seek(ctx.offsetCHAR);
 
-	const uint32 tag = ctx.ncgr->readUint32();
+	const uint32_t tag = ctx.ncgr->readUint32();
 	if (tag != kCHARID)
 		throw Common::Exception("Invalid CHAR section (%s)", Common::debugTag(tag).c_str());
 
@@ -190,7 +190,7 @@ void NCGR::readChar(NCGRFile &ctx) {
 		throw Common::Exception("Unsupported image dimensions");
 
 	// depthValue == 3 means 4 bit graphics. We don't need to support them.
-	const uint32 depthValue = ctx.ncgr->readUint32();
+	const uint32_t depthValue = ctx.ncgr->readUint32();
 	if (depthValue != 4)
 		throw Common::Exception("Unsupported image depth %u", depthValue);
 
@@ -201,19 +201,19 @@ void NCGR::readChar(NCGRFile &ctx) {
 	/* tiled == 0xFF apparently means the graphics are non-tiled.
 	 * Would certainly make things easier, but none of the files
 	 * are in this format, it seems. */
-	const uint8 tiled = ctx.ncgr->readByte();
+	const uint8_t tiled = ctx.ncgr->readByte();
 
 	/* part == 0xFF apparently means that the image is portioned somehow?
 	 * None of the Sonic files have this flag set, though. */
-	const uint8 part  = ctx.ncgr->readByte();
+	const uint8_t part  = ctx.ncgr->readByte();
 
 	if ((tiled != 0) || (part != 0))
 		throw Common::Exception("Unsupported layout 0x%02X 0x%02X", tiled, part);
 
 	ctx.ncgr->skip(2); // Unknown
 
-	const uint32 dataSize   = ctx.ncgr->readUint32();
-	const uint32 dataOffset = ctx.ncgr->readUint32() + 24;
+	const uint32_t dataSize   = ctx.ncgr->readUint32();
+	const uint32_t dataOffset = ctx.ncgr->readUint32() + 24;
 
 	if ((dataOffset >= ctx.ncgr->size()) || ((ctx.ncgr->size() - dataOffset) < dataSize))
 		throw Common::Exception("Invalid data offset (%u, %u, %u)",
@@ -222,15 +222,15 @@ void NCGR::readChar(NCGRFile &ctx) {
 	ctx.image = new Common::SeekableSubReadStream(ctx.ncgr, dataOffset, dataOffset + dataSize);
 }
 
-void NCGR::calculateGrid(ReadContext &ctx, uint32 &imageWidth, uint32 &imageHeight) {
+void NCGR::calculateGrid(ReadContext &ctx, uint32_t &imageWidth, uint32_t &imageHeight) {
 	imageWidth = imageHeight = 0;
 
 	// Go through the whole image and get the max height of a row of NCGR
-	for (uint32 y = 0; y < ctx.height; y++) {
-		uint32 rowHeight = 0;
-		uint32 rowWidth  = 0;
+	for (uint32_t y = 0; y < ctx.height; y++) {
+		uint32_t rowHeight = 0;
+		uint32_t rowWidth  = 0;
 
-		for (uint32 x = 0; x < ctx.width; x++) {
+		for (uint32_t x = 0; x < ctx.width; x++) {
 			NCGRFile &ncgr = ctx.ncgrs[y * ctx.width + x];
 			ncgr.offsetX = rowWidth;
 			ncgr.offsetY = imageHeight;
@@ -245,7 +245,7 @@ void NCGR::calculateGrid(ReadContext &ctx, uint32 &imageWidth, uint32 &imageHeig
 }
 
 void NCGR::draw(ReadContext &ctx) {
-	uint32 imageWidth, imageHeight;
+	uint32_t imageWidth, imageHeight;
 	calculateGrid(ctx, imageWidth, imageHeight);
 
 	if ((imageWidth >= 0x8000) || (imageHeight >= 0x8000))
@@ -267,7 +267,7 @@ void NCGR::draw(ReadContext &ctx) {
 	const bool is0Transp = (ctx.pal[0] == 0xF8) && (ctx.pal[1] == 0x00) && (ctx.pal[2] == 0xF8);
 
 	// Fill with palette entry 0. Some NCGR cells might be empty, or smaller
-	for (uint32 i = 0; i < (imageWidth * imageHeight); i++) {
+	for (uint32_t i = 0; i < (imageWidth * imageHeight); i++) {
 		data[i * 4 + 0] = ctx.pal[0];
 		data[i * 4 + 1] = ctx.pal[1];
 		data[i * 4 + 2] = ctx.pal[2];
@@ -278,8 +278,8 @@ void NCGR::draw(ReadContext &ctx) {
 	 * this manually. Moreover, we ourselves stitch together several NCGR files into
 	 * one image. */
 
-	const uint32 tileWidth  = 8;
-	const uint32 tileHeight = 8;
+	const uint32_t tileWidth  = 8;
+	const uint32_t tileHeight = 8;
 
 	for (std::vector<NCGRFile>::iterator n = ctx.ncgrs.begin(); n != ctx.ncgrs.end(); ++n) {
 		if (!n->image)
@@ -288,26 +288,26 @@ void NCGR::draw(ReadContext &ctx) {
 		n->image->seek(0);
 
 		// Position of this NCGR within the big image
-		const uint32 imagePos = n->offsetX + n->offsetY * imageWidth;
+		const uint32_t imagePos = n->offsetX + n->offsetY * imageWidth;
 
 		// Number of "tiles" in this image's rows/columns
-		const uint32 tilesX = n->width  / tileWidth;
-		const uint32 tilesY = n->height / tileHeight;
+		const uint32_t tilesX = n->width  / tileWidth;
+		const uint32_t tilesY = n->height / tileHeight;
 
 		// Go over all tiles
-		for (uint32 yT = 0; yT < tilesY; yT++) {
-			for (uint32 xT = 0; xT < tilesX; xT++) {
+		for (uint32_t yT = 0; yT < tilesY; yT++) {
+			for (uint32_t xT = 0; xT < tilesX; xT++) {
 
 				// Position of the tile within the NCGR
-				const uint32 tilePos = xT * tileWidth + yT * tileHeight * imageWidth;
+				const uint32_t tilePos = xT * tileWidth + yT * tileHeight * imageWidth;
 
 				// Go over all pixels in the tile
-				for (uint32 y = 0; y < tileHeight; y++) {
-					for (uint32 x = 0; x < tileWidth; x++) {
+				for (uint32_t y = 0; y < tileHeight; y++) {
+					for (uint32_t x = 0; x < tileWidth; x++) {
 
 						// Position of the pixel within the tile
-						const uint32 pos   = imagePos + tilePos + x + y * imageWidth;
-						const uint8  pixel = n->image->readByte();
+						const uint32_t pos   = imagePos + tilePos + x + y * imageWidth;
+						const uint8_t  pixel = n->image->readByte();
 
 						if (pos > (imageWidth * imageHeight))
 							continue;

@@ -258,7 +258,7 @@ static void splitDirectories(const UString &directory, std::list<UString> &dirs)
 	UString curDir;
 
 	for (UString::iterator it = directory.begin(); it != directory.end(); ++it) {
-		uint32 c = *it;
+		uint32_t c = *it;
 
 		if (c == '/') {
 			// Found a directory separator, split here

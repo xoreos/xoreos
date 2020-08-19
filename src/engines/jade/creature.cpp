@@ -71,7 +71,7 @@ bool Creature::isPC() const {
 	return _isPC;
 }
 
-int32 Creature::getAutoBalance() const {
+int32_t Creature::getAutoBalance() const {
 	return _autoBalance;
 }
 

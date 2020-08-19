@@ -77,7 +77,7 @@ static void loadTables(const Common::UString &nameM, const Common::UString &name
 }
 
 void TalkManager::addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
-                           bool isAlt, uint32 priority, Common::ChangeID *changeID) {
+                           bool isAlt, uint32_t priority, Common::ChangeID *changeID) {
 
 	TalkTable *tableMale = 0, *tableFemale = 0;
 	loadTables(nameMale, nameFemale, tableMale, tableFemale, LangMan.getCurrentEncoding());
@@ -89,7 +89,7 @@ void TalkManager::addTable(const Common::UString &nameMale, const Common::UStrin
 	if (isAlt)
 		tables = &_tablesAlt;
 
-	const uint32 id = Common::generateIDNumber();
+	const uint32_t id = Common::generateIDNumber();
 
 	tables->push_back(Table(tableMale, tableFemale, priority, id));
 	tables->sort();
@@ -128,7 +128,7 @@ void TalkManager::removeTable(Common::ChangeID &changeID) {
 }
 
 static const Common::UString kEmptyString = "";
-const Common::UString &TalkManager::getString(uint32 strRef, LanguageGender gender) {
+const Common::UString &TalkManager::getString(uint32_t strRef, LanguageGender gender) {
 	if (gender == kLanguageGenderCurrent)
 		gender = LangMan.getCurrentGender();
 
@@ -142,7 +142,7 @@ const Common::UString &TalkManager::getString(uint32 strRef, LanguageGender gend
 	return table->getString(strRef);
 }
 
-const Common::UString &TalkManager::getSoundResRef(uint32 strRef, LanguageGender gender) {
+const Common::UString &TalkManager::getSoundResRef(uint32_t strRef, LanguageGender gender) {
 	if (gender == kLanguageGenderCurrent)
 		gender = LangMan.getCurrentGender();
 
@@ -156,7 +156,7 @@ const Common::UString &TalkManager::getSoundResRef(uint32 strRef, LanguageGender
 	return table->getSoundResRef(strRef);
 }
 
-const TalkTable *TalkManager::find(const Tables &tables, uint32 strRef, LanguageGender gender) const {
+const TalkTable *TalkManager::find(const Tables &tables, uint32_t strRef, LanguageGender gender) const {
 	/* Look for the strRef in decreasing priority.
 	 *
 	 * Only look through the female table if a female gendered string was requested,
@@ -175,7 +175,7 @@ const TalkTable *TalkManager::find(const Tables &tables, uint32 strRef, Language
 	return 0;
 }
 
-const TalkTable *TalkManager::find(uint32 strRef, LanguageGender gender) const {
+const TalkTable *TalkManager::find(uint32_t strRef, LanguageGender gender) const {
 	bool isAlt = (strRef & 0xFF000000) != 0;
 
 	strRef &= 0x00FFFFFF;

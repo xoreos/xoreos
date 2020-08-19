@@ -49,7 +49,7 @@ public:
 	/** Generate a string for the body texture. */
 	static Common::UString getBodyTextureString(KotORBase::Gender gender, KotORBase::Skin skin, KotORBase::Class charClass, char state = 'b');
 	/** Generate a string for the head mesh. */
-	static Common::UString getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId);
+	static Common::UString getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32_t faceId);
 
 	/** Create a character model from a character info class. */
 	static Graphics::Aurora::Model *createModel(const CharacterGenerationInfo *info);
@@ -57,7 +57,7 @@ public:
 	static Graphics::Aurora::Model *createHeadModel(const CharacterGenerationInfo *info);
 
 protected:
-	void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
+	void getPartModelsPC(PartModels &parts, uint32_t state, uint8_t textureVariation);
 };
 
 } // End of namespace KotOR

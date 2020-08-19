@@ -37,7 +37,7 @@ class Variable {
 public:
 	Variable(Type type, const Common::UString &exactType = "");
 	Variable(bool value);
-	Variable(int32 value);
+	Variable(int32_t value);
 	Variable(float value);
 	Variable(const char *value);
 	Variable(const Common::UString &value);
@@ -52,7 +52,7 @@ public:
 	Variable &operator=(const Variable &var);
 
 	Variable &operator=(bool value);
-	Variable &operator=(int32 value);
+	Variable &operator=(int32_t value);
 	Variable &operator=(float value);
 	Variable &operator=(const char *value);
 	Variable &operator=(const Common::UString &value);
@@ -67,7 +67,7 @@ public:
 	const Common::UString &getExactType() const;
 
 	bool getBool() const;
-	int32 getInt() const;
+	int32_t getInt() const;
 	float getFloat() const;
 	Common::UString &getString();
 	const Common::UString &getString() const;

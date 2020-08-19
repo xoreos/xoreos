@@ -302,7 +302,7 @@ Common::SeekableReadStream *ResourceManager::openArchiveStream(const KnownArchiv
 	return getResource(*archive.resource, true);
 }
 
-void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
+void ResourceManager::indexArchive(const Common::UString &file, uint32_t priority,
                                    const std::vector<byte> &password, Common::ChangeID *changeID) {
 
 	KnownArchive *knownArchive = findArchive(file);
@@ -360,13 +360,13 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 		indexArchive(*knownArchive, archive.release(), priority, change);
 }
 
-void ResourceManager::indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+void ResourceManager::indexArchive(const Common::UString &file, uint32_t priority, Common::ChangeID *changeID) {
 	std::vector<byte> password;
 
 	indexArchive(file, priority, password, changeID);
 }
 
-uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
+uint32_t ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
                                     std::vector<KnownArchive *> &archives,
                                     std::vector<KEYDataFile *> &keyData) {
 
@@ -388,7 +388,7 @@ uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 	archives.resize(keyBIFs.size(), 0);
 	keyData.resize(keyBIFs.size(), 0);
 
-	for (uint32 i = 0; i < keyBIFs.size(); i++) {
+	for (uint32_t i = 0; i < keyBIFs.size(); i++) {
 		archives[i] = findArchive(keyBIFs[i], _knownArchives[kArchiveBIF]);
 		if (!archives[i])
 			throw Common::Exception("BIF \"%s\" not found", keyBIFs[i].c_str());
@@ -405,18 +405,18 @@ uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 	return archives.size();
 }
 
-void ResourceManager::indexKEY(Common::SeekableReadStream *stream, uint32 priority, Change *change) {
+void ResourceManager::indexKEY(Common::SeekableReadStream *stream, uint32_t priority, Change *change) {
 	std::vector<KnownArchive *> archives;
 	std::vector<KEYDataFile *> keyData;
 
-	const uint32 count = openKEYBIFs(stream, archives, keyData);
+	const uint32_t count = openKEYBIFs(stream, archives, keyData);
 
-	for (uint32 i = 0; i < count; i++)
+	for (uint32_t i = 0; i < count; i++)
 		indexArchive(*archives[i], keyData[i], priority, change);
 }
 
 void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
-                                   uint32 priority, Change *change) {
+                                   uint32_t priority, Change *change) {
 
 	const Common::HashAlgo hashAlgo = archive->getNameHashAlgo();
 	if ((hashAlgo != Common::kHashNone) && (hashAlgo != _hashAlgo))
@@ -452,7 +452,7 @@ void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
 		res.type         = resource->type;
 
 		// Get the hash or calculate if we have to
-		uint64 hash = (hashAlgo == Common::kHashNone) ? getHash(res.name, res.type) : resource->hash;
+		uint64_t hash = (hashAlgo == Common::kHashNone) ? getHash(res.name, res.type) : resource->hash;
 
 		// Normalize the file types if we can and recalculate the hash
 		if ((res.name != "") && (res.type != kFileTypeNone))
@@ -479,7 +479,7 @@ bool ResourceManager::hasResourceDir(const Common::UString &dir) {
 	return !Common::FilePath::findSubDirectory(_baseDir, dir, true).empty();
 }
 
-void ResourceManager::indexResourceFile(const Common::UString &file, uint32 priority,
+void ResourceManager::indexResourceFile(const Common::UString &file, uint32_t priority,
                                         Common::ChangeID *changeID) {
 
 	Common::UString path;
@@ -497,7 +497,7 @@ void ResourceManager::indexResourceFile(const Common::UString &file, uint32 prio
 }
 
 void ResourceManager::indexResourceDir(const Common::UString &dir, const char *glob, int depth,
-                                       uint32 priority, Common::ChangeID *changeID) {
+                                       uint32_t priority, Common::ChangeID *changeID) {
 	if (_baseDir.empty())
 		throw Common::Exception("No base data directory set");
 
@@ -671,7 +671,7 @@ bool ResourceManager::hasResource(const Common::UString &name, const std::vector
 	return getRes(name, types) != 0;
 }
 
-bool ResourceManager::hasResource(uint64 hash) const {
+bool ResourceManager::hasResource(uint64_t hash) const {
 	return getRes(hash) != 0;
 }
 
@@ -702,7 +702,7 @@ Common::UString ResourceManager::findResourceFile(const Common::UString &name,
 	return "";
 }
 
-uint32 ResourceManager::getResourceSize(const Resource &res) const {
+uint32_t ResourceManager::getResourceSize(const Resource &res) const {
 	if (res.source == kSourceArchive) {
 		if ((res.archive == 0) || (res.archive->archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
 			return 0xFFFFFFFF;
@@ -749,7 +749,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	return getResource(*res);
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(uint64 hash, FileType *type) const {
+Common::SeekableReadStream *ResourceManager::getResource(uint64_t hash, FileType *type) const {
 	const Resource *res = getRes(hash);
 	if (!res)
 		return 0;
@@ -894,11 +894,11 @@ bool ResourceManager::normalizeType(Resource &resource) {
 	return true;
 }
 
-inline uint64 ResourceManager::getHash(const Common::UString &name, FileType type) const {
+inline uint64_t ResourceManager::getHash(const Common::UString &name, FileType type) const {
 	return getHash(TypeMan.setFileType(name, type));
 }
 
-inline uint64 ResourceManager::getHash(const Common::UString &name) const {
+inline uint64_t ResourceManager::getHash(const Common::UString &name) const {
 	return Common::hashString(name.toLower(), _hashAlgo);
 }
 
@@ -952,7 +952,7 @@ bool ResourceManager::checkResourceIsArchive(Resource &resource, Change *change)
 	return true;
 }
 
-void ResourceManager::addResource(Resource &resource, uint64 hash, Change *change) {
+void ResourceManager::addResource(Resource &resource, uint64_t hash, Change *change) {
 	ResourceMap::iterator resList = _resources.find(hash);
 	if (resList == _resources.end()) {
 		// We don't have a resource with this name yet, create a new resource list for it
@@ -985,7 +985,7 @@ void ResourceManager::addResource(Resource &resource, uint64 hash, Change *chang
 	resList->second.sort();
 }
 
-void ResourceManager::addResource(const Common::UString &path, Change *change, uint32 priority) {
+void ResourceManager::addResource(const Common::UString &path, Change *change, uint32_t priority) {
 	Resource res;
 	res.priority = priority;
 	res.source   = kSourceFile;
@@ -1003,19 +1003,19 @@ void ResourceManager::addResource(const Common::UString &path, Change *change, u
 		res.type = TypeMan.getFileType(name);
 	}
 
-	uint64 hash = getHash(res.name, res.type);
+	uint64_t hash = getHash(res.name, res.type);
 	if (normalizeType(res))
 		hash = getHash(res.name, res.type);
 
 	addResource(res, hash, change);
 }
 
-void ResourceManager::addResources(const Common::FileList &files, Change *change, uint32 priority) {
+void ResourceManager::addResources(const Common::FileList &files, Change *change, uint32_t priority) {
 	for (Common::FileList::const_iterator file = files.begin(); file != files.end(); ++file)
 		addResource(*file, change, priority);
 }
 
-const ResourceManager::Resource *ResourceManager::getRes(uint64 hash) const {
+const ResourceManager::Resource *ResourceManager::getRes(uint64_t hash) const {
 	ResourceMap::const_iterator r = _resources.find(hash);
 	if ((r == _resources.end()) || r->second.empty() || (r->second.back().priority == 0))
 		return 0;
@@ -1068,8 +1068,8 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 
 		const Common::UString &name = res.name;
 		const Common::UString   ext = TypeMan.setFileType("", res.type);
-		const uint64           hash = r->first;
-		const uint32           size = getResourceSize(res);
+		const uint64_t         hash = r->first;
+		const uint32_t         size = getResourceSize(res);
 
 		const Common::UString line =
 			Common::UString::format("%32s%4s | %s | %12d\n", name.c_str(), ext.c_str(),

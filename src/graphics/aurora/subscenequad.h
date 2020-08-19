@@ -60,7 +60,7 @@ private:
 	glm::mat4 _projection;
 	glm::mat4 _transformation;
 
-	uint32 _lastSampled;
+	uint32_t _lastSampled;
 
 	int _x, _y;
 	int _width, _height;

@@ -47,9 +47,9 @@ public:
 	/** A resource within the archive. */
 	struct Resource {
 		Common::UString name;  ///< The resource's name.
-		uint64          hash;  ///< The resource's hashed name.
+		uint64_t        hash;  ///< The resource's hashed name.
 		FileType        type;  ///< The resource's type.
-		uint32          index; ///< The resource's local index within the archive.
+		uint32_t        index; ///< The resource's local index within the archive.
 
 		Resource();
 	};
@@ -63,7 +63,7 @@ public:
 	virtual const ResourceList &getResources() const = 0;
 
 	/** Return the size of a resource. */
-	virtual uint32 getResourceSize(uint32 index) const;
+	virtual uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents.
 	 *
@@ -71,15 +71,15 @@ public:
 	 *  @param  tryNoCopy Try to return a SeekableSubReadStream of the archive instead of copying.
 	 *  @return A (sub)stream of the resource's contents.
 	 */
-	virtual Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const = 0;
+	virtual Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const = 0;
 
 	/** Return with which algorithm the name is hashed. */
 	virtual Common::HashAlgo getNameHashAlgo() const;
 
 	/** Return the index of the resource matching the hash, or 0xFFFFFFFF if not found. */
-	uint32 findResource(uint64 hash) const;
+	uint32_t findResource(uint64_t hash) const;
 	/** Return the index of the resource matching the name and type, or 0xFFFFFFFF if not found. */
-	uint32 findResource(const Common::UString &name, FileType type) const;
+	uint32_t findResource(const Common::UString &name, FileType type) const;
 };
 
 } // End of namespace Aurora

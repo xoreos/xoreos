@@ -26,6 +26,7 @@
 #define COMMON_WRITEFILE_H
 
 #include <cstdio>
+#include <cstddef>
 
 #include <boost/noncopyable.hpp>
 

@@ -54,8 +54,8 @@ public:
 
 private:
 	struct PacketKey {
-		uint32 signature;
-		uint32 offset;
+		uint32_t signature;
+		uint32_t offset;
 	};
 
 	struct ParserContext {
@@ -67,8 +67,8 @@ private:
 
 		std::list<ModelNode_NWN2 *> nodes;
 
-		uint32 offModelData;
-		uint32 offRawData;
+		uint32_t offModelData;
+		uint32_t offRawData;
 
 		ParserContext(const Common::UString &name);
 		~ParserContext();

@@ -69,12 +69,12 @@ public:
 	// Abilities
 
 	struct Abilities {
-		uint32 strength { 0 };
-		uint32 dexterity { 0 };
-		uint32 constitution { 0 };
-		uint32 intelligence { 0 };
-		uint32 wisdom { 0 };
-		uint32 charisma { 0 };
+		uint32_t strength { 0 };
+		uint32_t dexterity { 0 };
+		uint32_t constitution { 0 };
+		uint32_t intelligence { 0 };
+		uint32_t wisdom { 0 };
+		uint32_t charisma { 0 };
 
 		Abilities &operator=(const Abilities &other);
 	};
@@ -82,26 +82,26 @@ public:
 	int getAbilityScore(Ability ability) const;
 	int getAbilityModifier(Ability ability) const;
 
-	void setAbilityScore(Ability ability, uint32 score);
+	void setAbilityScore(Ability ability, uint32_t score);
 
 	// Skills
 
 	struct Skills {
-		uint32 computerUse { 0 };
-		uint32 demolitions { 0 };
-		uint32 stealth { 0 };
-		uint32 awareness { 0 };
-		uint32 persuade { 0 };
-		uint32 repair { 0 };
-		uint32 security { 0 };
-		uint32 treatInjury { 0 };
+		uint32_t computerUse { 0 };
+		uint32_t demolitions { 0 };
+		uint32_t stealth { 0 };
+		uint32_t awareness { 0 };
+		uint32_t persuade { 0 };
+		uint32_t repair { 0 };
+		uint32_t security { 0 };
+		uint32_t treatInjury { 0 };
 
 		Skills &operator=(const Skills &other);
 	};
 
 	int getSkillRank(Skill skill) const;
 
-	void setSkillRank(Skill skill, uint32 rank);
+	void setSkillRank(Skill skill, uint32_t rank);
 
 	// Inventory
 

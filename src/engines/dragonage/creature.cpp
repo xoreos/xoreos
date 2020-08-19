@@ -46,11 +46,11 @@ namespace Engines {
 
 namespace DragonAge {
 
-static const uint32 kMORPID    = MKTAG('M', 'O', 'R', 'P');
-static const uint32 kVersion01 = MKTAG('V', '0', '.', '1');
+static const uint32_t kMORPID    = MKTAG('M', 'O', 'R', 'P');
+static const uint32_t kVersion01 = MKTAG('V', '0', '.', '1');
 
-static const uint32 kUTCID     = MKTAG('U', 'T', 'C', ' ');
-static const uint32 kUTIID     = MKTAG('U', 'T', 'I', ' ');
+static const uint32_t kUTCID     = MKTAG('U', 'T', 'C', ' ');
+static const uint32_t kUTIID     = MKTAG('U', 'T', 'I', ' ');
 
 using ::Aurora::GFF3File;
 using ::Aurora::GFF3Struct;
@@ -160,7 +160,7 @@ void Creature::load(const GFF3Struct &creature) {
 	load(creature, utc ? &utc->getTopLevel() : 0);
 }
 
-Common::UString Creature::createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender) {
+Common::UString Creature::createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8_t gender) {
 	if (row == Aurora::GDAFile::kInvalidRow)
 		return "";
 
@@ -289,12 +289,12 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 
 	const Aurora::GDAFile &naked = getMGDA(kWorksheetNakedVariations);
 
-	static const uint32 kNakedTorso  = 0;
-	static const uint32 kNakedGloves = 1;
-	static const uint32 kNakedBoots  = 2;
+	static const uint32_t kNakedTorso  = 0;
+	static const uint32_t kNakedGloves = 1;
+	static const uint32_t kNakedBoots  = 2;
 
-	uint8  armorType = 0;
-	Model *model     = 0;
+	uint8_t armorType = 0;
+	Model  *model     = 0;
 
 	// Torso: creature model -> equipped chest item -> naked
 
@@ -346,7 +346,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 }
 
 Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UString &prefix,
-                                         uint8 *armorType) const {
+                                         uint8_t *armorType) const {
 	if (armorType)
 		*armorType = 0;
 
@@ -360,8 +360,8 @@ Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UStri
 			GFF3File uti(item->resRef, Aurora::kFileTypeUTI, kUTIID);
 			const GFF3Struct &utiTop = uti.getTopLevel();
 
-			const uint32 baseItem  = (uint32) ((int32) utiTop.getSint("BaseItem", -1));
-			const uint32 variation = utiTop.getUint("ModelVariation", 0xFFFFFFFF);
+			const uint32_t baseItem  = (uint32_t) ((int32_t) utiTop.getSint("BaseItem", -1));
+			const uint32_t variation = utiTop.getUint("ModelVariation", 0xFFFFFFFF);
 
 			const size_t itemRow = baseItems.findRow(baseItem);
 			if (itemRow == Aurora::GDAFile::kInvalidRow)
@@ -370,7 +370,7 @@ Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UStri
 			if (armorType)
 				*armorType = baseItems.getInt(itemRow, "ArmorType");
 
-			const uint32 varSheet = (uint32) baseItems.getInt(itemRow, "Variation_Worksheet", -1);
+			const uint32_t varSheet = (uint32_t) baseItems.getInt(itemRow, "Variation_Worksheet", -1);
 			const Aurora::GDAFile &variations = getMGDA(varSheet);
 
 			const size_t variationRow = variations.findRow(variation);
@@ -443,7 +443,7 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 	if (gff.hasField("Appearance Data")) {
 		const GFF3Struct &app = gff.getStruct("Appearance Data");
 
-		_appearanceID     = (uint32) ((int32) app.getSint("Appearance_Type", (int32) _appearanceID));
+		_appearanceID     = (uint32_t) ((int32_t) app.getSint("Appearance_Type", (int32_t) _appearanceID));
 		_appearanceGender = app.getUint("Gender", _appearanceGender);
 
 		_headMorph = app.getString("HeadMorph", _headMorph);

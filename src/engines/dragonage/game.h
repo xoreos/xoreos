@@ -59,15 +59,15 @@ public:
 	void run();
 
 	/** Load all talk tables in the current language found in this directory. */
-	void loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &res);
+	void loadTalkTables(const Common::UString &dir, uint32_t priority, ChangeList &res);
 
 	/** Load all game resource archives found in this directory. */
-	static void loadResources  (const Common::UString &dir, uint32 priority, ChangeList &res);
+	static void loadResources  (const Common::UString &dir, uint32_t priority, ChangeList &res);
 	/** Load all texture packs found in this directory. */
 	/** Load all talk tables in this language found in this directory. */
-	static void loadTalkTables (const Common::UString &dir, uint32 priority, ChangeList &res,
+	static void loadTalkTables (const Common::UString &dir, uint32_t priority, ChangeList &res,
 	                            Aurora::Language language);
-	static void loadTexturePack(const Common::UString &dir, uint32 priority, ChangeList &res,
+	static void loadTexturePack(const Common::UString &dir, uint32_t priority, ChangeList &res,
 	                            TextureQuality quality);
 
 	/** Unload this set of talk tables. */
@@ -85,9 +85,9 @@ private:
 
 	void runCampaigns();
 
-	static void loadResourceDir(const Common::UString &dir, uint32 priority, ChangeList &changes);
+	static void loadResourceDir(const Common::UString &dir, uint32_t priority, ChangeList &changes);
 	static void loadTalkTable  (const Common::UString &tlk, Aurora::Language language,
-	                            uint32 priority, ChangeList &changes);
+	                            uint32_t priority, ChangeList &changes);
 };
 
 } // End of namespace DragonAge

@@ -52,7 +52,7 @@ public:
 	 *  @return             Return true if a path is found. False otherwise.
 	 */
 	bool findPath(float startX, float startY, float endX, float endY,
-	              std::vector<uint32> &facePath, float width = 0.f, uint32 maxIteration = 10000);
+	              std::vector<uint32_t> &facePath, float width = 0.f, uint32_t maxIteration = 10000);
 
 protected:
 	/** A node in the walkmesh network and its relationship within the structure and the algorithm.
@@ -62,16 +62,16 @@ protected:
 	 * on the G cost is computed (see getGValue() ).
 	 */
 	struct Node {
-		uint32 face; ///< Actually the real node.
+		uint32_t face; ///< Actually the real node.
 		float x; ///< The x position of the node.
 		float y; ///< The y position of the node.
-		uint32 parent; ///< Parent node, UINT32_MAX for no parent.
+		uint32_t parent; ///< Parent node, UINT32_MAX for no parent.
 
 		float G; //< Cost value (from the starting node to this node).
 		float H; ///< Heuristic value (estimation cost from this node to the ending point).
 
 		Node();
-		Node(uint32 faceID, float pX, float pY, uint32 parentNode = UINT32_MAX);
+		Node(uint32_t faceID, float pX, float pY, uint32_t parentNode = UINT32_MAX);
 		/** Compare the distance between two nodes. */
 		bool operator<(const Node &node) const;
 	};
@@ -83,7 +83,7 @@ protected:
 	 *  center. But it could have been from centroid to centroid, it really depends
 	 *  on the shape of the polygons that make the walkmesh.
 	 */
-	virtual float getGValue(Node &previousNode, uint32 face, float &x, float &y) const;
+	virtual float getGValue(Node &previousNode, uint32_t face, float &x, float &y) const;
 	/** Get a heuristic (an estimation) of the distance between two nodes.
 	 *
 	 *  As this could be higly related on how the walkmesh is done. This base class
@@ -94,15 +94,15 @@ protected:
 	float getEuclideanDistance(float xA, float yA, float xB, float yB) const;
 
 	/** Find a node in a vector of nodes. */
-	Node *getNode(uint32 face, std::vector<Node> &nodes) const;
+	Node *getNode(uint32_t face, std::vector<Node> &nodes) const;
 	/** Check if a vector of nodes contains a specific node. */
-	bool hasNode(uint32 face, std::vector<Node> &nodes) const;
+	bool hasNode(uint32_t face, std::vector<Node> &nodes) const;
 
 	Pathfinding *_pathfinding; ///< Pathfinding object that contains the walkmesh.
 
 private:
 	/** Reconstruct the path of faces from the closed list and the end node. */
-	void reconstructPath(Node &endNode, std::vector<Node> &closedList, std::vector<uint32> &path);
+	void reconstructPath(Node &endNode, std::vector<Node> &closedList, std::vector<uint32_t> &path);
 };
 
 } // End of namespace Engines

@@ -66,29 +66,29 @@ using Common::XMLNode;
 #endif
 
 // .--- GFF4 helpers
-static const uint32 kMMHID     = MKTAG('M', 'M', 'H', ' ');
-static const uint32 kMSHID     = MKTAG('M', 'E', 'S', 'H');
-static const uint32 kVersion01 = MKTAG('V', '0', '.', '1');
-static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
+static const uint32_t kMMHID     = MKTAG('M', 'M', 'H', ' ');
+static const uint32_t kMSHID     = MKTAG('M', 'E', 'S', 'H');
+static const uint32_t kVersion01 = MKTAG('V', '0', '.', '1');
+static const uint32_t kVersion10 = MKTAG('V', '1', '.', '0');
 
-static const uint32 kNODEID    = MKTAG('n', 'o', 'd', 'e');
-static const uint32 kMSHHID    = MKTAG('m', 's', 'h', 'h');
-static const uint32 kCRSTID    = MKTAG('c', 'r', 's', 't');
+static const uint32_t kNODEID    = MKTAG('n', 'o', 'd', 'e');
+static const uint32_t kMSHHID    = MKTAG('m', 's', 'h', 'h');
+static const uint32_t kCRSTID    = MKTAG('c', 'r', 's', 't');
 
-static const uint32 kTRSLID    = MKTAG('t', 'r', 's', 'l');
-static const uint32 kROTAID    = MKTAG('r', 'o', 't', 'a');
+static const uint32_t kTRSLID    = MKTAG('t', 'r', 's', 'l');
+static const uint32_t kROTAID    = MKTAG('r', 'o', 't', 'a');
 
-static const uint32 kCHNKID    = MKTAG('c', 'h', 'n', 'k');
-static const uint32 kDECLID    = MKTAG('d', 'e', 'c', 'l');
+static const uint32_t kCHNKID    = MKTAG('c', 'h', 'n', 'k');
+static const uint32_t kDECLID    = MKTAG('d', 'e', 'c', 'l');
 
-static const uint32 kGFFID     = MKTAG('G', 'F', 'F', ' ');
-static const uint32 kXMLID     = MKTAG('<', '?', 'x', 'm');
+static const uint32_t kGFFID     = MKTAG('G', 'F', 'F', ' ');
+static const uint32_t kXMLID     = MKTAG('<', '?', 'x', 'm');
 
-static const uint32 kMAOID     = MKTAG('M', 'A', 'O', ' ');
+static const uint32_t kMAOID     = MKTAG('M', 'A', 'O', ' ');
 
-static const uint32 kFLOTID    = MKTAG('f', 'l', 'o', 't');
-static const uint32 kFLT4ID    = MKTAG('f', 'l', 't', '4');
-static const uint32 kTEXID     = MKTAG('t', 'e', 'x', ' ');
+static const uint32_t kFLOTID    = MKTAG('f', 'l', 'o', 't');
+static const uint32_t kFLT4ID    = MKTAG('f', 'l', 't', '4');
+static const uint32_t kTEXID     = MKTAG('t', 'e', 'x', ' ');
 
 using ::Aurora::GFF4File;
 using ::Aurora::GFF4Struct;
@@ -109,11 +109,11 @@ static const GFF4Struct *getChild(const GFF4Struct &children, size_t i) {
 	return children.getStruct(i);
 }
 
-static bool isType(const GFF4Struct *strct, uint32 type) {
+static bool isType(const GFF4Struct *strct, uint32_t type) {
 	return strct && (strct->getLabel() == type);
 }
 
-static bool isType(const GFF4Struct &strct, uint32 type) {
+static bool isType(const GFF4Struct &strct, uint32_t type) {
 	return isType(&strct, type);
 }
 
@@ -294,8 +294,8 @@ void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclTypeSint16_2:
 		case kMeshDeclTypeSint16_4:
-			*f++ = (int16) stream.readUint16LE();
-			*f++ = (int16) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
 			break;
 
 		case kMeshDeclTypeUint8_4n:
@@ -305,8 +305,8 @@ void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclTypeSint16_2n:
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_2n:
@@ -348,9 +348,9 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4:
-			*f++ = (int16) stream.readUint16LE();
-			*f++ = (int16) stream.readUint16LE();
-			*f++ = (int16) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
 			break;
 
 		case kMeshDeclTypeUint8_4n:
@@ -360,9 +360,9 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_4n:
@@ -373,21 +373,21 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclType1010102:
 			{
-				uint32 data = stream.readUint32LE();
+				uint32_t data = stream.readUint32LE();
 
-				*f++ = (uint16) ((data >> 22) & 0x3FFF);
-				*f++ = (uint16) ((data >> 12) & 0x3FFF);
-				*f++ = (uint16) ((data >>  2) & 0x3FFF);
+				*f++ = (uint16_t) ((data >> 22) & 0x3FFF);
+				*f++ = (uint16_t) ((data >> 12) & 0x3FFF);
+				*f++ = (uint16_t) ((data >>  2) & 0x3FFF);
 			}
 			break;
 
 		case kMeshDeclType1010102n:
 			{
-				uint32 data = stream.readUint32LE();
+				uint32_t data = stream.readUint32LE();
 
-				*f++ = (uint16) ((data >> 22) & 0x3FFF) / 511.0f;
-				*f++ = (uint16) ((data >> 12) & 0x3FFF) / 511.0f;
-				*f++ = (uint16) ((data >>  2) & 0x3FFF) / 511.0f;
+				*f++ = (uint16_t) ((data >> 22) & 0x3FFF) / 511.0f;
+				*f++ = (uint16_t) ((data >> 12) & 0x3FFF) / 511.0f;
+				*f++ = (uint16_t) ((data >>  2) & 0x3FFF) / 511.0f;
 			}
 			break;
 
@@ -433,10 +433,10 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4:
-			*f++ = (int16) stream.readUint16LE();
-			*f++ = (int16) stream.readUint16LE();
-			*f++ = (int16) stream.readUint16LE();
-			*f++ = (int16) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16LE();
 			break;
 
 		case kMeshDeclTypeUint8_4n:
@@ -447,10 +447,10 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_4n:
@@ -462,23 +462,23 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclType1010102:
 			{
-				uint32 data = stream.readUint32LE();
+				uint32_t data = stream.readUint32LE();
 
-				*f++ = (uint16) ((data >> 22) & 0x3FFF);
-				*f++ = (uint16) ((data >> 12) & 0x3FFF);
-				*f++ = (uint16) ((data >>  2) & 0x3FFF);
-				*f++ = (uint16) ( data        & 0x0002);
+				*f++ = (uint16_t) ((data >> 22) & 0x3FFF);
+				*f++ = (uint16_t) ((data >> 12) & 0x3FFF);
+				*f++ = (uint16_t) ((data >>  2) & 0x3FFF);
+				*f++ = (uint16_t) ( data        & 0x0002);
 			}
 			break;
 
 		case kMeshDeclType1010102n:
 			{
-				uint32 data = stream.readUint32LE();
+				uint32_t data = stream.readUint32LE();
 
-				*f++ = (uint16) ((data >> 22) & 0x3FFF) / 511.0f;
-				*f++ = (uint16) ((data >> 12) & 0x3FFF) / 511.0f;
-				*f++ = (uint16) ((data >>  2) & 0x3FFF) / 511.0f;
-				*f++ = (uint16) ( data        & 0x0002) /   4.0f;
+				*f++ = (uint16_t) ((data >> 22) & 0x3FFF) / 511.0f;
+				*f++ = (uint16_t) ((data >> 12) & 0x3FFF) / 511.0f;
+				*f++ = (uint16_t) ((data >>  2) & 0x3FFF) / 511.0f;
+				*f++ = (uint16_t) ( data        & 0x0002) /   4.0f;
 			}
 			break;
 
@@ -585,19 +585,19 @@ void ModelNode_DragonAge::readChildren(Model_DragonAge::ParserContext &ctx, cons
 }
 
 void ModelNode_DragonAge::sanityCheckMeshChunk(const GFF4Struct &meshChunk) {
-	const uint32 primitiveType = meshChunk.getUint(kGFF4MeshChunkPrimitiveType);
+	const uint32_t primitiveType = meshChunk.getUint(kGFF4MeshChunkPrimitiveType);
 	if (primitiveType != 0)
 		throw Common::Exception("Unsupported primitive type %u", primitiveType);
 
-	const uint32 indexFormat = meshChunk.getUint(kGFF4MeshChunkIndexFormat);
+	const uint32_t indexFormat = meshChunk.getUint(kGFF4MeshChunkIndexFormat);
 	if (indexFormat != 0)
 		throw Common::Exception("Invalid index format %u", indexFormat);
 
-	const uint32 baseVertexIndex = meshChunk.getUint(kGFF4MeshChunkBaseVertexIndex);
+	const uint32_t baseVertexIndex = meshChunk.getUint(kGFF4MeshChunkBaseVertexIndex);
 	if (baseVertexIndex != 0)
 		throw Common::Exception("Unsupported base vertex index %u", baseVertexIndex);
 
-	const uint32 minIndex = meshChunk.getUint(kGFF4MeshChunkMinIndex);
+	const uint32_t minIndex = meshChunk.getUint(kGFF4MeshChunkMinIndex);
 	if (minIndex != 0)
 		throw Common::Exception("Unsupported min index %u", minIndex);
 }
@@ -611,7 +611,7 @@ void ModelNode_DragonAge::readMeshDecl(const GFF4Struct &meshChunk, MeshDeclarat
 		if (!isType(*d, kDECLID))
 			continue;
 
-		const int32 streamIndex = (*d)->getSint(kGFF4MeshVertexDeclaratorStream);
+		const int32_t streamIndex = (*d)->getSint(kGFF4MeshVertexDeclaratorStream);
 		if (streamIndex == -1)
 			continue;
 
@@ -620,11 +620,11 @@ void ModelNode_DragonAge::readMeshDecl(const GFF4Struct &meshChunk, MeshDeclarat
 		if (streamIndex != 0)
 			throw Common::Exception("Unsupported chunk stream index %d", streamIndex);
 
-		const uint32 usageIndex = (*d)->getUint(kGFF4MeshVertexDeclaratorUsageIndex);
+		const uint32_t usageIndex = (*d)->getUint(kGFF4MeshVertexDeclaratorUsageIndex);
 		if (streamIndex != 0)
 			throw Common::Exception("Unsupported chunk usage index %u", usageIndex);
 
-		const uint32 method = (*d)->getUint(kGFF4MeshVertexDeclaratorMethod);
+		const uint32_t method = (*d)->getUint(kGFF4MeshVertexDeclaratorMethod);
 		if (method != 0)
 			throw Common::Exception("Unsupported chunk method %u", method);
 
@@ -635,7 +635,7 @@ void ModelNode_DragonAge::readMeshDecl(const GFF4Struct &meshChunk, MeshDeclarat
 
 		// Read and add the declaration
 
-		const int32 offset = (*d)->getSint(kGFF4MeshVertexDeclaratorOffset);
+		const int32_t offset = (*d)->getSint(kGFF4MeshVertexDeclaratorOffset);
 		const MeshDeclType type = (MeshDeclType) (*d)->getUint(kGFF4MeshVertexDeclaratorDatatype);
 
 		meshDecl.push_back(MeshDeclaration(use, *d, offset, type));
@@ -645,13 +645,13 @@ void ModelNode_DragonAge::readMeshDecl(const GFF4Struct &meshChunk, MeshDeclarat
 void ModelNode_DragonAge::createIndexBuffer(const GFF4Struct &meshChunk,
 		Common::SeekableReadStream &indexData) {
 
-	uint32 indexCount = meshChunk.getUint(kGFF4MeshChunkIndexCount);
-	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+	uint32_t indexCount = meshChunk.getUint(kGFF4MeshChunkIndexCount);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	const uint32 startIndex = meshChunk.getUint(kGFF4MeshChunkStartIndex);
+	const uint32_t startIndex = meshChunk.getUint(kGFF4MeshChunkStartIndex);
 	indexData.skip(startIndex * 2);
 
-	uint16 *indices = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
+	uint16_t *indices = reinterpret_cast<uint16_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	while (indexCount-- > 0)
 		*indices++ = indexData.readUint16LE();
 }
@@ -660,9 +660,9 @@ void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 		Common::SeekableReadStream &vertexData, const MeshDeclarations &meshDecl) {
 
 	const size_t vertexPos    = vertexData.pos();
-	const uint32 vertexSize   = meshChunk.getUint(kGFF4MeshChunkVertexSize);
-	const uint32 vertexCount  = meshChunk.getUint(kGFF4MeshChunkVertexCount);
-	const uint32 vertexOffset = meshChunk.getUint(kGFF4MeshChunkVertexOffset);
+	const uint32_t vertexSize   = meshChunk.getUint(kGFF4MeshChunkVertexSize);
+	const uint32_t vertexCount  = meshChunk.getUint(kGFF4MeshChunkVertexCount);
+	const uint32_t vertexOffset = meshChunk.getUint(kGFF4MeshChunkVertexOffset);
 
 	VertexDecl vertexDecl;
 
@@ -693,7 +693,7 @@ void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
 	float *vData = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
-	for (uint32 v = 0; v < vertexCount; v++) {
+	for (uint32_t v = 0; v < vertexCount; v++) {
 
 		for (MeshDeclarations::const_iterator d = meshDecl.begin(); d != meshDecl.end(); ++d) {
 			vertexData.seek(vertexPos + vertexOffset + v * vertexSize + d->offset);
@@ -836,7 +836,7 @@ void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialO
 		if (!maoStream)
 			throw Common::Exception("No such MAO");
 
-		const uint32 tag = ::Aurora::AuroraFile::readHeaderID(*maoStream);
+		const uint32_t tag = ::Aurora::AuroraFile::readHeaderID(*maoStream);
 		maoStream->seek(0);
 
 		if        (tag == kGFFID) {

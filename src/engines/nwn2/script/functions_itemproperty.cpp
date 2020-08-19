@@ -48,7 +48,7 @@ void Functions::getItemPropertySubType(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
 	int result = -1;
 	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
-		const uint16 subType = prop->getItemPropertySubType();
+		const uint16_t subType = prop->getItemPropertySubType();
 		if (subType != UINT16_MAX)
 			result = static_cast<int>(subType);
 	}
@@ -59,7 +59,7 @@ void Functions::getItemPropertyParam1(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
 	int result = -1;
 	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
-		const uint8 param1 = prop->getItemPropertyParam1();
+		const uint8_t param1 = prop->getItemPropertyParam1();
 		if (param1 != UINT8_MAX)
 			result = static_cast<int>(param1);
 	}
@@ -70,7 +70,7 @@ void Functions::getItemPropertyParam1Value(Aurora::NWScript::FunctionContext &ct
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
 	int result = -1;
 	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
-		const uint8 param1Value = prop->getItemPropertyParam1Value();
+		const uint8_t param1Value = prop->getItemPropertyParam1Value();
 		if (param1Value != UINT8_MAX)
 			result = static_cast<int>(param1Value);
 	}
@@ -81,7 +81,7 @@ void Functions::getItemPropertyCostTable(Aurora::NWScript::FunctionContext &ctx)
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
 	int result = -1;
 	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
-		const uint8 costTable = prop->getItemPropertyCostTable();
+		const uint8_t costTable = prop->getItemPropertyCostTable();
 		if (costTable != UINT8_MAX)
 			result = static_cast<int>(costTable);
 	}
@@ -92,7 +92,7 @@ void Functions::getItemPropertyCostTableValue(Aurora::NWScript::FunctionContext 
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
 	int result = -1;
 	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
-		const uint8 costTableValue = prop->getItemPropertyCostTableValue();
+		const uint8_t costTableValue = prop->getItemPropertyCostTableValue();
 		if (costTableValue != UINT8_MAX)
 			result = static_cast<int>(costTableValue);
 	}
@@ -107,11 +107,11 @@ void Functions::getIsItemPropertyValid(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::itemPropertyAbilityBonus(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyAbilityBonus;
-	uint16 ability = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t ability = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
-	if (ability >= static_cast<uint16>(kAbilityMAX) || bonus < 1 || bonus > kMaxAbilityBonus)
+	if (ability >= static_cast<uint16_t>(kAbilityMAX) || bonus < 1 || bonus > kMaxAbilityBonus)
 		type = kItemPropertyInvalid;
 
 	ItemProperty prop(type, ability, UINT8_MAX, UINT8_MAX, bonus);
@@ -120,7 +120,7 @@ void Functions::itemPropertyAbilityBonus(Aurora::NWScript::FunctionContext &ctx)
 
 void Functions::itemPropertyACBonus(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyACBonus;
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxACBonus)
@@ -132,8 +132,8 @@ void Functions::itemPropertyACBonus(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::itemPropertyACBonusVsAlign(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyACBonusVsAlignmentGroup;
-	uint16 alignGroup = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t alignGroup = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxACBonus)
@@ -145,8 +145,8 @@ void Functions::itemPropertyACBonusVsAlign(Aurora::NWScript::FunctionContext &ct
 
 void Functions::itemPropertyACBonusVsDmgType(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type =  kItemPropertyACBonusVsDamageType;
-	uint16 damageType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t damageType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (damageType > kMaxDamageType || bonus < 1 || bonus > kMaxACBonus)
@@ -158,8 +158,8 @@ void Functions::itemPropertyACBonusVsDmgType(Aurora::NWScript::FunctionContext &
 
 void Functions::itemPropertyACBonusVsRace(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyACBonusVsRacialGroup;
-	uint16 race = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t race = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxACBonus)
@@ -171,8 +171,8 @@ void Functions::itemPropertyACBonusVsRace(Aurora::NWScript::FunctionContext &ctx
 
 void Functions::itemPropertyACBonusVsSAlign(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyACBonusVsSpecificAlignment;
-	uint16 align = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t align = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxACBonus)
@@ -184,7 +184,7 @@ void Functions::itemPropertyACBonusVsSAlign(Aurora::NWScript::FunctionContext &c
 
 void Functions::itemPropertyEnhancementBonus(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyEnhancementBonus;
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxEnhanceBonus)
@@ -196,8 +196,8 @@ void Functions::itemPropertyEnhancementBonus(Aurora::NWScript::FunctionContext &
 
 void Functions::itemPropertyEnhancementBonusVsAlign(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyEnhancementBonusVsAlignmentGroup;
-	uint16 alignGroup = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t alignGroup = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxEnhanceBonus)
@@ -209,8 +209,8 @@ void Functions::itemPropertyEnhancementBonusVsAlign(Aurora::NWScript::FunctionCo
 
 void Functions::itemPropertyEnhancementBonusVsRace(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyEnhancementBonusVsRacialGroup;
-	uint16 race = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t race = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxEnhanceBonus)
@@ -222,8 +222,8 @@ void Functions::itemPropertyEnhancementBonusVsRace(Aurora::NWScript::FunctionCon
 
 void Functions::itemPropertyEnhancementBonusVsSAlign(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyEnhancementBonusVsSpecificAlignment;
-	uint16 align = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t align = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxEnhanceBonus)
@@ -235,7 +235,7 @@ void Functions::itemPropertyEnhancementBonusVsSAlign(Aurora::NWScript::FunctionC
 
 void Functions::itemPropertyEnhancementPenalty(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedEnhancementModifier;
-	uint16 penalty = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t penalty = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (penalty < 1 || penalty > kMaxEnhancePenalty)
@@ -246,21 +246,21 @@ void Functions::itemPropertyEnhancementPenalty(Aurora::NWScript::FunctionContext
 }
 
 void Functions::itemPropertyWeightReduction(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 reduction = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t reduction = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyBaseItemWeightReduction, UINT16_MAX, UINT8_MAX, UINT8_MAX, reduction);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyBonusFeat(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 feat = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t feat = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyBonusFeat, feat, UINT8_MAX, UINT8_MAX, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyBonusLevelSpell(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyBonusSpellSlotOfLevelN;
-	uint16 spellClass = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 spellLevel = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t spellClass = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t spellLevel = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (spellLevel > kMaxSpellLevel)
@@ -271,53 +271,53 @@ void Functions::itemPropertyBonusLevelSpell(Aurora::NWScript::FunctionContext &c
 }
 
 void Functions::itemPropertyCastSpell(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 spell = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 numUses = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t spell = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t numUses = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyCastSpell, spell, UINT8_MAX, UINT8_MAX, numUses);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyDamageBonus(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 damageType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 damage = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t damageType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t damage = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyDamageBonus, damageType, UINT8_MAX, UINT8_MAX, damage);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyDamageBonusVsAlign(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 align = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 damageType = static_cast<uint8>(ctx.getParams()[1].getInt());
-	uint8 damage = static_cast<uint8>(ctx.getParams()[2].getInt());
+	uint16_t align = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t damageType = static_cast<uint8_t>(ctx.getParams()[1].getInt());
+	uint8_t damage = static_cast<uint8_t>(ctx.getParams()[2].getInt());
 	ItemProperty prop(kItemPropertyDamageBonusVsSpecificAlignment, align, UINT8_MAX, damageType, damage);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyDamageBonusVsRace(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 race = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 damageType = static_cast<uint8>(ctx.getParams()[1].getInt());
-	uint8 damage = static_cast<uint8>(ctx.getParams()[2].getInt());
+	uint16_t race = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t damageType = static_cast<uint8_t>(ctx.getParams()[1].getInt());
+	uint8_t damage = static_cast<uint8_t>(ctx.getParams()[2].getInt());
 	ItemProperty prop(kItemPropertyDamageBonusVsRacialGroup, race, UINT8_MAX, damageType, damage);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyDamageBonusVsSAlign(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 align = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 damageType = static_cast<uint8>(ctx.getParams()[1].getInt());
-	uint8 damage = static_cast<uint8>(ctx.getParams()[2].getInt());
+	uint16_t align = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t damageType = static_cast<uint8_t>(ctx.getParams()[1].getInt());
+	uint8_t damage = static_cast<uint8_t>(ctx.getParams()[2].getInt());
 	ItemProperty prop(kItemPropertyDamageBonusVsSpecificAlignment, align, UINT8_MAX, damageType, damage);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyDamageImmunity(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 damageType = static_cast<uint8>(ctx.getParams()[1].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[2].getInt());
+	uint8_t damageType = static_cast<uint8_t>(ctx.getParams()[1].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[2].getInt());
 	ItemProperty prop(kItemPropertyImmunityDamageType, damageType, UINT8_MAX, UINT8_MAX, bonus);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyDamagePenalty(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedDamage;
-	uint8 penalty = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t penalty = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (penalty < 1 || penalty > kMaxDamagePenalty)
@@ -328,15 +328,15 @@ void Functions::itemPropertyDamagePenalty(Aurora::NWScript::FunctionContext &ctx
 }
 
 void Functions::itemPropertyDamageResistance(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 damageType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 hpResist = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t damageType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t hpResist = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyDamageResistance, damageType, UINT8_MAX, UINT8_MAX, hpResist);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyDamageVulnerability(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 damageType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 vulnerability = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t damageType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t vulnerability = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyDamageVulnerability, damageType, UINT8_MAX, UINT8_MAX, vulnerability);
 	ctx.getReturn() = prop;
 }
@@ -348,11 +348,11 @@ void Functions::itemPropertyDarkvision(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::itemPropertyDecreaseAbility(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedAbilityScore;
-	uint16 ability = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 modifier = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t ability = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t modifier = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
-	if (ability >= static_cast<uint16>(kAbilityMAX) || modifier < 1 || modifier > kMaxAbilityPenalty)
+	if (ability >= static_cast<uint16_t>(kAbilityMAX) || modifier < 1 || modifier > kMaxAbilityPenalty)
 		type = kItemPropertyInvalid;
 
 	ItemProperty prop(type, ability, UINT8_MAX, UINT8_MAX, modifier);
@@ -361,8 +361,8 @@ void Functions::itemPropertyDecreaseAbility(Aurora::NWScript::FunctionContext &c
 
 void Functions::itemPropertyDecreaseAC(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedAC;
-	uint16 modifierType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 penalty = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t modifierType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t penalty = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (penalty < 1 || penalty > kMaxDamagePenalty)
@@ -374,8 +374,8 @@ void Functions::itemPropertyDecreaseAC(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::itemPropertyDecreaseSkill(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedSkillModifier;
-	uint16 skill = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 penalty = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t skill = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t penalty = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (penalty < 1 || penalty > kMaxSkillPenalty)
@@ -386,14 +386,14 @@ void Functions::itemPropertyDecreaseSkill(Aurora::NWScript::FunctionContext &ctx
 }
 
 void Functions::itemPropertyContainerReducedWeight(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 containerType = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t containerType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyEnhancedContainerReducedWeight, UINT16_MAX, UINT8_MAX, UINT8_MAX, containerType);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyExtraMeleeDamageType(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyExtraMeleeDamageType;
-	uint16 damageType = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t damageType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (damageType > kMaxDamageType)
@@ -405,7 +405,7 @@ void Functions::itemPropertyExtraMeleeDamageType(Aurora::NWScript::FunctionConte
 
 void Functions::itemPropertyExtraRangeDamageType(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyExtraRangedDamageType;
-	uint16 damageType = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t damageType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (damageType > kMaxDamageType)
@@ -431,21 +431,21 @@ void Functions::itemPropertyImprovedEvasion(Aurora::NWScript::FunctionContext &c
 }
 
 void Functions::itemPropertyBonusSpellResistance(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertySpellResistance, UINT16_MAX, UINT8_MAX, UINT8_MAX, bonus);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyImmunityMisc(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 immunityType = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t immunityType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyImmunityMiscellaneous, immunityType, UINT8_MAX, UINT8_MAX, 1);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyBonusSavingThrow(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertySavingThrowBonus;
-	uint16 baseSaveType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t baseSaveType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxSaveBonus)
@@ -457,8 +457,8 @@ void Functions::itemPropertyBonusSavingThrow(Aurora::NWScript::FunctionContext &
 
 void Functions::itemPropertyBonusSavingThrowVsX(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertySavingThrowBonusSpecific;
-	uint16 bonusType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t bonusType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxSaveBonus)
@@ -474,15 +474,15 @@ void Functions::itemPropertyKeen(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::itemPropertyLight(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 brightness = static_cast<uint8>(ctx.getParams()[0].getInt());
-	uint8 color = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint8_t brightness = static_cast<uint8_t>(ctx.getParams()[0].getInt());
+	uint8_t color = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyLight, UINT16_MAX, UINT8_MAX, color, brightness);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyMaxRangeStrengthMod(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyMighty;
-	uint8 modifier = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t modifier = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (modifier < 1 || modifier > kMaxRangeStrMod)
@@ -498,16 +498,16 @@ void Functions::itemPropertyNoDamage(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::itemPropertyOnHitProps(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 property = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 saveDC = static_cast<uint8>(ctx.getParams()[1].getInt());
-	uint8 special = static_cast<uint8>(ctx.getParams()[2].getInt());
+	uint16_t property = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t saveDC = static_cast<uint8_t>(ctx.getParams()[1].getInt());
+	uint8_t special = static_cast<uint8_t>(ctx.getParams()[2].getInt());
 
 	// Load the property table row from the 2da On-Hit data
-	uint8 param1 = UINT8_MAX;
+	uint8_t param1 = UINT8_MAX;
 	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("iprp_onhit");
 	if (property < twoDA.getRowCount()) {
 		const Aurora::TwoDARow &row = twoDA.getRow(property);
-		param1 = static_cast<uint8>(row.getInt("Param1ResRef"));
+		param1 = static_cast<uint8_t>(row.getInt("Param1ResRef"));
 	}
 
 	ItemProperty prop(kItemPropertyOnHitProperties, property, param1, special, saveDC);
@@ -516,8 +516,8 @@ void Functions::itemPropertyOnHitProps(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::itemPropertyReducedSavingThrow(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedSavingThrows;
-	uint16 bonusType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 penalty = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t bonusType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t penalty = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (penalty < 1 || penalty > kMaxSavePenalty)
@@ -529,8 +529,8 @@ void Functions::itemPropertyReducedSavingThrow(Aurora::NWScript::FunctionContext
 
 void Functions::itemPropertyReducedSavingThrowVsX(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedSavingThrowsSpecific;
-	uint16 baseSaveType = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 penalty = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t baseSaveType = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t penalty = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (penalty < 1 || penalty > kMaxSavePenalty)
@@ -542,7 +542,7 @@ void Functions::itemPropertyReducedSavingThrowVsX(Aurora::NWScript::FunctionCont
 
 void Functions::itemPropertyRegeneration(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyRegeneration;
-	uint8 regeneration = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t regeneration = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (regeneration < 1 || regeneration > kMaxRegeneration)
@@ -554,8 +554,8 @@ void Functions::itemPropertyRegeneration(Aurora::NWScript::FunctionContext &ctx)
 
 void Functions::itemPropertySkillBonus(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertySkillBonus;
-	uint16 skill = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t skill = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxSkillBonus)
@@ -566,20 +566,20 @@ void Functions::itemPropertySkillBonus(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::itemPropertySpellImmunitySpecific(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 spell = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t spell = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyImmunitySpecificSpell, UINT16_MAX, UINT8_MAX, UINT8_MAX, spell);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertySpellImmunitySchool(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 school = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t school = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyImmunitySpellSchool, school, UINT8_MAX, UINT8_MAX, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyThievesTools(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyThievesTools;
-	uint8 modifier = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t modifier = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (modifier < 1 || modifier > kMaxThievesTools)
@@ -591,7 +591,7 @@ void Functions::itemPropertyThievesTools(Aurora::NWScript::FunctionContext &ctx)
 
 void Functions::itemPropertyAttackBonus(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyAttackBonus;
-	uint16 bonus = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t bonus = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxAttackBonus)
@@ -603,8 +603,8 @@ void Functions::itemPropertyAttackBonus(Aurora::NWScript::FunctionContext &ctx) 
 
 void Functions::itemPropertyAttackBonusVsAlign(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyAttackBonusVsAlignmentGroup;
-	uint16 alignGroup = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t alignGroup = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxAttackBonus)
@@ -616,8 +616,8 @@ void Functions::itemPropertyAttackBonusVsAlign(Aurora::NWScript::FunctionContext
 
 void Functions::itemPropertyAttackBonusVsRace(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyAttackBonusVsRacialGroup;
-	uint16 race = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t race = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxAttackBonus)
@@ -629,8 +629,8 @@ void Functions::itemPropertyAttackBonusVsRace(Aurora::NWScript::FunctionContext 
 
 void Functions::itemPropertyAttackBonusVsSAlign(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyAttackBonusVsSpecificAlignment;
-	uint16 align = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 bonus = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t align = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t bonus = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 
 	// Check the range
 	if (bonus < 1 || bonus > kMaxAttackBonus)
@@ -642,7 +642,7 @@ void Functions::itemPropertyAttackBonusVsSAlign(Aurora::NWScript::FunctionContex
 
 void Functions::itemPropertyAttackPenalty(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyDecreasedAttackModifier;
-	uint8 penalty = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t penalty = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (penalty < 1 || penalty > kMaxACPenalty)
@@ -653,50 +653,50 @@ void Functions::itemPropertyAttackPenalty(Aurora::NWScript::FunctionContext &ctx
 }
 
 void Functions::itemPropertyUnlimitedAmmo(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 ammoDamage = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t ammoDamage = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyUnlimitedAmmunition, UINT16_MAX, UINT8_MAX, UINT8_MAX, ammoDamage);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyLimitUseByAlign(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 useAlign = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t useAlign = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyUseLimitationAlignmentGroup, useAlign, UINT8_MAX, UINT8_MAX, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyLimitUseByClass(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 useClass = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t useClass = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyUseLimitationClass, useClass, UINT8_MAX, UINT8_MAX, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyLimitUseByRace(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 useRace = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t useRace = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyUseLimitationRacialType, useRace, UINT8_MAX, UINT8_MAX, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyLimitUseBySAlign(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 useSAlign = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t useSAlign = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyUseLimitationSpecificAlignment, useSAlign, UINT8_MAX, UINT8_MAX, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyBonusHitpoints(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 bonusType = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t bonusType = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyBonusHitpoints, UINT16_MAX, UINT8_MAX, UINT8_MAX, bonusType);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyVampiricRegeneration(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 regenAmount = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t regenAmount = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyRegenerationVampiric, UINT16_MAX, UINT8_MAX, UINT8_MAX, regenAmount);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyTrap(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 level = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 type = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t level = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t type = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyTrap, level, UINT8_MAX, UINT8_MAX, type);
 	ctx.getReturn() = prop;
 }
@@ -707,15 +707,15 @@ void Functions::itemPropertyTrueSeeing(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::itemPropertyOnMonsterHitProperties(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 property = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 special = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t property = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t special = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyOnMonsterHit, property, UINT8_MAX, special, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyTurnResistance(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyTurnResistance;
-	uint8 modifier = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t modifier = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (modifier < 1 || modifier > kMaxTurnResist)
@@ -726,7 +726,7 @@ void Functions::itemPropertyTurnResistance(Aurora::NWScript::FunctionContext &ct
 }
 
 void Functions::itemPropertyMassiveCritical(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 damage = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t damage = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyMassiveCriticals, UINT16_MAX, UINT8_MAX, UINT8_MAX, damage);
 	ctx.getReturn() = prop;
 }
@@ -737,14 +737,14 @@ void Functions::itemPropertyFreeAction(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::itemPropertyMonsterDamage(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 damage = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t damage = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyMonsterDamage, UINT16_MAX, UINT8_MAX, UINT8_MAX, damage);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyImmunityToSpellLevel(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyImmunitySpellsByLevel;
-	uint8 level = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t level = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	/*
 	 * In the game engine, the value returned by the getItemPropertyCostTableValue
@@ -761,14 +761,14 @@ void Functions::itemPropertyImmunityToSpellLevel(Aurora::NWScript::FunctionConte
 }
 
 void Functions::itemPropertySpecialWalk(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 walk = static_cast<uint8>(ctx.getParams()[0].getInt()); // Doesn't seem to get used
+	uint8_t walk = static_cast<uint8_t>(ctx.getParams()[0].getInt()); // Doesn't seem to get used
 	ItemProperty prop(kItemPropertySpecialWalk, UINT16_MAX, UINT8_MAX, UINT8_MAX, walk);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyHealersKit(Aurora::NWScript::FunctionContext &ctx) {
 	ItemPropertyType type = kItemPropertyHealersKit;
-	uint8 modifier = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t modifier = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 
 	// Check the range
 	if (modifier < 1 || modifier > kMaxHealersKit)
@@ -779,26 +779,26 @@ void Functions::itemPropertyHealersKit(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::itemPropertyWeightIncrease(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 weight = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t weight = static_cast<uint8_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyWeightIncrease, UINT16_MAX, UINT8_MAX, weight, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyOnHitCastSpell(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 spell = static_cast<uint16>(ctx.getParams()[0].getInt());
-	uint8 level = static_cast<uint8>(ctx.getParams()[1].getInt());
+	uint16_t spell = static_cast<uint16_t>(ctx.getParams()[0].getInt());
+	uint8_t level = static_cast<uint8_t>(ctx.getParams()[1].getInt());
 	ItemProperty prop(kItemPropertyOnHitCastSpell, spell, UINT8_MAX, UINT8_MAX, level);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyVisualEffect(Aurora::NWScript::FunctionContext &ctx) {
-	uint16 effect = static_cast<uint16>(ctx.getParams()[0].getInt());
+	uint16_t effect = static_cast<uint16_t>(ctx.getParams()[0].getInt());
 	ItemProperty prop(kItemPropertyWeightIncrease, effect, UINT8_MAX, UINT8_MAX, UINT8_MAX);
 	ctx.getReturn() = prop;
 }
 
 void Functions::itemPropertyArcaneSpellFailure(Aurora::NWScript::FunctionContext &ctx) {
-	uint8 modLevel = static_cast<uint8>(ctx.getParams()[0].getInt());
+	uint8_t modLevel = static_cast<uint8_t>(ctx.getParams()[0].getInt());
         ItemProperty prop(kItemPropertyArcaneSpellFailure, UINT16_MAX, UINT8_MAX, UINT8_MAX, modLevel);
 	ctx.getReturn() = prop;
 }

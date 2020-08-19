@@ -55,13 +55,13 @@ void Functions::isEventValid(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getEventType(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kEventTypeInvalid;
+	ctx.getReturn() = (int32_t) kEventTypeInvalid;
 
 	const Event *event = DragonAge::ObjectContainer::toEvent(ctx.getParams()[0].getEngineType());
 	if (!event)
 		return;
 
-	ctx.getReturn() = (int32) event->getType();
+	ctx.getReturn() = (int32_t) event->getType();
 }
 
 void Functions::getEventCreator(Aurora::NWScript::FunctionContext &ctx) {

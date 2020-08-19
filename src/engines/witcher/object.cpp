@@ -105,7 +105,7 @@ bool Object::isClickable() const {
 	return !_static && _usable;
 }
 
-const std::list<uint32> &Object::getIDs() const {
+const std::list<uint32_t> &Object::getIDs() const {
 	return _ids;
 }
 
@@ -165,7 +165,7 @@ void Object::leave() {
 void Object::highlight(bool UNUSED(enabled)) {
 }
 
-void Object::speakString(const Common::UString &string, uint32 UNUSED(volume)) {
+void Object::speakString(const Common::UString &string, uint32_t UNUSED(volume)) {
 	// TODO: Object::speakString(): Show the string in a speech bubble
 
 	status("<%s> \"%s\"", getName().getString().c_str(), string.c_str());

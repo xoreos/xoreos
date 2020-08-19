@@ -27,7 +27,7 @@
 #include "src/common/util.h"
 #include "src/common/binsearch.h"
 
-typedef Common::BinSearchValue<uint8, uint8> TestBinSearch;
+typedef Common::BinSearchValue<uint8_t, uint8_t> TestBinSearch;
 
 static const TestBinSearch kTestBinSearch[] = {
 	{ 5, 23 },
@@ -36,14 +36,14 @@ static const TestBinSearch kTestBinSearch[] = {
 };
 
 GTEST_TEST(BinSearch, positive) {
-	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, ARRAYSIZE(kTestBinSearch), (uint8) 6);
+	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, ARRAYSIZE(kTestBinSearch), (uint8_t) 6);
 
 	ASSERT_NE(entry, static_cast<const TestBinSearch *>(0));
 	EXPECT_EQ(entry->value, 42);
 }
 
 GTEST_TEST(BinSearch, negative) {
-	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, ARRAYSIZE(kTestBinSearch), (uint8) 42);
+	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, ARRAYSIZE(kTestBinSearch), (uint8_t) 42);
 
 	ASSERT_EQ(entry, static_cast<const TestBinSearch *>(0));
 }

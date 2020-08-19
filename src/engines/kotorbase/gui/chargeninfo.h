@@ -61,13 +61,13 @@ public:
 	/** Set the skin type of the Character. */
 	void setSkin(Skin);
 	/** Set the face index of the character. */
-	void setFace(uint8 face);
+	void setFace(uint8_t face);
 
 protected:
 	Class _class;
 	Gender _gender;
 	Skin _skin;
-	uint8 _face;
+	uint8_t _face;
 	CreatureInfo::Abilities _abilities;
 
 	Common::UString _name;

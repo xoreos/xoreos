@@ -46,7 +46,7 @@ public:
 	Item *getItemInSlot(InventorySlot slot) const;
 
 	/** Add a new item to the inventory using the blueprint template. */
-	Item *createItem(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
+	Item *createItem(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag);
 
 private:
 
@@ -64,7 +64,7 @@ private:
 	Item *getNextRetrieved();
 
 	/** Convert a bit flag to an equipment slot. */
-	InventorySlot getSlotFromBitFlag(uint32 bitFlag) const;
+	InventorySlot getSlotFromBitFlag(uint32_t bitFlag) const;
 
 	/** Delete all items in inventory then clear the maps. */
 	void clear();

@@ -39,7 +39,7 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetListItemVoice::WidgetListItemVoice(::Engines::GUI &gui, const Common::UString &title, const Common::UString &soundSet, uint16 soundSetID) :
+WidgetListItemVoice::WidgetListItemVoice(::Engines::GUI &gui, const Common::UString &title, const Common::UString &soundSet, uint16_t soundSetID) :
     WidgetListItemButton(gui, "ctl_cg_btn_snds", title, "", kNoButton), _soundSetID(soundSetID) {
 
 	_soundSet = std::make_unique<Aurora::SSFFile>(soundSet);
@@ -49,7 +49,7 @@ WidgetListItemVoice::WidgetListItemVoice(::Engines::GUI &gui, const Common::UStr
 WidgetListItemVoice::~WidgetListItemVoice() {
 }
 
-void WidgetListItemVoice::mouseDown(uint8 state, float x, float y) {
+void WidgetListItemVoice::mouseDown(uint8_t state, float x, float y) {
 	if (_currentSound < _soundSet->getSoundCount()) {
 		++_currentSound;
 	} else {
@@ -137,7 +137,7 @@ void CharInfoVoice::initVoicesList() {
 		const Common::UString voiceName = TalkMan.getString(row.getInt("STRREF"));
 		const Common::UString resRef = row.getString("RESREF");
 
-		WidgetListItemVoice *item = new WidgetListItemVoice(*this, voiceName, resRef, (uint16) it);
+		WidgetListItemVoice *item = new WidgetListItemVoice(*this, voiceName, resRef, (uint16_t) it);
 		voicesListBox->add(item);
 	}
 	voicesListBox->unlock();

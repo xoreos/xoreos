@@ -39,8 +39,8 @@ MenuOptions::MenuOptions(Console *console) :
 	load("optionsingame");
 }
 
-uint8 MenuOptions::pollSelectedItem() {
-	uint8 result = _selectedItem;
+uint8_t MenuOptions::pollSelectedItem() {
+	uint8_t result = _selectedItem;
 	_selectedItem = 0;
 	return result;
 }

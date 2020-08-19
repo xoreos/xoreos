@@ -34,7 +34,7 @@ namespace Video {
 /** A quick test fader "video". */
 class Fader : public VideoDecoder {
 public:
-	Fader(uint32 width, uint32 height, int n);
+	Fader(uint32_t width, uint32_t height, int n);
 
 protected:
 	void decodeNextTrackFrame(VideoTrack &track);
@@ -42,10 +42,10 @@ protected:
 private:
 	class FaderVideoTrack : public FixedRateVideoTrack {
 	public:
-		FaderVideoTrack(uint32 width, uint32 height, int n);
+		FaderVideoTrack(uint32_t width, uint32_t height, int n);
 
-		uint32 getWidth() const { return _width; }
-		uint32 getHeight() const { return _height; }
+		uint32_t getWidth() const { return _width; }
+		uint32_t getHeight() const { return _height; }
 		int getCurFrame() const { return _curFrame; }
 		int getFrameCount() const { return _n * 128; }
 
@@ -55,8 +55,8 @@ private:
 		Common::Rational getFrameRate() const { return 50; }
 
 	private:
-		uint32 _width;
-		uint32 _height;
+		uint32_t _width;
+		uint32_t _height;
 		int _curFrame;
 		byte _c;
 		int _n;

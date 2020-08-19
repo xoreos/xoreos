@@ -109,11 +109,11 @@ void info(const char *s, ...) {
 	// format anyway. However, should we find another system that has this differently,
 	// we might have to do something more here...
 union floatConvert {
-	uint32 dInt;
+	uint32_t dInt;
 	float dFloat;
 };
 
-float convertIEEEFloat(uint32 data) {
+float convertIEEEFloat(uint32_t data) {
 
 	floatConvert conv;
 
@@ -122,7 +122,7 @@ float convertIEEEFloat(uint32 data) {
 	return conv.dFloat;
 }
 
-uint32 convertIEEEFloat(float value) {
+uint32_t convertIEEEFloat(float value) {
 	floatConvert conv;
 
 	conv.dFloat = value;
@@ -136,11 +136,11 @@ uint32 convertIEEEFloat(float value) {
 	// we might have to do something more here...
 
 union doubleConvert {
-	uint64 dInt;
+	uint64_t dInt;
 	double dDouble;
 };
 
-double convertIEEEDouble(uint64 data) {
+double convertIEEEDouble(uint64_t data) {
 	doubleConvert conv;
 
 	conv.dInt = data;
@@ -148,7 +148,7 @@ double convertIEEEDouble(uint64 data) {
 	return conv.dDouble;
 }
 
-uint64 convertIEEEDouble(double value) {
+uint64_t convertIEEEDouble(double value) {
 	doubleConvert conv;
 
 	conv.dDouble = value;
@@ -156,27 +156,27 @@ uint64 convertIEEEDouble(double value) {
 	return conv.dInt;
 }
 
-double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits) {
+double readNintendoFixedPoint(uint32_t value, bool sign, uint8_t iBits, uint8_t fBits) {
 	/* The Nintendo DS uses fixed point values of various formats. This method can
 	 * convert them all into a usual floating point double. */
 
 	assert((iBits + fBits + (sign ? 1 : 0)) <= 32);
 
 	// Masks for the integer, fractional and sign parts
-	const uint32 fMask =  (UINT64_C(1) <<          fBits)  - 1;
-	const uint32 iMask = ((UINT64_C(1) << (iBits + fBits)) - 1) - fMask;
-	const uint32 sMask =   UINT64_C(1) << (iBits + fBits);
+	const uint32_t fMask =  (UINT64_C(1) <<          fBits)  - 1;
+	const uint32_t iMask = ((UINT64_C(1) << (iBits + fBits)) - 1) - fMask;
+	const uint32_t sMask =   UINT64_C(1) << (iBits + fBits);
 
 	// Step of a fractional unit
-	const uint32 fDiv  =  (1 <<          fBits);
+	const uint32_t fDiv  =  (1 <<          fBits);
 
 	// The fractional and integer parts themselves
-	int32 fPart =  value & fMask;
-	int32 iPart = (value & iMask) >> fBits;
+	int32_t fPart =  value & fMask;
+	int32_t iPart = (value & iMask) >> fBits;
 
 	// If this is a negative value, negate the integer part (which is a two's complement)
 	if (sign && ((value & sMask) != 0))
-		iPart = -((int32) ((~iPart & (iMask >> fBits)) + 1));
+		iPart = -((int32_t) ((~iPart & (iMask >> fBits)) + 1));
 
 	return (double)iPart + ((double) fPart) / ((double) fDiv);
 }
@@ -195,16 +195,16 @@ double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits)
  * point converter" MATLAB package.
  * (<https://www.mathworks.com/matlabcentral/fileexchange/23173-ieee-754r-half-precision-floating-point-converter>)
  */
-float readIEEEFloat16(uint16 value) {
+float readIEEEFloat16(uint16_t value) {
 	// Check for 0.0 / -0.0
 	if ((value & 0x7FFF) == 0)
-		return convertIEEEFloat(((uint32) value) << 16);
+		return convertIEEEFloat(((uint32_t) value) << 16);
 
-	uint16 vS = value & 0x8000; // float16 sign
-	uint16 vE = value & 0x7C00; // float16 exponent
-	uint16 vM = value & 0x03FF; // float16 mantissa
+	uint16_t vS = value & 0x8000; // float16 sign
+	uint16_t vE = value & 0x7C00; // float16 exponent
+	uint16_t vM = value & 0x03FF; // float16 mantissa
 
-	const uint32 fS = ((uint32) vS) << 16; // float32 sign
+	const uint32_t fS = ((uint32_t) vS) << 16; // float32 sign
 
 	// Check for (-)Inf and NaN
 	if (vE == 0x7C00) {
@@ -219,12 +219,12 @@ float readIEEEFloat16(uint16 value) {
 	// Not zero, infinity or NaN: this is a regular number
 
 	// Unbias the float16 exponent, and bias the float32 exponent accordingly
-	int32 fER = ((int32) (vE >> 10)) - 15 + 127;
+	int32_t fER = ((int32_t) (vE >> 10)) - 15 + 127;
 
 	// Is this float normalized? If so, we can directly extend it
 	if (vE != 0) {
-		const uint32 fE = ((uint32) fER) << 23; // float32 exponent, rebiased
-		const uint32 fM = ((uint32) vM ) << 13; // float32 mantissa
+		const uint32_t fE = ((uint32_t) fER) << 23; // float32 exponent, rebiased
+		const uint32_t fM = ((uint32_t) vM ) << 13; // float32 mantissa
 
 		// Combine sign, exponent and mantissa
 		return convertIEEEFloat(fS | fE | fM);
@@ -243,8 +243,8 @@ float readIEEEFloat16(uint16 value) {
 	fER -= aE;
 	vM  &= 0x03FF;
 
-	const uint32 fE = ((uint32) fER) << 23; // float32 exponent, rebiased and normalized
-	const uint32 fM = ((uint32) vM ) << 13; // float32 mantissa, normalized
+	const uint32_t fE = ((uint32_t) fER) << 23; // float32 exponent, rebiased and normalized
+	const uint32_t fM = ((uint32_t) vM ) << 13; // float32 mantissa, normalized
 
 	// Combine sign, exponent and mantissa
 	return convertIEEEFloat(fS | fE | fM);

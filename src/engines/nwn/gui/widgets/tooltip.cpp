@@ -255,7 +255,7 @@ void Tooltip::setPosition(float x, float y, float z) {
 	updatePosition();
 }
 
-void Tooltip::show(uint32 delay, uint32 timeOut) {
+void Tooltip::show(uint32_t delay, uint32_t timeOut) {
 	if (_visible || _empty)
 		return;
 
@@ -268,10 +268,10 @@ void Tooltip::show(uint32 delay, uint32 timeOut) {
 
 	if (delay   != 0)
 		TimerMan.addTimer(delay          , _timerShow,
-		                  std::bind(static_cast<uint32(Tooltip::*)(uint32)>(&Tooltip::doShow), this, std::placeholders::_1));
+		                  std::bind(static_cast<uint32_t(Tooltip::*)(uint32_t)>(&Tooltip::doShow), this, std::placeholders::_1));
 	if (timeOut != 0)
 		TimerMan.addTimer(delay + timeOut, _timerHide,
-		                  std::bind(static_cast<uint32(Tooltip::*)(uint32)>(&Tooltip::doHide), this, std::placeholders::_1));
+		                  std::bind(static_cast<uint32_t(Tooltip::*)(uint32_t)>(&Tooltip::doHide), this, std::placeholders::_1));
 }
 
 void Tooltip::hide() {
@@ -378,8 +378,8 @@ void Tooltip::redoBubble() {
 	if (!_showBubble || (_height <= 0.0f))
 		return;
 
-	float  height = _height - _lineHeight;
-	uint32 lines  = 1;
+	float    height = _height - _lineHeight;
+	uint32_t lines  = 1;
 
 	while (height > _lineSpacing) {
 		height -= (_lineSpacing + _lineHeight);
@@ -455,13 +455,13 @@ void Tooltip::doHide() {
 	GfxMan.unlockFrame();
 }
 
-uint32 Tooltip::doShow(uint32 UNUSED(oldInterval)) {
+uint32_t Tooltip::doShow(uint32_t UNUSED(oldInterval)) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	doShow();
 	return 0;
 }
 
-uint32 Tooltip::doHide(uint32 UNUSED(oldInterval)) {
+uint32_t Tooltip::doHide(uint32_t UNUSED(oldInterval)) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (!_visible)
@@ -476,7 +476,7 @@ uint32 Tooltip::doHide(uint32 UNUSED(oldInterval)) {
 }
 
 void Tooltip::getFeedbackMode(bool &showBubble, bool &showText, bool &showPortrait) const {
-	uint32 mode = ConfigMan.getInt("feedbackmode", 2);
+	uint32_t mode = ConfigMan.getInt("feedbackmode", 2);
 
 	showBubble   = mode == 2;
 	showText     = mode >= 1;
@@ -502,9 +502,9 @@ Common::UString Tooltip::getFontName() {
 	return ConfigMan.getBool("largefonts") ? "fnt_dialog_big16" : "fnt_dialog16x16";
 }
 
-Common::UString Tooltip::getBubbleModel(uint32 lines, float width) {
-	uint32 modelLines = 0;
-	uint32 modelWidth = 0;
+Common::UString Tooltip::getBubbleModel(uint32_t lines, float width) {
+	uint32_t modelLines = 0;
+	uint32_t modelWidth = 0;
 
 	if      (lines <=  1)
 		modelLines =  1;
@@ -538,8 +538,8 @@ Common::UString Tooltip::getBubbleModel(uint32 lines, float width) {
 	return Common::UString::format("pnl_bubble%d_%d", modelLines, modelWidth);
 }
 
-uint32 Tooltip::getDefaultDelay() {
-	return (uint32) ConfigMan.getInt("tooltipdelay", 100);
+uint32_t Tooltip::getDefaultDelay() {
+	return (uint32_t) ConfigMan.getInt("tooltipdelay", 100);
 }
 
 } // End of namespace NWN

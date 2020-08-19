@@ -43,7 +43,7 @@ public:
 	// Basic properties
 
 	/** Return the ID of the group this waypoint belongs to. */
-	int32 getGroup() const;
+	int32_t getGroup() const;
 
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
@@ -62,7 +62,7 @@ public:
 
 private:
 	/** The ID of the group this waypoint belongs to. */
-	int32 _group;
+	int32_t _group;
 
 	bool _hasMapNote;     ///< Does this waypoint have a map note?
 	bool _enabledMapNote; ///< Is this waypoint's map note enabled?
@@ -71,7 +71,7 @@ private:
 	Aurora::LocString _mapNote;
 
 	/** Index into the Waypoints MGDA. */
-	uint32 _type; ///< The type of the map note.
+	uint32_t _type; ///< The type of the map note.
 
 	/** The icon to show in the mini map for this waypoint. */
 	Common::UString _icon;

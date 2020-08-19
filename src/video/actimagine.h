@@ -51,10 +51,10 @@ private:
 
 	class ActimagineVideoTrack : public FixedRateVideoTrack {
 	public:
-		ActimagineVideoTrack(uint32 width, uint32 height, uint32 numFrames, Common::Rational fps);
+		ActimagineVideoTrack(uint32_t width, uint32_t height, uint32_t numFrames, Common::Rational fps);
 
-		uint32 getWidth() const override;
-		uint32 getHeight() const override;
+		uint32_t getWidth() const override;
+		uint32_t getHeight() const override;
 
 		int getCurFrame() const override;
 
@@ -62,9 +62,9 @@ private:
 		Common::Rational getFrameRate() const override;
 
 	private:
-		uint32 _width;
-		uint32 _height;
-		uint32 _numFrames;
+		uint32_t _width;
+		uint32_t _height;
+		uint32_t _numFrames;
 
 		const Common::Rational _fps;
 	};
@@ -73,7 +73,7 @@ private:
 	// It might be one of FastAudio or GCADPCM
 	class ActimagineAudioTrack : public AudioTrack {
 	public:
-		ActimagineAudioTrack(uint32 sampleRate, uint32 channelCount, uint32 audioOffset);
+		ActimagineAudioTrack(uint32_t sampleRate, uint32_t channelCount, uint32_t audioOffset);
 
 		bool canBufferData() const override;
 
@@ -81,21 +81,21 @@ private:
 		Sound::AudioStream *getAudioStream() const override;
 
 	private:
-		uint32 _sampleRate;
-		uint32 _channelCount;
-		uint32 _audioOffset;
+		uint32_t _sampleRate;
+		uint32_t _channelCount;
+		uint32_t _audioOffset;
 	};
 
 	struct KeyFrame {
-		uint32 frameNumber;
-		uint32 dataOffset;
+		uint32_t frameNumber;
+		uint32_t dataOffset;
 	};
 
 	std::unique_ptr<Common::SeekableReadStream> _vx;
 
 	std::vector<KeyFrame> _keyFrames;
 
-	uint32 _biggestFrame;
+	uint32_t _biggestFrame;
 
 	/** Load an Actimagine file. */
 	void load();

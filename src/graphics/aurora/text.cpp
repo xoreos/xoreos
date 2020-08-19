@@ -326,7 +326,7 @@ void Text::parseColors(const Common::UString &str, Common::UString &parsed,
 		if ((t->size() == 11) && t->beginsWith("<c") && t->endsWith(">")) {
 			// Color start token
 
-			uint8 colorValue[4];
+			uint8_t colorValue[4];
 
 			Common::UString::iterator it = t->begin();
 
@@ -335,7 +335,7 @@ void Text::parseColors(const Common::UString &str, Common::UString &parsed,
 			++it;
 
 			for (int i = 0; i < 8; i++, ++it) {
-				uint32 c = *it;
+				uint32_t c = *it;
 
 				// Convert the hex values into true nibble values
 				if      ((c >= '0') && (c <= '9'))
@@ -348,7 +348,7 @@ void Text::parseColors(const Common::UString &str, Common::UString &parsed,
 					c = 15;
 
 				// Merge two nibbles into one color value byte
-				uint8 &value = colorValue[i / 2];
+				uint8_t &value = colorValue[i / 2];
 				bool  high   = (i % 2) == 0;
 
 				if (high)

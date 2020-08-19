@@ -45,7 +45,7 @@ public:
 	Room(const Aurora::GFF4Struct &room);
 	~Room();
 
-	int32 getID() const;
+	int32_t getID() const;
 
 	void show();
 	void hide();
@@ -53,7 +53,7 @@ public:
 private:
 	typedef Common::PtrVector<Graphics::Aurora::Model> Models;
 
-	int32 _id;
+	int32_t _id;
 
 	Models _models;
 

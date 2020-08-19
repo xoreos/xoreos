@@ -29,7 +29,7 @@
 
 namespace Aurora {
 
-static const uint32 kRGMHID = MKTAG('R', 'G', 'M', 'H');
+static const uint32_t kRGMHID = MKTAG('R', 'G', 'M', 'H');
 
 TheWitcherSaveFile::TheWitcherSaveFile(Common::SeekableReadStream *tws) : _tws(tws) {
 	assert(tws);
@@ -45,7 +45,7 @@ const Archive::ResourceList &TheWitcherSaveFile::getResources() const {
 	return _resourceList;
 }
 
-Common::SeekableReadStream *TheWitcherSaveFile::getResource(uint32 index, bool tryNoCopy) const {
+Common::SeekableReadStream *TheWitcherSaveFile::getResource(uint32_t index, bool tryNoCopy) const {
 	IResource resource = _resources[index];
 
 	if (tryNoCopy)
@@ -58,15 +58,15 @@ Common::SeekableReadStream *TheWitcherSaveFile::getResource(uint32 index, bool t
 }
 
 void TheWitcherSaveFile::load() {
-	uint32 magicId = _tws->readUint32BE();
+	uint32_t magicId = _tws->readUint32BE();
 	if (magicId != kRGMHID)
 		throw Common::Exception("Invalid TheWitcherSave file");
 
-	uint32 version = _tws->readUint32LE();
+	uint32_t version = _tws->readUint32LE();
 	if (version != 1)
 		throw Common::Exception("Invalid TheWitcherSave file version");
 
-	uint64 dataOffset = _tws->readUint64LE();
+	uint64_t dataOffset = _tws->readUint64LE();
 
 	_tws->skip(8); // Unknown data, possibly zero only
 
@@ -93,15 +93,15 @@ void TheWitcherSaveFile::load() {
 	_areaName = areaName1;
 
 	_tws->seek(-8, Common::SeekableReadStream::kOriginEnd);
-	uint32 resourceOffset = _tws->readUint32LE();
-	uint32 resourceCount = _tws->readUint32LE();
+	uint32_t resourceOffset = _tws->readUint32LE();
+	uint32_t resourceCount = _tws->readUint32LE();
 
 	_tws->seek(resourceOffset);
 	_resources.resize(resourceCount);
-	for (uint32 i = 0; i < resourceCount; ++i) {
+	for (uint32_t i = 0; i < resourceCount; ++i) {
 		Resource resource;
 
-		uint32 nameLength = _tws->readUint32LE();
+		uint32_t nameLength = _tws->readUint32LE();
 		resource.name = Common::readStringFixed(*_tws, Common::kEncodingUTF8, nameLength);
 		resource.type = TypeMan.getFileType(resource.name);
 		resource.index = i;
@@ -124,7 +124,7 @@ void TheWitcherSaveFile::load() {
 	}
 }
 
-uint32 TheWitcherSaveFile::getResourceSize(uint32 index) const {
+uint32_t TheWitcherSaveFile::getResourceSize(uint32_t index) const {
 	return _resources[index].length;
 }
 

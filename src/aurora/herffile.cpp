@@ -46,11 +46,11 @@ HERFFile::~HERFFile() {
 }
 
 void HERFFile::load(Common::SeekableReadStream &herf) {
-	uint32 magic = herf.readUint32LE();
+	uint32_t magic = herf.readUint32LE();
 	if (magic != 0x00F1A5C0)
 		throw Common::Exception("Invalid HERF file (0x%08X)", magic);
 
-	uint32 resCount = herf.readUint32LE();
+	uint32_t resCount = herf.readUint32LE();
 
 	_resources.resize(resCount);
 	_iResources.resize(resCount);
@@ -66,13 +66,13 @@ void HERFFile::load(Common::SeekableReadStream &herf) {
 	}
 }
 
-void HERFFile::searchDictionary(Common::SeekableReadStream &herf, uint32 resCount) {
-	const uint32 dictHash = Common::hashStringDJB2("erf.dict");
+void HERFFile::searchDictionary(Common::SeekableReadStream &herf, uint32_t resCount) {
+	const uint32_t dictHash = Common::hashStringDJB2("erf.dict");
 
 	const size_t pos = herf.pos();
 
-	for (uint32 i = 0; i < resCount; i++) {
-		uint32 hash = herf.readUint32LE();
+	for (uint32_t i = 0; i < resCount; i++) {
+		uint32_t hash = herf.readUint32LE();
 		if (hash == dictHash) {
 			_dictSize   = herf.readUint32LE();
 			_dictOffset = herf.readUint32LE();
@@ -85,7 +85,7 @@ void HERFFile::searchDictionary(Common::SeekableReadStream &herf, uint32 resCoun
 	herf.seek(pos);
 }
 
-void HERFFile::readDictionary(Common::SeekableReadStream &herf, std::map<uint32, Common::UString> &dict) {
+void HERFFile::readDictionary(Common::SeekableReadStream &herf, std::map<uint32_t, Common::UString> &dict) {
 	if (_dictOffset == 0xFFFFFFFF)
 		return;
 
@@ -93,17 +93,17 @@ void HERFFile::readDictionary(Common::SeekableReadStream &herf, std::map<uint32,
 
 	herf.seek(_dictOffset);
 
-	uint32 magic = herf.readUint32LE();
+	uint32_t magic = herf.readUint32LE();
 	if (magic != 0x00F1A5C0)
 		throw Common::Exception("Invalid HERF dictionary (0x%08X)", magic);
 
-	uint32 hashCount = herf.readUint32LE();
+	uint32_t hashCount = herf.readUint32LE();
 
-	for (uint32 i = 0; i < hashCount; i++) {
+	for (uint32_t i = 0; i < hashCount; i++) {
 		if ((size_t)herf.pos() >= (_dictOffset + _dictSize))
 			break;
 
-		uint32 hash = herf.readUint32LE();
+		uint32_t hash = herf.readUint32LE();
 		dict[hash] = Common::readStringFixed(herf, Common::kEncodingASCII, 128).toLower();
 	}
 
@@ -111,10 +111,10 @@ void HERFFile::readDictionary(Common::SeekableReadStream &herf, std::map<uint32,
 }
 
 void HERFFile::readResList(Common::SeekableReadStream &herf) {
-	std::map<uint32, Common::UString> dict;
+	std::map<uint32_t, Common::UString> dict;
 	readDictionary(herf, dict);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
@@ -125,10 +125,10 @@ void HERFFile::readResList(Common::SeekableReadStream &herf) {
 		iRes->size   = herf.readUint32LE();
 		iRes->offset = herf.readUint32LE();
 
-		if (iRes->offset >= (uint32)herf.size())
+		if (iRes->offset >= (uint32_t)herf.size())
 			throw Common::Exception("HERFFile::readResList(): Resource goes beyond end of file");
 
-		std::map<uint32, Common::UString>::const_iterator name = dict.find(res->hash);
+		std::map<uint32_t, Common::UString>::const_iterator name = dict.find(res->hash);
 		if (name != dict.end()) {
 			res->name = Common::FilePath::getStem(name->second);
 			res->type = TypeMan.getFileType(name->second);
@@ -145,18 +145,18 @@ const Archive::ResourceList &HERFFile::getResources() const {
 	return _resources;
 }
 
-const HERFFile::IResource &HERFFile::getIResource(uint32 index) const {
+const HERFFile::IResource &HERFFile::getIResource(uint32_t index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }
 
-uint32 HERFFile::getResourceSize(uint32 index) const {
+uint32_t HERFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *HERFFile::getResource(uint32 index, bool tryNoCopy) const {
+Common::SeekableReadStream *HERFFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy)

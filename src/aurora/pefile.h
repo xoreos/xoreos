@@ -52,7 +52,7 @@ public:
 	const ResourceList &getResources() const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
+	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
 
 private:
 	/** The actual exe. */
@@ -61,7 +61,7 @@ private:
 	/** External list of resource names and types. */
 	ResourceList _resources;
 	/** A map which maps a unique resource id to the corresponding pe id. */
-	std::vector<uint32> _peIDs;
+	std::vector<uint32_t> _peIDs;
 
 	void load(const std::vector<Common::UString> &remap);
 };

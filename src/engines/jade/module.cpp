@@ -298,7 +298,7 @@ void Module::handleEvents() {
 }
 
 void Module::handleActions() {
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 
 	while (!_delayedActions.empty()) {
 		ActionQueue::iterator action = _delayedActions.begin();
@@ -352,7 +352,7 @@ Area *Module::getCurrentArea() {
 void Module::delayScript(const Common::UString &script,
                          const Aurora::NWScript::ScriptState &state,
                          Aurora::NWScript::Object *owner,
-                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+                         Aurora::NWScript::Object *triggerer, uint32_t delay) {
 	Action action;
 
 	action.type      = kActionScript;

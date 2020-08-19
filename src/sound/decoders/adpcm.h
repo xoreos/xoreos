@@ -86,10 +86,10 @@ enum ADPCMTypes {
 RewindableAudioStream *makeADPCMStream(
 	Common::SeekableReadStream *stream,
 	bool disposeAfterUse,
-	uint32 size, ADPCMTypes type,
+	uint32_t size, ADPCMTypes type,
 	int rate,
 	int channels,
-	uint32 blockAlign = 0);
+	uint32_t blockAlign = 0);
 
 /**
  * Creates a PacketizedAudioStream that will automatically queue
@@ -109,7 +109,7 @@ PacketizedAudioStream *makePacketizedADPCMStream(
 	ADPCMTypes type,
 	int rate,
 	int channels,
-	uint32 blockAlign = 0);
+	uint32_t blockAlign = 0);
 
 } // End of namespace Sound
 

@@ -31,17 +31,17 @@
 #include "src/graphics/images/dds.h"
 #include "src/graphics/images/util.h"
 
-static const uint32 kDDSID  = MKTAG('D', 'D', 'S', ' ');
-static const uint32 kDXT1ID = MKTAG('D', 'X', 'T', '1');
-static const uint32 kDXT3ID = MKTAG('D', 'X', 'T', '3');
-static const uint32 kDXT5ID = MKTAG('D', 'X', 'T', '5');
+static const uint32_t kDDSID  = MKTAG('D', 'D', 'S', ' ');
+static const uint32_t kDXT1ID = MKTAG('D', 'X', 'T', '1');
+static const uint32_t kDXT3ID = MKTAG('D', 'X', 'T', '3');
+static const uint32_t kDXT5ID = MKTAG('D', 'X', 'T', '5');
 
-static const uint32 kHeaderFlagsHasMipMaps = 0x00020000;
+static const uint32_t kHeaderFlagsHasMipMaps = 0x00020000;
 
-static const uint32 kPixelFlagsHasAlpha  = 0x00000001;
-static const uint32 kPixelFlagsHasFourCC = 0x00000004;
-static const uint32 kPixelFlagsIsIndexed = 0x00000020;
-static const uint32 kPixelFlagsIsRGB     = 0x00000040;
+static const uint32_t kPixelFlagsHasAlpha  = 0x00000001;
+static const uint32_t kPixelFlagsHasFourCC = 0x00000004;
+static const uint32_t kPixelFlagsIsIndexed = 0x00000020;
+static const uint32_t kPixelFlagsIsRGB     = 0x00000040;
 
 namespace Graphics {
 
@@ -81,19 +81,19 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds, DataType &dataType
 		throw Common::Exception("Header size invalid");
 
 	// DDS features
-	uint32 flags = dds.readUint32LE();
+	uint32_t flags = dds.readUint32LE();
 
 	// Image dimensions
-	uint32 height = dds.readUint32LE();
-	uint32 width  = dds.readUint32LE();
+	uint32_t height = dds.readUint32LE();
+	uint32_t width  = dds.readUint32LE();
 
 	if ((width >= 0x8000) || (height >= 0x8000))
 		throw Common::Exception("Unsupported image dimensions (%ux%u)", width, height);
 
 	dds.skip(4 + 4); // Pitch + Depth
-	//uint32 pitchOrLineSize = dds.readUint32LE();
-	//uint32 depth           = dds.readUint32LE();
-	uint32 mipMapCount     = dds.readUint32LE();
+	//uint32_t pitchOrLineSize = dds.readUint32LE();
+	//uint32_t depth           = dds.readUint32LE();
+	uint32_t mipMapCount     = dds.readUint32LE();
 
 	// DDS doesn't provide any mip maps, only one full-size image
 	if ((flags & kHeaderFlagsHasMipMaps) == 0)
@@ -121,11 +121,11 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds, DataType &dataType
 	dds.skip(16 + 4); // DDCAPS2 + Reserved
 
 	_mipMaps.reserve(mipMapCount);
-	for (uint32 i = 0; i < mipMapCount; i++) {
+	for (uint32_t i = 0; i < mipMapCount; i++) {
 		std::unique_ptr<MipMap> mipMap = std::make_unique<MipMap>();
 
-		mipMap->width  = MAX<uint32>(width , 1);
-		mipMap->height = MAX<uint32>(height, 1);
+		mipMap->width  = MAX<uint32_t>(width , 1);
+		mipMap->height = MAX<uint32_t>(height, 1);
 
 		setSize(*mipMap);
 
@@ -144,8 +144,8 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 	dds.seek(0);
 
 	// Image dimensions
-	uint32 width  = dds.readUint32LE();
-	uint32 height = dds.readUint32LE();
+	uint32_t width  = dds.readUint32LE();
+	uint32_t height = dds.readUint32LE();
 
 	if ((width >= 0x8000) || (height >= 0x8000))
 		throw Common::Exception("Unsupported image dimensions (%ux%u)", width, height);
@@ -158,7 +158,7 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 	_compressed = true;
 
 	// Check which compression
-	uint32 bpp = dds.readUint32LE();
+	uint32_t bpp = dds.readUint32LE();
 	if      (bpp == 3) {
 		_hasAlpha  = false;
 		_format    = kPixelFormatBGR;
@@ -173,7 +173,7 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 		throw Common::Exception("Unsupported bytes per pixel value (%d)", bpp);
 
 	// Sanity check for the image data size
-	uint32 dataSize = dds.readUint32LE();
+	uint32_t dataSize = dds.readUint32LE();
 	if (((bpp == 3) && (dataSize != ((width * height) / 2))) ||
 		  ((bpp == 4) && (dataSize != ((width * height)    ))))
 		throw Common::Exception("Invalid data size (%dx%dx%d %d)", width, height, bpp, dataSize);
@@ -190,8 +190,8 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 	do {
 		std::unique_ptr<MipMap> mipMap = std::make_unique<MipMap>(this);
 
-		mipMap->width  = MAX<uint32>(width,  1);
-		mipMap->height = MAX<uint32>(height, 1);
+		mipMap->width  = MAX<uint32_t>(width,  1);
+		mipMap->height = MAX<uint32_t>(height, 1);
 
 		setSize(*mipMap);
 
@@ -222,8 +222,8 @@ void DDS::readData(Common::SeekableReadStream &dds, DataType dataType) {
 		if (dataType == kDataType4444) {
 
 			byte *data = (*mipMap)->data.get();
-			for (uint32 i = 0; i < (uint32)((*mipMap)->width * (*mipMap)->height); i++, data += 4) {
-				const uint16 pixel = dds.readUint16LE();
+			for (uint32_t i = 0; i < (uint32_t)((*mipMap)->width * (*mipMap)->height); i++, data += 4) {
+				const uint16_t pixel = dds.readUint16LE();
 
 				data[0] = ( pixel & 0x0000000F       ) << 4;
 				data[1] = ((pixel & 0x000000F0) >>  4) << 4;

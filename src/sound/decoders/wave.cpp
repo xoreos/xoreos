@@ -36,31 +36,31 @@
 namespace Sound {
 
 RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	uint32 riffTag = stream->readUint32BE();
+	uint32_t riffTag = stream->readUint32BE();
 	if (riffTag != MKTAG('R', 'I', 'F', 'F'))
 		throw Common::Exception("makeWAVStream(): No 'RIFF' header (%s)", Common::debugTag(riffTag).c_str());
 
-	/* uint32 fileSize = */ stream->readUint32LE();
+	/* uint32_t fileSize = */ stream->readUint32LE();
 
-	uint32 waveTag = stream->readUint32BE();
+	uint32_t waveTag = stream->readUint32BE();
 	if (waveTag != MKTAG('W', 'A', 'V', 'E'))
 		throw Common::Exception("makeWAVStream(): No 'WAVE' RIFF type (%s)", Common::debugTag(waveTag).c_str());
 
-	uint32 fmtTag = stream->readUint32BE();
+	uint32_t fmtTag = stream->readUint32BE();
 	if (fmtTag != MKTAG('f', 'm', 't', ' '))
 		throw Common::Exception("makeWAVStream(): No 'fmt ' chunk (%s)", Common::debugTag(fmtTag).c_str());
 
-	uint32 fmtLength = stream->readUint32LE();
+	uint32_t fmtLength = stream->readUint32LE();
 	if (fmtLength < 16) // A valid fmt chunk always contains at least 16 bytes
 		throw Common::Exception("makeWAVStream(): Invalid wave format size %d", fmtLength);
 
 	// Now parse the WAVEFORMAT(EX) structure
-	uint16 compression = stream->readUint16LE();
-	uint16 channels = stream->readUint16LE();
-	uint32 sampleRate = stream->readUint32LE();
-	/* uint32 avgBytesPerSecond = */ stream->readUint32LE();
-	uint16 blockAlign = stream->readUint16LE();
-	uint16 bitsPerSample = stream->readUint16LE();
+	uint16_t compression = stream->readUint16LE();
+	uint16_t channels = stream->readUint16LE();
+	uint32_t sampleRate = stream->readUint32LE();
+	/* uint32_t avgBytesPerSecond = */ stream->readUint32LE();
+	uint16_t blockAlign = stream->readUint16LE();
+	uint16_t bitsPerSample = stream->readUint16LE();
 
 	// Skip over the rest of the fmt chunk.
 	stream->skip(fmtLength - 16);
@@ -76,7 +76,7 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 		stream->skip(stream->readUint32LE());
 	}
 
-	uint32 size = stream->readUint32LE();
+	uint32_t size = stream->readUint32LE();
 	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + size, disposeAfterUse);
 
 	// Return the decoder we need

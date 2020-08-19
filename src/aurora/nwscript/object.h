@@ -42,7 +42,7 @@ public:
 	virtual ~Object() {
 	}
 
-	uint32 getID() const {
+	uint32_t getID() const {
 		return _id;
 	}
 
@@ -51,7 +51,7 @@ public:
 	}
 
 protected:
-	uint32 _id;
+	uint32_t _id;
 
 	Common::UString _tag;
 };

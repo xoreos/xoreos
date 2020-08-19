@@ -38,18 +38,18 @@ class WidgetListBox;
 
 class WidgetListItemDomain : public WidgetListItemButton {
 public:
-	WidgetListItemDomain(::Engines::GUI &gui, const Common::UString &title, const Common::UString &icon, const Common::UString &desc, uint8 domainId);
+	WidgetListItemDomain(::Engines::GUI &gui, const Common::UString &title, const Common::UString &icon, const Common::UString &desc, uint8_t domainId);
 	~WidgetListItemDomain();
 
-	void mouseUp(uint8 state, float x, float y);
-	void mouseDblClick(uint8 state, float x, float y);
+	void mouseUp(uint8_t state, float x, float y);
+	void mouseDblClick(uint8_t state, float x, float y);
 
 	void subActive(Engines::Widget &widget);
 
 private:
 	Common::UString _name;
 	Common::UString _description;
-	uint8 _domainId;
+	uint8_t _domainId;
 
 	friend class CharDomain;
 };

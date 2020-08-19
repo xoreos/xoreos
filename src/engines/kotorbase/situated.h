@@ -103,8 +103,8 @@ public:
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 
-	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
-	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
+	uint32_t _appearanceID; ///< The index within the situated appearance 2DA.
+	uint32_t _soundAppType; ///< The index within the situated sounds 2DA.
 
 	bool _locked; ///< Is the situated object locked?
 	bool _keyRequired { false };

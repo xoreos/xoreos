@@ -33,7 +33,7 @@ namespace NWScript {
 ObjectReference::ObjectReference(const Object *object) : _id(object ? object->getID() : kObjectIDInvalid) {
 }
 
-uint32 ObjectReference::getId() const {
+uint32_t ObjectReference::getId() const {
 	return _id;
 }
 

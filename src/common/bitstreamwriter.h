@@ -46,7 +46,7 @@ public:
 	virtual void putBit(bool bit) = 0;
 
 	/** Write a multi-bit value to the bit stream. */
-	virtual void putBits(uint32 bits, size_t n) = 0;
+	virtual void putBits(uint32_t bits, size_t n) = 0;
 
 	/** Flush the stream, forcing all cached bits to the written. */
 	virtual void flush() = 0;
@@ -71,11 +71,11 @@ class BitStreamWriterImpl : boost::noncopyable, public BitStreamWriter {
 private:
 	DisposablePtr<WriteStream> _stream; ///< The output stream.
 
-	uint64 _value;   ///< Current value.
-	uint8  _inValue; ///< Position within the current value.
+	uint64_t _value;   ///< Current value.
+	uint8_t  _inValue; ///< Position within the current value.
 
 	/** Write a data value. */
-	inline void writeData(uint64 data) {
+	inline void writeData(uint64_t data) {
 		if (isLE) {
 			if (valueBits ==  8)
 				_stream->writeByte(data);
@@ -136,7 +136,7 @@ public:
 		if (isMSB2LSB)
 			_value = (_value << 1) | (bit ? 1 : 0);
 		else
-			_value = (_value >> 1) | (static_cast<uint64>(bit ? 1 : 0) << 63);
+			_value = (_value >> 1) | (static_cast<uint64_t>(bit ? 1 : 0) << 63);
 
 		// Increase the position within the current value
 		_inValue = (_inValue + 1) % valueBits;
@@ -147,7 +147,7 @@ public:
 	}
 
 	/** Write a multi-bit value to the bit stream. */
-	void putBits(uint32 bits, size_t n) {
+	void putBits(uint32_t bits, size_t n) {
 		if (n == 0)
 			return;
 

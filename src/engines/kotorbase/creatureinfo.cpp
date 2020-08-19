@@ -181,7 +181,7 @@ int CreatureInfo::getAbilityModifier(Ability ability) const {
 	return (score - 10) / 2;
 }
 
-void CreatureInfo::setAbilityScore(Ability ability, uint32 score) {
+void CreatureInfo::setAbilityScore(Ability ability, uint32_t score) {
 	switch (ability) {
 		case kAbilityStrength:
 			_abilities.strength = score;
@@ -231,7 +231,7 @@ int CreatureInfo::getSkillRank(Skill skill) const {
 	}
 }
 
-void CreatureInfo::setSkillRank(Skill skill, uint32 rank) {
+void CreatureInfo::setSkillRank(Skill skill, uint32_t rank) {
 	switch (skill) {
 		case kSkillComputerUse:
 			_skills.computerUse = rank;

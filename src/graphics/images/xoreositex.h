@@ -45,7 +45,7 @@ private:
 	bool _flipX;
 	bool _flipY;
 
-	uint8 _coordTransform;
+	uint8_t _coordTransform;
 
 	void load(Common::SeekableReadStream &xeositex);
 	void readHeader(Common::SeekableReadStream &xeositex);

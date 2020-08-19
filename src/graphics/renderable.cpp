@@ -83,7 +83,7 @@ double Renderable::getDistance() const {
 	return _distance;
 }
 
-uint32 Renderable::getID() const {
+uint32_t Renderable::getID() const {
 	return _id;
 }
 

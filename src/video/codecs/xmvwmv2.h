@@ -68,19 +68,19 @@ struct WMV2MVTable;
 
 class XMVWMV2Codec : public Codec {
 public:
-	XMVWMV2Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData);
+	XMVWMV2Codec(uint32_t width, uint32_t height, Common::SeekableReadStream &extraData);
 	~XMVWMV2Codec();
 
 	void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream);
 
 private:
-	static const uint32 kMacroBlockSize = 16; ///< Size of a macro block.
-	static const uint32 kBlockSize      =  8; ///< Size of a block.
+	static const uint32_t kMacroBlockSize = 16; ///< Size of a macro block.
+	static const uint32_t kBlockSize      =  8; ///< Size of a block.
 
 	/** Which block pattern are coded? */
 	class CBP {
 	public:
-		CBP(uint32 cbp = 0);
+		CBP(uint32_t cbp = 0);
 
 		void clear();
 
@@ -89,11 +89,11 @@ private:
 
 		void set(int block, bool coded);
 
-		void decode(uint32 cbp);
-		void decode(uint32 cbp, const CBP &topLeft, const CBP &top, const CBP &left);
+		void decode(uint32_t cbp);
+		void decode(uint32_t cbp, const CBP &topLeft, const CBP &top, const CBP &left);
 
 	private:
-		uint8 _cbp;
+		uint8_t _cbp;
 	};
 
 	/** Decoders for DCT AC coefficients. */
@@ -113,34 +113,34 @@ private:
 		const byte *refPlane;
 		      byte *curPlane;
 
-		int32 *acQuantTop;
-		int32 *acQuantLeft;
+		int32_t *acQuantTop;
+		int32_t *acQuantLeft;
 
-		int32 *dcTopLeft;
+		int32_t *dcTopLeft;
 
 		ACDecoder       **decoderAC;
 		Common::Huffman **huffDC;
 
-		uint32 dcEscapeCode;
+		uint32_t dcEscapeCode;
 
 		bool hasACCoeffs;
 
-		uint32 planePitch;
-		uint32 blockPitch;
+		uint32_t planePitch;
+		uint32_t blockPitch;
 	};
 
 	/** Context for decoding a frame. */
 	struct DecodeContext {
 		Common::BitStream &bits;
 
-		int32 qScale;
-		int32 dcStepSize;
-		int32 defaultPredictor;
+		int32_t qScale;
+		int32_t dcStepSize;
+		int32_t defaultPredictor;
 
-		int32 *acQuantTop[3];
-		int32  acQuantLeft[4][kBlockSize];
+		int32_t *acQuantTop[3];
+		int32_t  acQuantLeft[4][kBlockSize];
 
-		int32 dcTopLeft[4];
+		int32_t dcTopLeft[4];
 
 		ACDecoder       *decoderAC[2];
 		Common::Huffman *huffDC   [2];
@@ -154,8 +154,8 @@ private:
 		bool hasACPerMacroBlock;
 		bool hasACPrediction;
 
-		uint32 acRLERunLength;
-		uint32 acRLELevelLength;
+		uint32_t acRLERunLength;
+		uint32_t acRLELevelLength;
 
 		BlockContext block[6];
 
@@ -163,29 +163,29 @@ private:
 		DecodeContext(Common::BitStream &b);
 
 		/** Set the quantizer scale and calculate the DC step size and default predictor. */
-		void setQScale(int32 qS);
+		void setQScale(int32_t qS);
 
 		void startRow();
 		void finishRow();
 
-		void startMacroBlock(uint32 cbp);
+		void startMacroBlock(uint32_t cbp);
 		void finishMacroBlock();
 	};
 
 
 	// Dimensions
 
-	uint32 _width;  ///< Width of a frame.
-	uint32 _height; ///< Height of a frame.
+	uint32_t _width;  ///< Width of a frame.
+	uint32_t _height; ///< Height of a frame.
 
-	uint32 _lumaWidth;  ///< Width of the luma portion of a decoded frame.
-	uint32 _lumaHeight; ///< Height of the luma portion of a decoded frame.
+	uint32_t _lumaWidth;  ///< Width of the luma portion of a decoded frame.
+	uint32_t _lumaHeight; ///< Height of the luma portion of a decoded frame.
 
-	uint32 _chromaWidth;  ///< Width of the chroma portion of a decoded frame.
-	uint32 _chromaHeight; ///< Height of the chroma portion of a decoded frame.
+	uint32_t _chromaWidth;  ///< Width of the chroma portion of a decoded frame.
+	uint32_t _chromaHeight; ///< Height of the chroma portion of a decoded frame.
 
-	uint32 _mbCountWidth;  ///< Width of a frame in macro blocks.
-	uint32 _mbCountHeight; ///< Height of a frame in macro blocks.
+	uint32_t _mbCountWidth;  ///< Width of a frame in macro blocks.
+	uint32_t _mbCountHeight; ///< Height of a frame in macro blocks.
 
 	// Color planes
 
@@ -201,7 +201,7 @@ private:
 	bool _hasHybridMV;        ///< Does the video have hybrid motion vectors?
 	bool _hasACPerMacroBlock; ///< Are the AC selected per macro block instead of per frame?
 
-	uint8 _sliceCount; ///< Number of slices per frame.
+	uint8_t _sliceCount; ///< Number of slices per frame.
 
 	// CBP
 
@@ -215,7 +215,7 @@ private:
 
 	// DCT AC coefficients
 
-	std::unique_ptr<int32[]> _predAC[3]; ///< AC predictors, previous row.
+	std::unique_ptr<int32_t[]> _predAC[3]; ///< AC predictors, previous row.
 
 	/** Decoders for DCT AC coefficients [luma/chroma][low motion/high motion/MPEG4]. */
 	ACDecoder _decoderAC[2][3];
@@ -225,7 +225,7 @@ private:
 	/** Huffman code for the motion vectors [low/high motion]. */
 	MVDecoder _decoderMV[2];
 
-	uint32 _currentFrame;
+	uint32_t _currentFrame;
 
 
 	/** Init the decoder. */
@@ -254,14 +254,14 @@ private:
 	void decodeIBlock(DecodeContext &ctx, BlockContext &block);
 
 	/** Decode a "tri-state". */
-	static uint8 getTrit(Common::BitStream &bits);
+	static uint8_t getTrit(Common::BitStream &bits);
 
 	// IDCT
 
-	void IDCTPut(byte *dest, int32 *block, uint32 pitch);
-	void IDCT(int32 *block);
-	void IDCTRow(int32 *b);
-	void IDCTCol(int32 *b);
+	void IDCTPut(byte *dest, int32_t *block, uint32_t pitch);
+	void IDCT(int32_t *block);
+	void IDCTRow(int32_t *b);
+	void IDCTCol(int32_t *b);
 };
 
 } // End of namespace Video

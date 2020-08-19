@@ -53,7 +53,7 @@ static void readBitStream(Common::BitStream &bitStream, byte (&data)[11]) {
 	data[8] = bitStream.getBits(4);
 	data[9] = bitStream.getBits(4);
 
-	uint32 x = 1;
+	uint32_t x = 1;
 	bitStream.addBit(x, 1);
 
 	data[10] = x;

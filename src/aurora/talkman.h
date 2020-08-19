@@ -55,23 +55,23 @@ public:
 	 *  @param changeID   If given, record the collective changes done here.
 	 */
 	void addTable(const Common::UString &nameMale, const Common::UString &nameFemale,
-                bool isAlt, uint32 priority, Common::ChangeID *changeID = 0);
+                bool isAlt, uint32_t priority, Common::ChangeID *changeID = 0);
 
 	/** Remove a talk table from the talk manager again. */
 	void removeTable(Common::ChangeID &changeID);
 
-	const Common::UString &getString     (uint32 strRef, LanguageGender gender = kLanguageGenderCurrent);
-	const Common::UString &getSoundResRef(uint32 strRef, LanguageGender gender = kLanguageGenderCurrent);
+	const Common::UString &getString     (uint32_t strRef, LanguageGender gender = kLanguageGenderCurrent);
+	const Common::UString &getSoundResRef(uint32_t strRef, LanguageGender gender = kLanguageGenderCurrent);
 
 private:
 	struct Table {
-		uint32 id;
-		uint32 priority;
+		uint32_t id;
+		uint32_t priority;
 
 		TalkTable *tableMale;
 		TalkTable *tableFemale;
 
-		Table(TalkTable *tM, TalkTable *tF, uint32 p, uint32 i) :
+		Table(TalkTable *tM, TalkTable *tF, uint32_t p, uint32_t i) :
 			id(i), priority(p), tableMale(tM), tableFemale(tF) { }
 
 		bool operator<(const Table &right) const { return priority < right.priority; }
@@ -79,9 +79,9 @@ private:
 
 	class Change : public Common::ChangeContent {
 	private:
-		Change(uint32 id, bool isAlt) : _id(id), _isAlt(isAlt) { }
+		Change(uint32_t id, bool isAlt) : _id(id), _isAlt(isAlt) { }
 
-		uint32 _id;
+		uint32_t _id;
 		bool _isAlt;
 
 		friend class TalkManager;
@@ -101,8 +101,8 @@ private:
 
 	void deleteTable(Table &table);
 
-	const TalkTable *find(uint32 strRef, LanguageGender gender) const;
-	const TalkTable *find(const Tables &tables, uint32 strRef, LanguageGender gender) const;
+	const TalkTable *find(uint32_t strRef, LanguageGender gender) const;
+	const TalkTable *find(const Tables &tables, uint32_t strRef, LanguageGender gender) const;
 };
 
 } // End of namespace Aurora

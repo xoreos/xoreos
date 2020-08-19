@@ -121,29 +121,29 @@ void Area::refreshLocalized() {
 		(*o)->refreshLocalized();
 }
 
-uint32 Area::getMusicDayTrack() const {
+uint32_t Area::getMusicDayTrack() const {
 	return _musicDayTrack;
 }
 
-uint32 Area::getMusicNightTrack() const {
+uint32_t Area::getMusicNightTrack() const {
 	return _musicNightTrack;
 }
 
-uint32 Area::getMusicBattleTrack() const {
+uint32_t Area::getMusicBattleTrack() const {
 	return _musicBattleTrack;
 }
 
-void Area::setMusicDayTrack(uint32 track) {
+void Area::setMusicDayTrack(uint32_t track) {
 	_musicDayTrack = track;
 	_musicDay      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
-void Area::setMusicNightTrack(uint32 track) {
+void Area::setMusicNightTrack(uint32_t track) {
 	_musicNightTrack = track;
 	_musicNight      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
-void Area::setMusicBattleTrack(uint32 track) {
+void Area::setMusicBattleTrack(uint32_t track) {
 	_musicBattleTrack = track;
 	_musicBattle      = TwoDAReg.get2DA("ambientmusic").getRow(_musicBattleTrack).getString("Resource");
 }
@@ -265,9 +265,9 @@ void Area::loadModels() {
 		object.loadModel();
 
 		if (!object.isStatic()) {
-			const std::list<uint32> &ids = object.getIDs();
+			const std::list<uint32_t> &ids = object.getIDs();
 
-			for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+			for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 				_objectMap.insert(std::make_pair(*id, &object));
 		}
 	}

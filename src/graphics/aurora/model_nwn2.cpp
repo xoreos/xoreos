@@ -48,10 +48,10 @@
 IGNORE_UNUSED_VARIABLES
 
 
-static const uint32 kMDBID = MKTAG('N', 'W', 'N', '2');
+static const uint32_t kMDBID = MKTAG('N', 'W', 'N', '2');
 
-static const uint32 kRigidID = MKTAG('R', 'I', 'G', 'D');
-static const uint32 kSkinID  = MKTAG('S', 'K', 'I', 'N');
+static const uint32_t kRigidID = MKTAG('R', 'I', 'G', 'D');
+static const uint32_t kSkinID  = MKTAG('S', 'K', 'I', 'N');
 
 namespace Graphics {
 
@@ -123,14 +123,14 @@ void Model_NWN2::setTintWalls(const float tint[3][4]) {
 }
 
 void Model_NWN2::load(ParserContext &ctx) {
-	uint32 tag = ctx.mdb->readUint32BE();
+	uint32_t tag = ctx.mdb->readUint32BE();
 	if (tag != kMDBID)
 		throw Common::Exception("Not a NWN2 MDB file (%s)", Common::debugTag(tag).c_str());
 
-	uint16 verMajor = ctx.mdb->readUint16LE();
-	uint16 verMinor = ctx.mdb->readUint16LE();
+	uint16_t verMajor = ctx.mdb->readUint16LE();
+	uint16_t verMinor = ctx.mdb->readUint16LE();
 
-	uint32 packetCount = ctx.mdb->readUint32LE();
+	uint32_t packetCount = ctx.mdb->readUint32LE();
 
 	std::vector<PacketKey> packetKeys;
 	packetKeys.resize(packetCount);
@@ -206,11 +206,11 @@ ModelNode_NWN2::~ModelNode_NWN2() {
 }
 
 bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
-	uint32 tag = ctx.mdb->readUint32BE();
+	uint32_t tag = ctx.mdb->readUint32BE();
 	if (tag != kRigidID)
 		throw Common::Exception("Invalid rigid packet signature (%s)", Common::debugTag(tag).c_str());
 
-	uint32 packetSize = ctx.mdb->readUint32LE();
+	uint32_t packetSize = ctx.mdb->readUint32LE();
 
 	_name = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
@@ -234,10 +234,10 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	float  specularPower = ctx.mdb->readIEEEFloatLE();
 	float  specularValue = ctx.mdb->readIEEEFloatLE();
-	uint32 textureFlags  = ctx.mdb->readUint32LE();
+	uint32_t textureFlags  = ctx.mdb->readUint32LE();
 
-	uint32 vertexCount = ctx.mdb->readUint32LE();
-	uint32 facesCount  = ctx.mdb->readUint32LE();
+	uint32_t vertexCount = ctx.mdb->readUint32LE();
+	uint32_t facesCount  = ctx.mdb->readUint32LE();
 
 	if ((vertexCount == 0) || (facesCount == 0))
 		return false;
@@ -265,7 +265,7 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
 	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
-	for (uint32 i = 0; i < vertexCount; i++) {
+	for (uint32_t i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -296,10 +296,10 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	// Read faces
 
-	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
-	for (uint32 i = 0; i < facesCount * 3; i++)
+	uint16_t *f = reinterpret_cast<uint16_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
+	for (uint32_t i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
 	Common::UString meshName = ctx.mdlName;
@@ -329,11 +329,11 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 }
 
 bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
-	uint32 tag = ctx.mdb->readUint32BE();
+	uint32_t tag = ctx.mdb->readUint32BE();
 	if (tag != kSkinID)
 		throw Common::Exception("Invalid skin packet signature (%s)", Common::debugTag(tag).c_str());
 
-	uint32 packetSize = ctx.mdb->readUint32LE();
+	uint32_t packetSize = ctx.mdb->readUint32LE();
 
 	_name = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
@@ -359,10 +359,10 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	float  specularPower = ctx.mdb->readIEEEFloatLE();
 	float  specularValue = ctx.mdb->readIEEEFloatLE();
-	uint32 textureFlags  = ctx.mdb->readUint32LE();
+	uint32_t textureFlags  = ctx.mdb->readUint32LE();
 
-	uint32 vertexCount = ctx.mdb->readUint32LE();
-	uint32 facesCount  = ctx.mdb->readUint32LE();
+	uint32_t vertexCount = ctx.mdb->readUint32LE();
+	uint32_t facesCount  = ctx.mdb->readUint32LE();
 
 	if ((vertexCount == 0) || (facesCount == 0))
 		return false;
@@ -390,7 +390,7 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
 	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
-	for (uint32 i = 0; i < vertexCount; i++) {
+	for (uint32_t i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -424,10 +424,10 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 
 	// Read faces
-	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
-	for (uint32 i = 0; i < facesCount * 3; i++)
+	uint16_t *f = reinterpret_cast<uint16_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
+	for (uint32_t i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
 	createBound();

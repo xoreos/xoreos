@@ -57,7 +57,7 @@ public:
 	virtual void hide(); ///< Hide the object's model(s).
 
 	/** Return the object's model IDs. */
-	const std::list<uint32> &getIDs() const;
+	const std::list<uint32_t> &getIDs() const;
 
 	// Basic properties
 
@@ -128,7 +128,7 @@ protected:
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
 
-	std::list<uint32> _ids; ///< The object's model IDs.
+	std::list<uint32_t> _ids; ///< The object's model IDs.
 
 	float _position[3];    ///< The object's position.
 	float _orientation[4]; ///< The object's orientation.

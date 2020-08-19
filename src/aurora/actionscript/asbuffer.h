@@ -25,6 +25,8 @@
 #ifndef AURORA_ACTIONSCRIPT_ASBUFFER_H
 #define AURORA_ACTIONSCRIPT_ASBUFFER_H
 
+#include <cstddef>
+
 #include <stack>
 #include <memory>
 

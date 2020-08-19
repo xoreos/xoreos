@@ -41,7 +41,7 @@ namespace Witcher {
 void Functions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 	Witcher::Object *object = Witcher::ObjectContainer::toObject(ctx.getCaller());
 
-	const Common::UString sound = TalkMan.getSoundResRef((uint32) ctx.getParams()[0].getInt());
+	const Common::UString sound = TalkMan.getSoundResRef((uint32_t) ctx.getParams()[0].getInt());
 
 	// TODO: Run as action
 	// bool runAsAction = ctx.getParams()[1].getInt() != 0;
@@ -90,13 +90,13 @@ void Functions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ct
 void Functions::musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx) {
 	Area *area = Witcher::ObjectContainer::toArea(getParamObject(ctx, 0));
 
-	ctx.getReturn() = area ? (int32)area->getMusicDayTrack() : -1;
+	ctx.getReturn() = area ? (int32_t)area->getMusicDayTrack() : -1;
 }
 
 void Functions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx) {
 	Area *area = Witcher::ObjectContainer::toArea(getParamObject(ctx, 0));
 
-	ctx.getReturn() = area ? (int32)area->getMusicNightTrack() : -1;
+	ctx.getReturn() = area ? (int32_t)area->getMusicNightTrack() : -1;
 }
 
 } // End of namespace Witcher

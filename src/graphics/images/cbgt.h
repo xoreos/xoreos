@@ -74,8 +74,8 @@ private:
 		PaletteIndices paletteIndices;
 		Cells cells;
 
-		uint32 width;
-		uint32 height;
+		uint32_t width;
+		uint32_t height;
 
 		size_t maxPaletteIndex;
 
@@ -92,7 +92,7 @@ private:
 
 	void checkConsistency(ReadContext &ctx);
 
-	void createImage(uint32 width, uint32 height);
+	void createImage(uint32_t width, uint32_t height);
 	void drawImage(ReadContext &ctx);
 };
 

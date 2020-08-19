@@ -42,7 +42,7 @@ public:
 	virtual ~Font();
 
 	/** Return the width of a character. */
-	virtual float getWidth (uint32 c) const = 0;
+	virtual float getWidth (uint32_t c) const = 0;
 	/** Return the height of a character. */
 	virtual float getHeight()         const = 0;
 
@@ -63,10 +63,10 @@ public:
 	virtual void buildChars(const Common::UString &str);
 
 	/** Draw this character. */
-	virtual void draw(uint32 c) const = 0;
+	virtual void draw(uint32_t c) const = 0;
 
 	virtual void renderBind(const glm::mat4 &UNUSED(transform)) const {}
-	virtual void render(uint32 UNUSED(c), float &UNUSED(x), float &UNUSED(y), float *UNUSED(rgba)) const {}
+	virtual void render(uint32_t UNUSED(c), float &UNUSED(x), float &UNUSED(y), float *UNUSED(rgba)) const {}
 	virtual void renderUnbind() const {}
 
 	float split(const Common::UString &line, std::vector<Common::UString> &lines,

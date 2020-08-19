@@ -48,7 +48,7 @@ namespace KotOR {
 
 SaveLoadMenu::SaveLoadMenu(KotORBase::Module &module,
                            ::Engines::Console *console,
-                           uint8 type,
+                           uint8_t type,
                            bool frontBackground) :
 		KotORBase::GUI(console),
 		_module(&module),
@@ -152,7 +152,7 @@ void SaveLoadMenu::addSavedGameItems(Odyssey::WidgetListBox *listBox) {
 
 		_saveDirs.push_back(saveDir);
 		KotORBase::SavedGame *save = new SavedGame(saveDir);
-		uint32 timePlayed = save->getTimePlayed();
+		uint32_t timePlayed = save->getTimePlayed();
 		Common::UString slotText(slotTextFormat);
 
 		slotText.replaceAll("Game <CUSTOM0>", baseName);

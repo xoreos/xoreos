@@ -31,7 +31,7 @@ namespace Common {
 
 UString generateIDRandomString();
 
-uint32 generateIDNumber();
+uint32_t generateIDNumber();
 UString generateIDNumberString();
 
 } // End of namespace Common

@@ -51,8 +51,8 @@ public:
 	int getState() const;
 	void setState(int state);
 
-	void mouseMove(uint8 state, float x, float y);
-	void mouseDown(uint8 state, float x, float y);
+	void mouseMove(uint8_t state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
 
 private:
 	float _width;

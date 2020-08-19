@@ -120,13 +120,13 @@ void Functions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getObjectType(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kObjectTypeInvalid;
+	ctx.getReturn() = (int32_t) kObjectTypeInvalid;
 
 	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
-	if (!object || ((uint32)object->getType() >= kObjectTypeMAX))
+	if (!object || ((uint32_t)object->getType() >= kObjectTypeMAX))
 		return;
 
-	ctx.getReturn() = (int32) object->getType();
+	ctx.getReturn() = (int32_t) object->getType();
 }
 
 void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -241,9 +241,9 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	// Bitfield of type(s) to check for
-	uint32 type = ctx.getParams()[0].getInt();
+	uint32_t type = ctx.getParams()[0].getInt();
 	// We want the nth nearest object
-	size_t nth  = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
+	size_t nth  = MAX<int32_t>(ctx.getParams()[2].getInt() - 1, 0);
 
 	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjects());
 	Aurora::NWScript::Object *object = 0;
@@ -256,7 +256,7 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 			continue;
 
 		// Ignore invalid object types
-		const uint32 objectType = (uint32) nwn2Object->getType();
+		const uint32_t objectType = (uint32_t) nwn2Object->getType();
 		if (objectType >= kObjectTypeMAX)
 			continue;
 
@@ -285,7 +285,7 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (!target)
 		return;
 
-	size_t nth = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
+	size_t nth = MAX<int32_t>(ctx.getParams()[2].getInt() - 1, 0);
 
 	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
 	Aurora::NWScript::Object *object = 0;
@@ -317,7 +317,7 @@ void Functions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
 	if (!target)
 		return;
 
-	size_t nth = MAX<int32>(ctx.getParams()[3].getInt() - 1, 0);
+	size_t nth = MAX<int32_t>(ctx.getParams()[3].getInt() - 1, 0);
 
 	/* TODO: Criteria:
 	 *
@@ -473,7 +473,7 @@ void Functions::setTrapDetectable(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setTrapDetectDC(Aurora::NWScript::FunctionContext &ctx) {
 	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
 	if (trigger) {
-		const uint8 detectDC = (uint8) ctx.getParams()[1].getInt();
+		const uint8_t detectDC = (uint8_t) ctx.getParams()[1].getInt();
 		trigger->setTrapDetectDC(detectDC);
 	}
 }
@@ -504,7 +504,7 @@ void Functions::setTrapDisarmable(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setTrapDisarmDC(Aurora::NWScript::FunctionContext &ctx) {
 	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
 	if (trigger) {
-		const uint8 disarmDC = (uint8) ctx.getParams()[1].getInt();
+		const uint8_t disarmDC = (uint8_t) ctx.getParams()[1].getInt();
 		trigger->setTrapDisarmDC(disarmDC);
 	}
 }
@@ -538,8 +538,8 @@ void Functions::createTrapOnObject(Aurora::NWScript::FunctionContext &ctx) {
 	if (!trigger)
 		return;
 
-	const uint8 trapType = (uint8)(ctx.getParams()[0].getInt());
-	const uint32 faction = (uint32)(ctx.getParams()[2].getInt());
+	const uint8_t trapType = (uint8_t)(ctx.getParams()[0].getInt());
+	const uint32_t faction = (uint32_t)(ctx.getParams()[2].getInt());
 	const Common::UString &disarm = ctx.getParams()[3].getString();
 	const Common::UString &triggered = ctx.getParams()[4].getString();
 
@@ -630,7 +630,7 @@ void Functions::setListenPattern(Aurora::NWScript::FunctionContext &ctx) {
 	if (pattern.empty())
 		return;
 
-	const int32 number = (int32)(ctx.getParams()[2].getInt());
+	const int32_t number = (int32_t)(ctx.getParams()[2].getInt());
 	if (number == 0)
 		return;
 

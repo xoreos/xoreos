@@ -122,7 +122,7 @@ Item *Inventory::getItemInSlot(InventorySlot slot) const {
 	return (slot < kInventorySlotMax) ? equippedItems[(size_t) slot] : nullptr;
 }
 
-Item *Inventory::createItem(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+Item *Inventory::createItem(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag) {
 	if (blueprint.empty() || stackSize == 0)
 		return nullptr;
 
@@ -168,26 +168,26 @@ void Inventory::clear() {
 	inventoryItems.clear();
 }
 
-InventorySlot Inventory::getSlotFromBitFlag(uint32 bitFlag) const {
+InventorySlot Inventory::getSlotFromBitFlag(uint32_t bitFlag) const {
 	// Bit flags used for the 'EquipableSlots' column of 'baseitem.2da'
-	static const uint32 kSlotBitFlagHead      = (uint32)(0x1 << (int) kInventorySlotHead);
-	static const uint32 kSlotBitFlagChest     = (uint32)(0x1 << (int) kInventorySlotChest);
-	static const uint32 kSlotBitFlagBoots     = (uint32)(0x1 << (int) kInventorySlotBoots);
-	static const uint32 kSlotBitFlagArms      = (uint32)(0x1 << (int) kInventorySlotArms);
-	static const uint32 kSlotBitFlagRightHand = (uint32)(0x1 << (int) kInventorySlotRightHand);
-	static const uint32 kSlotBitFlagLeftHand  = (uint32)(0x1 << (int) kInventorySlotLeftHand);
-	static const uint32 kSlotBitFlagCloak     = (uint32)(0x1 << (int) kInventorySlotCloak);
-	static const uint32 kSlotBitFlagLeftRing  = (uint32)(0x1 << (int) kInventorySlotLeftRing);
-	static const uint32 kSlotBitFlagRightRing = (uint32)(0x1 << (int) kInventorySlotRightRing);
-	static const uint32 kSlotBitFlagNeck      = (uint32)(0x1 << (int) kInventorySlotNeck);
-	static const uint32 kSlotBitFlagBelt      = (uint32)(0x1 << (int) kInventorySlotBelt);
-	static const uint32 kSlotBitFlagArrows    = (uint32)(0x1 << (int) kInventorySlotArrows);
-	static const uint32 kSlotBitFlagBullets   = (uint32)(0x1 << (int) kInventorySlotBullets);
-	static const uint32 kSlotBitFlagBolts     = (uint32)(0x1 << (int) kInventorySlotBolts);
-	static const uint32 kSlotBitFlagCWeaponL  = (uint32)(0x1 << (int) kInventorySlotCWeaponL);
-	static const uint32 kSlotBitFlagCWeaponR  = (uint32)(0x1 << (int) kInventorySlotCWeaponR);
-	static const uint32 kSlotBitFlagCWeaponB  = (uint32)(0x1 << (int) kInventorySlotCWeaponB);
-	static const uint32 kSlotBitFlagCArmour   = (uint32)(0x1 << (int) kInventorySlotCArmour);
+	static const uint32_t kSlotBitFlagHead      = (uint32_t)(0x1 << (int) kInventorySlotHead);
+	static const uint32_t kSlotBitFlagChest     = (uint32_t)(0x1 << (int) kInventorySlotChest);
+	static const uint32_t kSlotBitFlagBoots     = (uint32_t)(0x1 << (int) kInventorySlotBoots);
+	static const uint32_t kSlotBitFlagArms      = (uint32_t)(0x1 << (int) kInventorySlotArms);
+	static const uint32_t kSlotBitFlagRightHand = (uint32_t)(0x1 << (int) kInventorySlotRightHand);
+	static const uint32_t kSlotBitFlagLeftHand  = (uint32_t)(0x1 << (int) kInventorySlotLeftHand);
+	static const uint32_t kSlotBitFlagCloak     = (uint32_t)(0x1 << (int) kInventorySlotCloak);
+	static const uint32_t kSlotBitFlagLeftRing  = (uint32_t)(0x1 << (int) kInventorySlotLeftRing);
+	static const uint32_t kSlotBitFlagRightRing = (uint32_t)(0x1 << (int) kInventorySlotRightRing);
+	static const uint32_t kSlotBitFlagNeck      = (uint32_t)(0x1 << (int) kInventorySlotNeck);
+	static const uint32_t kSlotBitFlagBelt      = (uint32_t)(0x1 << (int) kInventorySlotBelt);
+	static const uint32_t kSlotBitFlagArrows    = (uint32_t)(0x1 << (int) kInventorySlotArrows);
+	static const uint32_t kSlotBitFlagBullets   = (uint32_t)(0x1 << (int) kInventorySlotBullets);
+	static const uint32_t kSlotBitFlagBolts     = (uint32_t)(0x1 << (int) kInventorySlotBolts);
+	static const uint32_t kSlotBitFlagCWeaponL  = (uint32_t)(0x1 << (int) kInventorySlotCWeaponL);
+	static const uint32_t kSlotBitFlagCWeaponR  = (uint32_t)(0x1 << (int) kInventorySlotCWeaponR);
+	static const uint32_t kSlotBitFlagCWeaponB  = (uint32_t)(0x1 << (int) kInventorySlotCWeaponB);
+	static const uint32_t kSlotBitFlagCArmour   = (uint32_t)(0x1 << (int) kInventorySlotCArmour);
 
 	switch (bitFlag) {
 		case kSlotBitFlagHead:

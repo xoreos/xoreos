@@ -42,7 +42,7 @@ Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) : Object(kObjectTypeWaypo
 Waypoint::~Waypoint() {
 }
 
-int32 Waypoint::getGroup() const {
+int32_t Waypoint::getGroup() const {
 	return _group;
 }
 
@@ -80,7 +80,7 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	waypoint.getLocString("MapNote", _mapNote);
 
 	// Type
-	_type = (uint32) ((int32) waypoint.getSint("MapNoteType", -1));
+	_type = (uint32_t) ((int32_t) waypoint.getSint("MapNoteType", -1));
 
 	// Position
 	const float position[3] = {

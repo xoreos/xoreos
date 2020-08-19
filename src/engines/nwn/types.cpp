@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace NWN {
 
-Alignment getAlignmentLawChaos(uint8 lawChaos) {
+Alignment getAlignmentLawChaos(uint8_t lawChaos) {
 	if (lawChaos >= 70)
 		return kAlignmentLawful;
 	if (lawChaos <= 30)
@@ -39,7 +39,7 @@ Alignment getAlignmentLawChaos(uint8 lawChaos) {
 	return kAlignmentNeutral;
 }
 
-Alignment getAlignmentGoodEvil(uint8 goodEvil) {
+Alignment getAlignmentGoodEvil(uint8_t goodEvil) {
 	if (goodEvil >= 70)
 		return kAlignmentGood;
 	if (goodEvil <= 30)

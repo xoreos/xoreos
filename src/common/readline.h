@@ -73,7 +73,7 @@ public:
 	const std::vector<UString> &getCompleteHint(size_t &maxSize) const;
 
 	/** Add that character to the current input. */
-	void addInput(uint32 c);
+	void addInput(uint32_t c);
 	/** Add that string to the current input. */
 	void addInput(const UString &str);
 
@@ -155,7 +155,7 @@ private:
 	size_t findLastWordStart(bool onlySpace = false) const;
 	size_t findNextWordEnd(bool onlySpace = false) const;
 
-	static bool isWordCharacter(uint32 c, bool onlySpace = false);
+	static bool isWordCharacter(uint32_t c, bool onlySpace = false);
 	static UString findCommonSubstring(const std::list<UString> &strings);
 };
 

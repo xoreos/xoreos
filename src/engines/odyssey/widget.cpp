@@ -551,7 +551,7 @@ Widget::Text Widget::createText(const Aurora::GFF3Struct &gff) {
 		text.text   = t.getString("TEXT");
 		text.strRef = t.getUint("STRREF", Aurora::kStrRefInvalid);
 
-		const uint32 alignment = t.getUint("ALIGNMENT");
+		const uint32_t alignment = t.getUint("ALIGNMENT");
 
 		t.getVector("COLOR", text.r, text.g, text.b);
 

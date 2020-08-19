@@ -36,7 +36,7 @@ namespace NWN2 {
 class ItemProperty : public Aurora::NWScript::EngineType {
 public:
 	ItemProperty(const Aurora::GFF3Struct &itemProperty);
-	ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1 = 255, uint8 param1value = 255, uint8 costValue = 0);
+	ItemProperty(ItemPropertyType type, uint16_t subtype, uint8_t param1 = 255, uint8_t param1value = 255, uint8_t costValue = 0);
 	~ItemProperty() = default;
 
 	/** Clone factory method. */
@@ -45,29 +45,29 @@ public:
 	/** Return the item property type. */
 	ItemPropertyType getItemPropertyType() const;
 	/** Return the item property subtype. */
-	uint16 getItemPropertySubType() const;
+	uint16_t getItemPropertySubType() const;
 	/** Return the item property param1 number. */
-	uint8 getItemPropertyParam1() const;
+	uint8_t getItemPropertyParam1() const;
 	/** Return the item property param1 value. */
-	uint8 getItemPropertyParam1Value() const;
+	uint8_t getItemPropertyParam1Value() const;
 	/** Return the cost table. */
-	uint8 getItemPropertyCostTable() const;
+	uint8_t getItemPropertyCostTable() const;
 	/** Return the cost value. */
-	uint8 getItemPropertyCostTableValue() const;
+	uint8_t getItemPropertyCostTableValue() const;
 	/** Return true if this item property is valid. */
 	bool getIsItemPropertyValid() const;
 
 private:
 	ItemPropertyType _type; ///< Index into 'itempropdef.2da'.
-	uint16 _subtype;        ///< Index into an iprp subtype 2da file.
-	uint8 _param1;          ///< Index into 'iprp_paramtable.2da'.
-	uint8 _param1Value;     ///< Index into an iprp params 2da file.
-	uint8 _costTable;       ///< Index into 'iprp_costtable.2da'.
-	uint16 _costValue;      ///< Index into an iprp cost table 2da file.
+	uint16_t _subtype;        ///< Index into an iprp subtype 2da file.
+	uint8_t _param1;          ///< Index into 'iprp_paramtable.2da'.
+	uint8_t _param1Value;     ///< Index into an iprp params 2da file.
+	uint8_t _costTable;       ///< Index into 'iprp_costtable.2da'.
+	uint16_t _costValue;      ///< Index into an iprp cost table 2da file.
 
 	/** Load an item property. */
 	void load(const Aurora::GFF3Struct &gff);
-	void load(ItemPropertyType type, uint16 subtype, uint8 param1 = 255, uint8 param1Value = 255, uint8 costValue = 0);
+	void load(ItemPropertyType type, uint16_t subtype, uint8_t param1 = 255, uint8_t param1Value = 255, uint8_t costValue = 0);
 };
 
 } // End of namespace NWN2

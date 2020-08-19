@@ -76,7 +76,7 @@ void SubSceneQuad::render(RenderPass pass) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 	float elapsedTime = 0;
-	const uint32 now = EventMan.getTimestamp();
+	const uint32_t now = EventMan.getTimestamp();
 
 	if (_lastSampled != 0)
 		elapsedTime = (now - _lastSampled) / 1000.0f;

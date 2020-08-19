@@ -56,31 +56,31 @@ public:
 	void clear();
 
 	/** Return the file's ID. */
-	uint32 getID() const;
+	uint32_t getID() const;
 
 	/** Return the file's version. */
-	uint32 getVersion() const;
+	uint32_t getVersion() const;
 
 	/** Were the ID and version encoded in little-endian UTF-16 in the file? */
 	bool isUTF16LE() const;
 
 	// .--- Static base header readers
 	/** Read the header out of a stream. */
-	static void readHeader(Common::ReadStream &stream, uint32 &id, uint32 &version, bool &utf16le);
+	static void readHeader(Common::ReadStream &stream, uint32_t &id, uint32_t &version, bool &utf16le);
 	/** Read the ID and version out of a stream. */
-	static void readHeader(Common::ReadStream &stream, uint32 &id, uint32 &version);
+	static void readHeader(Common::ReadStream &stream, uint32_t &id, uint32_t &version);
 	/** Read the ID out of a stream. */
-	static uint32 readHeaderID(Common::ReadStream &stream);
+	static uint32_t readHeaderID(Common::ReadStream &stream);
 	// '---
 
 protected:
-	uint32 _id;      ///< The file's ID.
-	uint32 _version; ///< The file's version.
-	bool   _utf16le; ///< The file's ID and version are in little-endian UTF-16.
+	uint32_t _id;      ///< The file's ID.
+	uint32_t _version; ///< The file's version.
+	bool     _utf16le; ///< The file's ID and version are in little-endian UTF-16.
 
 	void readHeader(Common::ReadStream &stream);
 
-	static uint32 convertUTF16LE(uint32 x1, uint32 x2);
+	static uint32_t convertUTF16LE(uint32_t x1, uint32_t x2);
 };
 
 } // End of namespace Aurora

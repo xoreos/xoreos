@@ -54,7 +54,7 @@ UString::UString(const char *str, size_t n) {
 	*this = std::string(str, n);
 }
 
-UString::UString(uint32 c, size_t n) : _size(0) {
+UString::UString(uint32_t c, size_t n) : _size(0) {
 	while (n-- > 0)
 		*this += c;
 }
@@ -128,7 +128,7 @@ UString UString::operator+(const char *str) const {
 	return tmp;
 }
 
-UString UString::operator+(uint32 c) const {
+UString UString::operator+(uint32_t c) const {
 	UString tmp(*this);
 
 	tmp += c;
@@ -155,7 +155,7 @@ UString &UString::operator+=(const char *str) {
 	return *this += ustr;
 }
 
-UString &UString::operator+=(uint32 c) {
+UString &UString::operator+=(uint32_t c) {
 	try {
 		utf8::append(c, std::back_inserter(_string));
 	} catch (const std::exception &se) {
@@ -173,8 +173,8 @@ int UString::strcmp(const UString &str) const {
 		UString::iterator it1 = begin();
 		UString::iterator it2 = str.begin();
 		for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
-			const uint32 c1 = *it1;
-			const uint32 c2 = *it2;
+			const uint32_t c1 = *it1;
+			const uint32_t c2 = *it2;
 
 			if (c1 < c2)
 				return -1;
@@ -199,8 +199,8 @@ int UString::stricmp(const UString &str) const {
 		UString::iterator it1 = begin();
 		UString::iterator it2 = str.begin();
 		for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
-			const uint32 c1 = toLower(*it1);
-			const uint32 c2 = toLower(*it2);
+			const uint32_t c1 = toLower(*it1);
+			const uint32_t c2 = toLower(*it2);
 
 			if (c1 < c2)
 				return -1;
@@ -267,7 +267,7 @@ UString::iterator UString::end() const {
 	return iterator(_string.end(), _string.begin(), _string.end());
 }
 
-UString::iterator UString::findFirst(uint32 c) const {
+UString::iterator UString::findFirst(uint32_t c) const {
 	for (iterator it = begin(); it != end(); ++it)
 		if (*it == c)
 			return it;
@@ -285,7 +285,7 @@ UString::iterator UString::findFirst(const UString &what) const {
 	return end();
 }
 
-UString::iterator UString::findLast(uint32 c) const {
+UString::iterator UString::findLast(uint32_t c) const {
 	if (empty())
 		return end();
 
@@ -345,7 +345,7 @@ bool UString::contains(const UString &what) const {
 	return _string.find(what._string) != std::string::npos;
 }
 
-bool UString::contains(uint32 c) const {
+bool UString::contains(uint32_t c) const {
 	return findFirst(c) != end();
 }
 
@@ -378,7 +378,7 @@ void UString::trim() {
 	// Find the last space, from the end
 	iterator itEnd = --end();
 	for (; itEnd != begin(); --itEnd) {
-		uint32 c = *itEnd;
+		uint32_t c = *itEnd;
 		if (!isSpace(c) && (c != '\0')) {
 			++itEnd;
 			break;
@@ -386,7 +386,7 @@ void UString::trim() {
 	}
 
 	if (itEnd == begin()) {
-		uint32 c = *itEnd;
+		uint32_t c = *itEnd;
 		if (!isSpace(c) && (c != '\0'))
 			++itEnd;
 	}
@@ -424,7 +424,7 @@ void UString::trimRight() {
 	// Find the last space, from the end
 	iterator itEnd = --end();
 	for (; itEnd != begin(); --itEnd) {
-		uint32 c = *itEnd;
+		uint32_t c = *itEnd;
 		if (!isSpace(c) && (c != '\0')) {
 			++itEnd;
 			break;
@@ -432,7 +432,7 @@ void UString::trimRight() {
 	}
 
 	if (itEnd == begin()) {
-		uint32 c = *itEnd;
+		uint32_t c = *itEnd;
 		if (!isSpace(c) && (c != '\0'))
 			++itEnd;
 	}
@@ -441,7 +441,7 @@ void UString::trimRight() {
 	recalculateSize();
 }
 
-void UString::replaceAll(uint32 what, uint32 with) {
+void UString::replaceAll(uint32_t what, uint32_t with) {
 	try {
 
 		// The new string with characters replaced
@@ -454,7 +454,7 @@ void UString::replaceAll(uint32 what, uint32 with) {
 			std::string::iterator prev = it;
 
 			// Get the codepoint
-			uint32 c = utf8::next(it, _string.end());
+			uint32_t c = utf8::next(it, _string.end());
 
 			if (c != what) {
 				// It's not what we're looking for, copy it
@@ -519,7 +519,7 @@ size_t UString::getPosition(iterator it) const {
 	return n;
 }
 
-void UString::insert(iterator pos, uint32 c) {
+void UString::insert(iterator pos, uint32_t c) {
 	if (pos == end()) {
 		*this += c;
 		return;
@@ -559,7 +559,7 @@ void UString::insert(UString::iterator pos, const UString &str) {
 	swap(temp);
 }
 
-void UString::replace(iterator pos, uint32 c) {
+void UString::replace(iterator pos, uint32_t c) {
 	if (pos == end()) {
 		*this += c;
 		return;
@@ -656,7 +656,7 @@ void UString::splitTextTokens(const UString &text, std::vector<UString> &tokens)
 
 	int state = 0;
 	for (iterator it = text.begin(); it != text.end(); ++it) {
-		uint32 c = *it;
+		uint32_t c = *it;
 
 		if (state == 0) {
 			// Collecting non-tokens
@@ -735,7 +735,7 @@ UString UString::format(const char *s, ...) {
 	return UString(buf);
 }
 
-size_t UString::split(const UString &text, uint32 delim, std::vector<UString> &texts) {
+size_t UString::split(const UString &text, uint32_t delim, std::vector<UString> &texts) {
 	size_t length = 0;
 
 	UString t = text;
@@ -775,7 +775,7 @@ void UString::recalculateSize() {
 // NOTE: If we ever need uppercase<->lowercase mappings for non-ASCII
 //       characters: http://www.unicode.org/reports/tr21/tr21-5.html
 
-uint32 UString::toLower(uint32 c) {
+uint32_t UString::toLower(uint32_t c) {
 	if (!isASCII(c))
 		// We don't know how to lowercase that
 		return c;
@@ -783,7 +783,7 @@ uint32 UString::toLower(uint32 c) {
 	return std::tolower(c);
 }
 
-uint32 UString::toUpper(uint32 c) {
+uint32_t UString::toUpper(uint32_t c) {
 	if (!isASCII(c))
 		// We don't know how to uppercase that
 		return c;
@@ -791,31 +791,31 @@ uint32 UString::toUpper(uint32 c) {
 	return std::toupper(c);
 }
 
-bool UString::isASCII(uint32 c) {
+bool UString::isASCII(uint32_t c) {
 	return (c & 0xFFFFFF80) == 0;
 }
 
-bool UString::isSpace(uint32 c) {
+bool UString::isSpace(uint32_t c) {
 	return isASCII(c) && std::isspace(c);
 }
 
-bool UString::isDigit(uint32 c) {
+bool UString::isDigit(uint32_t c) {
 	return isASCII(c) && std::isdigit(c);
 }
 
-bool UString::isAlpha(uint32 c) {
+bool UString::isAlpha(uint32_t c) {
 	return isASCII(c) && std::isalpha(c);
 }
 
-bool UString::isAlNum(uint32 c) {
+bool UString::isAlNum(uint32_t c) {
 	return isASCII(c) && std::isalnum(c);
 }
 
-bool UString::isCntrl(uint32 c) {
+bool UString::isCntrl(uint32_t c) {
 	return isASCII(c) && std::iscntrl(c);
 }
 
-uint32 UString::fromUTF16(uint16 c) {
+uint32_t UString::fromUTF16(uint16_t c) {
 	std::string utf8result;
 
 	try {

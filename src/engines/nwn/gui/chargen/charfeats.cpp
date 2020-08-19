@@ -141,7 +141,7 @@ void CharFeats::moveFeat(const FeatItem &feat, bool toKnownFeats, bool rebuild) 
 
 	std::list<FeatItem> &toList = (toKnownFeats) ? _knownFeats : _availFeats;
 	std::list<FeatItem> &fromList = (toKnownFeats) ? _availFeats : _knownFeats;
-	int8 diff = (toKnownFeats) ? -1 : 1;
+	int8_t diff = (toKnownFeats) ? -1 : 1;
 
 	for (std::list<FeatItem>::iterator aF = fromList.begin(); aF != fromList.end(); ++aF) {
 		if ((*aF).featId != feat.featId)
@@ -198,7 +198,7 @@ void CharFeats::moveFeat(WidgetListItemFeat *item) {
 	_featsPopup->setFeats(slaveFeatsList);
 	removeFocus();
 	_featsPopup->show();
-	uint32 returnCode = _featsPopup->run();
+	uint32_t returnCode = _featsPopup->run();
 	_featsPopup->hide();
 
 	if (returnCode == 1)
@@ -261,7 +261,7 @@ void CharFeats::callbackRun() {
 	_featsTrash.clear();
 }
 
-void CharFeats::makeAvailList(uint8 list) {
+void CharFeats::makeAvailList(uint8_t list) {
 	// Build the list of available feats.
 	_availListBox->lock();
 	_availListBox->clear();
@@ -269,7 +269,7 @@ void CharFeats::makeAvailList(uint8 list) {
 
 	const Aurora::TwoDAFile &twodaMasterFeats = TwoDAReg.get2DA("masterfeats");
 
-	std::list<uint32> masterFeats;
+	std::list<uint32_t> masterFeats;
 	for (std::list<FeatItem>::iterator f = _availFeats.begin(); f != _availFeats.end(); ++f) {
 		if (list == 0 && (*f).list > 1)
 			continue;
@@ -282,7 +282,7 @@ void CharFeats::makeAvailList(uint8 list) {
 		if (feat.masterFeat < 0xFFFFFFFF) {
 			// Check if the masterfeat is already there.
 			bool found = false;
-			for (std::list<uint32>::iterator mf = masterFeats.begin(); mf != masterFeats.end(); ++mf) {
+			for (std::list<uint32_t>::iterator mf = masterFeats.begin(); mf != masterFeats.end(); ++mf) {
 				if (feat.masterFeat == *mf) {
 					found = true;
 					break;
@@ -314,9 +314,9 @@ void CharFeats::makeKnownList() {
 	_knownListBox->lock();
 	_knownListBox->clear();
 	_knownListBox->setMode(WidgetListBox::kModeSelectable);
-	std::vector<uint32> feats;
+	std::vector<uint32_t> feats;
 	_choices->getFeats(feats);
-	for (std::vector<uint32>::iterator f = feats.begin(); f != feats.end(); ++f) {
+	for (std::vector<uint32_t>::iterator f = feats.begin(); f != feats.end(); ++f) {
 		const Aurora::TwoDAFile &twodaFeats = TwoDAReg.get2DA("feat");
 		const Aurora::TwoDARow &featRow = twodaFeats.getRow(*f);
 
@@ -345,14 +345,14 @@ void CharFeats::makeKnownList() {
 	_knownListBox->unlock();
 }
 
-void CharFeats::changeAvailFeats(int8 diff, bool normalFeat, bool rebuild) {
+void CharFeats::changeAvailFeats(int8_t diff, bool normalFeat, bool rebuild) {
 	if (normalFeat) {
 		_normalFeats += diff;
 	} else {
 		_bonusFeats  += diff;
 	}
 
-	int8 list = 1;
+	int8_t list = 1;
 	if (_bonusFeats == 0 && _hasBonusFeats)
 		list = 0;
 
@@ -378,7 +378,7 @@ void CharFeats::changeAvailFeats(int8 diff, bool normalFeat, bool rebuild) {
 		GfxMan.unlockFrame();
 	}
 
-	getLabel("RemainLabel", true)->setText(Common::composeString<uint8>(_normalFeats + _bonusFeats));
+	getLabel("RemainLabel", true)->setText(Common::composeString<uint8_t>(_normalFeats + _bonusFeats));
 
 	// Enable/Disable the OK button.
 	if (_normalFeats + _bonusFeats != 0) {
@@ -393,10 +393,10 @@ void CharFeats::setRecommendedFeats() {
 	reset();
 
 	// Retrieve recommended feats.
-	std::vector<uint32> recFeats;
+	std::vector<uint32_t> recFeats;
 	_choices->getPrefFeats(recFeats);
 
-	for (std::vector<uint32>::iterator rF = recFeats.begin(); rF != recFeats.end(); ++rF) {
+	for (std::vector<uint32_t>::iterator rF = recFeats.begin(); rF != recFeats.end(); ++rF) {
 		if (_bonusFeats + _normalFeats == 0)
 			break;
 

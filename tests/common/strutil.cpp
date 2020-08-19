@@ -35,79 +35,79 @@ GTEST_TEST(StrUtil, composeBool) {
 }
 
 GTEST_TEST(StrUtil, composeInt8) {
-	EXPECT_STREQ(Common::composeString((int8) -23).c_str(), "-23");
-	EXPECT_STREQ(Common::composeString((int8)  23).c_str(),  "23");
+	EXPECT_STREQ(Common::composeString((int8_t) -23).c_str(), "-23");
+	EXPECT_STREQ(Common::composeString((int8_t)  23).c_str(),  "23");
 
-	EXPECT_STREQ(Common::composeString((int8)   0).c_str(),   "0");
-	EXPECT_STREQ(Common::composeString((int8) - 0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int8_t)   0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int8_t) - 0).c_str(),   "0");
 
-	EXPECT_STREQ(Common::composeString((int8) INT8_MIN).c_str(), "-128");
-	EXPECT_STREQ(Common::composeString((int8) INT8_MAX).c_str(),  "127");
+	EXPECT_STREQ(Common::composeString((int8_t) INT8_MIN).c_str(), "-128");
+	EXPECT_STREQ(Common::composeString((int8_t) INT8_MAX).c_str(),  "127");
 }
 
 GTEST_TEST(StrUtil, composeInt16) {
-	EXPECT_STREQ(Common::composeString((int16) -23).c_str(), "-23");
-	EXPECT_STREQ(Common::composeString((int16)  23).c_str(),  "23");
+	EXPECT_STREQ(Common::composeString((int16_t) -23).c_str(), "-23");
+	EXPECT_STREQ(Common::composeString((int16_t)  23).c_str(),  "23");
 
-	EXPECT_STREQ(Common::composeString((int16)   0).c_str(),   "0");
-	EXPECT_STREQ(Common::composeString((int16) - 0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int16_t)   0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int16_t) - 0).c_str(),   "0");
 
-	EXPECT_STREQ(Common::composeString((int16) INT16_MIN).c_str(), "-32768");
-	EXPECT_STREQ(Common::composeString((int16) INT16_MAX).c_str(),  "32767");
+	EXPECT_STREQ(Common::composeString((int16_t) INT16_MIN).c_str(), "-32768");
+	EXPECT_STREQ(Common::composeString((int16_t) INT16_MAX).c_str(),  "32767");
 }
 
 GTEST_TEST(StrUtil, composeInt32) {
-	EXPECT_STREQ(Common::composeString((int32) -23).c_str(), "-23");
-	EXPECT_STREQ(Common::composeString((int32)  23).c_str(),  "23");
+	EXPECT_STREQ(Common::composeString((int32_t) -23).c_str(), "-23");
+	EXPECT_STREQ(Common::composeString((int32_t)  23).c_str(),  "23");
 
-	EXPECT_STREQ(Common::composeString((int32)   0).c_str(),   "0");
-	EXPECT_STREQ(Common::composeString((int32) - 0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int32_t)   0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int32_t) - 0).c_str(),   "0");
 
-	EXPECT_STREQ(Common::composeString((int32) INT32_MIN).c_str(), "-2147483648");
-	EXPECT_STREQ(Common::composeString((int32) INT32_MAX).c_str(),  "2147483647");
+	EXPECT_STREQ(Common::composeString((int32_t) INT32_MIN).c_str(), "-2147483648");
+	EXPECT_STREQ(Common::composeString((int32_t) INT32_MAX).c_str(),  "2147483647");
 }
 
 GTEST_TEST(StrUtil, composeInt64) {
-	EXPECT_STREQ(Common::composeString((int64) -23).c_str(), "-23");
-	EXPECT_STREQ(Common::composeString((int64)  23).c_str(),  "23");
+	EXPECT_STREQ(Common::composeString((int64_t) -23).c_str(), "-23");
+	EXPECT_STREQ(Common::composeString((int64_t)  23).c_str(),  "23");
 
-	EXPECT_STREQ(Common::composeString((int64)   0).c_str(),   "0");
-	EXPECT_STREQ(Common::composeString((int64) - 0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int64_t)   0).c_str(),   "0");
+	EXPECT_STREQ(Common::composeString((int64_t) - 0).c_str(),   "0");
 
-	EXPECT_STREQ(Common::composeString((int64) INT64_MIN).c_str(), "-9223372036854775808");
-	EXPECT_STREQ(Common::composeString((int64) INT64_MAX).c_str(),  "9223372036854775807");
+	EXPECT_STREQ(Common::composeString((int64_t) INT64_MIN).c_str(), "-9223372036854775808");
+	EXPECT_STREQ(Common::composeString((int64_t) INT64_MAX).c_str(),  "9223372036854775807");
 }
 
 GTEST_TEST(StrUtil, composeUInt8) {
-	EXPECT_STREQ(Common::composeString((uint8) 23).c_str(), "23");
+	EXPECT_STREQ(Common::composeString((uint8_t) 23).c_str(), "23");
 
-	EXPECT_STREQ(Common::composeString((uint8)  0).c_str(),  "0");
+	EXPECT_STREQ(Common::composeString((uint8_t)  0).c_str(),  "0");
 
-	EXPECT_STREQ(Common::composeString((uint8) UINT8_MAX).c_str(), "255");
+	EXPECT_STREQ(Common::composeString((uint8_t) UINT8_MAX).c_str(), "255");
 }
 
 GTEST_TEST(StrUtil, composeUInt16) {
-	EXPECT_STREQ(Common::composeString((uint16) 23).c_str(), "23");
+	EXPECT_STREQ(Common::composeString((uint16_t) 23).c_str(), "23");
 
-	EXPECT_STREQ(Common::composeString((uint16)  0).c_str(),  "0");
+	EXPECT_STREQ(Common::composeString((uint16_t)  0).c_str(),  "0");
 
-	EXPECT_STREQ(Common::composeString((uint16) UINT16_MAX).c_str(), "65535");
+	EXPECT_STREQ(Common::composeString((uint16_t) UINT16_MAX).c_str(), "65535");
 }
 
 GTEST_TEST(StrUtil, composeUInt32) {
-	EXPECT_STREQ(Common::composeString((uint32) 23).c_str(), "23");
+	EXPECT_STREQ(Common::composeString((uint32_t) 23).c_str(), "23");
 
-	EXPECT_STREQ(Common::composeString((uint32)  0).c_str(),  "0");
+	EXPECT_STREQ(Common::composeString((uint32_t)  0).c_str(),  "0");
 
-	EXPECT_STREQ(Common::composeString((uint32) UINT32_MAX).c_str(), "4294967295");
+	EXPECT_STREQ(Common::composeString((uint32_t) UINT32_MAX).c_str(), "4294967295");
 }
 
 GTEST_TEST(StrUtil, composeUInt64) {
-	EXPECT_STREQ(Common::composeString((uint64) 23).c_str(), "23");
+	EXPECT_STREQ(Common::composeString((uint64_t) 23).c_str(), "23");
 
-	EXPECT_STREQ(Common::composeString((uint64)  0).c_str(),  "0");
+	EXPECT_STREQ(Common::composeString((uint64_t)  0).c_str(),  "0");
 
-	EXPECT_STREQ(Common::composeString((uint64) UINT64_MAX).c_str(), "18446744073709551615");
+	EXPECT_STREQ(Common::composeString((uint64_t) UINT64_MAX).c_str(), "18446744073709551615");
 }
 
 GTEST_TEST(StrUtil, composeSizeT) {
@@ -162,7 +162,7 @@ GTEST_TEST(StrUtil, parseBool) {
 }
 
 GTEST_TEST(StrUtil, parseInt8 ) {
-	int8  x = 0;
+	int8_t  x = 0;
 
 	Common::parseString("-23", x);
 	EXPECT_EQ(x, -23);
@@ -184,7 +184,7 @@ GTEST_TEST(StrUtil, parseInt8 ) {
 }
 
 GTEST_TEST(StrUtil, parseInt16) {
-	int16 x = 0;
+	int16_t x = 0;
 
 	Common::parseString("-23", x);
 	EXPECT_EQ(x, -23);
@@ -206,7 +206,7 @@ GTEST_TEST(StrUtil, parseInt16) {
 }
 
 GTEST_TEST(StrUtil, parseInt32) {
-	int32 x = 0;
+	int32_t x = 0;
 
 	Common::parseString("-23", x);
 	EXPECT_EQ(x, -23);
@@ -228,7 +228,7 @@ GTEST_TEST(StrUtil, parseInt32) {
 }
 
 GTEST_TEST(StrUtil, parseInt64) {
-	int64 x = 0;
+	int64_t x = 0;
 
 	Common::parseString("-23", x);
 	EXPECT_EQ(x, -23);
@@ -250,7 +250,7 @@ GTEST_TEST(StrUtil, parseInt64) {
 }
 
 GTEST_TEST(StrUtil, parseUInt8 ) {
-	uint8  x = 0;
+	uint8_t  x = 0;
 
 	Common::parseString("23", x);
 	EXPECT_EQ(x, 23);
@@ -266,7 +266,7 @@ GTEST_TEST(StrUtil, parseUInt8 ) {
 }
 
 GTEST_TEST(StrUtil, parseUInt16) {
-	uint16 x = 0;
+	uint16_t x = 0;
 
 	Common::parseString("23", x);
 	EXPECT_EQ(x, 23);
@@ -282,7 +282,7 @@ GTEST_TEST(StrUtil, parseUInt16) {
 }
 
 GTEST_TEST(StrUtil, parseUInt32) {
-	uint32 x = 0;
+	uint32_t x = 0;
 
 	Common::parseString("23", x);
 	EXPECT_EQ(x, 23);
@@ -298,7 +298,7 @@ GTEST_TEST(StrUtil, parseUInt32) {
 }
 
 GTEST_TEST(StrUtil, parseUInt64) {
-	uint64 x = 0;
+	uint64_t x = 0;
 
 	Common::parseString("23", x);
 	EXPECT_EQ(x, 23);

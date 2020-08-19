@@ -46,32 +46,32 @@ void ActimagineDecoder::decodeNextTrackFrame(VideoTrack &UNUSED(track)) {
 }
 
 void ActimagineDecoder::load() {
-	uint32 tag = _vx->readUint32BE();
+	uint32_t tag = _vx->readUint32BE();
 	if (tag != MKTAG('V', 'X', 'D', 'S'))
 		throw Common::Exception("Not a valid Actimagine video (%s)", Common::debugTag(tag).c_str());
 
-	uint32 numFrames = _vx->readUint32LE();
-	uint32 width     = _vx->readUint32LE();
-	uint32 height    = _vx->readUint32LE();
+	uint32_t numFrames = _vx->readUint32LE();
+	uint32_t width     = _vx->readUint32LE();
+	uint32_t height    = _vx->readUint32LE();
 
 	_vx->skip(4); // unknown
 
-	uint32 fps = _vx->readUint32LE();
+	uint32_t fps = _vx->readUint32LE();
 
-	uint32 sampleRate   = _vx->readUint32LE();
-	uint32 channelCount = _vx->readUint32LE();
+	uint32_t sampleRate   = _vx->readUint32LE();
+	uint32_t channelCount = _vx->readUint32LE();
 
 	addTrack(new ActimagineVideoTrack(width, height, numFrames, fps));
 
 	_biggestFrame = _vx->readUint32LE();
-	uint32 audioOffset = _vx->readUint32LE();
+	uint32_t audioOffset = _vx->readUint32LE();
 
-	uint32 keyFrameIndexOffset = _vx->readUint32LE();
-	uint32 keyFrameCount = _vx->readUint32LE();
+	uint32_t keyFrameIndexOffset = _vx->readUint32LE();
+	uint32_t keyFrameCount = _vx->readUint32LE();
 
 	_vx->seek(keyFrameIndexOffset);
 	_keyFrames.resize(keyFrameCount);
-	for (uint32 i = 0; i < keyFrameCount; ++i) {
+	for (uint32_t i = 0; i < keyFrameCount; ++i) {
 		_keyFrames[i].frameNumber = _vx->readUint32LE();
 		_keyFrames[i].dataOffset = _vx->readUint32LE();
 	}
@@ -85,7 +85,7 @@ void ActimagineDecoder::goToKeyFrame(size_t n) {
 	_vx->seek(_keyFrames[n].dataOffset);
 }
 
-ActimagineDecoder::ActimagineVideoTrack::ActimagineVideoTrack(uint32 width, uint32 height, uint32 numFrames,
+ActimagineDecoder::ActimagineVideoTrack::ActimagineVideoTrack(uint32_t width, uint32_t height, uint32_t numFrames,
                                                               Common::Rational fps) :
 	_width(width), _height(height), _numFrames(numFrames), _fps(fps) {
 }
@@ -94,11 +94,11 @@ Common::Rational ActimagineDecoder::ActimagineVideoTrack::getFrameRate() const {
 	return _fps;
 }
 
-uint32 ActimagineDecoder::ActimagineVideoTrack::getWidth() const {
+uint32_t ActimagineDecoder::ActimagineVideoTrack::getWidth() const {
 	return _width;
 }
 
-uint32 ActimagineDecoder::ActimagineVideoTrack::getHeight() const {
+uint32_t ActimagineDecoder::ActimagineVideoTrack::getHeight() const {
 	return _height;
 }
 
@@ -106,8 +106,8 @@ int ActimagineDecoder::ActimagineVideoTrack::getCurFrame() const {
 	return 0; // TODO
 }
 
-ActimagineDecoder::ActimagineAudioTrack::ActimagineAudioTrack(uint32 sampleRate, uint32 channelCount,
-                                                              uint32 audioOffset) :
+ActimagineDecoder::ActimagineAudioTrack::ActimagineAudioTrack(uint32_t sampleRate, uint32_t channelCount,
+                                                              uint32_t audioOffset) :
 	_sampleRate(sampleRate), _channelCount(channelCount), _audioOffset(audioOffset) {
 }
 

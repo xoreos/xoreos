@@ -60,15 +60,15 @@ public:
 	struct Field {
 		UString name;
 
-		Type   type;
-		uint32 offset;
-		uint8  size;
-		uint8  decimals;
+		Type     type;
+		uint32_t offset;
+		uint8_t  size;
+		uint8_t  decimals;
 
 		byte flags;
 
-		uint32 autoIncNext;
-		uint8  autoIncStep;
+		uint32_t autoIncNext;
+		uint8_t  autoIncStep;
 	};
 
 	/** A record. */
@@ -84,7 +84,7 @@ public:
 	          SeekableReadStream *fpt = 0);
 	void save(WriteStream *dbf, WriteStream *cdx = 0, WriteStream *fpt = 0) const;
 
-	void getLastUpdate(uint16 &lastUpdateYear, uint8 &lastUpdateMonth, uint8 &lastUpdateDay) const;
+	void getLastUpdate(uint16_t &lastUpdateYear, uint8_t &lastUpdateMonth, uint8_t &lastUpdateDay) const;
 
 	bool hasIndex() const;
 	bool hasMemo () const;
@@ -96,19 +96,19 @@ public:
 	const std::vector<Record> &getRecords() const;
 
 	UString getString(const Record &record, size_t field) const;
-	int32   getInt   (const Record &record, size_t field) const;
+	int32_t getInt   (const Record &record, size_t field) const;
 	bool    getBool  (const Record &record, size_t field) const;
 	double  getDouble(const Record &record, size_t field) const;
 
-	void getDate(const Record &record, size_t field, uint16 &year, uint8 &month, uint8 &day);
+	void getDate(const Record &record, size_t field, uint16_t &year, uint8_t &month, uint8_t &day);
 
 	SeekableReadStream *getMemo(const Record &record, size_t field) const;
 
 
 	void deleteRecord(size_t record);
 
-	size_t addFieldString(const UString &name, uint8 size);
-	size_t addFieldNumber(const UString &name, uint8 size, uint8 decimals);
+	size_t addFieldString(const UString &name, uint8_t size);
+	size_t addFieldNumber(const UString &name, uint8_t size, uint8_t decimals);
 	size_t addFieldInt   (const UString &name);
 	size_t addFieldBool  (const UString &name);
 	size_t addFieldDate  (const UString &name);
@@ -118,18 +118,18 @@ public:
 
 
 	void setString(size_t record, size_t field, const UString &value);
-	void setInt   (size_t record, size_t field, int32 value);
+	void setInt   (size_t record, size_t field, int32_t value);
 	void setBool  (size_t record, size_t field, bool value);
 	void setDouble(size_t record, size_t field, double value);
 
-	void setDate(size_t record, size_t field, uint16 year, uint8 month, uint8 day);
+	void setDate(size_t record, size_t field, uint16_t year, uint8_t month, uint8_t day);
 
 	void setMemo(size_t record, size_t field, SeekableReadStream *value = 0);
 
 private:
-	uint16 _lastUpdateYear;
-	uint8  _lastUpdateMonth;
-	uint8  _lastUpdateDay;
+	uint16_t _lastUpdateYear;
+	uint8_t  _lastUpdateMonth;
+	uint8_t  _lastUpdateDay;
 
 	bool _hasIndex;
 	bool _hasMemo;
@@ -139,14 +139,14 @@ private:
 
 	PtrList<byte, DeallocatorArray> _pool;
 
-	uint16 _memoBlockSize;
+	uint16_t _memoBlockSize;
 	PtrVector<byte, DeallocatorArray> _memos;
 
 	// Loading helpers
-	void loadHeader (SeekableReadStream &dbf, uint32 &recordSize, uint32 &recordCount,
-	                 uint32 &firstRecordPos);
-	void loadFields (SeekableReadStream &dbf, uint32 recordSize);
-	void loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 recordCount);
+	void loadHeader (SeekableReadStream &dbf, uint32_t &recordSize, uint32_t &recordCount,
+	                 uint32_t &firstRecordPos);
+	void loadFields (SeekableReadStream &dbf, uint32_t recordSize);
+	void loadRecords(SeekableReadStream &dbf, uint32_t recordSize, uint32_t recordCount);
 	void loadMemos  (SeekableReadStream &fpt);
 
 	// Saving helpers
@@ -155,12 +155,12 @@ private:
 	void saveRecords(WriteStream &dbf) const;
 	void saveMemos  (WriteStream &fpt) const;
 
-	void addField(uint8 size);
+	void addField(uint8_t size);
 	void updateUpdate();
 
 	static void checkName(const UString &name);
 
-	static bool getInt(const byte *data, size_t size, int32 &i);
+	static bool getInt(const byte *data, size_t size, int32_t &i);
 };
 
 } // End of namespace Common

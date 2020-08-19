@@ -52,10 +52,10 @@ public:
 	ABCFont(const Common::UString &name);
 	~ABCFont();
 
-	float getWidth (uint32 c) const;
-	float getHeight()         const;
+	float getWidth (uint32_t c) const;
+	float getHeight()           const;
 
-	void draw(uint32 c) const;
+	void draw(uint32_t c) const;
 
 	/**
 	 * @brief Bind the font for rendering. Must be performed before render is called.
@@ -63,17 +63,17 @@ public:
 	 */
 	virtual void renderBind(const glm::mat4 &transform) const;
 
-	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
+	virtual void render(uint32_t c, float &x, float &y, float *rgba) const;
 	virtual void renderUnbind() const;
 
 private:
 	/** A font character. */
 	struct Char {
-		uint32 dataX;
-		uint32 dataY;
-		uint8  width;
-		int8   spaceL;
-		int8   spaceR;
+		uint32_t dataX;
+		uint32_t dataY;
+		uint8_t  width;
+		int8_t   spaceL;
+		int8_t   spaceR;
 
 		float tX[4], tY[4];
 		float vX[4], vY[4];
@@ -84,18 +84,18 @@ private:
 	Shader::ShaderMaterial *_material;
 	Shader::ShaderRenderable *_renderable;
 
-	uint8 _base;
+	uint8_t _base;
 
 	Char _invalid;
 	Char _ascii[128];
-	std::map<uint32, Char> _extended;
+	std::map<uint32_t, Char> _extended;
 
 	void load(const Common::UString &name);
 
 	void readCharDesc(Char &c, Common::SeekableReadStream &abc);
 	void calcCharVertices(Char &c);
 
-	const Char &findChar(uint32 c) const;
+	const Char &findChar(uint32_t c) const;
 };
 
 } // End of namespace Aurora

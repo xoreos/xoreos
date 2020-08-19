@@ -85,11 +85,11 @@ Menu::Menu(KotORBase::Module &module, Console *console) :
 	_menuSave = std::make_unique<SaveLoadMenu>(module, console, kSaveLoadMenuTypeSave, true);
 }
 
-void Menu::setReturnStrref(uint32 id) {
+void Menu::setReturnStrref(uint32_t id) {
 	dynamic_cast<MenuMap &>(*_menu[kMenuTypeMap].menu.get()).setReturnStrref(id);
 }
 
-void Menu::setReturnQueryStrref(uint32 id) {
+void Menu::setReturnQueryStrref(uint32_t id) {
 	dynamic_cast<MenuMap &>(*_menu[kMenuTypeMap].menu.get()).setReturnQueryStrref(id);
 }
 
@@ -119,7 +119,7 @@ void Menu::showMenu(MenuType type) {
 
 void Menu::callbackRun() {
 	if (_currentMenu == &_menu[kMenuTypeOptions]) {
-		const uint8 selectedItem = dynamic_cast<MenuOptions &>(*_currentMenu->menu.get()).pollSelectedItem();
+		const uint8_t selectedItem = dynamic_cast<MenuOptions &>(*_currentMenu->menu.get()).pollSelectedItem();
 
 		switch (selectedItem) {
 			case kOptionsItemLoadGame:

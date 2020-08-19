@@ -42,11 +42,11 @@ public:
 	void registerObject(Object *object);
 	void unregisterObject(Object *object);
 
-	Object *findObject(uint32 id);
+	Object *findObject(uint32_t id);
 
 private:
 	std::recursive_mutex _objMutex;
-	std::map<uint32, Object *> _objects;
+	std::map<uint32_t, Object *> _objects;
 };
 
 } // End of namespace NWScript

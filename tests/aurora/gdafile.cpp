@@ -73,18 +73,18 @@ static const char * const kHeadersLow[kColumnCount] = {
 	"id", "stringvalue", "intvalue", "floatvalue", "boolvalue", "resourcevalue"
 };
 
-static const uint32 kFields[kColumnCount] = {
+static const uint32_t kFields[kColumnCount] = {
 	Aurora::kGFF4G2DAColumn1, Aurora::kGFF4G2DAColumn2, Aurora::kGFF4G2DAColumn3,
 	Aurora::kGFF4G2DAColumn4, Aurora::kGFF4G2DAColumn5, Aurora::kGFF4G2DAColumn6
 };
 
 static const size_t kRowCount = 3;
 
-static const int32        kDataID      [kRowCount] = { 1        , 0        , 3         };
+static const int32_t      kDataID      [kRowCount] = { 1        , 0        , 3         };
 static const char * const kDataString  [kRowCount] = { "Foobar" , "Barfoo" , "Quuuux"  };
-static const int32        kDataInt     [kRowCount] = { -23      , -24      , -25       };
+static const int32_t      kDataInt     [kRowCount] = { -23      , -24      , -25       };
 static const float        kDataFloat   [kRowCount] = { 42.0f    , 42.1f    , 42.2f     };
-static const int32        kDataBool    [kRowCount] = { 0        , 0        , 1         };
+static const int32_t      kDataBool    [kRowCount] = { 0        , 0        , 1         };
 static const char * const kDataResource[kRowCount] = { "foo.bar", "bar.foo", "qux.qux" };
 
 GTEST_TEST(GDAFile, getColumnCount) {
@@ -169,9 +169,9 @@ GTEST_TEST(GDAFile, getStringName) {
 GTEST_TEST(GDAFile, getStringHash) {
 	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
 
-	const uint32 hash0 = Common::hashStringCRC32(kHeadersLow[0], Common::kEncodingUTF16LE);
-	const uint32 hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
-	const uint32 hash5 = Common::hashStringCRC32(kHeadersLow[5], Common::kEncodingUTF16LE);
+	const uint32_t hash0 = Common::hashStringCRC32(kHeadersLow[0], Common::kEncodingUTF16LE);
+	const uint32_t hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
+	const uint32_t hash5 = Common::hashStringCRC32(kHeadersLow[5], Common::kEncodingUTF16LE);
 
 	for (size_t i = 0; i < kRowCount; i++) {
 		EXPECT_STREQ(gda.getString(i, hash1).c_str(), kDataString[i]);
@@ -208,10 +208,10 @@ GTEST_TEST(GDAFile, getIntName) {
 GTEST_TEST(GDAFile, getIntHash) {
 	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
 
-	const uint32 hash0 = Common::hashStringCRC32(kHeadersLow[0], Common::kEncodingUTF16LE);
-	const uint32 hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
-	const uint32 hash2 = Common::hashStringCRC32(kHeadersLow[2], Common::kEncodingUTF16LE);
-	const uint32 hash4 = Common::hashStringCRC32(kHeadersLow[4], Common::kEncodingUTF16LE);
+	const uint32_t hash0 = Common::hashStringCRC32(kHeadersLow[0], Common::kEncodingUTF16LE);
+	const uint32_t hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
+	const uint32_t hash2 = Common::hashStringCRC32(kHeadersLow[2], Common::kEncodingUTF16LE);
+	const uint32_t hash4 = Common::hashStringCRC32(kHeadersLow[4], Common::kEncodingUTF16LE);
 
 	for (size_t i = 0; i < kRowCount; i++) {
 		EXPECT_EQ(gda.getInt(i, hash0), kDataID[i]);
@@ -246,8 +246,8 @@ GTEST_TEST(GDAFile, getFloatName) {
 GTEST_TEST(GDAFile, getFloatHash) {
 	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
 
-	const uint32 hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
-	const uint32 hash3 = Common::hashStringCRC32(kHeadersLow[3], Common::kEncodingUTF16LE);
+	const uint32_t hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
+	const uint32_t hash3 = Common::hashStringCRC32(kHeadersLow[3], Common::kEncodingUTF16LE);
 
 	for (size_t i = 0; i < kRowCount; i++)
 		EXPECT_FLOAT_EQ(gda.getFloat(i, hash3), kDataFloat[i]);
@@ -352,7 +352,7 @@ GTEST_TEST(GDAFile, add) {
 		0x00,0x00,0x16,0x00,0x00,0x00
 	};
 
-	static const int32 kIDs[9] = { 0, 1, 2, 10, 11, 12, 20, 21, 22 };
+	static const int32_t kIDs[9] = { 0, 1, 2, 10, 11, 12, 20, 21, 22 };
 
 	Aurora::GDAFile gda(new Common::MemoryReadStream(kMGDA1));
 

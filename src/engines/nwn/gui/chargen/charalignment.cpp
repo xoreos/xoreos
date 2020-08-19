@@ -92,7 +92,7 @@ void CharAlignment::hide() {
 	if (_returnCode == 1) {
 		// If alignment has been previously select, set it back.
 		if (_choices->getAlign(_goodness, _lawfulness)) {
-			uint8 point[3] = { 0, 100, 50 };
+			uint8_t point[3] = { 0, 100, 50 };
 
 			uint lawfulnessButton = 0;
 			uint goodnessButton = 0;
@@ -133,7 +133,7 @@ void CharAlignment::callbackActive(Widget &widget) {
 
 void CharAlignment::setRecommend() {
 	// { Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Wizard }
-	uint8 recommendedAlign[] = {2, 1, 5, 8, 1, 5, 4, 1, 8, 2, 5};
+	uint8_t recommendedAlign[] = {2, 1, 5, 8, 1, 5, 4, 1, 8, 2, 5};
 	_buttons->setActive(recommendedAlign[_choices->getClass()]);
 }
 
@@ -201,8 +201,8 @@ void CharAlignment::setRestrict() {
 void CharAlignment::getAlignment() {
 	size_t button = _buttons->getChoice();
 
-	uint8  point[3] = { 0, 100, 50 };
-	size_t rest     = button % 3;
+	uint8_t point[3] = { 0, 100, 50 };
+	size_t  rest     = button % 3;
 	_goodness   = point[rest];
 	_lawfulness = point[(button - rest) / 3];
 }

@@ -43,8 +43,8 @@ static Common::UString stripZeros(Common::UString str) {
 	return str;
 }
 
-static int64 getNumber(Common::UString str) {
-	int64 number = 0;
+static int64_t getNumber(Common::UString str) {
+	int64_t number = 0;
 
 	Common::parseString(stripZeros(str), number);
 
@@ -125,7 +125,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 		sound.name = tokens[0];
 
-		const int64 categoryIndex = getNumber(tokens[1]);
+		const int64_t categoryIndex = getNumber(tokens[1]);
 		if ((categoryIndex >= 0) && (static_cast<size_t>(categoryIndex) < categories.size())) {
 			sound.categoryIndex = categoryIndex;
 			sound.categoryName  = categories[categoryIndex];
@@ -138,7 +138,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			sound.pitch = CLIP(getNumber(tokens[6]) / 100.0f, -24.0f, 24.0f);
 
 		if (tokens.size() > 7) {
-			const int64 priority = getNumber(tokens[7]);
+			const int64_t priority = getNumber(tokens[7]);
 			if (priority > 0)
 				sound.priority = priority;
 		}
@@ -177,9 +177,9 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 					sound.params3D.mode = static_cast<Mode3D>(getNumber(tokens[1]));
 
 				if (tokens.size() > 2)
-					sound.params3D.coneInsideAngle   = CLIP<uint16>(getNumber(tokens[2]), 0, 360);
+					sound.params3D.coneInsideAngle   = CLIP<uint16_t>(getNumber(tokens[2]), 0, 360);
 				if (tokens.size() > 3)
-					sound.params3D.coneOutsideAngle  = CLIP<uint16>(getNumber(tokens[3]), 0, 360);
+					sound.params3D.coneOutsideAngle  = CLIP<uint16_t>(getNumber(tokens[3]), 0, 360);
 				if (tokens.size() > 4)
 					sound.params3D.coneOutsideVolume = CLIP(getNumber(tokens[4]) / 100.0f, -64.0f, 0.0f);
 
@@ -205,9 +205,9 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				if (tokens.size() > 1)
 					sound.parametricEQGain = CLIP(getNumber(tokens[1]) / 1000.0f, -1.0f, 4.0f);
 				if (tokens.size() > 2)
-					sound.parametricEQQ = 1.0f / (1 << CLIP<int64>(getNumber(tokens[2]), 0, 7));
+					sound.parametricEQQ = 1.0f / (1 << CLIP<int64_t>(getNumber(tokens[2]), 0, 7));
 				if (tokens.size() > 3)
-					sound.parametricEQFreq = CLIP<uint16>(getNumber(tokens[3]), 30, 8000);
+					sound.parametricEQFreq = CLIP<uint16_t>(getNumber(tokens[3]), 30, 8000);
 
 			} else if (tokens[0] == "PLAY") {
 				bool isComplex = false;

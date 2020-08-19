@@ -62,7 +62,7 @@ public:
 
 	bool isPC() const; ///< Is the creature a player character?
 
-	int32 getAutoBalance() const;
+	int32_t getAutoBalance() const;
 
 	// Positioning
 
@@ -82,10 +82,10 @@ public:
 private:
 	bool _isPC; ///< Is the creature a PC?
 
-	int32 _autoBalance;
+	int32_t _autoBalance;
 
-	uint32 _appearance; ///< The creature's general appearance.
-	uint32 _headType;   ///< The creature's type of head if separate from the model.
+	uint32_t _appearance; ///< The creature's general appearance.
+	uint32_t _headType;   ///< The creature's type of head if separate from the model.
 
 	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The creature's model.
 

@@ -156,7 +156,7 @@ void Functions::getItemCharges(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setItemIcon(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item) {
-		const uint32 icon = (uint32)(ctx.getParams()[1].getInt());
+		const uint32_t icon = (uint32_t)(ctx.getParams()[1].getInt());
 		item->setItemIcon(icon);
 	}
 }
@@ -164,7 +164,7 @@ void Functions::setItemIcon(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setItemStackSize(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item) {
-		const uint16 stackSize = (uint16)(ctx.getParams()[1].getInt());
+		const uint16_t stackSize = (uint16_t)(ctx.getParams()[1].getInt());
 		item->setItemStackSize(stackSize);
 	}
 }
@@ -172,7 +172,7 @@ void Functions::setItemStackSize(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setItemCharges(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item) {
-		const uint8 charges = (uint8)(ctx.getParams()[1].getInt());
+		const uint8_t charges = (uint8_t)(ctx.getParams()[1].getInt());
 		item->setItemCharges(charges);
 	}
 }
@@ -195,7 +195,7 @@ void Functions::getStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx) {
 	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
 	if (store) {
-		const int32 identify = (uint8)(ctx.getParams()[1].getInt());
+		const int32_t identify = (uint8_t)(ctx.getParams()[1].getInt());
 		store->setStoreIdentifyCost(identify);
 	}
 }
@@ -203,7 +203,7 @@ void Functions::setStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setStoreGold(Aurora::NWScript::FunctionContext &ctx) {
 	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
 	if (store) {
-		const int32 gold = (uint8)(ctx.getParams()[1].getInt());
+		const int32_t gold = (uint8_t)(ctx.getParams()[1].getInt());
 		store->setStoreGold(gold);
 	}
 }
@@ -211,7 +211,7 @@ void Functions::setStoreGold(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::setStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx) {
 	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
 	if (store) {
-		const int32 max = (uint8)(ctx.getParams()[1].getInt());
+		const int32_t max = (uint8_t)(ctx.getParams()[1].getInt());
 		store->setStoreMaximumBuyPrice(max);
 	}
 }

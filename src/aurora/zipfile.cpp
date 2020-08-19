@@ -47,11 +47,11 @@ const Archive::ResourceList &ZIPFile::getResources() const {
 	return _resources;
 }
 
-uint32 ZIPFile::getResourceSize(uint32 index) const {
+uint32_t ZIPFile::getResourceSize(uint32_t index) const {
 	return _zipFile->getFileSize(index);
 }
 
-Common::SeekableReadStream *ZIPFile::getResource(uint32 index, bool tryNoCopy) const {
+Common::SeekableReadStream *ZIPFile::getResource(uint32_t index, bool tryNoCopy) const {
 	return _zipFile->getFile(index, tryNoCopy);
 }
 

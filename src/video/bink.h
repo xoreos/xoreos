@@ -115,30 +115,30 @@ private:
 
 	/** An audio track. */
 	struct AudioInfo {
-		uint16 flags;
+		uint16_t flags;
 
-		uint32 sampleRate;
-		uint8  channels;
+		uint32_t sampleRate;
+		uint8_t  channels;
 
-		uint32 outSampleRate;
-		uint8  outChannels;
+		uint32_t outSampleRate;
+		uint8_t  outChannels;
 
 		AudioCodec codec;
 
 		bool first;
 
-		uint32 frameLen;
-		uint32 overlapLen;
+		uint32_t frameLen;
+		uint32_t overlapLen;
 
-		uint32 blockSize;
+		uint32_t blockSize;
 
-		uint32  bandCount;
-		uint32 *bands;
+		uint32_t  bandCount;
+		uint32_t *bands;
 
 		float root;
 
 		float coeffs[16 * kAudioBlockSizeMax];
-		int16 prevCoeffs[kAudioBlockSizeMax];
+		int16_t prevCoeffs[kAudioBlockSizeMax];
 
 		float *coeffsPtr[kAudioChannelsMax];
 
@@ -153,8 +153,8 @@ private:
 	struct VideoFrame {
 		bool keyFrame;
 
-		uint32 offset;
-		uint32 size;
+		uint32_t offset;
+		uint32_t size;
 
 		Common::BitStream *bits;
 
@@ -167,17 +167,17 @@ private:
 	std::vector<AudioInfo> _audioTracks; ///< All audio tracks.
 	std::vector<VideoFrame> _frames;      ///< All video frames.
 
-	uint32 _audioTrack; ///< Audio track to use.
+	uint32_t _audioTrack; ///< Audio track to use.
 
 	/** Load a Bink file. */
 	void load();
 
 	class BinkVideoTrack : public FixedRateVideoTrack {
 	public:
-		BinkVideoTrack(uint32 width, uint32 height, uint32 frameCount, const Common::Rational &frameRate, bool swapPlanes, bool hasAlpha, uint32 id);
+		BinkVideoTrack(uint32_t width, uint32_t height, uint32_t frameCount, const Common::Rational &frameRate, bool swapPlanes, bool hasAlpha, uint32_t id);
 
-		uint32 getWidth() const { return _width; }
-		uint32 getHeight() const { return _height; }
+		uint32_t getWidth() const { return _width; }
+		uint32_t getHeight() const { return _height; }
 		int getCurFrame() const { return _curFrame; }
 		int getFrameCount() const { return _frameCount; }
 
@@ -192,10 +192,10 @@ private:
 		struct DecodeContext {
 			VideoFrame *video;
 
-			uint32 planeIdx;
+			uint32_t planeIdx;
 
-			uint32 blockX;
-			uint32 blockY;
+			uint32_t blockX;
+			uint32_t blockY;
 
 			byte *dest;
 			byte *prev;
@@ -203,7 +203,7 @@ private:
 			byte *destStart, *destEnd;
 			byte *prevStart, *prevEnd;
 
-			uint32 pitch;
+			uint32_t pitch;
 
 			int coordMap[64];
 			int coordScaledMap1[64];
@@ -265,8 +265,8 @@ private:
 			Bundle();
 		};
 
-		uint32 _width;
-		uint32 _height;
+		uint32_t _width;
+		uint32_t _height;
 
 		int _curFrame; ///< Current Frame.
 		int _frameCount;
@@ -276,7 +276,7 @@ private:
 		bool _swapPlanes; ///< Are the planes ordered (A)YVU instead of (A)YUV?
 		bool _hasAlpha;   ///< Do video frames have alpha?
 
-		uint32 _id; ///< The BIK FourCC.
+		uint32_t _id; ///< The BIK FourCC.
 
 		Bundle _bundles[kSourceMAX]; ///< Bundles for decoding all data types.
 
@@ -314,9 +314,9 @@ private:
 		byte getHuffmanSymbol(VideoFrame &video, Huffman &huffman);
 
 		/** Get a direct value out of a bundle. */
-		int32 getBundleValue(Source source);
+		int32_t getBundleValue(Source source);
 		/** Read a count value out of a bundle. */
-		uint32 readBundleCount(VideoFrame &video, Bundle &bundle);
+		uint32_t readBundleCount(VideoFrame &video, Bundle &bundle);
 
 		// Handle the block types
 		void blockSkip         (DecodeContext &ctx);
@@ -343,13 +343,13 @@ private:
 		void readPatterns    (VideoFrame &video, Bundle &bundle);
 		void readColors      (VideoFrame &video, Bundle &bundle);
 		void readDCS         (VideoFrame &video, Bundle &bundle, int startBits, bool hasSign);
-		void readDCTCoeffs   (VideoFrame &video, int16 *block, bool isIntra);
-		void readResidue     (VideoFrame &video, int16 *block, int masksCount);
+		void readDCTCoeffs   (VideoFrame &video, int16_t *block, bool isIntra);
+		void readResidue     (VideoFrame &video, int16_t *block, int masksCount);
 
 		// Bink video IDCT
-		void IDCT(int16 *block);
-		void IDCTPut(DecodeContext &ctx, int16 *block);
-		void IDCTAdd(DecodeContext &ctx, int16 *block);
+		void IDCT(int16_t *block);
+		void IDCTPut(DecodeContext &ctx, int16_t *block);
+		void IDCTAdd(DecodeContext &ctx, int16_t *block);
 	};
 
 	class BinkAudioTrack : public AudioTrack {
@@ -369,13 +369,13 @@ private:
 		size_t _index;
 		AudioInfo &_info;
 		Sound::PacketizedAudioStream *_audioStream;
-		uint32 _curFrame;
+		uint32_t _curFrame;
 		Common::Timestamp _audioBuffered;
 
 		float getFloat(Common::BitStream &bits);
 
 		/** Decode an audio block. */
-		void audioBlock(Common::BitStream &bits, int16 *out);
+		void audioBlock(Common::BitStream &bits, int16_t *out);
 		/** Decode a DCT'd audio block. */
 		void audioBlockDCT(Common::BitStream &bits);
 		/** Decode a RDFT'd audio block. */
@@ -383,7 +383,7 @@ private:
 
 		void readAudioCoeffs(Common::BitStream &bits, float *coeffs);
 
-		static void floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels);
+		static void floatToInt16Interleave(int16_t *dst, const float **src, uint32_t length, uint8_t channels);
 	};
 
 	void initAudioTrack(AudioInfo &audio);

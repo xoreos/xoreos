@@ -36,45 +36,45 @@ static constexpr size_t kSoundDefinitionSize = 20;
 static constexpr size_t kFadeDefinitionSize  = 16;
 static constexpr size_t kTrackDefinitionSize =  4;
 
-static constexpr uint16 kXSBNoCueNames = 0x0001;
+static constexpr uint16_t kXSBNoCueNames = 0x0001;
 
-static constexpr uint16 kCueSequential   = 0x0001;
-static constexpr uint16 kCueCrossfade    = 0x0002;
-static constexpr uint16 kCueStopOnStarve = 0x0004;
-static constexpr uint16 kCueInteractive  = 0x0008;
+static constexpr uint16_t kCueSequential   = 0x0001;
+static constexpr uint16_t kCueCrossfade    = 0x0002;
+static constexpr uint16_t kCueStopOnStarve = 0x0004;
+static constexpr uint16_t kCueInteractive  = 0x0008;
 
-static constexpr uint8 kSound3D        = 0x01;
-static constexpr uint8 kSoundGainBoost = 0x02;
-static constexpr uint8 kSoundEQ        = 0x04;
-static constexpr uint8 kSoundTrivial   = 0x08;
-static constexpr uint8 kSoundSimple    = 0x10;
-static constexpr uint8 kSoundLinger    = 0x20;
+static constexpr uint8_t kSound3D        = 0x01;
+static constexpr uint8_t kSoundGainBoost = 0x02;
+static constexpr uint8_t kSoundEQ        = 0x04;
+static constexpr uint8_t kSoundTrivial   = 0x08;
+static constexpr uint8_t kSoundSimple    = 0x10;
+static constexpr uint8_t kSoundLinger    = 0x20;
 
-static constexpr uint8 kPlayEventMultipleVariations = 0x04;
-static constexpr uint8 kPlayEventLoopNewVariation   = 0x40;
+static constexpr uint8_t kPlayEventMultipleVariations = 0x04;
+static constexpr uint8_t kPlayEventLoopNewVariation   = 0x40;
 
-static constexpr uint8 kPitchEventVariation = 0x0;
-static constexpr uint8 kPitchEventRelative  = 0x1;
-static constexpr uint8 kPitchEventFade      = 0x2;
+static constexpr uint8_t kPitchEventVariation = 0x0;
+static constexpr uint8_t kPitchEventRelative  = 0x1;
+static constexpr uint8_t kPitchEventFade      = 0x2;
 
-static constexpr uint8 kVolumeEventVariation = 0x0;
-static constexpr uint8 kVolumeEventRelative  = 0x1;
-static constexpr uint8 kVolumeEventFade      = 0x2;
+static constexpr uint8_t kVolumeEventVariation = 0x0;
+static constexpr uint8_t kVolumeEventRelative  = 0x1;
+static constexpr uint8_t kVolumeEventFade      = 0x2;
 
-static constexpr uint8 kLowPassEventRandom   = 0x0;
-static constexpr uint8 kLowPassEventRelative = 0x1;
-static constexpr uint8 kLowPassEventSweep    = 0x2;
+static constexpr uint8_t kLowPassEventRandom   = 0x0;
+static constexpr uint8_t kLowPassEventRelative = 0x1;
+static constexpr uint8_t kLowPassEventSweep    = 0x2;
 
-static constexpr uint8 kMarkerEventRepeat = 0x2;
+static constexpr uint8_t kMarkerEventRepeat = 0x2;
 
 XACTSoundBank_Binary::XACTSoundBank_Binary(Common::SeekableReadStream &xsb) {
 	load(xsb);
 }
 
-static void readVariationData(Common::SeekableReadStream &xsb, uint16 &count, uint16 &current,
-                              uint8 &selectMethod, uint8 &flags) {
+static void readVariationData(Common::SeekableReadStream &xsb, uint16_t &count, uint16_t &current,
+                              uint8_t &selectMethod, uint8_t &flags) {
 
-	const uint32 variationData = xsb.readUint32LE();
+	const uint32_t variationData = xsb.readUint32LE();
 
 	flags        =  variationData >> 30;
 	current      = (variationData >> 17) & 0x1FFF;
@@ -82,11 +82,11 @@ static void readVariationData(Common::SeekableReadStream &xsb, uint16 &count, ui
 	count        =  variationData        & 0x1FFF;
 }
 
-void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue &cue, uint32 offset) {
+void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue &cue, uint32_t offset) {
 	xsb.seek(offset);
 
-	uint16 variationCount, currentVariation;
-	uint8 selectMethod, flags;
+	uint16_t variationCount, currentVariation;
+	uint8_t selectMethod, flags;
 
 	readVariationData(xsb, variationCount, currentVariation, selectMethod, flags);
 
@@ -108,31 +108,31 @@ void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue
 	}
 }
 
-void XACTSoundBank_Binary::readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32 offset) {
+void XACTSoundBank_Binary::readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32_t offset) {
 	xsb.seek(offset);
 
-	uint16 variationCount, currentVariation;
-	uint8 selectMethod, flags;
+	uint16_t variationCount, currentVariation;
+	uint8_t selectMethod, flags;
 
 	readVariationData(xsb, variationCount, currentVariation, selectMethod, flags);
 
 	track.variationSelectMethod = static_cast<SelectMethod>(selectMethod);
 
 	for (size_t i = 0; i < variationCount; i++) {
-		const uint32 indices = xsb.readUint32LE();
+		const uint32_t indices = xsb.readUint32LE();
 
-		const uint16 weightMin = xsb.readUint16LE();
-		const uint16 weightMax = xsb.readUint16LE();
+		const uint16_t weightMin = xsb.readUint16LE();
+		const uint16_t weightMax = xsb.readUint16LE();
 
 		addWaveVariation(track, indices, weightMin, weightMax);
 	}
 }
 
-void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices,
-                                            uint32 weightMin, uint32 weightMax) {
+void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32_t indices,
+                                            uint32_t weightMin, uint32_t weightMax) {
 
-	const uint32 bankIndex  = indices >> 16;
-	const uint32 soundIndex = indices & 0xFFFF;
+	const uint32_t bankIndex  = indices >> 16;
+	const uint32_t soundIndex = indices & 0xFFFF;
 
 	track.waves.push_back(WaveVariation());
 	WaveVariation &wave = track.waves.back();
@@ -151,7 +151,7 @@ void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices,
 		std::swap(wave.weightMin, wave.weightMax);
 }
 
-void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32 offset, uint32 count) {
+void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32_t offset, uint32_t count) {
 	xsb.seek(offset);
 
 	_waveBanks.resize(count);
@@ -162,30 +162,30 @@ void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32
 	}
 }
 
-void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbFlags,
-                                    uint32 offset, uint32 count, uint32 offsetFadeParams) {
+void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32_t xsbFlags,
+                                    uint32_t offset, uint32_t count, uint32_t offsetFadeParams) {
 
 	_cues.resize(count);
 	for (size_t i = 0; i < count; ++i) {
 		Cue &cue = _cues[i];
 		xsb.seek(offset + i * kCueDefinitionSize);
 
-		const uint16 cueFlags = xsb.readUint16LE();
+		const uint16_t cueFlags = xsb.readUint16LE();
 
 		cue.sequential   = cueFlags & kCueSequential;
 		cue.crossfade    = cueFlags & kCueCrossfade;
 		cue.stopOnStarve = cueFlags & kCueStopOnStarve;
 		cue.interactive  = cueFlags & kCueInteractive;
 
-		const uint16 soundIndex = xsb.readUint16LE();
-		const uint32 offsetName = xsb.readUint32LE();
-		const uint32 offsetEntry = xsb.readUint32LE();
+		const uint16_t soundIndex = xsb.readUint16LE();
+		const uint32_t offsetName = xsb.readUint32LE();
+		const uint32_t offsetEntry = xsb.readUint32LE();
 
-		const uint16 fadeParamIndex = xsb.readUint16LE();
+		const uint16_t fadeParamIndex = xsb.readUint16LE();
 
 		xsb.skip(2); // Unknown
 
-		uint32 offsetTransitions = 0;
+		uint32_t offsetTransitions = 0;
 		offsetTransitions += xsb.readByte();
 		offsetTransitions += xsb.readByte() <<  8;
 		offsetTransitions += xsb.readByte() << 16;
@@ -229,7 +229,7 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 		if (cue.interactive && (offsetTransitions != 0x00FFFFFF)) {
 			xsb.seek(offsetTransitions);
 
-			const uint32 transitionCount = xsb.readUint32LE();
+			const uint32_t transitionCount = xsb.readUint32LE();
 			cue.transitions.resize(transitionCount);
 
 			size_t transFrom = kSoundSilence;
@@ -239,7 +239,7 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 				transition.from = transFrom;
 				transition.to   = transTo;
 
-				const uint16 transFlags = xsb.readUint16LE();
+				const uint16_t transFlags = xsb.readUint16LE();
 
 				transition.sourceWhen      = static_cast<TransitionSource>     ((transFlags     ) & 0xF);
 				transition.destinationWhen = static_cast<TransitionDestination>( transFlags >> 7  & 0xF);
@@ -271,12 +271,12 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 }
 
 void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Track &track, Sound &sound) {
-	const uint32 trackData = xsb.readUint32LE();
+	const uint32_t trackData = xsb.readUint32LE();
 
-	const uint8  eventCount   = trackData & 0xFF;
-	const uint32 eventsOffset = trackData >> 8;
+	const uint8_t  eventCount   = trackData & 0xFF;
+	const uint32_t eventsOffset = trackData >> 8;
 
-	uint32 wavesOffset = 0xFFFFFFFF;
+	uint32_t wavesOffset = 0xFFFFFFFF;
 
 	xsb.seek(eventsOffset);
 	for (size_t i = 0; i < eventCount; i++) {
@@ -287,9 +287,9 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 		event.timestamp += xsb.readByte() << 8;
 		event.timestamp += xsb.readByte() << 16;
 
-		uint8 parameterSize = xsb.readByte();
+		uint8_t parameterSize = xsb.readByte();
 
-		const uint8 eventFlags = xsb.readByte();
+		const uint8_t eventFlags = xsb.readByte();
 
 		switch (event.type) {
 			case EventType::Play:
@@ -297,7 +297,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				sound.loopCount = xsb.readUint16LE();
 
 				if (parameterSize >= 4) {
-					const uint32 indicesOrOffset = xsb.readUint32LE();
+					const uint32_t indicesOrOffset = xsb.readUint32LE();
 					parameterSize -= 4;
 
 					if (parameterSize >= 12) {
@@ -376,8 +376,8 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				event.params.lowpass.sweepStepCount = xsb.readUint16LE();
 
 				if (parameterSize >= 12) {
-					event.params.lowpass.cutOffStart = CLIP<uint16>(xsb.readUint16LE(), 0, 8192);
-					event.params.lowpass.cutOffEnd   = CLIP<uint16>(xsb.readUint16LE(), 0, 8192);
+					event.params.lowpass.cutOffStart = CLIP<uint16_t>(xsb.readUint16LE(), 0, 8192);
+					event.params.lowpass.cutOffEnd   = CLIP<uint16_t>(xsb.readUint16LE(), 0, 8192);
 
 					xsb.skip(1); // Unknown
 
@@ -525,7 +525,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				if (parameterSize >= 4) {
 					event.params.mixbinspan.speakerChannelCount = xsb.readByte() ? 4 : 5;
 
-					uint32 angles = 0;
+					uint32_t angles = 0;
 					angles += xsb.readByte();
 					angles += xsb.readByte() << 8;
 					angles += xsb.readByte() << 16;
@@ -560,7 +560,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 }
 
 void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &sound,
-                                      uint32 indicesOrOffset, uint32 count, uint8 flags) {
+                                      uint32_t indicesOrOffset, uint32_t count, uint8_t flags) {
 
 	if ((flags & (kSoundTrivial | kSoundSimple)) && (count != 1))
 		throw Common::Exception("XACTSoundBank_Binary::readTracks(): Trivial/simple sound, but trackCount == %u",
@@ -598,55 +598,55 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 	}
 }
 
-void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count,
-                                      uint32 offset3DParams) {
+void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32_t offset, uint32_t count,
+                                      uint32_t offset3DParams) {
 
 	_sounds.resize(count);
 	for (size_t i = 0; i < count; ++i) {
 		Sound &sound = _sounds[i];
 		xsb.seek(offset + i * kSoundDefinitionSize);
 
-		const uint32 indicesOrOffset = xsb.readUint32LE();
+		const uint32_t indicesOrOffset = xsb.readUint32LE();
 
-		const uint16 volume = xsb.readUint16LE();
-		sound.volume = -((int16) (volume & 0x1FF)) * 0.16f;
+		const uint16_t volume = xsb.readUint16LE();
+		sound.volume = -((int16_t) (volume & 0x1FF)) * 0.16f;
 
 		sound.pitch = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
 
-		const uint8 trackCount = xsb.readByte();
+		const uint8_t trackCount = xsb.readByte();
 
 		sound.layer         = xsb.readByte();
 		sound.categoryIndex = xsb.readByte();
 
-		const uint8 soundFlags = xsb.readByte();
+		const uint8_t soundFlags = xsb.readByte();
 
-		const uint16 index3DParam = xsb.readUint16LE();
+		const uint16_t index3DParam = xsb.readUint16LE();
 
 		sound.priority = xsb.readByte();
 
-		const uint8 volume3D = xsb.readByte();
+		const uint8_t volume3D = xsb.readByte();
 
 		sound.parametricEQ = soundFlags & kSoundEQ;
 
 		sound.parametricEQGain = CLIP(xsb.readSint16LE() / 8192.0f, -1.0f, 4.0f);
 
-		const uint16 eq = xsb.readUint16LE();
+		const uint16_t eq = xsb.readUint16LE();
 
 		sound.parametricEQQ    = 1.0f / (1 << (eq & 7));
-		sound.parametricEQFreq = CLIP<uint16>((eq >> 3) & 0x1FFF, 30, 8000);
+		sound.parametricEQFreq = CLIP<uint16_t>((eq >> 3) & 0x1FFF, 30, 8000);
 
 		sound.gainBoost = soundFlags & kSoundGainBoost;
 		sound.linger    = soundFlags & kSoundLinger;
 
 		sound.is3D = soundFlags & kSound3D;
 		if (sound.is3D) {
-			sound.params3D.volumeLFE   = -((int16) ((volume >> 9) & 0x7F)) * 0.50f;
-			sound.params3D.volumeI3DL2 = CLIP(-((int16) volume3D) * 2.56f, -64.0f, 0.0f);
+			sound.params3D.volumeLFE   = -((int16_t) ((volume >> 9) & 0x7F)) * 0.50f;
+			sound.params3D.volumeI3DL2 = CLIP(-((int16_t) volume3D) * 2.56f, -64.0f, 0.0f);
 
 			xsb.seek(offset3DParams + index3DParam * k3DDefinitionSize);
 
-			sound.params3D.coneInsideAngle   = CLIP<uint16>(xsb.readUint16LE(), 0, 360);
-			sound.params3D.coneOutsideAngle  = CLIP<uint16>(xsb.readUint16LE(), 0, 360);
+			sound.params3D.coneInsideAngle   = CLIP<uint16_t>(xsb.readUint16LE(), 0, 360);
+			sound.params3D.coneOutsideAngle  = CLIP<uint16_t>(xsb.readUint16LE(), 0, 360);
 			sound.params3D.coneOutsideVolume = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 0.0f);
 
 			xsb.skip(2); // Unknown;
@@ -672,30 +672,30 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 }
 
 void XACTSoundBank_Binary::load(Common::SeekableReadStream &xsb) {
-	static constexpr uint32 kXSBID = MKTAG('S', 'D', 'B', 'K');
+	static constexpr uint32_t kXSBID = MKTAG('S', 'D', 'B', 'K');
 
-	const uint32 id = xsb.readUint32BE();
+	const uint32_t id = xsb.readUint32BE();
 	if (id != kXSBID)
 		throw Common::Exception("Not a XSB file (%s)", Common::debugTag(id).c_str());
 
-	const uint16 version = xsb.readUint16LE();
+	const uint16_t version = xsb.readUint16LE();
 	if (version != 11)
 		throw Common::Exception("Unsupported XSB file version %u", version);
 
 	xsb.skip(2); // CRC. We're ignoring it (for now?)
 
-	const uint32 offsetWaveBanks  = xsb.readUint32LE();
-	const uint32 offsetFadeParams = xsb.readUint32LE();
-	const uint32 offset3DParams   = xsb.readUint32LE();
+	const uint32_t offsetWaveBanks  = xsb.readUint32LE();
+	const uint32_t offsetFadeParams = xsb.readUint32LE();
+	const uint32_t offset3DParams   = xsb.readUint32LE();
 	xsb.skip(4); // Some offset
 
-	const uint16 xsbFlags = xsb.readUint16LE();
+	const uint16_t xsbFlags = xsb.readUint16LE();
 
 	xsb.skip(2); // Some count
-	const uint16 soundCount = xsb.readUint16LE();
-	const uint16 cueCount   = xsb.readUint16LE();
+	const uint16_t soundCount = xsb.readUint16LE();
+	const uint16_t cueCount   = xsb.readUint16LE();
 	xsb.skip(2); // Some count
-	const uint16 bankCount  = xsb.readUint16LE();
+	const uint16_t bankCount  = xsb.readUint16LE();
 
 	xsb.skip(4); // Unknown
 

@@ -48,11 +48,11 @@
 #endif
 
 #ifndef INT32_MIN
-	#define INT32_MIN ((int32) 0x80000000)
+	#define INT32_MIN ((int32_t) 0x80000000)
 #endif
 
 #ifndef INT32_MAX
-	#define INT32_MAX ((int32) 0x7FFFFFFF)
+	#define INT32_MAX ((int32_t) 0x7FFFFFFF)
 #endif
 
 namespace Common {
@@ -64,7 +64,7 @@ struct Complex {
 
 
 #if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-static inline int intLog2(uint32 v) {
+static inline int intLog2(uint32_t v) {
 	// This is a slightly optimized implementation of log2 for natural numbers
 	// targeting gcc. It also saves some binary size over our fallback
 	// implementation, since it does not need any table.
@@ -79,9 +79,9 @@ static inline int intLog2(uint32 v) {
 #else
 // See http://graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup
 
-extern const int8 intLog2Table256[256];
-static inline int intLog2(uint32 v) {
-	register uint32 t, tt;
+extern const int8_t intLog2Table256[256];
+static inline int intLog2(uint32_t v) {
+	register uint32_t t, tt;
 
 	if ((tt = v >> 16))
 		return (t = tt >> 8) ? 24 + intLog2Table256[t] : 16 + intLog2Table256[tt];

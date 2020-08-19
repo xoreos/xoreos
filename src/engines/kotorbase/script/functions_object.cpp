@@ -157,7 +157,7 @@ void Functions::changeToStandardFaction(Aurora::NWScript::FunctionContext &ctx) 
 void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &itemTag = ctx.getParams()[0].getString();
 	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
-	int32 count = ctx.getParams()[2].getInt();
+	int32_t count = ctx.getParams()[2].getInt();
 
 	Creature *creature = ObjectContainer::toCreature(object);
 	if (creature) {

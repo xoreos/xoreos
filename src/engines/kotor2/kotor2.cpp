@@ -79,7 +79,7 @@ bool KotOR2Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::US
 		if (tlk.empty())
 			return true;
 
-		uint32 languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
+		uint32_t languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
 		if (languageID == Aurora::kLanguageInvalid)
 			return true;
 

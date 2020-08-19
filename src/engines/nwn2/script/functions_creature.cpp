@@ -46,7 +46,7 @@ void Functions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 	Ability   ability  = (Ability) ctx.getParams()[1].getInt();
 
-	ctx.getReturn() = creature ? (int32) creature->getAbility(ability) : 0;
+	ctx.getReturn() = creature ? (int32_t) creature->getAbility(ability) : 0;
 }
 
 void Functions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
@@ -62,17 +62,17 @@ void Functions::getHasFeat(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kClassInvalid;
+	ctx.getReturn() = (int32_t) kClassInvalid;
 
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 1));
 	if (!creature)
 		return;
 
-	uint32 classID;
-	uint16 level;
-	creature->getClass(MAX<int32>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
+	uint32_t classID;
+	uint16_t level;
+	creature->getClass(MAX<int32_t>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
 
-	ctx.getReturn() = (int32) classID;
+	ctx.getReturn() = (int32_t) classID;
 }
 
 void Functions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
@@ -82,9 +82,9 @@ void Functions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
 	if (!creature)
 		return;
 
-	uint32 classID;
-	uint16 level;
-	creature->getClass(MAX<int32>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
+	uint32_t classID;
+	uint16_t level;
+	creature->getClass(MAX<int32_t>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
 }
 
 void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
@@ -96,7 +96,7 @@ void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getXP(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (creature ? creature->getXP() : 0);
+	ctx.getReturn() = (int32_t) (creature ? creature->getXP() : 0);
 }
 
 void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
@@ -178,7 +178,7 @@ void Functions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
 		 *      value = nState
 		 */
 		const Common::UString &plotID = ctx.getParams()[0].getString();
-		const uint32 state = ctx.getParams()[1].getInt();
+		const uint32_t state = ctx.getParams()[1].getInt();
 		bool override = (ctx.getParams()[5].getInt() != 0);
 		creature->addJournalQuestEntry(plotID, state, override);
 	}
@@ -202,7 +202,7 @@ void Functions::getJournalEntry(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 1));
 	if (creature) {
 		const Common::UString &plotID = ctx.getParams()[0].getString();
-		ctx.getReturn() = static_cast<int32>(creature->getJournalEntry(plotID));
+		ctx.getReturn() = static_cast<int32_t>(creature->getJournalEntry(plotID));
 	}
 }
 
@@ -219,13 +219,13 @@ void Functions::getIsDM(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getGender(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (creature ? creature->getGender() : kGenderNone);
+	ctx.getReturn() = (int32_t) (creature ? creature->getGender() : kGenderNone);
 }
 
 void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (creature ? creature->getRace() : kRaceInvalid);
+	ctx.getReturn() = (int32_t) (creature ? creature->getRace() : kRaceInvalid);
 }
 
 void Functions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
@@ -237,32 +237,32 @@ void Functions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getLawChaosValue(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) creature->getLawChaos() : -1;
+	ctx.getReturn() = creature ? (int32_t) creature->getLawChaos() : -1;
 }
 
 void Functions::getGoodEvilValue(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) creature->getGoodEvil() : -1;
+	ctx.getReturn() = creature ? (int32_t) creature->getGoodEvil() : -1;
 }
 
 void Functions::getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) NWN2::getAlignmentLawChaos(creature->getLawChaos()) : -1;
+	ctx.getReturn() = creature ? (int32_t) NWN2::getAlignmentLawChaos(creature->getLawChaos()) : -1;
 }
 
 void Functions::getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) NWN2::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
+	ctx.getReturn() = creature ? (int32_t) NWN2::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
 }
 
 void Functions::getIsRosterMember(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 	Creature *pc       = _game->getModule().getPC();
 
-	ctx.getReturn() = (int32) ((creature && (creature == pc)) ? 1 : 0);
+	ctx.getReturn() = (int32_t) ((creature && (creature == pc)) ? 1 : 0);
 }
 
 void Functions::getFactionLeader(Aurora::NWScript::FunctionContext &ctx) {
@@ -280,7 +280,7 @@ void Functions::featAdd(Aurora::NWScript::FunctionContext &ctx) {
 	// Pass 'FeatID' and 'bCheckRequirements' parameters to creature's featAdd() call
 	bool result = creature->featAdd(ctx.getParams()[1].getInt(), ctx.getParams()[2].getInt());
 	// TODO: process remaining params: 'bFeedback' and 'bNotice'
-	ctx.getReturn() = (int32) result;
+	ctx.getReturn() = (int32_t) result;
 }
 
 } // End of namespace NWN2

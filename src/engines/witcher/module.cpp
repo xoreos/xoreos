@@ -337,7 +337,7 @@ void Module::handleEvents() {
 }
 
 void Module::handleActions() {
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 
 	while (!_delayedActions.empty()) {
 		ActionQueue::iterator action = _delayedActions.begin();
@@ -508,7 +508,7 @@ void Module::refreshLocalized() {
 void Module::delayScript(const Common::UString &script,
                          const Aurora::NWScript::ScriptState &state,
                          Aurora::NWScript::Object *owner,
-                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+                         Aurora::NWScript::Object *triggerer, uint32_t delay) {
 	Action action;
 
 	action.type      = kActionScript;
@@ -524,7 +524,7 @@ void Module::delayScript(const Common::UString &script,
 Common::UString Module::getName(const Common::UString &module) {
 	try {
 		const Aurora::ERFFile mod(new Common::ReadFile(findModule(module, false)));
-		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
 
@@ -539,7 +539,7 @@ Common::UString Module::getName(const Common::UString &module) {
 Common::UString Module::getDescription(const Common::UString &module) {
 	try {
 		const Aurora::ERFFile mod(new Common::ReadFile(findModule(module, false)));
-		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
 

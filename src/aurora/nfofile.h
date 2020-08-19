@@ -42,7 +42,7 @@ public:
 	const Common::UString &getPortrait2() const;
 
 	/** Get the time played. */
-	uint32 getTimePlayed() const;
+	uint32_t getTimePlayed() const;
 
 	/** Get the area name. */
 	const Common::UString &getSaveName() const;
@@ -55,7 +55,7 @@ public:
 private:
 	void load(const GFF3Struct &top);
 
-	uint32 _timePlayed; ///< The time this save was actually played.
+	uint32_t _timePlayed; ///< The time this save was actually played.
 
 	Common::UString _saveName; ///< The save name.
 	Common::UString _areaName; ///< The current area to load.

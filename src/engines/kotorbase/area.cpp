@@ -128,29 +128,29 @@ void Area::clear() {
 	_activeTrigger = 0;
 }
 
-uint32 Area::getMusicDayTrack() const {
+uint32_t Area::getMusicDayTrack() const {
 	return _musicDayTrack;
 }
 
-uint32 Area::getMusicNightTrack() const {
+uint32_t Area::getMusicNightTrack() const {
 	return _musicNightTrack;
 }
 
-uint32 Area::getMusicBattleTrack() const {
+uint32_t Area::getMusicBattleTrack() const {
 	return _musicBattleTrack;
 }
 
-void Area::setMusicDayTrack(uint32 track) {
+void Area::setMusicDayTrack(uint32_t track) {
 	_musicDayTrack = track;
 	_musicDay      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
-void Area::setMusicNightTrack(uint32 track) {
+void Area::setMusicNightTrack(uint32_t track) {
 	_musicNightTrack = track;
 	_musicNight      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
 }
 
-void Area::setMusicBattleTrack(uint32 track) {
+void Area::setMusicBattleTrack(uint32_t track) {
 	_musicBattleTrack = track;
 
 	if (_musicBattleTrack != Aurora::kStrRefInvalid) {
@@ -356,7 +356,7 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 	readScripts(are);
 }
 
-void Area::loadCameraStyle(uint32 id) {
+void Area::loadCameraStyle(uint32_t id) {
 	const Aurora::TwoDAFile &tda = TwoDAReg.get2DA("camerastyle");
 	const Aurora::TwoDARow &row = tda.getRow(id);
 	_cameraStyle.distance = row.getFloat("distance");
@@ -393,14 +393,14 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 
 	const Aurora::TwoDAFile &ambientSound = TwoDAReg.get2DA("ambientsound");
 
-	uint32 ambientDay   = props.getUint("AmbientSndDay"  , Aurora::kStrRefInvalid);
-	uint32 ambientNight = props.getUint("AmbientSndNight", Aurora::kStrRefInvalid);
+	uint32_t ambientDay   = props.getUint("AmbientSndDay"  , Aurora::kStrRefInvalid);
+	uint32_t ambientNight = props.getUint("AmbientSndNight", Aurora::kStrRefInvalid);
 
 	_ambientDay   = ambientSound.getRow(ambientDay  ).getString("Resource");
 	_ambientNight = ambientSound.getRow(ambientNight).getString("Resource");
 
-	uint32 ambientDayVol   = CLIP<uint32>(props.getUint("AmbientSndDayVol"  , 127), 0, 127);
-	uint32 ambientNightVol = CLIP<uint32>(props.getUint("AmbientSndNightVol", 127), 0, 127);
+	uint32_t ambientDayVol   = CLIP<uint32_t>(props.getUint("AmbientSndDayVol"  , 127), 0, 127);
+	uint32_t ambientNightVol = CLIP<uint32_t>(props.getUint("AmbientSndNightVol", 127), 0, 127);
 
 	_ambientDayVol   = 1.25f * (1.0f - (1.0f / powf(5.0f, ambientDayVol   / 127.0f)));
 	_ambientNightVol = 1.25f * (1.0f - (1.0f / powf(5.0f, ambientNightVol / 127.0f)));
@@ -835,8 +835,8 @@ void Area::addCreature(Creature *creature) {
 }
 
 void Area::addToObjectMap(Object *object) {
-	const std::list<uint32> &ids = object->getIDs();
-	for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+	const std::list<uint32_t> &ids = object->getIDs();
+	for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 		_objectMap.insert(std::make_pair(*id, object));
 }
 
@@ -863,9 +863,9 @@ void Area::removeObject(Object *object) {
 		_activeTrigger = 0;
 
 	if (!object->isStatic()) {
-		const std::list<uint32> &ids = object->getIDs();
+		const std::list<uint32_t> &ids = object->getIDs();
 
-		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+		for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 			_objectMap.erase(*id);
 	}
 

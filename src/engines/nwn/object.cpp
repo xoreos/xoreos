@@ -121,7 +121,7 @@ bool Object::isClickable() const {
 	return !_static && _usable;
 }
 
-const std::list<uint32> &Object::getIDs() const {
+const std::list<uint32_t> &Object::getIDs() const {
 	return _ids;
 }
 
@@ -207,7 +207,7 @@ void Object::loadSSF() {
 	}
 }
 
-void Object::speakString(const Common::UString &string, uint32 UNUSED(volume)) {
+void Object::speakString(const Common::UString &string, uint32_t UNUSED(volume)) {
 	if (!showSpeechTooltip(string))
 		status("<%s> \"%s\"", getName().c_str(), string.c_str());
 }

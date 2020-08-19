@@ -66,55 +66,55 @@ static const int kNodeFlagHasDangly    = 0x0100;
 static const int kNodeFlagHasAABB      = 0x0200;
 static const int kNodeFlagHasSaber     = 0x0800;
 
-static const uint32 kControllerTypePosition             = 8;
-static const uint32 kControllerTypeOrientation          = 20;
-static const uint32 kControllerTypeScale                = 36;
-static const uint32 kControllerTypeColor                = 76;
-static const uint32 kControllerTypeRadius               = 88;
-static const uint32 kControllerTypeShadowRadius         = 96;
-static const uint32 kControllerTypeVerticalDisplacement = 100;
-static const uint32 kControllerTypeMultiplier           = 140;
-static const uint32 kControllerTypeAlphaEnd             = 80;
-static const uint32 kControllerTypeAlphaStart           = 84;
-static const uint32 kControllerTypeBirthRate            = 88;
-static const uint32 kControllerTypeBounce_Co            = 92;
-static const uint32 kControllerTypeColorEnd             = 96;
-static const uint32 kControllerTypeColorStart           = 108;
-static const uint32 kControllerTypeCombineTime          = 120;
-static const uint32 kControllerTypeDrag                 = 124;
-static const uint32 kControllerTypeFPS                  = 128;
-static const uint32 kControllerTypeFrameEnd             = 132;
-static const uint32 kControllerTypeFrameStart           = 136;
-static const uint32 kControllerTypeGrav                 = 140;
-static const uint32 kControllerTypeLifeExp              = 144;
-static const uint32 kControllerTypeMass                 = 148;
-static const uint32 kControllerTypeP2P_Bezier2          = 152;
-static const uint32 kControllerTypeP2P_Bezier3          = 156;
-static const uint32 kControllerTypeParticleRot          = 160;
-static const uint32 kControllerTypeRandVel              = 164;
-static const uint32 kControllerTypeSizeStart            = 168;
-static const uint32 kControllerTypeSizeEnd              = 172;
-static const uint32 kControllerTypeSizeStart_Y          = 176;
-static const uint32 kControllerTypeSizeEnd_Y            = 180;
-static const uint32 kControllerTypeSpread               = 184;
-static const uint32 kControllerTypeThreshold            = 188;
-static const uint32 kControllerTypeVelocity             = 192;
-static const uint32 kControllerTypeXSize                = 196;
-static const uint32 kControllerTypeYSize                = 200;
-static const uint32 kControllerTypeBlurLength           = 204;
-static const uint32 kControllerTypeLightningDelay       = 208;
-static const uint32 kControllerTypeLightningRadius      = 212;
-static const uint32 kControllerTypeLightningScale       = 216;
-static const uint32 kControllerTypeDetonate             = 228;
-static const uint32 kControllerTypeAlphaMid             = 464;
-static const uint32 kControllerTypeColorMid             = 468;
-static const uint32 kControllerTypePercentStart         = 480;
-static const uint32 kControllerTypePercentMid           = 481;
-static const uint32 kControllerTypePercentEnd           = 482;
-static const uint32 kControllerTypeSizeMid              = 484;
-static const uint32 kControllerTypeSizeMid_Y            = 488;
-static const uint32 kControllerTypeSelfIllumColor       = 100;
-static const uint32 kControllerTypeAlpha                = 128;
+static const uint32_t kControllerTypePosition             = 8;
+static const uint32_t kControllerTypeOrientation          = 20;
+static const uint32_t kControllerTypeScale                = 36;
+static const uint32_t kControllerTypeColor                = 76;
+static const uint32_t kControllerTypeRadius               = 88;
+static const uint32_t kControllerTypeShadowRadius         = 96;
+static const uint32_t kControllerTypeVerticalDisplacement = 100;
+static const uint32_t kControllerTypeMultiplier           = 140;
+static const uint32_t kControllerTypeAlphaEnd             = 80;
+static const uint32_t kControllerTypeAlphaStart           = 84;
+static const uint32_t kControllerTypeBirthRate            = 88;
+static const uint32_t kControllerTypeBounce_Co            = 92;
+static const uint32_t kControllerTypeColorEnd             = 96;
+static const uint32_t kControllerTypeColorStart           = 108;
+static const uint32_t kControllerTypeCombineTime          = 120;
+static const uint32_t kControllerTypeDrag                 = 124;
+static const uint32_t kControllerTypeFPS                  = 128;
+static const uint32_t kControllerTypeFrameEnd             = 132;
+static const uint32_t kControllerTypeFrameStart           = 136;
+static const uint32_t kControllerTypeGrav                 = 140;
+static const uint32_t kControllerTypeLifeExp              = 144;
+static const uint32_t kControllerTypeMass                 = 148;
+static const uint32_t kControllerTypeP2P_Bezier2          = 152;
+static const uint32_t kControllerTypeP2P_Bezier3          = 156;
+static const uint32_t kControllerTypeParticleRot          = 160;
+static const uint32_t kControllerTypeRandVel              = 164;
+static const uint32_t kControllerTypeSizeStart            = 168;
+static const uint32_t kControllerTypeSizeEnd              = 172;
+static const uint32_t kControllerTypeSizeStart_Y          = 176;
+static const uint32_t kControllerTypeSizeEnd_Y            = 180;
+static const uint32_t kControllerTypeSpread               = 184;
+static const uint32_t kControllerTypeThreshold            = 188;
+static const uint32_t kControllerTypeVelocity             = 192;
+static const uint32_t kControllerTypeXSize                = 196;
+static const uint32_t kControllerTypeYSize                = 200;
+static const uint32_t kControllerTypeBlurLength           = 204;
+static const uint32_t kControllerTypeLightningDelay       = 208;
+static const uint32_t kControllerTypeLightningRadius      = 212;
+static const uint32_t kControllerTypeLightningScale       = 216;
+static const uint32_t kControllerTypeDetonate             = 228;
+static const uint32_t kControllerTypeAlphaMid             = 464;
+static const uint32_t kControllerTypeColorMid             = 468;
+static const uint32_t kControllerTypePercentStart         = 480;
+static const uint32_t kControllerTypePercentMid           = 481;
+static const uint32_t kControllerTypePercentEnd           = 482;
+static const uint32_t kControllerTypeSizeMid              = 484;
+static const uint32_t kControllerTypeSizeMid_Y            = 488;
+static const uint32_t kControllerTypeSelfIllumColor       = 100;
+static const uint32_t kControllerTypeAlpha                = 128;
 
 namespace Graphics {
 
@@ -185,8 +185,8 @@ void Model_KotOR::load(ParserContext &ctx) {
 	if (ctx.mdl->readUint32LE() != 0)
 		throw Common::Exception("Unsupported KotOR ASCII MDL");
 
-	uint32 sizeModelData = ctx.mdl->readUint32LE();
-	uint32 sizeRawData   = ctx.mdl->readUint32LE();
+	uint32_t sizeModelData = ctx.mdl->readUint32LE();
+	uint32_t sizeRawData   = ctx.mdl->readUint32LE();
 
 	ctx.offModelData = 12;
 	ctx.offRawData   = ctx.offModelData + sizeModelData;
@@ -196,21 +196,21 @@ void Model_KotOR::load(ParserContext &ctx) {
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 	ctx.mdlName = _name;
 
-	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
-	uint32 nodeCount       = ctx.mdl->readUint32LE();
+	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32_t nodeCount       = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(24 + 4); // Unknown + Reference count
 
-	uint8 type = ctx.mdl->readByte();
+	uint8_t type = ctx.mdl->readByte();
 
 	ctx.mdl->skip(3 + 2); // Padding + Unknown
 
-	uint8 classification = ctx.mdl->readByte();
-	uint8 fogged         = ctx.mdl->readByte();
+	uint8_t classification = ctx.mdl->readByte();
+	uint8_t fogged         = ctx.mdl->readByte();
 
 	ctx.mdl->skip(4); // Unknown
 
-	uint32 animOffset, animCount;
+	uint32_t animOffset, animCount;
 	readArrayDef(*ctx.mdl, animOffset, animCount);
 
 	ctx.mdl->skip(4); // Parent model pointer
@@ -235,10 +235,10 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	ctx.mdl->skip(12); // Unknown
 
-	uint32 nameOffset, nameCount;
+	uint32_t nameOffset, nameCount;
 	readArrayDef(*ctx.mdl, nameOffset, nameCount);
 
-	std::vector<uint32> nameOffsets;
+	std::vector<uint32_t> nameOffsets;
 	readArray(*ctx.mdl, ctx.offModelData + nameOffset, nameCount, nameOffsets);
 
 	readStrings(*ctx.mdl, nameOffsets, ctx.offModelData, ctx.names);
@@ -253,10 +253,10 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	addState(ctx);
 
-	std::vector<uint32> animOffsets;
+	std::vector<uint32_t> animOffsets;
 	readArray(*ctx.mdl, ctx.offModelData + animOffset, animCount, animOffsets);
 
-	for (std::vector<uint32>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
+	for (std::vector<uint32_t>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
 		newState(ctx);
 
 		if (readAnim(ctx, ctx.offModelData + *offset))
@@ -266,7 +266,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 	}
 }
 
-bool Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
+bool Model_KotOR::readAnim(ParserContext &ctx, uint32_t offset) {
 	ctx.mdl->seek(offset);
 
 	ctx.mdl->skip(8); // Function pointers
@@ -287,12 +287,12 @@ bool Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
 		return false;
 	}
 
-	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
-	uint32 nodeCount       = ctx.mdl->readUint32LE();
+	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32_t nodeCount       = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(24 + 4); // Unknown + Reference count
 
-	uint8 type = ctx.mdl->readByte();
+	uint8_t type = ctx.mdl->readByte();
 
 	ctx.mdl->skip(3); // Padding + Unknown
 
@@ -301,7 +301,7 @@ bool Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
 
 	const Common::UString animRoot = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
-	uint32 eventOffset, eventCount;
+	uint32_t eventOffset, eventCount;
 	readArrayDef(*ctx.mdl, eventOffset, eventCount);
 
 	ctx.mdl->skip(4); // Padding + Unknown
@@ -351,13 +351,13 @@ void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2, bool xbox)
 }
 
 void Model_KotOR::readStrings(Common::SeekableReadStream &mdl,
-		const std::vector<uint32> &offsets, uint32 offset,
+		const std::vector<uint32_t> &offsets, uint32_t offset,
 		std::vector<Common::UString> &strings) {
 
 	size_t pos = mdl.pos();
 
 	strings.reserve(offsets.size());
-	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
+	for (std::vector<uint32_t>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
 		mdl.seek(offset + *o);
 
 		strings.push_back(Common::readString(mdl, Common::kEncodingASCII));
@@ -410,7 +410,7 @@ void Model_KotOR::fillBoneNodeMap() {
 
 			const NodeList &nodes = getNodes();
 
-			for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
+			for (uint16_t i = 0; i < skin->boneMappingCount; ++i) {
 				int index = static_cast<int>(skin->boneMapping[i]);
 				if (index != -1) {
 					ModelNode *boneNode = nodes[i];
@@ -449,7 +449,7 @@ ModelNode_KotOR::~ModelNode_KotOR() {
 
 void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	ctx.flags = ctx.mdl->readUint16LE();
-	uint16 superNode = ctx.mdl->readUint16LE();
+	uint16_t superNode = ctx.mdl->readUint16LE();
 
 	_nodeNumber = ctx.mdl->readUint16LE();
 
@@ -475,23 +475,23 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	_orientationBuffer[2] = _orientation[2];
 	_orientationBuffer[3] = _orientation[3];
 
-	uint32 childrenOffset, childrenCount;
+	uint32_t childrenOffset, childrenCount;
 	Model::readArrayDef(*ctx.mdl, childrenOffset, childrenCount);
 
-	std::vector<uint32> children;
+	std::vector<uint32_t> children;
 	Model::readArray(*ctx.mdl, ctx.offModelData + childrenOffset, childrenCount, children);
 
-	uint32 controllerKeyOffset, controllerKeyCount;
+	uint32_t controllerKeyOffset, controllerKeyCount;
 	Model::readArrayDef(*ctx.mdl, controllerKeyOffset, controllerKeyCount);
 
-	uint32 controllerDataOffset, controllerDataCount;
+	uint32_t controllerDataOffset, controllerDataCount;
 	Model::readArrayDef(*ctx.mdl, controllerDataOffset, controllerDataCount);
 
 	std::vector<float> controllerDataFloat;
 	Model::readArray(*ctx.mdl, ctx.offModelData + controllerDataOffset,
 	                 controllerDataCount, controllerDataFloat);
 
-	std::vector<uint32> controllerDataInt;
+	std::vector<uint32_t> controllerDataInt;
 	Model::readArray(*ctx.mdl, ctx.offModelData + controllerDataOffset,
 	                 controllerDataCount, controllerDataInt);
 
@@ -543,7 +543,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		readSaber(ctx);
 	}
 
-	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
+	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_KotOR *childNode = new ModelNode_KotOR(*_model);
 		ctx.nodes.push_back(childNode);
 
@@ -616,15 +616,15 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 }
 
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
-		uint32 offset, uint32 count, std::vector<float> &dataFloat, std::vector<uint32> &dataInt) {
-	uint32 pos = ctx.mdl->seek(offset);
-	for (uint32 i = 0; i < count; i++) {
-		uint32 type = ctx.mdl->readUint32LE();
+		uint32_t offset, uint32_t count, std::vector<float> &dataFloat, std::vector<uint32_t> &dataInt) {
+	uint32_t pos = ctx.mdl->seek(offset);
+	for (uint32_t i = 0; i < count; i++) {
+		uint32_t type = ctx.mdl->readUint32LE();
 		ctx.mdl->skip(2);
-		uint16 rowCount = ctx.mdl->readUint16LE();
-		uint16 timeIndex = ctx.mdl->readUint16LE();
-		uint16 dataIndex = ctx.mdl->readUint16LE();
-		uint8 columnCount = ctx.mdl->readByte();
+		uint16_t rowCount = ctx.mdl->readUint16LE();
+		uint16_t timeIndex = ctx.mdl->readUint16LE();
+		uint16_t dataIndex = ctx.mdl->readUint16LE();
+		uint8_t columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(3);
 		switch (type) {
 			case kControllerTypePosition:
@@ -677,8 +677,8 @@ void ModelNode_KotOR::setupShaderTexture(MaterialConfiguration &config, int text
 	}
 }
 
-void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
-		uint16 dataIndex, std::vector<float> &data) {
+void ModelNode_KotOR::readPositionController(uint8_t columnCount, uint16_t rowCount, uint16_t timeIndex,
+		uint16_t dataIndex, std::vector<float> &data) {
 	bool bezier = columnCount & 16;
 	switch (columnCount) {
 		case 3:
@@ -699,15 +699,15 @@ void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount,
 	}
 }
 
-void ModelNode_KotOR::readOrientationController(uint8 columnCount, uint16 rowCount,
-		uint16 timeIndex, uint16 dataIndex, std::vector<float> &dataFloat, std::vector<uint32> &dataInt) {
+void ModelNode_KotOR::readOrientationController(uint8_t columnCount, uint16_t rowCount,
+		uint16_t timeIndex, uint16_t dataIndex, std::vector<float> &dataFloat, std::vector<uint32_t> &dataInt) {
 	switch (columnCount) {
 		case 2:
 			for (int r = 0; r < rowCount; r++) {
 				QuaternionKeyFrame q;
 				q.time = dataFloat[timeIndex + r];
 
-				uint32 temp = dataInt[dataIndex + r];
+				uint32_t temp = dataInt[dataIndex + r];
 				q.x = 1.0f - static_cast<float>(temp & 0x7ff) / 1023.0f;
 				q.y = 1.0f - static_cast<float>((temp >> 11) & 0x7ff) / 1023.0f;
 				q.z = 1.0f - static_cast<float>(temp >> 22) / 511.0f;
@@ -749,7 +749,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Function pointers
 
-	uint32 facesOffset, facesCount;
+	uint32_t facesOffset, facesCount;
 	Model::readArrayDef(*ctx.mdl, facesOffset, facesCount);
 
 	float boundingMin[3], boundingMax[3];
@@ -783,7 +783,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->specular[1] = 0;
 	_mesh->specular[2] = 0;
 
-	uint32 transparencyHint = ctx.mdl->readUint32LE();
+	uint32_t transparencyHint = ctx.mdl->readUint32LE();
 
 	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint    = (transparencyHint != 0);
@@ -796,7 +796,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->skip(12); // Vertex indices counts
 
-	uint32 offOffVerts, offOffVertsCount;
+	uint32_t offOffVerts, offOffVertsCount;
 	Model::readArrayDef(*ctx.mdl, offOffVerts, offOffVertsCount);
 
 	if (offOffVertsCount > 1)
@@ -810,11 +810,11 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Unknown
 
-	uint32 offNormals = ctx.mdl->readUint32LE();
+	uint32_t offNormals = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Unknown
 
-	uint32 offUV[2];
+	uint32_t offUV[2];
 	offUV[0] = ctx.mdl->readUint32LE();
 	offUV[1] = ctx.mdl->readUint32LE();
 
@@ -847,7 +847,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 	_mesh->data->rawMesh->setBindPosePtr(&_absoluteBaseTransform);
 
-	uint32 endPos = ctx.mdl->pos();
+	uint32_t endPos = ctx.mdl->pos();
 
 	if (ctx.textureCount > 2) {
 		warning("Model_KotOR::readMesh(): textureCount > 2 (%d)", ctx.textureCount);
@@ -882,7 +882,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
 	float *iv = _mesh->data->initialVertexCoords.data();
 
-	for (uint32 i = 0; i < ctx.vertexCount; i++) {
+	for (uint32_t i = 0; i < ctx.vertexCount; i++) {
 		// Position
 		ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize);
 		iv[0] = ctx.mdx->readIEEEFloatLE();
@@ -904,7 +904,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 			v += 8;
 
 		// TexCoords
-		for (uint16 t = 0; t < ctx.textureCount; t++) {
+		for (uint16_t t = 0; t < ctx.textureCount; t++) {
 			if (offUV[t] != 0xFFFFFFFF) {
 				ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + offUV[t]);
 				*v++ = ctx.mdx->readIEEEFloatLE();
@@ -920,14 +920,14 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	// Read faces
 
 	ctx.mdl->seek(ctx.offModelData + offOffVerts);
-	uint32 offVerts = ctx.mdl->readUint32LE();
+	uint32_t offVerts = ctx.mdl->readUint32LE();
 
 	ctx.mdl->seek(ctx.offModelData + offVerts);
 
-	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
-	for (uint32 i = 0; i < facesCount * 3; i++)
+	uint16_t *f = reinterpret_cast<uint16_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
+	for (uint32_t i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
 
 	createBound();
@@ -936,22 +936,22 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 }
 
 void ModelNode_KotOR::readSkin(Model_KotOR::ParserContext &ctx) {
-	/* The models found in the Xbox versions store bone indices as int16,
+	/* The models found in the Xbox versions store bone indices as int16_t,
 	 * while the Windows/Mac/Linux versions use floats. */
 
 	ctx.mdl->skip(ctx.xbox ? 8 : 12);
-	uint32 mdxOffsetBoneWeights = ctx.mdl->readUint32LE();
-	uint32 mdxOffsetBoneMappingId = ctx.mdl->readUint32LE();
-	uint32 boneMappingOffset = ctx.mdl->readUint32LE();
-	uint32 boneMappingCount = ctx.mdl->readUint32LE();
+	uint32_t mdxOffsetBoneWeights = ctx.mdl->readUint32LE();
+	uint32_t mdxOffsetBoneMappingId = ctx.mdl->readUint32LE();
+	uint32_t boneMappingOffset = ctx.mdl->readUint32LE();
+	uint32_t boneMappingCount = ctx.mdl->readUint32LE();
 	ctx.mdl->skip(72);
 
 	_mesh->skin = new Skin();
 	_mesh->skin->boneMappingCount = boneMappingCount;
 
-	const uint32 pos = ctx.mdl->seek(ctx.offModelData + boneMappingOffset);
+	const uint32_t pos = ctx.mdl->seek(ctx.offModelData + boneMappingOffset);
 
-	for (uint32 i = 0; i < boneMappingCount; i++) {
+	for (uint32_t i = 0; i < boneMappingCount; i++) {
 		const float index = ctx.xbox ? static_cast<float>(ctx.mdl->readSint16LE()) : ctx.mdl->readIEEEFloatLE();
 
 		_mesh->skin->boneMapping.push_back(index);
@@ -1008,9 +1008,9 @@ void ModelNode_KotOR::readSaber(Model_KotOR::ParserContext &ctx) {
 
 	// Load special saber data
 
-	uint32 offVertsCoords2 = ctx.mdl->readUint32LE();
-	uint32 offTexCoords = ctx.mdl->readUint32LE();
-	uint32 offSaberData = ctx.mdl->readUint32LE();
+	uint32_t offVertsCoords2 = ctx.mdl->readUint32LE();
+	uint32_t offTexCoords = ctx.mdl->readUint32LE();
+	uint32_t offSaberData = ctx.mdl->readUint32LE();
 
 	std::vector<glm::vec3> saberVerts;
 	saberVerts.resize(ctx.vertexCount);
@@ -1100,10 +1100,10 @@ void ModelNode_KotOR::readSaber(Model_KotOR::ParserContext &ctx) {
 	}
 
 	IndexBuffer *indexBuffer = _mesh->data->rawMesh->getIndexBuffer();
-	indexBuffer->setSize(96, sizeof(uint16), GL_UNSIGNED_SHORT);
-	uint16 *indexData = static_cast<uint16 *>(indexBuffer->getData());
+	indexBuffer->setSize(96, sizeof(uint16_t), GL_UNSIGNED_SHORT);
+	uint16_t *indexData = static_cast<uint16_t *>(indexBuffer->getData());
 
-	static uint16 indices[] = {
+	static uint16_t indices[] = {
 		5, 4, 0, 1, 5, 4, 0, 0,
 		0, 1, 5, 1, 0, 1, 5, 0,
 		13, 8, 12, 1, 13, 8, 12, 0,
@@ -1118,15 +1118,15 @@ void ModelNode_KotOR::readSaber(Model_KotOR::ParserContext &ctx) {
 		10, 14, 11, 1, 10, 14, 11, 0
 	};
 
-	std::memcpy(indexData, indices, 96 * sizeof(uint16));
+	std::memcpy(indexData, indices, 96 * sizeof(uint16_t));
 }
 
 void ModelNode_KotOR::readEmitter(Model_KotOR::ParserContext &ctx) {
 	// TODO: Add values for unknown fields
 	ctx.mdl->skip(20); // Unknown
 
-	uint32 xGrid = ctx.mdl->readUint32LE();
-	uint32 yGrid = ctx.mdl->readUint32LE();
+	uint32_t xGrid = ctx.mdl->readUint32LE();
+	uint32_t yGrid = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Unknown
 

@@ -94,30 +94,30 @@
 #include "src/video/bink.h"
 #include "src/video/binkdata.h"
 
-static const uint32 kBIKfID = MKTAG('B', 'I', 'K', 'f');
-static const uint32 kBIKgID = MKTAG('B', 'I', 'K', 'g');
-static const uint32 kBIKhID = MKTAG('B', 'I', 'K', 'h');
-static const uint32 kBIKiID = MKTAG('B', 'I', 'K', 'i');
+static const uint32_t kBIKfID = MKTAG('B', 'I', 'K', 'f');
+static const uint32_t kBIKgID = MKTAG('B', 'I', 'K', 'g');
+static const uint32_t kBIKhID = MKTAG('B', 'I', 'K', 'h');
+static const uint32_t kBIKiID = MKTAG('B', 'I', 'K', 'i');
 
-static const uint32 kBIKbID = MKTAG('B', 'I', 'K', 'b');
-static const uint32 kBIKkID = MKTAG('B', 'I', 'K', 'k');
+static const uint32_t kBIKbID = MKTAG('B', 'I', 'K', 'b');
+static const uint32_t kBIKkID = MKTAG('B', 'I', 'K', 'k');
 
-static const uint32 kKB2aID = MKTAG('K', 'B', '2', 'a');
-static const uint32 kKB2dID = MKTAG('K', 'B', '2', 'd');
-static const uint32 kKB2fID = MKTAG('K', 'B', '2', 'f');
-static const uint32 kKB2gID = MKTAG('K', 'B', '2', 'g');
-static const uint32 kKB2hID = MKTAG('K', 'B', '2', 'h');
-static const uint32 kKB2iID = MKTAG('K', 'B', '2', 'i');
-static const uint32 kKB2jID = MKTAG('K', 'B', '2', 'j');
-static const uint32 kKB2kID = MKTAG('K', 'B', '2', 'k');
+static const uint32_t kKB2aID = MKTAG('K', 'B', '2', 'a');
+static const uint32_t kKB2dID = MKTAG('K', 'B', '2', 'd');
+static const uint32_t kKB2fID = MKTAG('K', 'B', '2', 'f');
+static const uint32_t kKB2gID = MKTAG('K', 'B', '2', 'g');
+static const uint32_t kKB2hID = MKTAG('K', 'B', '2', 'h');
+static const uint32_t kKB2iID = MKTAG('K', 'B', '2', 'i');
+static const uint32_t kKB2jID = MKTAG('K', 'B', '2', 'j');
+static const uint32_t kKB2kID = MKTAG('K', 'B', '2', 'k');
 
-static const uint32 kVideoFlagAlpha = 0x00100000;
+static const uint32_t kVideoFlagAlpha = 0x00100000;
 
-static const uint16 kAudioFlagDCT    = 0x1000;
-static const uint16 kAudioFlagStereo = 0x2000;
+static const uint16_t kAudioFlagDCT    = 0x1000;
+static const uint16_t kAudioFlagStereo = 0x2000;
 
 // Number of bits used to store first DC value in bundle
-static const uint32 kDCStartBits = 11;
+static const uint32_t kDCStartBits = 11;
 
 namespace Video {
 
@@ -166,11 +166,11 @@ void Bink::decodeNextTrackFrame(VideoTrack &track) {
 	VideoFrame &frame = _frames[videoTrack.getCurFrame() + 1];
 
 	_bink->seek(frame.offset);
-	uint32 frameSize = frame.size;
+	uint32_t frameSize = frame.size;
 
 	// Skip over the audio tracks
 	for (size_t i = 0; i < _audioTracks.size(); i++) {
-		uint32 audioPacketLength = _bink->readUint32LE();
+		uint32_t audioPacketLength = _bink->readUint32LE();
 		frameSize -= 4;
 
 		if (audioPacketLength > frameSize)
@@ -237,10 +237,10 @@ void Bink::BinkVideoTrack::decodePacket(Graphics::Surface &surface, VideoFrame &
 }
 
 void Bink::BinkVideoTrack::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
-	uint32 blockWidth  = isChroma ? ((_width  + 15) >> 4) : ((_width  + 7) >> 3);
-	uint32 blockHeight = isChroma ? ((_height + 15) >> 4) : ((_height + 7) >> 3);
-	uint32 width       = isChroma ?  (_width        >> 1) :   _width;
-	uint32 height      = isChroma ?  (_height       >> 1) :   _height;
+	uint32_t blockWidth  = isChroma ? ((_width  + 15) >> 4) : ((_width  + 7) >> 3);
+	uint32_t blockHeight = isChroma ? ((_height + 15) >> 4) : ((_height + 7) >> 3);
+	uint32_t width       = isChroma ?  (_width        >> 1) :   _width;
+	uint32_t height      = isChroma ?  (_height       >> 1) :   _height;
 
 	DecodeContext ctx;
 
@@ -380,7 +380,7 @@ void Bink::BinkVideoTrack::readHuffman(VideoFrame &video, Huffman &huffman) {
 
 		std::memset(hasSymbol, 0, 16);
 
-		uint8 length = video.bits->getBits(3);
+		uint8_t length = video.bits->getBits(3);
 		for (int i = 0; i <= length; i++) {
 			huffman.symbols[i] = video.bits->getBits(4);
 			hasSymbol[huffman.symbols[i]] = 1;
@@ -398,7 +398,7 @@ void Bink::BinkVideoTrack::readHuffman(VideoFrame &video, Huffman &huffman) {
 	byte tmp1[16], tmp2[16];
 	byte *in = tmp1, *out = tmp2;
 
-	uint8 depth = video.bits->getBits(2);
+	uint8_t depth = video.bits->getBits(2);
 
 	for (int i = 0; i < 16; i++)
 		in[i] = i;
@@ -437,7 +437,7 @@ void Bink::BinkVideoTrack::mergeHuffmanSymbols(VideoFrame &video, byte *dst, con
 }
 
 void Bink::load() {
-	uint32 id = _bink->readUint32BE();
+	uint32_t id = _bink->readUint32BE();
 	if ((id == kKB2aID) || (id == kKB2dID) || (id == kKB2fID) || (id == kKB2gID) ||
 	    (id == kKB2hID) || (id == kKB2iID) || (id == kKB2jID) || (id == kKB2kID))
 		throw Common::Exception("Bink 2 (%s) is not supported", Common::debugTag(id).c_str());
@@ -446,29 +446,29 @@ void Bink::load() {
 	if ((id != kBIKfID) && (id != kBIKgID) && (id != kBIKhID) && (id != kBIKiID))
 		throw Common::Exception("Unknown Bink FourCC %s", Common::debugTag(id).c_str());
 
-	uint32 fileSize         = _bink->readUint32LE() + 8;
-	uint32 frameCount       = _bink->readUint32LE();
-	uint32 largestFrameSize = _bink->readUint32LE();
+	uint32_t fileSize         = _bink->readUint32LE() + 8;
+	uint32_t frameCount       = _bink->readUint32LE();
+	uint32_t largestFrameSize = _bink->readUint32LE();
 
 	if (largestFrameSize > fileSize)
 		throw Common::Exception("Largest frame size greater than file size");
 
 	_bink->skip(4);
 
-	uint32 width  = _bink->readUint32LE();
-	uint32 height = _bink->readUint32LE();
+	uint32_t width  = _bink->readUint32LE();
+	uint32_t height = _bink->readUint32LE();
 
-	uint32 fpsNum = _bink->readUint32LE();
-	uint32 fpsDen = _bink->readUint32LE();
+	uint32_t fpsNum = _bink->readUint32LE();
+	uint32_t fpsDen = _bink->readUint32LE();
 
 	if ((fpsNum == 0) || (fpsDen == 0))
 		throw Common::Exception("Invalid FPS (%d/%d)", fpsNum, fpsDen);
 
-	uint32 videoFlags = _bink->readUint32LE();
+	uint32_t videoFlags = _bink->readUint32LE();
 
 	addTrack(new BinkVideoTrack(width, height, frameCount, Common::Rational(fpsNum, fpsDen), (id == kBIKhID || id == kBIKiID), (videoFlags & kVideoFlagAlpha) != 0, id));
 
-	uint32 audioTrackCount = _bink->readUint32LE();
+	uint32_t audioTrackCount = _bink->readUint32LE();
 
 	if (audioTrackCount > 1) {
 		warning("More than one audio track found. Using the first one");
@@ -482,7 +482,7 @@ void Bink::load() {
 		_bink->skip(4 * audioTrackCount);
 
 		// Reading audio track properties
-		for (uint32 i = 0; i < audioTrackCount; i++) {
+		for (uint32_t i = 0; i < audioTrackCount; i++) {
 			AudioInfo &track = _audioTracks[i];
 
 			track.sampleRate = _bink->readUint16LE();
@@ -496,7 +496,7 @@ void Bink::load() {
 
 	// Reading video frame properties
 	_frames.resize(frameCount);
-	for (uint32 i = 0; i < frameCount; i++) {
+	for (uint32_t i = 0; i < frameCount; i++) {
 		_frames[i].offset   = _bink->readUint32LE();
 		_frames[i].keyFrame = _frames[i].offset & 1;
 
@@ -523,7 +523,7 @@ void Bink::initAudioTrack(AudioInfo &audio) {
 	if (audio.channels > kAudioChannelsMax)
 		throw Common::Exception("Too many audio channels: %d", audio.channels);
 
-	uint32 frameLenBits;
+	uint32_t frameLenBits;
 	// Calculate frame length
 	if      (audio.sampleRate < 22050)
 		frameLenBits =  9;
@@ -552,24 +552,24 @@ void Bink::initAudioTrack(AudioInfo &audio) {
 	audio.blockSize  = (audio.frameLen - audio.overlapLen) * audio.channels;
 	audio.root       = 2.0 / sqrt((double) audio.frameLen);
 
-	uint32 sampleRateHalf = (audio.sampleRate + 1) / 2;
+	uint32_t sampleRateHalf = (audio.sampleRate + 1) / 2;
 
 	// Calculate number of bands
 	for (audio.bandCount = 1; audio.bandCount < 25; audio.bandCount++)
 		if (sampleRateHalf <= binkCriticalFreqs[audio.bandCount - 1])
 			break;
 
-	audio.bands = new uint32[audio.bandCount + 1];
+	audio.bands = new uint32_t[audio.bandCount + 1];
 
 	// Populate bands
 	audio.bands[0] = 1;
-	for (uint32 i = 1; i < audio.bandCount; i++)
+	for (uint32_t i = 1; i < audio.bandCount; i++)
 		audio.bands[i] = binkCriticalFreqs[i - 1] * (audio.frameLen / 2) / sampleRateHalf;
 	audio.bands[audio.bandCount] = audio.frameLen / 2;
 
 	audio.first = true;
 
-	for (uint8 i = 0; i < audio.channels; i++)
+	for (uint8_t i = 0; i < audio.channels; i++)
 		audio.coeffsPtr[i] = audio.coeffs + i * audio.frameLen;
 
 	audio.codec = ((audio.flags & kAudioFlagDCT) != 0) ? kAudioCodecDCT : kAudioCodecRDFT;
@@ -581,21 +581,21 @@ void Bink::initAudioTrack(AudioInfo &audio) {
 }
 
 void Bink::BinkVideoTrack::initBundles() {
-	uint32 bw     = (_width  + 7) >> 3;
-	uint32 bh     = (_height + 7) >> 3;
-	uint32 blocks = bw * bh;
+	uint32_t bw     = (_width  + 7) >> 3;
+	uint32_t bh     = (_height + 7) >> 3;
+	uint32_t blocks = bw * bh;
 
 	for (int i = 0; i < kSourceMAX; i++) {
 		_bundles[i].data = std::make_unique<byte[]>(blocks * 64);
 		_bundles[i].dataEnd = _bundles[i].data.get() + blocks * 64;
 	}
 
-	uint32 cbw[2] = { (_width + 7) >> 3, (_width  + 15) >> 4 };
-	uint32 cw [2] = {  _width          ,  _width        >> 1 };
+	uint32_t cbw[2] = { (_width + 7) >> 3, (_width  + 15) >> 4 };
+	uint32_t cw [2] = {  _width          ,  _width        >> 1 };
 
 	// Calculate the lengths of an element count in bits
 	for (int i = 0; i < 2; i++) {
-		int width = MAX<uint32>(cw[i], 8);
+		int width = MAX<uint32_t>(cw[i], 8);
 
 		_bundles[kSourceBlockTypes   ].countLengths[i] = Common::intLog2((width       >> 3) + 511) + 1;
 		_bundles[kSourceSubBlockTypes].countLengths[i] = Common::intLog2(((width + 7) >> 4) + 511) + 1;
@@ -618,25 +618,25 @@ byte Bink::BinkVideoTrack::getHuffmanSymbol(VideoFrame &video, Huffman &huffman)
 	return huffman.symbols[_huffman[huffman.index]->getSymbol(*video.bits)];
 }
 
-int32 Bink::BinkVideoTrack::getBundleValue(Source source) {
+int32_t Bink::BinkVideoTrack::getBundleValue(Source source) {
 	if ((source < kSourceXOff) || (source == kSourceRun))
 		return *_bundles[source].curPtr++;
 
 	if ((source == kSourceXOff) || (source == kSourceYOff))
-		return (int8) *_bundles[source].curPtr++;
+		return (int8_t) *_bundles[source].curPtr++;
 
-	int16 ret = *reinterpret_cast<int16 *>(_bundles[source].curPtr);
+	int16_t ret = *reinterpret_cast<int16_t *>(_bundles[source].curPtr);
 
 	_bundles[source].curPtr += 2;
 
 	return ret;
 }
 
-uint32 Bink::BinkVideoTrack::readBundleCount(VideoFrame &video, Bundle &bundle) {
+uint32_t Bink::BinkVideoTrack::readBundleCount(VideoFrame &video, Bundle &bundle) {
 	if (!bundle.curDec || (bundle.curDec > bundle.curPtr))
 		return 0;
 
-	uint32 n = video.bits->getBits(bundle.countLength);
+	uint32_t n = video.bits->getBits(bundle.countLength);
 	if (n == 0)
 		bundle.curDec = 0;
 
@@ -660,7 +660,7 @@ void Bink::BinkVideoTrack::blockScaledSkip(DecodeContext &ctx) {
 }
 
 void Bink::BinkVideoTrack::blockScaledRun(DecodeContext &ctx) {
-	const uint8 *scan = binkPatterns[ctx.video->bits->getBits(4)];
+	const uint8_t *scan = binkPatterns[ctx.video->bits->getBits(4)];
 
 	int i = 0;
 	do {
@@ -696,8 +696,8 @@ void Bink::BinkVideoTrack::blockScaledRun(DecodeContext &ctx) {
 }
 
 void Bink::BinkVideoTrack::blockScaledIntra(DecodeContext &ctx) {
-	int16 block[64];
-	std::memset(block, 0, 64 * sizeof(int16));
+	int16_t block[64];
+	std::memset(block, 0, 64 * sizeof(int16_t));
 
 	block[0] = getBundleValue(kSourceIntraDC);
 
@@ -705,7 +705,7 @@ void Bink::BinkVideoTrack::blockScaledIntra(DecodeContext &ctx) {
 
 	IDCT(block);
 
-	int16 *src   = block;
+	int16_t *src   = block;
 	byte  *dest1 = ctx.dest;
 	byte  *dest2 = ctx.dest + ctx.pitch;
 	for (int j = 0; j < 8; j++, dest1 += (ctx.pitch << 1) - 16, dest2 += (ctx.pitch << 1) - 16, src += 8) {
@@ -789,11 +789,11 @@ void Bink::BinkVideoTrack::blockScaled(DecodeContext &ctx) {
 }
 
 void Bink::BinkVideoTrack::blockMotion(DecodeContext &ctx) {
-	int8 xOff = getBundleValue(kSourceXOff);
-	int8 yOff = getBundleValue(kSourceYOff);
+	int8_t xOff = getBundleValue(kSourceXOff);
+	int8_t yOff = getBundleValue(kSourceYOff);
 
 	byte *dest = ctx.dest;
-	byte *prev = ctx.prev + yOff * ((int32) ctx.pitch) + xOff;
+	byte *prev = ctx.prev + yOff * ((int32_t) ctx.pitch) + xOff;
 	if ((prev < ctx.prevStart) || (prev > ctx.prevEnd))
 		throw Common::Exception("Copy out of bounds (%d | %d)", ctx.blockX * 8 + xOff, ctx.blockY * 8 + yOff);
 
@@ -802,7 +802,7 @@ void Bink::BinkVideoTrack::blockMotion(DecodeContext &ctx) {
 }
 
 void Bink::BinkVideoTrack::blockRun(DecodeContext &ctx) {
-	const uint8 *scan = binkPatterns[ctx.video->bits->getBits(4)];
+	const uint8_t *scan = binkPatterns[ctx.video->bits->getBits(4)];
 
 	int i = 0;
 	do {
@@ -833,21 +833,21 @@ void Bink::BinkVideoTrack::blockResidue(DecodeContext &ctx) {
 
 	byte v = ctx.video->bits->getBits(7);
 
-	int16 block[64];
-	std::memset(block, 0, 64 * sizeof(int16));
+	int16_t block[64];
+	std::memset(block, 0, 64 * sizeof(int16_t));
 
 	readResidue(*ctx.video, block, v);
 
 	byte  *dst = ctx.dest;
-	int16 *src = block;
+	int16_t *src = block;
 	for (int i = 0; i < 8; i++, dst += ctx.pitch, src += 8)
 		for (int j = 0; j < 8; j++)
 			dst[j] += src[j];
 }
 
 void Bink::BinkVideoTrack::blockIntra(DecodeContext &ctx) {
-	int16 block[64];
-	std::memset(block, 0, 64 * sizeof(int16));
+	int16_t block[64];
+	std::memset(block, 0, 64 * sizeof(int16_t));
 
 	block[0] = getBundleValue(kSourceIntraDC);
 
@@ -867,8 +867,8 @@ void Bink::BinkVideoTrack::blockFill(DecodeContext &ctx) {
 void Bink::BinkVideoTrack::blockInter(DecodeContext &ctx) {
 	blockMotion(ctx);
 
-	int16 block[64];
-	std::memset(block, 0, 64 * sizeof(int16));
+	int16_t block[64];
+	std::memset(block, 0, 64 * sizeof(int16_t));
 
 	block[0] = getBundleValue(kSourceInterDC);
 
@@ -902,7 +902,7 @@ void Bink::BinkVideoTrack::blockRaw(DecodeContext &ctx) {
 }
 
 void Bink::BinkVideoTrack::readRuns(VideoFrame &video, Bundle &bundle) {
-	uint32 n = readBundleCount(video, bundle);
+	uint32_t n = readBundleCount(video, bundle);
 	if (n == 0)
 		return;
 
@@ -922,7 +922,7 @@ void Bink::BinkVideoTrack::readRuns(VideoFrame &video, Bundle &bundle) {
 }
 
 void Bink::BinkVideoTrack::readMotionValues(VideoFrame &video, Bundle &bundle) {
-	uint32 n = readBundleCount(video, bundle);
+	uint32_t n = readBundleCount(video, bundle);
 	if (n == 0)
 		return;
 
@@ -957,9 +957,9 @@ void Bink::BinkVideoTrack::readMotionValues(VideoFrame &video, Bundle &bundle) {
 	} while (bundle.curDec < decEnd);
 }
 
-const uint8 rleLens[4] = { 4, 8, 12, 32 };
+const uint8_t rleLens[4] = { 4, 8, 12, 32 };
 void Bink::BinkVideoTrack::readBlockTypes(VideoFrame &video, Bundle &bundle) {
-	uint32 n = readBundleCount(video, bundle);
+	uint32_t n = readBundleCount(video, bundle);
 	if (n == 0)
 		return;
 
@@ -996,7 +996,7 @@ void Bink::BinkVideoTrack::readBlockTypes(VideoFrame &video, Bundle &bundle) {
 }
 
 void Bink::BinkVideoTrack::readPatterns(VideoFrame &video, Bundle &bundle) {
-	uint32 n = readBundleCount(video, bundle);
+	uint32_t n = readBundleCount(video, bundle);
 	if (n == 0)
 		return;
 
@@ -1014,7 +1014,7 @@ void Bink::BinkVideoTrack::readPatterns(VideoFrame &video, Bundle &bundle) {
 
 
 void Bink::BinkVideoTrack::readColors(VideoFrame &video, Bundle &bundle) {
-	uint32 n = readBundleCount(video, bundle);
+	uint32_t n = readBundleCount(video, bundle);
 	if (n == 0)
 		return;
 
@@ -1030,7 +1030,7 @@ void Bink::BinkVideoTrack::readColors(VideoFrame &video, Bundle &bundle) {
 		v = (_colLastVal << 4) | v;
 
 		if (_id != kBIKiID) {
-			int sign = ((int8) v) >> 7;
+			int sign = ((int8_t) v) >> 7;
 			v = ((v & 0x7F) ^ sign) - sign;
 			v += 0x80;
 		}
@@ -1049,7 +1049,7 @@ void Bink::BinkVideoTrack::readColors(VideoFrame &video, Bundle &bundle) {
 		v = (_colLastVal << 4) | v;
 
 		if (_id != kBIKiID) {
-			int sign = ((int8) v) >> 7;
+			int sign = ((int8_t) v) >> 7;
 			v = ((v & 0x7F) ^ sign) - sign;
 			v += 0x80;
 		}
@@ -1058,13 +1058,13 @@ void Bink::BinkVideoTrack::readColors(VideoFrame &video, Bundle &bundle) {
 }
 
 void Bink::BinkVideoTrack::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSign) {
-	uint32 length = readBundleCount(video, bundle);
+	uint32_t length = readBundleCount(video, bundle);
 	if (length == 0)
 		return;
 
-	int16 *dest = reinterpret_cast<int16 *>(bundle.curDec);
+	int16_t *dest = reinterpret_cast<int16_t *>(bundle.curDec);
 
-	int32 v = video.bits->getBits(startBits - (hasSign ? 1 : 0));
+	int32_t v = video.bits->getBits(startBits - (hasSign ? 1 : 0));
 	if (v && hasSign) {
 		int sign = -((int)video.bits->getBit());
 		v = (v ^ sign) - sign;
@@ -1073,15 +1073,15 @@ void Bink::BinkVideoTrack::readDCS(VideoFrame &video, Bundle &bundle, int startB
 	*dest++ = v;
 	length--;
 
-	for (uint32 i = 0; i < length; i += 8) {
-		uint32 length2 = MIN<uint32>(length - i, 8);
+	for (uint32_t i = 0; i < length; i += 8) {
+		uint32_t length2 = MIN<uint32_t>(length - i, 8);
 
 		byte bSize = video.bits->getBits(4);
 
 		if (bSize) {
 
-			for (uint32 j = 0; j < length2; j++) {
-				int16 v2 = video.bits->getBits(bSize);
+			for (uint32_t j = 0; j < length2; j++) {
+				int16_t v2 = video.bits->getBits(bSize);
 				if (v2) {
 					int sign = -((int)video.bits->getBit());
 					v2 = (v2 ^ sign) - sign;
@@ -1095,7 +1095,7 @@ void Bink::BinkVideoTrack::readDCS(VideoFrame &video, Bundle &bundle, int startB
 			}
 
 		} else
-			for (uint32 j = 0; j < length2; j++)
+			for (uint32_t j = 0; j < length2; j++)
 				*dest++ = v;
 	}
 
@@ -1104,7 +1104,7 @@ void Bink::BinkVideoTrack::readDCS(VideoFrame &video, Bundle &bundle, int startB
 
 /* WORKAROUND: This fixes the NWN2 WotC logo.
  * [cf. ffmpeg 47b71eea099b3fe2c7e16644878ad9b7067974e3] */
-static inline int16 dequant(int16 in, uint32 quant, bool dc) {
+static inline int16_t dequant(int16_t in, uint32_t quant, bool dc) {
 	/* Note: multiplication is unsigned but we want signed shift
 	 * otherwise clipping breaks.
 	 *
@@ -1115,7 +1115,7 @@ static inline int16 dequant(int16 in, uint32 quant, bool dc) {
 	 * and should cause at most minor differences (except for DC).
 	 */
 
-	int32 res = ((int32) (in * quant)) >> 11;
+	int32_t res = ((int32_t) (in * quant)) >> 11;
 	if (!dc)
 		res = CLIP(res, -32768, 32767);
 
@@ -1123,7 +1123,7 @@ static inline int16 dequant(int16 in, uint32 quant, bool dc) {
 }
 
 /** Reads 8x8 block of DCT coefficients. */
-void Bink::BinkVideoTrack::readDCTCoeffs(VideoFrame &video, int16 *block, bool isIntra) {
+void Bink::BinkVideoTrack::readDCTCoeffs(VideoFrame &video, int16_t *block, bool isIntra) {
 	int coefCount = 0;
 	int coefIdx[64];
 
@@ -1210,8 +1210,8 @@ void Bink::BinkVideoTrack::readDCTCoeffs(VideoFrame &video, int16 *block, bool i
 		}
 	}
 
-	uint8 quantIdx = video.bits->getBits(4);
-	const uint32 *quant = isIntra ? binkIntraQuant[quantIdx] : binkInterQuant[quantIdx];
+	uint8_t quantIdx = video.bits->getBits(4);
+	const uint32_t *quant = isIntra ? binkIntraQuant[quantIdx] : binkInterQuant[quantIdx];
 	block[0] = dequant(block[0], quant[0], true);
 
 	for (int i = 0; i < coefCount; i++) {
@@ -1222,7 +1222,7 @@ void Bink::BinkVideoTrack::readDCTCoeffs(VideoFrame &video, int16 *block, bool i
 }
 
 /** Reads 8x8 block with residue after motion compensation. */
-void Bink::BinkVideoTrack::readResidue(VideoFrame &video, int16 *block, int masksCount) {
+void Bink::BinkVideoTrack::readResidue(VideoFrame &video, int16_t *block, int masksCount) {
 	int nzCoeff[64];
 	int nzCoeffCount = 0;
 
@@ -1334,9 +1334,9 @@ void Bink::BinkAudioTrack::decodeAudio(Common::SeekableReadStream& bink, const s
 	while (_audioBuffered < endTime && _curFrame < frames.size()) {
 		const VideoFrame &frame = frames[_curFrame++];
 		bink.seek(frame.offset);
-		uint32 frameSize = frame.size;
+		uint32_t frameSize = frame.size;
 
-		uint32 audioPacketLength = 0;
+		uint32_t audioPacketLength = 0;
 
 		for (size_t i = 0; i < audioTracks.size(); i++) {
 			audioPacketLength = bink.readUint32LE();
@@ -1360,7 +1360,7 @@ void Bink::BinkAudioTrack::decodeAudio(Common::SeekableReadStream& bink, const s
 			continue;
 
 		// Number of samples in bytes
-		uint32 sampleCount = bink.readUint32LE() / (2 * _info.channels);
+		uint32_t sampleCount = bink.readUint32LE() / (2 * _info.channels);
 
 		// Create a substream for these bits
 		Common::BitStream32LELSB bits(new Common::SeekableSubReadStream(&bink, bink.pos(), bink.pos() + audioPacketLength - 4), true);
@@ -1368,7 +1368,7 @@ void Bink::BinkAudioTrack::decodeAudio(Common::SeekableReadStream& bink, const s
 		int outSize = _info.frameLen * _info.channels;
 
 		while (bits.pos() < bits.size()) {
-			std::unique_ptr<int16[]> out = std::make_unique<int16[]>(outSize);
+			std::unique_ptr<int16_t[]> out = std::make_unique<int16_t[]>(outSize);
 			memset(out.get(), 0, outSize * 2);
 
 			audioBlock(bits, out.get());
@@ -1402,7 +1402,7 @@ bool Bink::BinkAudioTrack::canBufferData() const {
 	return !_audioStream->isFinished();
 }
 
-void Bink::BinkAudioTrack::audioBlock(Common::BitStream &bits, int16 *out) {
+void Bink::BinkAudioTrack::audioBlock(Common::BitStream &bits, int16_t *out) {
 	if      (_info.codec == kAudioCodecDCT)
 		audioBlockDCT (bits);
 	else if (_info.codec == kAudioCodecRDFT)
@@ -1427,7 +1427,7 @@ void Bink::BinkAudioTrack::audioBlock(Common::BitStream &bits, int16 *out) {
 void Bink::BinkAudioTrack::audioBlockDCT(Common::BitStream &bits) {
 	bits.skip(2);
 
-	for (uint8 i = 0; i < _info.channels; i++) {
+	for (uint8_t i = 0; i < _info.channels; i++) {
 		float *coeffs = _info.coeffsPtr[i];
 
 		readAudioCoeffs(bits, coeffs);
@@ -1436,14 +1436,14 @@ void Bink::BinkAudioTrack::audioBlockDCT(Common::BitStream &bits) {
 
 		_info.dct->calc(coeffs);
 
-		for (uint32 j = 0; j < _info.frameLen; j++)
+		for (uint32_t j = 0; j < _info.frameLen; j++)
 			coeffs[j] *= (_info.frameLen / 2.0f);
 	}
 
 }
 
 void Bink::BinkAudioTrack::audioBlockRDFT(Common::BitStream &bits) {
-	for (uint8 i = 0; i < _info.channels; i++) {
+	for (uint8_t i = 0; i < _info.channels; i++) {
 		float *coeffs = _info.coeffsPtr[i];
 
 		readAudioCoeffs(bits, coeffs);
@@ -1452,7 +1452,7 @@ void Bink::BinkAudioTrack::audioBlockRDFT(Common::BitStream &bits) {
 	}
 }
 
-static const uint8 rleLengthTab[16] = {
+static const uint8_t rleLengthTab[16] = {
 	2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32, 64
 };
 
@@ -1462,7 +1462,7 @@ void Bink::BinkAudioTrack::readAudioCoeffs(Common::BitStream &bits, float *coeff
 
 	float quant[25];
 
-	for (uint32 i = 0; i < _info.bandCount; i++) {
+	for (uint32_t i = 0; i < _info.bandCount; i++) {
 		int value = bits.getBits(8);
 
 		//                               0.066399999 / log10(M_E)
@@ -1477,10 +1477,10 @@ void Bink::BinkAudioTrack::readAudioCoeffs(Common::BitStream &bits, float *coeff
 		q = quant[k];
 
 	// Parse coefficients
-	uint32 i = 2;
+	uint32_t i = 2;
 	while (i < _info.frameLen) {
 
-		uint32 j = 0;
+		uint32_t j = 0;
 		if (bits.getBit())
 			j = i + rleLengthTab[bits.getBits(4)] * 8;
 		else
@@ -1558,7 +1558,7 @@ void Bink::BinkAudioTrack::readAudioCoeffs(Common::BitStream &bits, float *coeff
 #define MUNGE_ROW(x) (((x) + 0x7F)>>8)
 #define IDCT_ROW(dest,src) IDCT_TRANSFORM(dest,0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7,MUNGE_ROW,src)
 
-static inline void IDCTCol(int16 *dest, const int16 *src)
+static inline void IDCTCol(int16_t *dest, const int16_t *src)
 {
 	if ((src[8] | src[16] | src[24] | src[32] | src[40] | src[48] | src[56]) == 0) {
 		dest[ 0] =
@@ -1574,9 +1574,9 @@ static inline void IDCTCol(int16 *dest, const int16 *src)
 	}
 }
 
-void Bink::BinkVideoTrack::IDCT(int16 *block) {
+void Bink::BinkVideoTrack::IDCT(int16_t *block) {
 	int i;
-	int16 temp[64];
+	int16_t temp[64];
 
 	for (i = 0; i < 8; i++)
 		IDCTCol(&temp[i], &block[i]);
@@ -1585,7 +1585,7 @@ void Bink::BinkVideoTrack::IDCT(int16 *block) {
 	}
 }
 
-void Bink::BinkVideoTrack::IDCTAdd(DecodeContext &ctx, int16 *block) {
+void Bink::BinkVideoTrack::IDCTAdd(DecodeContext &ctx, int16_t *block) {
 	int i, j;
 
 	IDCT(block);
@@ -1595,9 +1595,9 @@ void Bink::BinkVideoTrack::IDCTAdd(DecodeContext &ctx, int16 *block) {
 			 dest[j] += block[j];
 }
 
-void Bink::BinkVideoTrack::IDCTPut(DecodeContext &ctx, int16 *block) {
+void Bink::BinkVideoTrack::IDCTPut(DecodeContext &ctx, int16_t *block) {
 	int i;
-	int16 temp[64];
+	int16_t temp[64];
 	for (i = 0; i < 8; i++)
 		IDCTCol(&temp[i], &block[i]);
 	for (i = 0; i < 8; i++) {
@@ -1605,7 +1605,7 @@ void Bink::BinkVideoTrack::IDCTPut(DecodeContext &ctx, int16 *block) {
 	}
 }
 
-Bink::BinkVideoTrack::BinkVideoTrack(uint32 width, uint32 height, uint32 frameCount, const Common::Rational &frameRate, bool swapPlanes, bool hasAlpha, uint32 id) :
+Bink::BinkVideoTrack::BinkVideoTrack(uint32_t width, uint32_t height, uint32_t frameCount, const Common::Rational &frameRate, bool swapPlanes, bool hasAlpha, uint32_t id) :
 		_width(width), _height(height), _curFrame(-1), _frameCount(frameCount), _frameRate(frameRate), _swapPlanes(swapPlanes), _hasAlpha(hasAlpha), _id(id) {
 	// Give the planes a bit extra space
 	width  = _width  + 32;

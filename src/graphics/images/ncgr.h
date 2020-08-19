@@ -57,7 +57,7 @@ namespace Graphics {
 class NCGR : public ImageDecoder, public Aurora::NitroFile {
 public:
 	NCGR(Common::SeekableReadStream &ncgr, Common::SeekableReadStream &nclr);
-	NCGR(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 width, uint32 height,
+	NCGR(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32_t width, uint32_t height,
 	     Common::SeekableReadStream &nclr);
 	~NCGR();
 
@@ -67,22 +67,22 @@ private:
 		Common::SeekableReadStream *image;
 
 		/** Offset to the CHAR section within the NCGR file. */
-		uint32 offsetCHAR;
+		uint32_t offsetCHAR;
 
-		uint32 width;  ///< Width in pixels of this NCGR.
-		uint32 height; ///< Height in pixels of this NCGR.
-		uint8  depth;  ///< Color depth in bits.
+		uint32_t width;  ///< Width in pixels of this NCGR.
+		uint32_t height; ///< Height in pixels of this NCGR.
+		uint8_t  depth;  ///< Color depth in bits.
 
-		uint32 offsetX; ///< X offset in pixels into the final image.
-		uint32 offsetY; ///< Y offset in pixels into the final image.
+		uint32_t offsetX; ///< X offset in pixels into the final image.
+		uint32_t offsetY; ///< Y offset in pixels into the final image.
 
 		NCGRFile();
 		~NCGRFile();
 	};
 
 	struct ReadContext {
-		uint32 width;  ///< Width of the NCGR grid, in NCGR.
-		uint32 height; ///< Height of the NCGR grid, in NCGR.
+		uint32_t width;  ///< Width of the NCGR grid, in NCGR.
+		uint32_t height; ///< Height of the NCGR grid, in NCGR.
 
 		std::unique_ptr<const byte[]> pal;
 
@@ -90,14 +90,14 @@ private:
 	};
 
 
-	void load(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 width, uint32 height,
+	void load(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32_t width, uint32_t height,
 	          Common::SeekableReadStream &nclr);
 
 	void load      (NCGRFile &ctx);
 	void readHeader(NCGRFile &ctx);
 	void readChar  (NCGRFile &ctx);
 
-	void calculateGrid(ReadContext &ctx, uint32 &imageWidth, uint32 &imageHeight);
+	void calculateGrid(ReadContext &ctx, uint32_t &imageWidth, uint32_t &imageHeight);
 	void draw(ReadContext &ctx);
 };
 

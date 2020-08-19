@@ -109,13 +109,13 @@ public:
 	ASFStream(Common::SeekableReadStream *stream, bool dispose);
 	~ASFStream();
 
-	size_t readBuffer(int16 *buffer, const size_t numSamples);
+	size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 	bool endOfData() const;
 	int getChannels() const { return _channels; }
 	int getRate() const { return _sampleRate; }
-	uint64 getLength() const;
-	uint64 getDuration() const;
+	uint64_t getLength() const;
+	uint64_t getDuration() const;
 
 	bool rewind();
 
@@ -127,9 +127,9 @@ private:
 
 		byte flags;
 		byte segmentType;
-		uint16 packetSize;
-		uint32 sendTime;
-		uint16 duration;
+		uint16_t packetSize;
+		uint32_t sendTime;
+		uint16_t duration;
 
 		struct Segment {
 			byte streamID;
@@ -153,23 +153,23 @@ private:
 	bool allDataLoaded() const;
 
 	size_t _rewindPos;
-	uint64 _curPacket;
+	uint64_t _curPacket;
 	std::unique_ptr<PacketizedAudioStream> _curAudioStream;
 	byte _curSequenceNumber;
 
 	// Header object variables
-	uint64 _packetCount;
-	uint64 _duration;
-	uint32 _minPacketSize, _maxPacketSize;
+	uint64_t _packetCount;
+	uint64_t _duration;
+	uint32_t _minPacketSize, _maxPacketSize;
 
 	// Stream object variables
-	uint16 _streamID;
-	uint16 _compression;
-	uint16 _channels;
+	uint16_t _streamID;
+	uint16_t _compression;
+	uint16_t _channels;
 	int _sampleRate;
-	uint32 _bitRate;
-	uint16 _blockAlign;
-	uint16 _bitsPerCodedSample;
+	uint32_t _bitRate;
+	uint16_t _blockAlign;
+	uint16_t _bitsPerCodedSample;
 	std::unique_ptr<Common::SeekableReadStream> _extraData;
 };
 
@@ -205,7 +205,7 @@ void ASFStream::load() {
 	for (;;) {
 		size_t startPos = _stream->pos();
 		guid = ASFGUID(*_stream);
-		uint64 size = _stream->readUint64LE();
+		uint64_t size = _stream->readUint64LE();
 
 		if (_stream->eos())
 			throw Common::Exception("ASFStream: Unexpected eos");
@@ -241,17 +241,17 @@ void ASFStream::load() {
 
 void ASFStream::parseFileHeader() {
 	_stream->skip(16); // skip client GUID
-	/* uint64 fileSize = */ _stream->readUint64LE();
-	/* uint64 creationTime = */ _stream->readUint64LE();
+	/* uint64_t fileSize = */ _stream->readUint64LE();
+	/* uint64_t creationTime = */ _stream->readUint64LE();
 	_packetCount = _stream->readUint64LE();
-	/* uint64 endTimestamp = */ _stream->readUint64LE();
+	/* uint64_t endTimestamp = */ _stream->readUint64LE();
 	_duration = _stream->readUint64LE();
-	/* uint32 startTimestamp = */ _stream->readUint32LE();
-	/* uint32 unknown = */ _stream->readUint32LE();
-	/* uint32 flags = */ _stream->readUint32LE();
+	/* uint32_t startTimestamp = */ _stream->readUint32LE();
+	/* uint32_t unknown = */ _stream->readUint32LE();
+	/* uint32_t flags = */ _stream->readUint32LE();
 	_minPacketSize = _stream->readUint32LE();
 	_maxPacketSize = _stream->readUint32LE();
-	/* uint32 uncFrameSize = */ _stream->readUint32LE();
+	/* uint32_t uncFrameSize = */ _stream->readUint32LE();
 
 	// We only know how to support packets of one length
 	if (_minPacketSize != _maxPacketSize)
@@ -273,7 +273,7 @@ void ASFStream::parseStreamHeader() {
 
 	_stream->skip(16); // skip a guid
 	_stream->readUint64LE(); // total size
-	uint32 typeSpecificSize = _stream->readUint32LE();
+	uint32_t typeSpecificSize = _stream->readUint32LE();
 	_stream->readUint32LE();
 	_streamID = _stream->readUint16LE();
 	_stream->readUint32LE();
@@ -287,7 +287,7 @@ void ASFStream::parseStreamHeader() {
 	_bitsPerCodedSample = (typeSpecificSize == 14) ? 8 : _stream->readUint16LE();
 
 	if (typeSpecificSize >= 18) {
-		uint32 cbSize = _stream->readUint16LE();
+		uint32_t cbSize = _stream->readUint16LE();
 		cbSize = MIN<int>(cbSize, typeSpecificSize - 18);
 		_extraData.reset(_stream->readStream(cbSize));
 	}
@@ -295,11 +295,11 @@ void ASFStream::parseStreamHeader() {
 	_curAudioStream.reset(createAudioStream());
 }
 
-uint64 ASFStream::getLength() const {
+uint64_t ASFStream::getLength() const {
 	return (_duration * getRate()) / 10000000;
 }
 
-uint64 ASFStream::getDuration() const {
+uint64_t ASFStream::getDuration() const {
 	return _duration / 10000;
 }
 
@@ -337,7 +337,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 	packet->segmentType = _stream->readByte();
 	packet->packetSize = (packet->flags & 0x40) ? _stream->readUint16LE() : 0;
 
-	uint16 paddingSize = 0;
+	uint16_t paddingSize = 0;
 	if (packet->flags & 0x10)
 		paddingSize = _stream->readUint16LE();
 	else if (packet->flags & 0x08)
@@ -349,7 +349,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 	byte segmentCount = (packet->flags & 0x01) ? _stream->readByte() : 1;
 	packet->segments.resize(segmentCount & 0x3F);
 
-	for (uint32 i = 0; i < packet->segments.size(); i++) {
+	for (uint32_t i = 0; i < packet->segments.size(); i++) {
 		Packet::Segment &segment = packet->segments[i];
 
 		segment.streamID = _stream->readByte();
@@ -357,7 +357,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 		segment.isKeyframe = (segment.streamID & 0x80) != 0;
 		segment.streamID &= 0x7F;
 
-		uint32 fragmentOffset = 0;
+		uint32_t fragmentOffset = 0;
 		if (packet->segmentType == 0x55)
 			fragmentOffset = _stream->readByte();
 		else if (packet->segmentType == 0x59)
@@ -369,7 +369,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 
 		byte flags = _stream->readByte();
 		if (flags == 1) {
-			//uint32 objectStartTime = fragmentOffset; // reused purpose
+			//uint32_t objectStartTime = fragmentOffset; // reused purpose
 			_stream->readByte(); // unknown
 
 			size_t dataLength = (packet->segments.size() == 1) ? (_maxPacketSize - (_stream->pos() - packetStartPos) - paddingSize) : _stream->readUint16LE();
@@ -378,8 +378,8 @@ ASFStream::Packet *ASFStream::readPacket() {
 			while (_stream->pos() < dataLength + startObjectPos)
 				segment.data.push_back(_stream->readStream(_stream->readByte()));
 		} else if (flags == 8) {
-			/* uint32 objectLength = */ _stream->readUint32LE();
-			/* uint32 objectStartTime = */ _stream->readUint32LE();
+			/* uint32_t objectLength = */ _stream->readUint32LE();
+			/* uint32_t objectStartTime = */ _stream->readUint32LE();
 
 			size_t dataLength = 0;
 			if (packet->segments.size() == 1)
@@ -448,7 +448,7 @@ void ASFStream::feedAudioData() {
 	segment.data[0] = 0;
 }
 
-size_t ASFStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t ASFStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	size_t samplesDecoded = 0;
 
 	while (true) {

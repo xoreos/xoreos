@@ -94,17 +94,17 @@ class GFF4Struct;
 class GFF4File : boost::noncopyable, public AuroraFile {
 public:
 	/** Take over this stream and read a GFF4 file out of it. */
-	GFF4File(Common::SeekableReadStream *gff4, uint32 type = 0xFFFFFFFF);
+	GFF4File(Common::SeekableReadStream *gff4, uint32_t type = 0xFFFFFFFF);
 	/** Request this resource from the ResourceManager and read a GFF4 file out of it. */
-	GFF4File(const Common::UString &gff4, FileType fileType, uint32 type = 0xFFFFFFFF);
+	GFF4File(const Common::UString &gff4, FileType fileType, uint32_t type = 0xFFFFFFFF);
 	~GFF4File();
 
 	/** Return the GFF4's specific type. */
-	uint32 getType() const;
+	uint32_t getType() const;
 	/** Return the GFF4's specific type version. */
-	uint32 getTypeVersion() const;
+	uint32_t getTypeVersion() const;
 	/** Return the platform this GFF4 is for. */
-	uint32 getPlatform() const;
+	uint32_t getPlatform() const;
 
 	/** Is the GFF4's platform natively big endian? */
 	bool isBigEndian() const;
@@ -124,39 +124,39 @@ private:
 
 	/** A GFF4 header. */
 	struct Header {
-		uint32 platformID;   ///< ID of the platform this GFF4 is for.
-		uint32 type;         ///< The specific type this GFF4 describes.
-		uint32 typeVersion;  ///< The version of the specific type this GFF4 describes.
-		uint32 structCount;  ///< Number of struct templates in this GFF4.
-		uint32 stringCount;  ///< Number of shared strings (V4.1 only).
-		uint32 stringOffset; ///< Offset to shared strings (V4.1 only).
-		uint32 dataOffset;   ///< Offset to the data portion.
+		uint32_t platformID;   ///< ID of the platform this GFF4 is for.
+		uint32_t type;         ///< The specific type this GFF4 describes.
+		uint32_t typeVersion;  ///< The version of the specific type this GFF4 describes.
+		uint32_t structCount;  ///< Number of struct templates in this GFF4.
+		uint32_t stringCount;  ///< Number of shared strings (V4.1 only).
+		uint32_t stringOffset; ///< Offset to shared strings (V4.1 only).
+		uint32_t dataOffset;   ///< Offset to the data portion.
 
 		bool hasSharedStrings;
 
-		void read(Common::SeekableReadStream &gff4, uint32 version);
+		void read(Common::SeekableReadStream &gff4, uint32_t version);
 		bool isBigEndian() const;
 	};
 
 	/** A template of a struct, used when loading a struct. */
 	struct StructTemplate {
 		struct Field {
-			uint32 label;
-			uint16 type;
-			uint16 flags;
-			uint32 offset;
+			uint32_t label;
+			uint16_t type;
+			uint16_t flags;
+			uint32_t offset;
 		};
 
-		uint32 index;
-		uint32 label;
-		uint32 size;
+		uint32_t index;
+		uint32_t label;
+		uint32_t size;
 
 		std::vector<Field> fields;
 	};
 
 	typedef std::vector<StructTemplate> StructTemplates;
 	typedef std::vector<Common::UString> SharedStrings;
-	typedef std::map<uint64, GFF4Struct *> StructMap;
+	typedef std::map<uint64_t, GFF4Struct *> StructMap;
 
 
 
@@ -178,8 +178,8 @@ private:
 
 
 	// .--- Loading helpers
-	void load(uint32 type);
-	void loadHeader(uint32 type);
+	void load(uint32_t type);
+	void loadHeader(uint32_t type);
 	void loadStructs();
 	void loadStrings();
 
@@ -187,16 +187,16 @@ private:
 	// '---
 
 	// .--- Helper methods called by GFF4Struct
-	void registerStruct(uint64 id, GFF4Struct *strct);
-	void unregisterStruct(uint64 id);
-	GFF4Struct *findStruct(uint64 id);
+	void registerStruct(uint64_t id, GFF4Struct *strct);
+	void unregisterStruct(uint64_t id);
+	GFF4Struct *findStruct(uint64_t id);
 
-	Common::SeekableSubReadStreamEndian &getStream(uint32 offset) const;
-	const StructTemplate &getStructTemplate(uint32 i) const;
-	uint32 getDataOffset() const;
+	Common::SeekableSubReadStreamEndian &getStream(uint32_t offset) const;
+	const StructTemplate &getStructTemplate(uint32_t i) const;
+	uint32_t getDataOffset() const;
 
 	bool hasSharedStrings() const;
-	Common::UString getSharedString(uint32 i) const;
+	Common::UString getSharedString(uint32_t i) const;
 	// '---
 
 	friend class GFF4Struct;
@@ -231,9 +231,9 @@ public:
 	};
 
 	/** Return the struct's unique ID within the GFF4. */
-	uint64 getID() const;
+	uint64_t getID() const;
 	/** Return the number of structs that refer to this struct. */
-	uint32 getRefCount() const;
+	uint32_t getRefCount() const;
 
 	/** Return the struct's label.
 	 *
@@ -248,187 +248,187 @@ public:
 	 *  The purpose of the label in a GFF4 struct is comparable to the ID in
 	 *  a GFF3 struct.
 	 */
-	uint32 getLabel() const;
+	uint32_t getLabel() const;
 
 	/** Return the number of fields in this struct. */
 	size_t getFieldCount() const;
 	/** Does this specific field exist? */
-	bool hasField(uint32 field) const;
+	bool hasField(uint32_t field) const;
 
 	/** Return a list of all field labels in this struct. */
-	const std::vector<uint32> &getFieldLabels() const;
+	const std::vector<uint32_t> &getFieldLabels() const;
 
 	/** Return the type of this field, or kFieldTypeNone if it doesn't exist. */
-	FieldType getFieldType(uint32 field) const;
+	FieldType getFieldType(uint32_t field) const;
 	/** Return the type of this field and whether it's list, or kFieldTypeNone if it doesn't exist. */
-	FieldType getFieldType(uint32 field, bool &isList) const;
+	FieldType getFieldType(uint32_t field, bool &isList) const;
 
 	/** Collectively return all field properties in one go.
 	 *
 	 *  @return true if the field exists, false otherwise.
 	 */
-	bool getFieldProperties(uint32 field, FieldType &type, uint32 &label, bool &isList) const;
+	bool getFieldProperties(uint32_t field, FieldType &type, uint32_t &label, bool &isList) const;
 
 
 	// .--- Single values
-	uint64 getUint(uint32 field, uint64 def = 0    ) const;
-	 int64 getSint(uint32 field,  int64 def = 0    ) const;
-	bool   getBool(uint32 field, bool   def = false) const;
+	uint64_t getUint(uint32_t field, uint64_t def = 0    ) const;
+	 int64_t getSint(uint32_t field,  int64_t def = 0    ) const;
+	bool     getBool(uint32_t field, bool     def = false) const;
 
-	double getDouble(uint32 field, double def = 0.0 ) const;
-	float  getFloat (uint32 field, float  def = 0.0f) const;
+	double getDouble(uint32_t field, double def = 0.0 ) const;
+	float  getFloat (uint32_t field, float  def = 0.0f) const;
 
 	/** Return a field string, read from the given encoding. */
-	Common::UString getString(uint32 field, Common::Encoding encoding, const Common::UString &def = "") const;
+	Common::UString getString(uint32_t field, Common::Encoding encoding, const Common::UString &def = "") const;
 
 	/** Return a field string, read from the default UTF-16LE encoding. */
-	Common::UString getString(uint32 field, const Common::UString &def = "") const;
+	Common::UString getString(uint32_t field, const Common::UString &def = "") const;
 
 	/** Return a talk string, which is a reference into the TalkTable and an optional direct string. */
-	bool getTalkString(uint32 field, Common::Encoding encoding, uint32 &strRef, Common::UString &str) const;
+	bool getTalkString(uint32_t field, Common::Encoding encoding, uint32_t &strRef, Common::UString &str) const;
 
 	/** Return a talk string, which is a reference into the TalkTable and an optional direct string. */
-	bool getTalkString(uint32 field, uint32 &strRef, Common::UString &str) const;
+	bool getTalkString(uint32_t field, uint32_t &strRef, Common::UString &str) const;
 
-	bool getVector3(uint32 field, double &v1, double &v2, double &v3) const;
-	bool getVector4(uint32 field, double &v1, double &v2, double &v3, double &v4) const;
+	bool getVector3(uint32_t field, double &v1, double &v2, double &v3) const;
+	bool getVector4(uint32_t field, double &v1, double &v2, double &v3, double &v4) const;
 
-	bool getMatrix4x4(uint32 field, double (&m)[16]) const;
+	bool getMatrix4x4(uint32_t field, double (&m)[16]) const;
 
-	bool getVector3(uint32 field, float &v1, float &v2, float &v3) const;
-	bool getVector4(uint32 field, float &v1, float &v2, float &v3, float &v4) const;
+	bool getVector3(uint32_t field, float &v1, float &v2, float &v3) const;
+	bool getVector4(uint32_t field, float &v1, float &v2, float &v3, float &v4) const;
 
-	bool getMatrix4x4(uint32 field, float (&m)[16]) const;
+	bool getMatrix4x4(uint32_t field, float (&m)[16]) const;
 
 	/** Return a field vector or a matrix type as a std::vector of doubles. */
-	bool getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix) const;
+	bool getVectorMatrix(uint32_t field, std::vector<double> &vectorMatrix) const;
 	/** Return a field vector or a matrix type as a std::vector of doubles. */
-	bool getVectorMatrix(uint32 field, std::vector<float > &vectorMatrix) const;
+	bool getVectorMatrix(uint32_t field, std::vector<float > &vectorMatrix) const;
 
-	bool getMatrix4x4(uint32 field, glm::mat4 &m) const;
+	bool getMatrix4x4(uint32_t field, glm::mat4 &m) const;
 	// '---
 
 	// .--- Lists of values
-	bool getUint(uint32 field, std::vector<uint64> &list) const;
-	bool getSint(uint32 field, std::vector< int64> &list) const;
-	bool getBool(uint32 field, std::vector<bool  > &list) const;
+	bool getUint(uint32_t field, std::vector<uint64_t> &list) const;
+	bool getSint(uint32_t field, std::vector< int64_t> &list) const;
+	bool getBool(uint32_t field, std::vector<bool  > &list) const;
 
-	bool getDouble(uint32 field, std::vector<double> &list) const;
-	bool getFloat (uint32 field, std::vector<float > &list) const;
+	bool getDouble(uint32_t field, std::vector<double> &list) const;
+	bool getFloat (uint32_t field, std::vector<float > &list) const;
 
 	/** Return field strings, read from the given encoding. */
-	bool getString(uint32 field, Common::Encoding encoding, std::vector<Common::UString> &list) const;
+	bool getString(uint32_t field, Common::Encoding encoding, std::vector<Common::UString> &list) const;
 
 	/** Return field strings, read from the default UTF-16LE encoding. */
-	bool getString(uint32 field, std::vector<Common::UString> &list) const;
+	bool getString(uint32_t field, std::vector<Common::UString> &list) const;
 
 	/** Return field talk strings. */
-	bool getTalkString(uint32 field, Common::Encoding encoding,
-	                   std::vector<uint32> &strRefs, std::vector<Common::UString> &strs) const;
+	bool getTalkString(uint32_t field, Common::Encoding encoding,
+	                   std::vector<uint32_t> &strRefs, std::vector<Common::UString> &strs) const;
 
 	/** Return field talk strings. */
-	bool getTalkString(uint32 field,
-	                   std::vector<uint32> &strRefs, std::vector<Common::UString> &strs) const;
+	bool getTalkString(uint32_t field,
+	                   std::vector<uint32_t> &strRefs, std::vector<Common::UString> &strs) const;
 
 	/** Return field vector or a matrix types as std::vectors of doubles. */
-	bool getVectorMatrix(uint32 field, std::vector< std::vector<double> > &list) const;
+	bool getVectorMatrix(uint32_t field, std::vector< std::vector<double> > &list) const;
 	/** Return field vector or a matrix types as std::vectors of floats. */
-	bool getVectorMatrix(uint32 field, std::vector< std::vector<float > > &list) const;
+	bool getVectorMatrix(uint32_t field, std::vector< std::vector<float > > &list) const;
 
-	bool getMatrix4x4(uint32 field, std::vector<glm::mat4> &list) const;
+	bool getMatrix4x4(uint32_t field, std::vector<glm::mat4> &list) const;
 	// '---
 
 	// .--- Structs and lists of structs
-	const GFF4Struct *getStruct (uint32 field) const;
-	const GFF4Struct *getGeneric(uint32 field) const;
-	const GFF4List   &getList   (uint32 field) const;
+	const GFF4Struct *getStruct (uint32_t field) const;
+	const GFF4Struct *getGeneric(uint32_t field) const;
+	const GFF4List   &getList   (uint32_t field) const;
 	// '---
 
 	// .--- Raw data
 	/** Return the raw data of the field as a Seekable(Sub)ReadStream. Dangerous. */
-	Common::SeekableReadStream *getData(uint32 field) const;
+	Common::SeekableReadStream *getData(uint32_t field) const;
 	// '---
 
 private:
 	/** A field in the GFF4 struct. */
 	struct Field {
-		uint32    label { 0 };             ///< A numerical label of the field.
+		uint32_t  label { 0 };             ///< A numerical label of the field.
 		FieldType type { kFieldTypeNone }; ///< Type of the field.
-		uint32    offset { 0xFFFFFFFF };   ///< Offset into the GFF4 data.
+		uint32_t  offset { 0xFFFFFFFF };   ///< Offset into the GFF4 data.
 
 		bool isList { false };      ///< Is this field a singular item or a list?
 		bool isReference { false }; ///< Is this field a reference (pointer) to another field?
 		bool isGeneric { false };   ///< Is this field found in a generic?
 
-		uint16   structIndex { 0 }; ///< Index of the field's struct type (if kFieldTypeStruct).
+		uint16_t structIndex { 0 }; ///< Index of the field's struct type (if kFieldTypeStruct).
 		GFF4List structs;           ///< List of GFF4Struct (if kFieldTypeStruct).
 
 		Field() = default;
-		Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g = false);
+		Field(uint32_t l, uint16_t t, uint16_t f, uint32_t o, bool g = false);
 		~Field() = default;
 	};
 
-	typedef std::map<uint32, Field> FieldMap;
+	typedef std::map<uint32_t, Field> FieldMap;
 
 
 	const GFF4File *_parent;
 
-	uint32 _label;
+	uint32_t _label;
 
-	uint64 _id;
-	uint32 _refCount;
+	uint64_t _id;
+	uint32_t _refCount;
 
 	size_t _fieldCount;
 
 	FieldMap _fields;
 
 	/** The labels of all fields in this struct. */
-	std::vector<uint32> _fieldLabels;
+	std::vector<uint32_t> _fieldLabels;
 
 
 	// .--- Loader
 	/** Load a GFF4 struct. */
-	GFF4Struct(GFF4File &parent, uint32 offset, const GFF4File::StructTemplate &tmplt);
+	GFF4Struct(GFF4File &parent, uint32_t offset, const GFF4File::StructTemplate &tmplt);
 	/** Load a GFF4 generic as a struct. */
 	GFF4Struct(GFF4File &parent, const Field &genericParent);
 	~GFF4Struct();
 
-	void load(GFF4File &parent, uint32 offset, const GFF4File::StructTemplate &tmplt);
+	void load(GFF4File &parent, uint32_t offset, const GFF4File::StructTemplate &tmplt);
 	void loadStructs(GFF4File &parent, Field &field);
 	void loadGeneric(GFF4File &parent, Field &field);
 
 	void load(GFF4File &parent, const Field &genericParent);
 
-	static uint64 generateID(uint32 offset, const GFF4File::StructTemplate *tmplt = 0);
+	static uint64_t generateID(uint32_t offset, const GFF4File::StructTemplate *tmplt = 0);
 	// '---
 
 	// .--- Field and field data accessors
-	const Field *getField(uint32 field) const;
+	const Field *getField(uint32_t field) const;
 
-	uint32 getDataOffset(bool isReference, uint32 offset) const;
-	uint32 getDataOffset(const Field &field) const;
+	uint32_t getDataOffset(bool isReference, uint32_t offset) const;
+	uint32_t getDataOffset(const Field &field) const;
 
 	Common::SeekableSubReadStreamEndian *getData(const Field &field) const;
-	Common::SeekableSubReadStreamEndian *getField(uint32 fieldID, const Field *&field) const;
+	Common::SeekableSubReadStreamEndian *getField(uint32_t fieldID, const Field *&field) const;
 	// '---
 
 	// .--- Field reader helpers
-	uint32 getListCount(Common::SeekableSubReadStreamEndian &data, const Field &field) const;
-	uint32 getFieldSize(FieldType type) const;
+	uint32_t getListCount(Common::SeekableSubReadStreamEndian &data, const Field &field) const;
+	uint32_t getFieldSize(FieldType type) const;
 
-	uint64 getUint(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
-	 int64 getSint(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
+	uint64_t getUint(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
+	 int64_t getSint(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
 
 	double getDouble(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
 	float  getFloat (Common::SeekableSubReadStreamEndian &data, FieldType type) const;
 
 	Common::UString getString(Common::SeekableSubReadStreamEndian &data, Common::Encoding encoding) const;
 	Common::UString getString(Common::SeekableSubReadStreamEndian &data, Common::Encoding encoding,
-	                          uint32 offset) const;
+	                          uint32_t offset) const;
 	Common::UString getString(Common::SeekableSubReadStreamEndian &data, const Field &field,
 	                          Common::Encoding encoding) const;
 
-	uint32 getVectorMatrixLength(const Field &field, uint32 minLength, uint32 maxLength) const;
+	uint32_t getVectorMatrixLength(const Field &field, uint32_t minLength, uint32_t maxLength) const;
 	// '---
 
 

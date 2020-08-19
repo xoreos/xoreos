@@ -37,14 +37,14 @@ namespace Eclipse {
 
 class ExternalHandler : public Aurora::ActionScript::ExternalHandler {
 public:
-	uint32 setInterval(double interval, Aurora::ActionScript::IntervalFunction fun) override;
+	uint32_t setInterval(double interval, Aurora::ActionScript::IntervalFunction fun) override;
 
-	void clearInterval(uint32 id) override;
+	void clearInterval(uint32_t id) override;
 
-	uint32 getTime() override;
+	uint32_t getTime() override;
 
 private:
-	std::map<uint32, Events::TimerHandle> _timers;
+	std::map<uint32_t, Events::TimerHandle> _timers;
 };
 
 } // End of namespace Eclipse

@@ -41,7 +41,7 @@ public:
 
 private:
 	Module *_module;
-	uint32 _startTimestamp;
+	uint32_t _startTimestamp;
 	int _combatRound;
 
 	bool hasTimePassed(int ms);

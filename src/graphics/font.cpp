@@ -111,7 +111,7 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 		}
 
 		for (Common::UString::iterator p = t->begin(); p != t->end(); ++p) {
-			uint32 c = *p;
+			uint32_t c = *p;
 
 			// Ignore \r
 			if (c == '\r')

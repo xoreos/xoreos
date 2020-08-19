@@ -78,7 +78,7 @@ void WidgetProtoItem::leave() {
 	_hovered = false;
 }
 
-void WidgetProtoItem::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetProtoItem::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (!_soundClick.empty())
 		playSound(_soundClick, Sound::kSoundTypeSFX);
 
@@ -104,7 +104,7 @@ void WidgetProtoItem::setDefaultHighlighting(Graphics::Aurora::Highlightable *hi
 	highlightable->setHighlightUpperBound(1.0f, 1.0f, 0.0f, 1.0f);
 }
 
-void WidgetProtoItem::mouseWheel(uint8 state, int x, int y) {
+void WidgetProtoItem::mouseWheel(uint8_t state, int x, int y) {
 	if (_parentList)
 		_parentList->mouseWheel(state, x, y);
 }

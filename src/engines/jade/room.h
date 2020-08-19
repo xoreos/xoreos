@@ -36,7 +36,7 @@ namespace Jade {
 
 class Room {
 public:
-	Room(const Common::UString &resRef, uint32 id, float x, float y, float z, bool walkable);
+	Room(const Common::UString &resRef, uint32_t id, float x, float y, float z, bool walkable);
 	~Room();
 
 	const Common::UString &getResRef() const;
@@ -55,7 +55,7 @@ private:
 
 	bool _walkable;
 
-	void load(const Common::UString &resRef, uint32 id, float x, float y, float z);
+	void load(const Common::UString &resRef, uint32_t id, float x, float y, float z);
 	void unload();
 };
 

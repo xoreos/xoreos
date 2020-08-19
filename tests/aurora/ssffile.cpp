@@ -54,7 +54,7 @@ static const byte kSSFNWNV10[] = {
 };
 
 static const char * const kSSFNWNV10_Files[] = { "soundfile01", "", "soundfile03", "", "soundfile05" };
-static const uint32 kSSFNWNV10_StrRefs[] = { 0x0000002A, 0x0000002B, 0xFFFFFFFF, 0xFFFFFFFF, 0x0000002E };
+static const uint32_t kSSFNWNV10_StrRefs[] = { 0x0000002A, 0x0000002B, 0xFFFFFFFF, 0xFFFFFFFF, 0x0000002E };
 
 GTEST_TEST(SSFFile, getSoundCountNWNV10) {
 	Common::MemoryReadStream stream(kSSFNWNV10);
@@ -92,7 +92,7 @@ GTEST_TEST(SSFFile, getSoundNWNV10) {
 
 	for (size_t i = 0; i < ARRAYSIZE(kSSFNWNV10_Files); i++) {
 		Common::UString soundFile;
-		uint32 strRef;
+		uint32_t strRef;
 
 		ssf.getSound(i, soundFile, strRef);
 
@@ -158,7 +158,7 @@ static const byte kSSFNWN2V11[] = {
 };
 
 static const char * const kSSFNWN2V11_Files[] = { "thisisaverylongsoundfile01", "", "thisisaverylongsoundfile03", "", "thisisaverylongsoundfile05" };
-static const uint32 kSSFNWN2V11_StrRefs[] = { 0x0000002A, 0x0000002B, 0xFFFFFFFF, 0xFFFFFFFF, 0x0000002E };
+static const uint32_t kSSFNWN2V11_StrRefs[] = { 0x0000002A, 0x0000002B, 0xFFFFFFFF, 0xFFFFFFFF, 0x0000002E };
 
 GTEST_TEST(SSFFile, getSoundCountNWN2V11) {
 	Common::MemoryReadStream stream(kSSFNWN2V11);
@@ -196,7 +196,7 @@ GTEST_TEST(SSFFile, getSoundNWN2V11) {
 
 	for (size_t i = 0; i < ARRAYSIZE(kSSFNWN2V11_Files); i++) {
 		Common::UString soundFile;
-		uint32 strRef;
+		uint32_t strRef;
 
 		ssf.getSound(i, soundFile, strRef);
 
@@ -248,7 +248,7 @@ static const byte kSSFKotORV11[] = {
 };
 
 static const char * const kSSFKotORV11_Files[] = { "", "", "", "", "" };
-static const uint32 kSSFKotORV11_StrRefs[] = { 0x0000002A, 0x0000002B, 0xFFFFFFFF, 0x0000002D, 0x0000002E };
+static const uint32_t kSSFKotORV11_StrRefs[] = { 0x0000002A, 0x0000002B, 0xFFFFFFFF, 0x0000002D, 0x0000002E };
 
 GTEST_TEST(SSFFile, getSoundCountKotORV11) {
 	Common::MemoryReadStream stream(kSSFKotORV11);
@@ -286,7 +286,7 @@ GTEST_TEST(SSFFile, getSoundKotORV11) {
 
 	for (size_t i = 0; i < ARRAYSIZE(kSSFKotORV11_Files); i++) {
 		Common::UString soundFile;
-		uint32 strRef;
+		uint32_t strRef;
 
 		ssf.getSound(i, soundFile, strRef);
 

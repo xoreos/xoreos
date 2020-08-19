@@ -72,7 +72,7 @@ public:
 	/** Construct UString from the first n bytes of an UTF-8 string. */
 	UString(const char *str, size_t n);
 	/** Construct UString by creating n copies of Unicode codepoint c. */
-	explicit UString(uint32 c, size_t n = 1);
+	explicit UString(uint32_t c, size_t n = 1);
 	/** Construct UString by copying the characters between [sBegin,sEnd). */
 	UString(iterator sBegin, iterator sEnd);
 	~UString();
@@ -89,12 +89,12 @@ public:
 	UString operator+(const UString &str) const;
 	UString operator+(const std::string &str) const;
 	UString operator+(const char *str) const;
-	UString operator+(uint32 c) const;
+	UString operator+(uint32_t c) const;
 
 	UString &operator+=(const UString &str);
 	UString &operator+=(const std::string &str);
 	UString &operator+=(const char *str);
-	UString &operator+=(uint32 c);
+	UString &operator+=(uint32_t c);
 
 	int strcmp(const UString &str) const;
 	int stricmp(const UString &str) const;
@@ -123,15 +123,15 @@ public:
 	iterator begin() const;
 	iterator end() const;
 
-	iterator findFirst(uint32 c) const;
+	iterator findFirst(uint32_t c) const;
 	iterator findFirst(const UString &what) const;
-	iterator findLast(uint32 c) const;
+	iterator findLast(uint32_t c) const;
 
 	bool beginsWith(const UString &with) const;
 	bool endsWith(const UString &with) const;
 
 	bool contains(const UString &what) const;
-	bool contains(uint32 c) const;
+	bool contains(uint32_t c) const;
 
 	void truncate(const iterator &it);
 	void truncate(size_t n);
@@ -141,7 +141,7 @@ public:
 	void trim();
 
 	/** Replace all occurrences of a character with another character. */
-	void replaceAll(uint32 what, uint32 with);
+	void replaceAll(uint32_t what, uint32_t with);
 	/** Replace all occurrences of a substring with another substring. */
 	void replaceAll(const UString &what, const UString &with);
 
@@ -161,11 +161,11 @@ public:
 	size_t   getPosition(iterator it) const;
 
 	/** Insert character c in front of this position. */
-	void insert(iterator pos, uint32 c);
+	void insert(iterator pos, uint32_t c);
 	/** Insert a string in front of this position. */
 	void insert(iterator pos, const UString &str);
 	/** Replace the character at this position with c. */
-	void replace(iterator pos, uint32 c);
+	void replace(iterator pos, uint32_t c);
 	/** Replace the characters at this position with str. */
 	void replace(iterator pos, const UString &str);
 	/** Erase the character within this range. */
@@ -180,22 +180,22 @@ public:
 	/** Print formatted data into an UString object, similar to sprintf(). */
 	static UString format(const char *s, ...) GCC_PRINTF(1, 2);
 
-	static size_t split(const UString &text, uint32 delim, std::vector<UString> &texts);
+	static size_t split(const UString &text, uint32_t delim, std::vector<UString> &texts);
 
 	static void splitTextTokens(const UString &text, std::vector<UString> &tokens);
 
-	static uint32 toLower(uint32 c);
-	static uint32 toUpper(uint32 c);
+	static uint32_t toLower(uint32_t c);
+	static uint32_t toUpper(uint32_t c);
 
-	static bool isASCII(uint32 c); ///< Is the character an ASCII character?
+	static bool isASCII(uint32_t c); ///< Is the character an ASCII character?
 
-	static bool isSpace(uint32 c); ///< Is the character an ASCII space character?
-	static bool isDigit(uint32 c); ///< Is the character an ASCII digit character?
-	static bool isAlpha(uint32 c); ///< Is the character an ASCII alphabetic character?
-	static bool isAlNum(uint32 c); ///< Is the character an ASCII alphanumeric character?
-	static bool isCntrl(uint32 c); ///< Is the character an ASCII control character?
+	static bool isSpace(uint32_t c); ///< Is the character an ASCII space character?
+	static bool isDigit(uint32_t c); ///< Is the character an ASCII digit character?
+	static bool isAlpha(uint32_t c); ///< Is the character an ASCII alphabetic character?
+	static bool isAlNum(uint32_t c); ///< Is the character an ASCII alphanumeric character?
+	static bool isCntrl(uint32_t c); ///< Is the character an ASCII control character?
 
-	static uint32 fromUTF16(uint16 c);
+	static uint32_t fromUTF16(uint16_t c);
 
 private:
 	std::string _string; ///< Internal string holding the actual data.

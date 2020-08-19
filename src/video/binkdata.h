@@ -73,7 +73,7 @@
 
 #include "src/common/types.h"
 
-const uint16 binkCriticalFreqs[25] = {
+const uint16_t binkCriticalFreqs[25] = {
 	  100,  200,  300,  400,  510,  630,   770,   920,
 	 1080, 1270, 1480, 1720, 2000, 2320,  2700,  3150,
 	 3700, 4400, 5300, 6400, 7700, 9500, 12000, 15500,
@@ -81,7 +81,7 @@ const uint16 binkCriticalFreqs[25] = {
 };
 
 /** Bink DCT and residue 8x8 block scan order */
-static const uint8 binkScan[64] = {
+static const uint8_t binkScan[64] = {
 	 0,  1,  8,  9,  2,  3, 10, 11,
 	 4,  5, 12, 13,  6,  7, 14, 15,
 	20, 21, 28, 29, 22, 23, 30, 31,
@@ -92,7 +92,7 @@ static const uint8 binkScan[64] = {
 	52, 53, 60, 61, 54, 55, 62, 63
 };
 
-static const uint32 binkHuffmanCodes[16][16] = {
+static const uint32_t binkHuffmanCodes[16][16] = {
 	{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F },
 	{ 0x00, 0x01, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F, 0x13, 0x15, 0x17, 0x19, 0x1B, 0x1D, 0x1F },
 	{ 0x00, 0x02, 0x01, 0x09, 0x05, 0x15, 0x0D, 0x1D, 0x03, 0x13, 0x0B, 0x1B, 0x07, 0x17, 0x0F, 0x1F },
@@ -111,7 +111,7 @@ static const uint32 binkHuffmanCodes[16][16] = {
 	{ 0x00, 0x02, 0x01, 0x05, 0x03, 0x07, 0x27, 0x17, 0x37, 0x0F, 0x2F, 0x6F, 0x1F, 0x5F, 0x3F, 0x7F }
 };
 
-static const uint8 binkHuffmanLengths[16][16] = {
+static const uint8_t binkHuffmanLengths[16][16] = {
 	{ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
 	{ 1, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 },
 	{ 2, 2, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 },
@@ -130,7 +130,7 @@ static const uint8 binkHuffmanLengths[16][16] = {
 	{ 2, 2, 3, 3, 3, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7 }
 };
 
-static const uint8 binkPatterns[16][64] = {
+static const uint8_t binkPatterns[16][64] = {
 {
 	0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38,
 	0x39, 0x31, 0x29, 0x21, 0x19, 0x11, 0x09, 0x01,
@@ -293,7 +293,7 @@ static const uint8 binkPatterns[16][64] = {
 }
 };
 
-static const uint32 binkIntraQuant[16][64] = {
+static const uint32_t binkIntraQuant[16][64] = {
 {
 	0x010000, 0x016315, 0x01E83D, 0x02A535, 0x014E7B, 0x016577, 0x02F1E6, 0x02724C,
 	0x010000, 0x00EEDA, 0x024102, 0x017F9B, 0x00BE80, 0x00611E, 0x01083C, 0x00A552,
@@ -456,7 +456,7 @@ static const uint32 binkIntraQuant[16][64] = {
 },
 };
 
-static const uint32 binkInterQuant[16][64] = {
+static const uint32_t binkInterQuant[16][64] = {
 {
 	0x010000, 0x017946, 0x01A5A9, 0x0248DC, 0x016363, 0x0152A7, 0x0243EC, 0x0209EA,
 	0x012000, 0x00E248, 0x01BBDA, 0x015CBC, 0x00A486, 0x0053E0, 0x00F036, 0x008095,

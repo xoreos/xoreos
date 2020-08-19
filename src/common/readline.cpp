@@ -96,7 +96,7 @@ const std::vector<UString> &ReadLine::getCompleteHint(size_t &maxSize) const {
 	return _completeHint;
 }
 
-void ReadLine::addInput(uint32 c) {
+void ReadLine::addInput(uint32_t c) {
 	if (c == 0)
 		return;
 
@@ -544,7 +544,7 @@ UString ReadLine::findCommonSubstring(const std::list<UString> &strings) {
 	UString substring;
 
 	while (minSize-- > 0) {
-		uint32 c = *positions.front();
+		uint32_t c = *positions.front();
 
 		// Make sure the current character still matches in all strings
 		std::list<UString::iterator>::iterator p;
@@ -558,7 +558,7 @@ UString ReadLine::findCommonSubstring(const std::list<UString> &strings) {
 	return substring;
 }
 
-bool ReadLine::isWordCharacter(uint32 c, bool onlySpace) {
+bool ReadLine::isWordCharacter(uint32_t c, bool onlySpace) {
 	if (onlySpace)
 		return c != ' ';
 

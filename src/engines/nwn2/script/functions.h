@@ -51,19 +51,19 @@ private:
 	typedef void (Functions::*funcPtr)(Aurora::NWScript::FunctionContext &ctx);
 
 	struct FunctionPointer {
-		uint32 id;
+		uint32_t id;
 		const char *name;
 		funcPtr func;
 	};
 
 	struct FunctionSignature {
-		uint32 id;
+		uint32_t id;
 		Aurora::NWScript::Type returnType;
 		Aurora::NWScript::Type parameters[13];
 	};
 
 	struct FunctionDefaults {
-		uint32 id;
+		uint32_t id;
 		const Aurora::NWScript::Variable *defaults[10];
 	};
 
@@ -81,7 +81,7 @@ private:
 
 	void getGameDifficulty(Aurora::NWScript::FunctionContext &ctx);
 
-	static int32 getRandom(int min, int max, int32 n = 1);
+	static int32_t getRandom(int min, int max, int32_t n = 1);
 
 	void randomName(Aurora::NWScript::FunctionContext &ctx);
 

@@ -65,16 +65,16 @@
 
 namespace Sound {
 
-static constexpr uint32 kXWBFlagsStreaming    = 0x00000001;
-static constexpr uint32 kXWBFlagsEntryNames   = 0x00010000;
-static constexpr uint32 kXWBFlagsCompact      = 0x00020000;
-static constexpr uint32 kXWBFlagsSyncDisabled = 0x00040000;
-static constexpr uint32 kXWBFlagsSeekTables   = 0x00080000;
+static constexpr uint32_t kXWBFlagsStreaming    = 0x00000001;
+static constexpr uint32_t kXWBFlagsEntryNames   = 0x00010000;
+static constexpr uint32_t kXWBFlagsCompact      = 0x00020000;
+static constexpr uint32_t kXWBFlagsSyncDisabled = 0x00040000;
+static constexpr uint32_t kXWBFlagsSeekTables   = 0x00080000;
 
-static constexpr uint32 kWaveFlagsReadAhead      = 0x00000001; ///< Performance hint: read ahead while streaming.
-static constexpr uint32 kWaveFlagsLoopCache      = 0x00000002; ///< Audio file is used by at least one looping sound.
-static constexpr uint32 kWaveFlagsRemoveLoopTail = 0x00000004; ///< Ignore the data after the looping section.
-static constexpr uint32 kWaveFlagsIgnoreLoop     = 0x00000008; ///< Don't loop this sound.
+static constexpr uint32_t kWaveFlagsReadAhead      = 0x00000001; ///< Performance hint: read ahead while streaming.
+static constexpr uint32_t kWaveFlagsLoopCache      = 0x00000002; ///< Audio file is used by at least one looping sound.
+static constexpr uint32_t kWaveFlagsRemoveLoopTail = 0x00000004; ///< Ignore the data after the looping section.
+static constexpr uint32_t kWaveFlagsIgnoreLoop     = 0x00000008; ///< Don't loop this sound.
 
 XACTWaveBank_Binary::XACTWaveBank_Binary(Common::SeekableReadStream *xwb) : _xwb(xwb) {
 	assert(_xwb);
@@ -136,13 +136,13 @@ struct Segment {
 };
 
 void XACTWaveBank_Binary::load(Common::SeekableReadStream &xwb) {
-	static constexpr uint32 kXWBID = MKTAG('W', 'B', 'N', 'D');
+	static constexpr uint32_t kXWBID = MKTAG('W', 'B', 'N', 'D');
 
-	const uint32 id = xwb.readUint32BE();
+	const uint32_t id = xwb.readUint32BE();
 	if (id != kXWBID)
 		throw Common::Exception("Not a XWB file (%s)", Common::debugTag(id).c_str());
 
-	const uint32 version = xwb.readUint32LE();
+	const uint32_t version = xwb.readUint32LE();
 	if (version != 3)
 		throw Common::Exception("Unsupported XWB file version %u", version);
 
@@ -171,9 +171,9 @@ void XACTWaveBank_Binary::load(Common::SeekableReadStream &xwb) {
 	xwb.skip(4); // Size of a wave name
 	xwb.skip(4); // Alignment
 
-	uint32 indexOffset = segments[kSegmentEntryMetaData].offset;
+	uint32_t indexOffset = segments[kSegmentEntryMetaData].offset;
 
-	uint32 dataOffset = segments[kSegmentWaveData].offset;
+	uint32_t dataOffset = segments[kSegmentWaveData].offset;
 	if (dataOffset == 0)
 		dataOffset = indexOffset + waveCount * waveMetaSize;
 
@@ -183,7 +183,7 @@ void XACTWaveBank_Binary::load(Common::SeekableReadStream &xwb) {
 
 		wave.flags = xwb.readUint32LE();
 
-		const uint32 formatCode = xwb.readUint32LE();
+		const uint32_t formatCode = xwb.readUint32LE();
 
 		wave.offset = xwb.readUint32LE() + dataOffset;
 		wave.size   = xwb.readUint32LE();

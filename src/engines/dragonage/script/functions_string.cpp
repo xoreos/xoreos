@@ -175,11 +175,11 @@ void Functions::toString(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::intToHexString(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = Common::UString::format("0x%08x", (uint32) ctx.getParams()[0].getInt());
+	ctx.getReturn() = Common::UString::format("0x%08x", (uint32_t) ctx.getParams()[0].getInt());
 }
 
 void Functions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {
-	int32 i = 0;
+	int32_t i = 0;
 
 	try {
 		Common::parseString(ctx.getParams()[0].getString(), i);
@@ -229,7 +229,7 @@ void Functions::stringToVector(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::charToInt(Aurora::NWScript::FunctionContext &ctx) {
-	uint32 c = 0;
+	uint32_t c = 0;
 
 	const Common::UString &str = ctx.getParams()[0].getString();
 	if (!str.empty())
@@ -238,11 +238,11 @@ void Functions::charToInt(Aurora::NWScript::FunctionContext &ctx) {
 	if (!Common::UString::isASCII(c))
 		c = 0;
 
-	ctx.getReturn() = (int32) c;
+	ctx.getReturn() = (int32_t) c;
 }
 
 void Functions::intToChar(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = Common::UString((uint32) (ctx.getParams()[0].getInt() & 0x7F), 1);
+	ctx.getReturn() = Common::UString((uint32_t) (ctx.getParams()[0].getInt() & 0x7F), 1);
 }
 
 void Functions::isStringEmpty(Aurora::NWScript::FunctionContext &ctx) {
@@ -250,7 +250,7 @@ void Functions::isStringEmpty(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getStringLength(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) ctx.getParams()[0].getString().size();
+	ctx.getReturn() = (int32_t) ctx.getParams()[0].getString().size();
 }
 
 void Functions::stringUpperCase(Aurora::NWScript::FunctionContext &ctx) {
@@ -266,7 +266,7 @@ void Functions::stringRight(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Common::UString &str = ctx.getParams()[0].getString();
 
-	const int32 n = ctx.getParams()[1].getInt();
+	const int32_t n = ctx.getParams()[1].getInt();
 	if ((n <= 0) || ((size_t)n > str.size())) {
 		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\", %d",
 		       ctx.getName().c_str(), str.c_str(), n);
@@ -281,7 +281,7 @@ void Functions::stringLeft(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Common::UString &str = ctx.getParams()[0].getString();
 
-	const int32 n = ctx.getParams()[1].getInt();
+	const int32_t n = ctx.getParams()[1].getInt();
 	if ((n < 0) || ((size_t)n >= str.size())) {
 		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\", %d",
 		       ctx.getName().c_str(), str.c_str(), n);
@@ -311,8 +311,8 @@ void Functions::subString(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Common::UString &str = ctx.getParams()[0].getString();
 
-	const int32 offset = ctx.getParams()[1].getInt();
-	const int32 count  = ctx.getParams()[2].getInt();
+	const int32_t offset = ctx.getParams()[1].getInt();
+	const int32_t count  = ctx.getParams()[2].getInt();
 
 	if ((offset < 0) || ((size_t)offset >= str.size()) || (count <= 0)) {
 		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\", %d, %d",
@@ -329,7 +329,7 @@ void Functions::subString(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &str   = ctx.getParams()[0].getString();
 	const Common::UString &sub   = ctx.getParams()[1].getString();
-	const int32            start = ctx.getParams()[2].getInt();
+	const int32_t          start = ctx.getParams()[2].getInt();
 
 	ctx.getReturn() = -1;
 
@@ -345,17 +345,17 @@ void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
 	if (it == subStr.end())
 		return;
 
-	ctx.getReturn() = (int32) (subStr.getPosition(it) + start);
+	ctx.getReturn() = (int32_t) (subStr.getPosition(it) + start);
 }
 
 void Functions::getStringByStringId(Aurora::NWScript::FunctionContext &ctx) {
-	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+	const uint32_t strRef = (uint32_t) ctx.getParams()[0].getInt();
 
 	ctx.getReturn() = TalkMan.getString(strRef, Aurora::kLanguageGenderMale);
 }
 
 void Functions::getTlkTableString(Aurora::NWScript::FunctionContext &ctx) {
-	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+	const uint32_t strRef = (uint32_t) ctx.getParams()[0].getInt();
 	const Aurora::LanguageGender gender = (Aurora::LanguageGender) ctx.getParams()[1].getInt();
 
 	ctx.getReturn() = TalkMan.getString(strRef, gender);

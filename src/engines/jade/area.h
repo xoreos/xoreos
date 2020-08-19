@@ -93,7 +93,7 @@ protected:
 
 private:
 	typedef Common::PtrList<Object> ObjectList;
-	typedef std::map<uint32, Object *> ObjectMap;
+	typedef std::map<uint32_t, Object *> ObjectMap;
 
 
 	Module *_module; ///< The module this area is in.
@@ -101,8 +101,8 @@ private:
 	std::unique_ptr<Sound::XACTSoundBank> _musicBank;
 	Sound::ChannelHandle _music;
 
-	int32 _ambientMusicState;
-	int32 _combatMusicState;
+	int32_t _ambientMusicState;
+	int32_t _combatMusicState;
 
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.

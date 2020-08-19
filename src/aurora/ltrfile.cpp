@@ -28,8 +28,8 @@
 #include "src/aurora/ltrfile.h"
 #include "src/aurora/resman.h"
 
-static const uint32 kLTRID     = MKTAG('L', 'T', 'R', ' ');
-static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
+static const uint32_t kLTRID     = MKTAG('L', 'T', 'R', ' ');
+static const uint32_t kVersion10 = MKTAG('V', '1', '.', '0');
 
 // TODO: Check for non-latin language alphabets
 static const std::vector<char> kLetters28 = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','\'','-' };

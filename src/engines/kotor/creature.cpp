@@ -131,7 +131,7 @@ Common::UString Creature::getBodyTextureString(KotORBase::Gender gender, KotORBa
 	return bodyTexture;
 }
 
-Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId) {
+Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32_t faceId) {
 	Common::UString head;
 
 	head = "p";
@@ -190,7 +190,7 @@ Graphics::Aurora::Model *Creature::createHeadModel(const CharacterGenerationInfo
 	return head.release();
 }
 
-void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
+void Creature::getPartModelsPC(PartModels &parts, uint32_t state, uint8_t textureVariation) {
 	KotORBase::Class charClass = getClassByPosition(0);
 	parts.body = getBodyMeshString(_gender, charClass, state);
 	parts.bodyTexture = getBodyTextureString(_gender, _skin, charClass, state);

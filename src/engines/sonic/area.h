@@ -54,7 +54,7 @@ class Object;
 
 class Area : public Sonic::Object, public Events::Notifyable {
 public:
-	Area(Module &module, uint32 id);
+	Area(Module &module, uint32_t id);
 	~Area();
 
 	// General properties
@@ -62,8 +62,8 @@ public:
 	/** Return the area's localized name. */
 	const Common::UString &getName();
 
-	uint32 getWidth() const;  ///< Return the width of the area, in pixels.
-	uint32 getHeight() const; ///< Return the height of the area, in pixels.
+	uint32_t getWidth() const;  ///< Return the width of the area, in pixels.
+	uint32_t getHeight() const; ///< Return the height of the area, in pixels.
 
 	float getStartX() const; ///< Return the starting X position within this area.
 	float getStartY() const; ///< Return the starting Y position within this area.
@@ -103,7 +103,7 @@ protected:
 
 private:
 	typedef Common::PtrList<Object> ObjectList;
-	typedef std::map<uint32, Object *> ObjectMap;
+	typedef std::map<uint32_t, Object *> ObjectMap;
 
 
 	Module *_module;
@@ -112,26 +112,26 @@ private:
 	Common::UString _background;
 	Common::UString _layout;
 
-	uint32 _width;
-	uint32 _height;
+	uint32_t _width;
+	uint32_t _height;
 
 	float _startPosX;
 	float _startPosY;
 
 	Common::UString _miniMap;
 
-	uint32 _miniMapWidth;
-	uint32 _miniMapHeight;
+	uint32_t _miniMapWidth;
+	uint32_t _miniMapHeight;
 
 	Common::UString _soundMap;
 
-	int32 _soundMapBank;
-	int32 _sound;
-	int32 _soundType;
-	int32 _soundBank;
+	int32_t _soundMapBank;
+	int32_t _sound;
+	int32_t _soundType;
+	int32_t _soundBank;
 
-	uint32 _numberRings;
-	uint32 _numberChaoEggs;
+	uint32_t _numberRings;
+	uint32_t _numberChaoEggs;
 
 	std::list<Events::Event> _eventQueue;
 

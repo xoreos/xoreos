@@ -41,12 +41,12 @@ UString generateIDRandomString() {
 	return ss.str();
 }
 
-static std::atomic<uint32> idNumber(1);
-uint32 generateIDNumber() {
+static std::atomic<uint32_t> idNumber(1);
+uint32_t generateIDNumber() {
 	return idNumber.fetch_add(1, std::memory_order_relaxed);
 }
 
-static UString uint64ToString(uint64 i) {
+static UString uint64ToString(uint64_t i) {
 	std::string str;
 	str.reserve(20);
 
@@ -60,7 +60,7 @@ static UString uint64ToString(uint64 i) {
 	return str;
 }
 
-static std::atomic<uint64> idNumberString(1);
+static std::atomic<uint64_t> idNumberString(1);
 UString generateIDNumberString() {
 	return uint64ToString(idNumberString.fetch_add(1, std::memory_order_relaxed));
 }

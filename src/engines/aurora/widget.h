@@ -80,16 +80,16 @@ public:
 	virtual void leave(); ///< The mouse left the widget.
 
 	/** The mouse was moved over the widget. */
-	virtual void mouseMove(uint8 state, float x, float y);
+	virtual void mouseMove(uint8_t state, float x, float y);
 	/** A mouse button was pressed on the widget. */
-	virtual void mouseDown(uint8 state, float x, float y);
+	virtual void mouseDown(uint8_t state, float x, float y);
 	/** A mouse button was released on the widget. */
-	virtual void mouseUp(uint8 state, float x, float y);
+	virtual void mouseUp(uint8_t state, float x, float y);
 	/** A mouse wheel was used on the widget. */
-	virtual void mouseWheel(uint8 state, int x, int y);
+	virtual void mouseWheel(uint8_t state, int x, int y);
 
 	/** A mouse button was double-clicked on the widget. */
-	virtual void mouseDblClick(uint8 state, float x, float y);
+	virtual void mouseDblClick(uint8_t state, float x, float y);
 
 	/** A sub-widget was activated. */
 	virtual void subActive(Widget &widget);
@@ -132,10 +132,10 @@ private:
 	float _y; ///< The widget Y position.
 	float _z; ///< The widget Z position.
 
-	uint8  _lastClickButton;
-	uint32 _lastClickTime;
-	float  _lastClickX;
-	float  _lastClickY;
+	uint8_t  _lastClickButton;
+	uint32_t _lastClickTime;
+	float    _lastClickX;
+	float    _lastClickY;
 
 	friend class GUI;
 };

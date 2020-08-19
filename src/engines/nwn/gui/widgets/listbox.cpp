@@ -22,8 +22,10 @@
  *  A NWN listbox widget.
  */
 
-#include <algorithm>
 #include <cassert>
+#include <cstddef>
+
+#include <algorithm>
 
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -59,7 +61,7 @@ bool WidgetListItem::operator<(const WidgetListItem &item) const {
 	return getTag() < item.getTag();
 }
 
-void WidgetListItem::mouseUp(uint8 state, float UNUSED(x), float UNUSED(y)) {
+void WidgetListItem::mouseUp(uint8_t state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -69,7 +71,7 @@ void WidgetListItem::mouseUp(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	activate();
 }
 
-void WidgetListItem::mouseDblClick(uint8 state, float UNUSED(x), float UNUSED(y)) {
+void WidgetListItem::mouseDblClick(uint8_t state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -80,7 +82,7 @@ void WidgetListItem::mouseDblClick(uint8 state, float UNUSED(x), float UNUSED(y)
 	}
 }
 
-void WidgetListItem::mouseWheel(uint8 state, int x, int y) {
+void WidgetListItem::mouseWheel(uint8_t state, int x, int y) {
 	if (isDisabled())
 		return;
 
@@ -512,7 +514,7 @@ void WidgetListBox::unlock() {
 
 void WidgetListBox::sortByTag() {
 	std::sort(_items.begin(), _items.end(), compPtrItem);
-	for (uint16 it = 0; it < _items.size(); ++it) {
+	for (uint16_t it = 0; it < _items.size(); ++it) {
 		_items[it]->_itemNumber = it;
 	}
 
@@ -702,7 +704,7 @@ void WidgetListBox::subActive(Widget &widget) {
 
 }
 
-void WidgetListBox::mouseDown(uint8 UNUSED(state), float x, float y) {
+void WidgetListBox::mouseDown(uint8_t UNUSED(state), float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -722,7 +724,7 @@ void WidgetListBox::mouseDown(uint8 UNUSED(state), float x, float y) {
 	}
 }
 
-void WidgetListBox::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int y) {
+void WidgetListBox::mouseWheel(uint8_t UNUSED(state), int UNUSED(x), int y) {
 	if (isDisabled())
 		return;
 

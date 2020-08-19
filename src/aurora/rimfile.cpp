@@ -32,8 +32,8 @@
 
 #include "src/aurora/rimfile.h"
 
-static const uint32 kRIMID     = MKTAG('R', 'I', 'M', ' ');
-static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');
+static const uint32_t kRIMID     = MKTAG('R', 'I', 'M', ' ');
+static const uint32_t kVersion1  = MKTAG('V', '1', '.', '0');
 
 namespace Aurora {
 
@@ -56,8 +56,8 @@ void RIMFile::load(Common::SeekableReadStream &rim) {
 		throw Common::Exception("Unsupported RIM file version %s", Common::debugTag(_version).c_str());
 
 	rim.skip(4);                            // Reserved
-	uint32 resCount   = rim.readUint32LE(); // Number of resources in the RIM
-	uint32 offResList = rim.readUint32LE(); // Offset to the resource list
+	uint32_t resCount   = rim.readUint32LE(); // Number of resources in the RIM
+	uint32_t offResList = rim.readUint32LE(); // Offset to the resource list
 
 	_resources.resize(resCount);
 	_iResources.resize(resCount);
@@ -74,10 +74,10 @@ void RIMFile::load(Common::SeekableReadStream &rim) {
 
 }
 
-void RIMFile::readResList(Common::SeekableReadStream &rim, uint32 offset) {
+void RIMFile::readResList(Common::SeekableReadStream &rim, uint32_t offset) {
 	rim.seek(offset);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
@@ -94,18 +94,18 @@ const Archive::ResourceList &RIMFile::getResources() const {
 	return _resources;
 }
 
-const RIMFile::IResource &RIMFile::getIResource(uint32 index) const {
+const RIMFile::IResource &RIMFile::getIResource(uint32_t index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }
 
-uint32 RIMFile::getResourceSize(uint32 index) const {
+uint32_t RIMFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *RIMFile::getResource(uint32 index, bool tryNoCopy) const {
+Common::SeekableReadStream *RIMFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy)

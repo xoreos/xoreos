@@ -46,8 +46,8 @@ public:
 
 	void leave();
 
-	void mouseDown(uint8 state, float x, float y);
-	void mouseUp  (uint8 state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
+	void mouseUp  (uint8_t state, float x, float y);
 };
 
 } // End of namespace NWN

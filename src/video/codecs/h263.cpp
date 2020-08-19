@@ -45,14 +45,14 @@ namespace {
 
 class H263Codec : public Codec {
 public:
-	H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData);
+	H263Codec(uint32_t width, uint32_t height, Common::SeekableReadStream &extraData);
 	~H263Codec();
 
 	void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream);
 
 private:
-	uint32 _width;
-	uint32 _height;
+	uint32_t _width;
+	uint32_t _height;
 
 	void *_decHandle;
 
@@ -62,7 +62,7 @@ private:
 	void decodeInternal(Common::SeekableReadStream &dataStream, Graphics::Surface *surface = 0);
 };
 
-H263Codec::H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData) : _width(width), _height(height) {
+H263Codec::H263Codec(uint32_t width, uint32_t height, Common::SeekableReadStream &extraData) : _width(width), _height(height) {
 	xvid_gbl_init_t xvid_gbl_init;
 	std::memset(&xvid_gbl_init, 0, sizeof(xvid_gbl_init_t));
 	xvid_gbl_init.version = XVID_VERSION;

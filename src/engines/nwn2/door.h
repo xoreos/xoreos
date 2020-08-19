@@ -72,7 +72,7 @@ public:
 	/** Lock/Unlock the door. */
 	void setLocked(bool locked);
 	/** Create a trap on the door. */
-	void createTrap(uint8 trapType, uint32 faction,
+	void createTrap(uint8_t trapType, uint32_t faction,
 	                const Common::UString &disarm,
 	                const Common::UString &triggered);
 
@@ -88,7 +88,7 @@ public:
 	bool click(Object *triggerer = 0);
 
 	/** Get the reputation of the door with the source. */
-	uint8 getReputation(Object *source) const;
+	uint8_t getReputation(Object *source) const;
 
 protected:
 	/** Load door-specific properties. */
@@ -107,7 +107,7 @@ private:
 
 	bool _invisible; ///< Is the door invisible?
 
-	uint32 _genericType; ///< Index into the generic door types.
+	uint32_t _genericType; ///< Index into the generic door types.
 
 	State _state; ///< The current state of the door.
 
@@ -123,7 +123,7 @@ private:
 	void load(const Aurora::GFF3Struct &door);
 
 	/** Load the appearance from this 2DA row. */
-	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
+	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32_t id);
 
 	/** Sync the model's state with the door's state. */
 	void setModelState();

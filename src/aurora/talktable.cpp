@@ -32,8 +32,8 @@
 #include "src/aurora/talktable_tlk.h"
 #include "src/aurora/talktable_gff.h"
 
-static const uint32 kTLKID = MKTAG('T', 'L', 'K', ' ');
-static const uint32 kGFFID = MKTAG('G', 'F', 'F', ' ');
+static const uint32_t kTLKID = MKTAG('T', 'L', 'K', ' ');
+static const uint32_t kGFFID = MKTAG('G', 'F', 'F', ' ');
 
 namespace Aurora {
 
@@ -50,7 +50,7 @@ TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, Common::Encoding enc
 
 	size_t pos = tlkStream->pos();
 
-	uint32 id, version;
+	uint32_t id, version;
 	bool utf16le;
 
 	AuroraFile::readHeader(*tlkStream, id, version, utf16le);

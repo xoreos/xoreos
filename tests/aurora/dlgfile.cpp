@@ -230,9 +230,9 @@ GTEST_TEST_F(DLGFile, getOneLiner) {
 	EXPECT_EQ(dlg.getOneLiner(), static_cast<const Aurora::DLGFile::Line *>(0));
 }
 
-void checkLine(size_t n, const Aurora::DLGFile::Line *entry, uint32 id,
+void checkLine(size_t n, const Aurora::DLGFile::Line *entry, uint32_t id,
                const char *speaker, const char *text, const char *sound,
-               uint32 animation, const char *quest, uint32 questEntry, bool isEnd) {
+               uint32_t animation, const char *quest, uint32_t questEntry, bool isEnd) {
 
 	EXPECT_EQ(entry->id, id) << "At case " << n;
 

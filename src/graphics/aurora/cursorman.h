@@ -81,7 +81,7 @@ public:
 	void showCursor(); ///< Unhide the cursor.
 
 	/** Get the current cursor position. */
-	uint8 getPosition(int &x, int &y) const;
+	uint8_t getPosition(int &x, int &y) const;
 	/** Move the cursor to a specific position. */
 	void  setPosition(int  x, int  y);
 

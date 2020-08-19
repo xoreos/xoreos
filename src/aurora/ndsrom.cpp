@@ -59,10 +59,10 @@ void NDSFile::load(Common::SeekableReadStream &nds) {
 
 	nds.seek(0x40);
 
-	uint32 fileNameTableOffset = nds.readUint32LE();
-	uint32 fileNameTableLength = nds.readUint32LE();
-	uint32 fatOffset           = nds.readUint32LE();
-	//uint32 fatLength = nds.readUint32LE();
+	uint32_t fileNameTableOffset = nds.readUint32LE();
+	uint32_t fileNameTableLength = nds.readUint32LE();
+	uint32_t fatOffset           = nds.readUint32LE();
+	//uint32_t fatLength = nds.readUint32LE();
 
 	try {
 
@@ -76,10 +76,10 @@ void NDSFile::load(Common::SeekableReadStream &nds) {
 
 }
 
-void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 length) {
+void NDSFile::readNames(Common::SeekableReadStream &nds, uint32_t offset, uint32_t length) {
 	nds.seek(offset + 8);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	while (((size_t)nds.pos()) < (size_t)(offset + length)) {
 		Resource res;
 
@@ -97,7 +97,7 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 	}
 }
 
-void NDSFile::readFAT(Common::SeekableReadStream &nds, uint32 offset) {
+void NDSFile::readFAT(Common::SeekableReadStream &nds, uint32_t offset) {
 	nds.seek(offset);
 
 	_iResources.resize(_resources.size());
@@ -152,18 +152,18 @@ const Archive::ResourceList &NDSFile::getResources() const {
 	return _resources;
 }
 
-const NDSFile::IResource &NDSFile::getIResource(uint32 index) const {
+const NDSFile::IResource &NDSFile::getIResource(uint32_t index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }
 
-uint32 NDSFile::getResourceSize(uint32 index) const {
+uint32_t NDSFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *NDSFile::getResource(uint32 index, bool tryNoCopy) const {
+Common::SeekableReadStream *NDSFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	_nds->seek(res.offset);

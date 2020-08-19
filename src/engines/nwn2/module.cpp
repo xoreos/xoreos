@@ -157,13 +157,13 @@ void Module::loadModule(const Common::UString &module) {
 }
 
 void Module::checkXPs() {
-	uint16 hasXP = 0;
+	uint16_t hasXP = 0;
 
 	hasXP |= ConfigMan.getBool("NWN2_hasXP1") ? 1 : 0;
 	hasXP |= ConfigMan.getBool("NWN2_hasXP2") ? 2 : 0;
 	hasXP |= ConfigMan.getBool("NWN2_hasXP3") ? 4 : 0;
 
-	uint16 xp = _ifo.getExpansions();
+	uint16_t xp = _ifo.getExpansions();
 
 	for (int i = 0; i < 16; i++, xp >>= 1, hasXP >>= 1)
 		if ((xp & 1) && !(hasXP & 1))
@@ -352,7 +352,7 @@ void Module::handleEvents() {
 }
 
 void Module::handleActions() {
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 
 	while (!_delayedActions.empty()) {
 		ActionQueue::iterator action = _delayedActions.begin();
@@ -574,7 +574,7 @@ const Common::UString &Module::getDescription() const {
 void Module::delayScript(const Common::UString &script,
                          const Aurora::NWScript::ScriptState &state,
                          Aurora::NWScript::Object *owner,
-                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+                         Aurora::NWScript::Object *triggerer, uint32_t delay) {
 	Action action;
 
 	action.type      = kActionScript;
@@ -592,7 +592,7 @@ Common::UString Module::getName(const Common::UString &module) {
 		const Common::FileList modules(ConfigMan.getString("NWN2_moduleDir"));
 
 		const Aurora::ERFFile mod(new Common::ReadFile(modules.findFirst(module + ".mod", true)));
-		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
 
@@ -609,7 +609,7 @@ Common::UString Module::getDescription(const Common::UString &module) {
 		const Common::FileList modules(ConfigMan.getString("NWN2_moduleDir"));
 
 		const Aurora::ERFFile mod(new Common::ReadFile(modules.findFirst(module + ".mod", true)));
-		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
 

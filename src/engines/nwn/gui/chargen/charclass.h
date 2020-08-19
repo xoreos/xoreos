@@ -51,7 +51,7 @@ private:
 	WidgetListBox *_classesListBox;
 	std::vector<Common::UString> _classNames;
 	std::vector<Common::UString> _helpTexts;
-	std::vector<uint32> _classesId;
+	std::vector<uint32_t> _classesId;
 
 	size_t _firstPrestigeClass;
 };

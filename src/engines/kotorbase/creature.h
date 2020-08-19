@@ -224,9 +224,9 @@ protected:
 
 	Gender _gender;
 	Skin _skin; ///< The skin type of the creature.
-	uint8 _face; ///< The face of the creature.
+	uint8_t _face; ///< The face of the creature.
 
-	virtual void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) = 0;
+	virtual void getPartModelsPC(PartModels &parts, uint32_t state, uint8_t textureVariation) = 0;
 	void loadMovementRate(const Common::UString &name);
 
 private:
@@ -245,7 +245,7 @@ private:
 
 	bool _isPC; ///< Is the creature a PC?
 
-	uint32 _appearance; ///< The creature's general appearance.
+	uint32_t _appearance; ///< The creature's general appearance.
 
 	Race _race; ///< The race of the creature.
 	SubRace _subRace; ///< The subrace of the creature.
@@ -288,8 +288,8 @@ private:
 	void loadEquipment(const Aurora::GFF3Struct &gff);
 	void loadAbilities(const Aurora::GFF3Struct &gff);
 
-	void getModelState(uint32 &state, uint8 &textureVariation);
-	void getPartModels(PartModels &parts, uint32 state, uint8 textureVariation);
+	void getModelState(uint32_t &state, uint8_t &textureVariation);
+	void getPartModels(PartModels &parts, uint32_t state, uint8_t textureVariation);
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
 

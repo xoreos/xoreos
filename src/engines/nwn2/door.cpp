@@ -110,7 +110,7 @@ void Door::loadAppearance() {
 	}
 }
 
-void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
+void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32_t id) {
 	if (_modelName.empty())
 		_modelName = twoda.getRow(id).getString("ModelName");
 	if (_modelName.empty())
@@ -197,7 +197,7 @@ void Door::setLocked(bool locked) {
 		_linkedDoor->setLocked(locked);
 }
 
-void Door::createTrap(uint8 trapType, uint32 faction,
+void Door::createTrap(uint8_t trapType, uint32_t faction,
                       const Common::UString &disarm,
                       const Common::UString &triggered) {
 	Trap::createTrap(trapType, faction, disarm, triggered);
@@ -309,7 +309,7 @@ void Door::evaluateLink() {
 	_evaluatedLink = true;
 }
 
-uint8 Door::getReputation(Object *source) const {
+uint8_t Door::getReputation(Object *source) const {
 	return getArea()->getFactionReputation(source, _faction);
 }
 

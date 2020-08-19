@@ -100,7 +100,7 @@ static void addUniqueLanguageIfValid(std::vector<Aurora::Language> &languages, A
 
 /** Return the language of a TLK. */
 static Aurora::Language getTLKLanguage(const Common::UString &tlk) {
-	const uint32 languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
+	const uint32_t languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
 	if (languageID == Aurora::kLanguageInvalid)
 		return Aurora::kLanguageInvalid;
 

@@ -34,9 +34,9 @@
 
 #include "src/aurora/keyfile.h"
 
-static const uint32 kKEYID     = MKTAG('K', 'E', 'Y', ' ');
-static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
-static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
+static const uint32_t kKEYID     = MKTAG('K', 'E', 'Y', ' ');
+static const uint32_t kVersion1  = MKTAG('V', '1', ' ', ' ');
+static const uint32_t kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 
@@ -56,8 +56,8 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 	if ((_version != kVersion1) && (_version != kVersion11))
 		throw Common::Exception("Unsupported KEY file version %s", Common::debugTag(_version).c_str());
 
-	uint32 bifCount = key.readUint32LE();
-	uint32 resCount = key.readUint32LE();
+	uint32_t bifCount = key.readUint32LE();
+	uint32_t resCount = key.readUint32LE();
 
 	_bifs.reserve(bifCount);
 	_resources.reserve(resCount);
@@ -66,8 +66,8 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 	if (_version == kVersion11)
 		key.skip(4);
 
-	uint32 offFileTable     = key.readUint32LE();
-	uint32 offResTable      = key.readUint32LE();
+	uint32_t offFileTable     = key.readUint32LE();
+	uint32_t offResTable      = key.readUint32LE();
 
 	key.skip( 8); // Build year and day
 	key.skip(32); // Reserved
@@ -87,14 +87,14 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 
 }
 
-void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
+void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32_t offset) {
 	key.seek(offset);
 
 	for (BIFList::iterator bif = _bifs.begin(); bif != _bifs.end(); ++bif) {
 		key.skip(4); // File size of the bif
 
-		uint32 nameOffset = key.readUint32LE();
-		uint32 nameSize   = 0;
+		uint32_t nameOffset = key.readUint32LE();
+		uint32_t nameSize   = 0;
 
 		// nameSize is expanded to 4 bytes in 1.1 and the location is dropped
 		if (_version == kVersion11) {
@@ -116,19 +116,19 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 	}
 }
 
-void KEYFile::readResList(Common::SeekableReadStream &key, uint32 offset) {
+void KEYFile::readResList(Common::SeekableReadStream &key, uint32_t offset) {
 	key.seek(offset);
 
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++res) {
 		res->name = Common::readStringFixed(key, Common::kEncodingASCII, 16);
 		res->type = (FileType) key.readUint16LE();
 
-		uint32 id = key.readUint32LE();
+		uint32_t id = key.readUint32LE();
 
 		// The new flags field holds the bifIndex now. The rest contains fixed
 		// resource info.
 		if (_version == kVersion11) {
-			uint32 flags = key.readUint32LE();
+			uint32_t flags = key.readUint32LE();
 			res->bifIndex = (flags & 0xFFF00000) >> 20;
 		} else
 			res->bifIndex = id >> 20;

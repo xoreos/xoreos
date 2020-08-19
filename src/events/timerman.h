@@ -46,7 +46,7 @@ namespace Events {
  *  Its argument is the current calling interval.
  *  The return value is the new interval. 0 means the timer is stopped.
  */
-typedef std::function<uint32 (uint32)> TimerFunc;
+typedef std::function<uint32_t (uint32_t)> TimerFunc;
 
 class TimerID;
 class TimerHandle;
@@ -69,7 +69,7 @@ public:
 	 *  @param handle The timer handle to use.
 	 *  @param func The function to call.
 	 */
-	void addTimer(uint32 interval, TimerHandle &handle, const TimerFunc &func);
+	void addTimer(uint32_t interval, TimerHandle &handle, const TimerFunc &func);
 
 	/** Remove that timer function. */
 	void removeTimer(TimerHandle &handle);
@@ -81,7 +81,7 @@ private:
 
 	void removeTimer(TimerID &id);
 
-	static uint32 timerCallback(uint32 interval, void *data);
+	static uint32_t timerCallback(uint32_t interval, void *data);
 };
 
 class TimerID {

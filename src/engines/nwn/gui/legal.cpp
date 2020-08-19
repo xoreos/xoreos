@@ -44,7 +44,7 @@ class FadeModel : public Graphics::Aurora::Model_NWN {
 private:
 	bool _fade;
 
-	uint32 _fadeStart;
+	uint32_t _fadeStart;
 
 	float _fadeValue;
 	float _fadeStep;
@@ -53,7 +53,7 @@ private:
 		if (!_fade)
 			return;
 
-		uint32 now = EventMan.getTimestamp();
+		uint32_t now = EventMan.getTimestamp();
 
 		if ((now - _fadeStart) >= 10) {
 			// Get new fade value every 10ms
@@ -89,7 +89,7 @@ public:
 	~FadeModel() {
 	}
 
-	void fadeIn(uint32 length) {
+	void fadeIn(uint32_t length) {
 		GfxMan.lockFrame();
 
 		_fade      = true;
@@ -102,7 +102,7 @@ public:
 		GfxMan.unlockFrame();
 	}
 
-	void fadeOut(uint32 length) {
+	void fadeOut(uint32_t length) {
 		GfxMan.lockFrame();
 
 		_fade      = true;
@@ -147,7 +147,7 @@ void Legal::fadeIn() {
 	_billboard->fadeIn(1000);
 
 	bool abort = false;
-	uint32 start = EventMan.getTimestamp();
+	uint32_t start = EventMan.getTimestamp();
 	while ((EventMan.getTimestamp() - start) < 1000) {
 		Events::Event event;
 		while (EventMan.pollEvent(event))
@@ -170,8 +170,8 @@ void Legal::show() {
 	if (!_billboard)
 		return;
 
-	uint32 start   = EventMan.getTimestamp();
-	bool   fadeOut = false;
+	uint32_t start   = EventMan.getTimestamp();
+	bool     fadeOut = false;
 	while (!EventMan.quitRequested()) {
 		Events::Event event;
 

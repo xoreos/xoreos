@@ -248,11 +248,11 @@ const GFF3Struct *IFOFile::getGFF() const {
 	return &_gff->getTopLevel();
 }
 
-uint32 IFOFile::getVersion() const {
+uint32_t IFOFile::getVersion() const {
 	return _version;
 }
 
-uint32 IFOFile::getCreatorID() const {
+uint32_t IFOFile::getCreatorID() const {
 	return _creatorID;
 }
 
@@ -281,7 +281,7 @@ void IFOFile::getMinVersion(int &major, int &minor) const {
 	minor = _minVersionMinor;
 }
 
-uint16 IFOFile::getExpansions() const {
+uint16_t IFOFile::getExpansions() const {
 	return _expansions;
 }
 
@@ -332,38 +332,38 @@ const std::vector<Common::UString> &IFOFile::getMonsterNPCs() const {
 	return _monsterNPCs;
 }
 
-void IFOFile::getStartTime(uint8 &hour, uint8 &day, uint8 &month, uint32 &year) const {
+void IFOFile::getStartTime(uint8_t &hour, uint8_t &day, uint8_t &month, uint32_t &year) const {
 	hour  = _startHour;
 	day   = _startDay;
 	month = _startMonth;
 	year  = _startYear;
 }
 
-uint8 IFOFile::getDawnHour() const {
+uint8_t IFOFile::getDawnHour() const {
 	return _hourDawn;
 }
 
-uint8 IFOFile::getDuskHour() const {
+uint8_t IFOFile::getDuskHour() const {
 	return _hourDusk;
 }
 
-uint32 IFOFile::getMinutesPerHour() const {
+uint32_t IFOFile::getMinutesPerHour() const {
 	return _minutesPerHour;
 }
 
-int32 IFOFile::getMinWeatherIntensity() const {
+int32_t IFOFile::getMinWeatherIntensity() const {
 	return _minWeatherIntensity;
 }
 
-int32 IFOFile::getMaxWeatherIntensity() const {
+int32_t IFOFile::getMaxWeatherIntensity() const {
 	return _maxWeatherIntensity;
 }
 
-int32 IFOFile::getRainChance() const {
+int32_t IFOFile::getRainChance() const {
 	return _rainChance;
 }
 
-int32 IFOFile::getSnowChance() const {
+int32_t IFOFile::getSnowChance() const {
 	return _snowChance;
 }
 

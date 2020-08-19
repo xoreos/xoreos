@@ -69,11 +69,11 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
-static const uint32 kNFTRID = MKTAG('N', 'F', 'T', 'R');
-static const uint32 kFINFID = MKTAG('F', 'I', 'N', 'F');
-static const uint32 kCGLPID = MKTAG('C', 'G', 'L', 'P');
-static const uint32 kCWDHID = MKTAG('C', 'W', 'D', 'H');
-static const uint32 kCMAPID = MKTAG('C', 'M', 'A', 'P');
+static const uint32_t kNFTRID = MKTAG('N', 'F', 'T', 'R');
+static const uint32_t kFINFID = MKTAG('F', 'I', 'N', 'F');
+static const uint32_t kCGLPID = MKTAG('C', 'G', 'L', 'P');
+static const uint32_t kCWDHID = MKTAG('C', 'W', 'D', 'H');
+static const uint32_t kCMAPID = MKTAG('C', 'M', 'A', 'P');
 
 namespace Graphics {
 
@@ -126,25 +126,25 @@ void NFTRFont::load(Common::SeekableSubReadStreamEndian &nftr) {
 	_height = header.height;
 
 	// Try to find the width of an m. Alternatively, take half of a line's height.
-	std::map<uint32, Char>::const_iterator m = _chars.find('m');
+	std::map<uint32_t, Char>::const_iterator m = _chars.find('m');
 	_missingWidth = (m != _chars.end()) ? m->second.width : MAX<float>(2.0f, _height / 2);
 }
 
 void NFTRFont::readHeader(Common::SeekableSubReadStreamEndian &nftr, Header &header) {
-	const uint32 tag = nftr.readUint32();
+	const uint32_t tag = nftr.readUint32();
 	if (tag != kNFTRID)
 		throw Common::Exception("Invalid NFTR file (%s)", Common::debugTag(tag).c_str());
 
-	const uint16 bom = nftr.readUint16();
+	const uint16_t bom = nftr.readUint16();
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
 
-	const uint8 versionMinor = nftr.readByte();
-	const uint8 versionMajor = nftr.readByte();
+	const uint8_t versionMinor = nftr.readByte();
+	const uint8_t versionMajor = nftr.readByte();
 	if ((versionMajor != 1) || ((versionMinor != 0) && (versionMinor != 1)))
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
-	const uint32 fileSize = nftr.readUint32();
+	const uint32_t fileSize = nftr.readUint32();
 	if (fileSize > nftr.size())
 		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)nftr.size());
 
@@ -158,7 +158,7 @@ void NFTRFont::readHeader(Common::SeekableSubReadStreamEndian &nftr, Header &hea
 void NFTRFont::readInfo(Common::SeekableSubReadStreamEndian &nftr, Header &header) {
 	/* This section contains global information about the font. */
 
-	const uint32 tag = nftr.readUint32();
+	const uint32_t tag = nftr.readUint32();
 	if (tag != kFINFID)
 		throw Common::Exception("Invalid info section (%s)", Common::debugTag(tag).c_str());
 
@@ -192,19 +192,19 @@ void NFTRFont::readGlyphs(Common::SeekableSubReadStreamEndian &nftr, Header &hea
 
 	nftr.seek(header.offsetCGLP);
 
-	const uint32 tag = nftr.readUint32();
+	const uint32_t tag = nftr.readUint32();
 	if (tag != kCGLPID)
 		throw Common::Exception("Invalid glyph section (%s)", Common::debugTag(tag).c_str());
 
-	const uint32 sectionSize = nftr.readUint32();
+	const uint32_t sectionSize = nftr.readUint32();
 
-	const uint8  width  = nftr.readByte();   // Width of the glyph in pixels
-	const uint8  height = nftr.readByte();   // Height of the glyph in pixels
-	const uint16 size   = nftr.readUint16(); // Size of the glyph data in bytes
+	const uint8_t  width  = nftr.readByte();   // Width of the glyph in pixels
+	const uint8_t  height = nftr.readByte();   // Height of the glyph in pixels
+	const uint16_t size   = nftr.readUint16(); // Size of the glyph data in bytes
 
 	nftr.skip(2); // Unknown
 
-	const uint8 depth  = nftr.readByte();
+	const uint8_t depth  = nftr.readByte();
 
 	if ((depth != 1) && (depth != 2) && (depth != 4) && (depth != 8))
 		throw Common::Exception("Unsupported glyph depth %u", depth);
@@ -212,15 +212,15 @@ void NFTRFont::readGlyphs(Common::SeekableSubReadStreamEndian &nftr, Header &hea
 	if ((width * height * depth) > (size * 8))
 		throw Common::Exception("Glyph can't fit (%u * %u * %u > %d", width, height, depth, size * 8);
 
-	const uint8 rotateMode = nftr.readByte();
+	const uint8_t rotateMode = nftr.readByte();
 	if (rotateMode != 0)
 		throw Common::Exception("Unsupported glyph rotation %u", rotateMode);
 
-	const uint32 count = (sectionSize - 16) / size;
+	const uint32_t count = (sectionSize - 16) / size;
 	glyphs.resize(count);
 
 	size_t offset = nftr.pos();
-	for (uint32 i = 0; i < count; i++, offset += size) {
+	for (uint32_t i = 0; i < count; i++, offset += size) {
 		glyphs[i].data = new Common::SeekableSubReadStream(&nftr, offset, offset + size);
 
 		// Copy this information into the glyph to make glyph drawing easier later
@@ -250,25 +250,25 @@ void NFTRFont::readWidths(Common::SeekableSubReadStreamEndian &nftr, Header &hea
 
 	nftr.seek(header.offsetCWDH);
 
-	const uint32 tag = nftr.readUint32();
+	const uint32_t tag = nftr.readUint32();
 	if (tag != kCWDHID)
 		throw Common::Exception("Invalid widths section (%s)", Common::debugTag(tag).c_str());
 
 	nftr.skip(4); // Section size
 
-	const uint16 firstGlyph = nftr.readUint16();
-	const uint16 lastGlyph  = nftr.readUint16();
+	const uint16_t firstGlyph = nftr.readUint16();
+	const uint16_t lastGlyph  = nftr.readUint16();
 
 	nftr.skip(4); // Unknown
 
-	for (uint32 i = firstGlyph; i <= lastGlyph; i++) {
+	for (uint32_t i = firstGlyph; i <= lastGlyph; i++) {
 		if (i >= glyphs.size())
 			break;
 
 		nftr.skip(1); // pixel start
 
-		const uint8 pixelWidth  = nftr.readByte() + 1;
-		const uint8 pixelLength = nftr.readByte() + 1;
+		const uint8_t pixelWidth  = nftr.readByte() + 1;
+		const uint8_t pixelLength = nftr.readByte() + 1;
 
 		glyphs[i].advance = (pixelWidth == 1) ? pixelLength : pixelWidth;
 	}
@@ -291,28 +291,28 @@ void NFTRFont::readCharMaps(Common::SeekableSubReadStreamEndian &nftr, Header &h
 	 * it shows (converted to an UTF-32 code point) directly in the Glyph struct.
 	 */
 
-	uint32 nextOffset = header.offsetCMAP;
+	uint32_t nextOffset = header.offsetCMAP;
 	while ((nextOffset != 0) && (nextOffset < nftr.size())) {
 		nftr.seek(nextOffset);
 
-		const uint32 tag = nftr.readUint32();
+		const uint32_t tag = nftr.readUint32();
 		if (tag != kCMAPID)
 			throw Common::Exception("Invalid character map section (%s)", Common::debugTag(tag).c_str());
 
-		const uint32 sectionSize = nftr.readUint32();
+		const uint32_t sectionSize = nftr.readUint32();
 
-		const uint16 firstChar = nftr.readUint16();
-		const uint16 lastChar  = nftr.readUint16();
+		const uint16_t firstChar = nftr.readUint16();
+		const uint16_t lastChar  = nftr.readUint16();
 		if (firstChar > lastChar)
 			throw Common::Exception("Invalid character map range (%u - %u)", firstChar, lastChar);
 
-		const uint32 type = nftr.readUint32();
+		const uint32_t type = nftr.readUint32();
 		if (type > 2)
 			throw Common::Exception("Invalid character map type %u", type);
 
 		nextOffset = nftr.readUint32() - 8;
 
-		uint32 count, to, from;
+		uint32_t count, to, from;
 		switch (type) {
 			case 0:
 				count = lastChar - firstChar + 1;
@@ -322,14 +322,14 @@ void NFTRFont::readCharMaps(Common::SeekableSubReadStreamEndian &nftr, Header &h
 					throw Common::Exception("Invalid character map range (%u + %u > %u)",
 					                        to, count, (uint)glyphs.size());
 
-				for (uint32 i = 0; i < count; i++)
+				for (uint32_t i = 0; i < count; i++)
 					glyphs[to + i].character = convertToUTF32(firstChar + i, header.encoding);
 				break;
 
 			case 1:
 				count = (sectionSize - 20 - 2) / 2;
 
-				for (uint32 i = 0; i < count; i++) {
+				for (uint32_t i = 0; i < count; i++) {
 					to = nftr.readUint16();
 					if (to == 0xFFFF)
 						continue;
@@ -345,7 +345,7 @@ void NFTRFont::readCharMaps(Common::SeekableSubReadStreamEndian &nftr, Header &h
 			case 2:
 				count = nftr.readUint16();
 
-				for (uint32 i = 0; i < count; i++) {
+				for (uint32_t i = 0; i < count; i++) {
 					from = nftr.readUint16();
 					to   = nftr.readUint16();
 					if (to == 0xFFFF)
@@ -362,8 +362,8 @@ void NFTRFont::readCharMaps(Common::SeekableSubReadStreamEndian &nftr, Header &h
 	}
 }
 
-float NFTRFont::getWidth(uint32 c) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+float NFTRFont::getWidth(uint32_t c) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 	if (cC == _chars.end())
 		return _missingWidth;
 
@@ -389,8 +389,8 @@ void NFTRFont::drawMissing() const {
 	glTranslatef(width + 1.0f, 0.0f, 0.0f);
 }
 
-void NFTRFont::draw(uint32 c) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+void NFTRFont::draw(uint32_t c) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 	if (cC == _chars.end()) {
 		drawMissing();
 		return;
@@ -420,11 +420,11 @@ void NFTRFont::drawGlyphs(const std::vector<Glyph> &glyphs) {
 	 * of the glyphs anyway.
 	 */
 
-	const uint32 width  = glyphs[0].width;
-	const uint32 height = glyphs[0].height;
-	const uint32 pixels = glyphs.size() * width * height;
+	const uint32_t width  = glyphs[0].width;
+	const uint32_t height = glyphs[0].height;
+	const uint32_t pixels = glyphs.size() * width * height;
 
-	const uint32 textureLength = NEXTPOWER2((uint32) ceil(sqrt(pixels)));
+	const uint32_t textureLength = NEXTPOWER2((uint32_t) ceil(sqrt(pixels)));
 	if (textureLength > 2048)
 		throw Common::Exception("Too many glyphs (%u @ %ux%u)", (uint)glyphs.size(), width, height);
 
@@ -433,11 +433,11 @@ void NFTRFont::drawGlyphs(const std::vector<Glyph> &glyphs) {
 	_surface = new Surface(textureLength, textureLength);
 	_texture = TextureMan.add(Texture::create(_surface));
 
-	uint32 x = 0, y = 0;
+	uint32_t x = 0, y = 0;
 	for (std::vector<Glyph>::const_iterator g = glyphs.begin(); g != glyphs.end(); ++g) {
 		drawGlyph(*g, *_surface, x, y);
 
-		std::pair<std::map<uint32, Char>::iterator, bool> result;
+		std::pair<std::map<uint32_t, Char>::iterator, bool> result;
 		result = _chars.insert(std::make_pair(g->character, Char()));
 
 		Char &ch = result.first->second;
@@ -469,23 +469,23 @@ void NFTRFont::drawGlyphs(const std::vector<Glyph> &glyphs) {
 	_texture.getTexture().rebuild();
 }
 
-void NFTRFont::drawGlyph(const Glyph &glyph, Surface &surface, uint32 x, uint32 y) {
+void NFTRFont::drawGlyph(const Glyph &glyph, Surface &surface, uint32_t x, uint32_t y) {
 	glyph.data->seek(0);
 
-	const uint32 maxColors = 1 << glyph.depth;
+	const uint32_t maxColors = 1 << glyph.depth;
 
 	byte *dest = surface.getData() + (y * surface.getWidth() + x) * 4;
 
-	uint16 data = 0xFF00;
-	for (uint32 i = 0; i < glyph.height; i++, dest += 4 * surface.getWidth()) {
+	uint16_t data = 0xFF00;
+	for (uint32_t i = 0; i < glyph.height; i++, dest += 4 * surface.getWidth()) {
 		byte *destRow = dest;
 
-		for (uint32 j = 0; j < glyph.width; j++) {
+		for (uint32_t j = 0; j < glyph.width; j++) {
 			// If there's only our canaries left, read the next byte of data
 			if (data == 0xFF00)
 				data = (glyph.data->readByte() << 8) | 0x00FF;
 
-			const uint16 pixel = data >> (16 - glyph.depth);
+			const uint16_t pixel = data >> (16 - glyph.depth);
 
 			/* Depending on the NFTR header, the glyphs' palette can differ:
 			 * In the one mode, we have a full white to black gradient. This
@@ -495,7 +495,7 @@ void NFTRFont::drawGlyph(const Glyph &glyph, Surface &surface, uint32 x, uint32 
 			 * in higher-res Asian fonts.
 			 *
 			 * Note that we also guard against a potential division by 0. */
-			uint16 value = 0;
+			uint16_t value = 0;
 			if (glyph.palMode >= 7)
 				value = (maxColors == 2) ? 0xFF : (255 * (pixel    ) / (maxColors - 1));
 			else
@@ -519,7 +519,7 @@ void NFTRFont::drawGlyph(const Glyph &glyph, Surface &surface, uint32 x, uint32 
 	}
 }
 
-uint32 NFTRFont::convertToUTF32(uint16 codePoint, uint8 encoding) {
+uint32_t NFTRFont::convertToUTF32(uint16_t codePoint, uint8_t encoding) {
 	/* A rather hacky, ugly and slow way to convert a code point in various
 	 * encodings to a UTF-32 code point. Yes, this calls iconv() for every
 	 * single code point not already in UTF-32.

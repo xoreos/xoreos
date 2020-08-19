@@ -107,7 +107,7 @@ bool Object::isClickable() const {
 	return !_static && _usable;
 }
 
-const std::list<uint32> &Object::getIDs() const {
+const std::list<uint32_t> &Object::getIDs() const {
 	return _ids;
 }
 
@@ -192,14 +192,14 @@ Object *Object::getLastTriggerer() const {
 	return _lastTriggerer;
 }
 
-void Object::speakString(int32 strRef) {
+void Object::speakString(int32_t strRef) {
 	// TODO: Object::speakString(): Show the string in a speech bubble
 
 	status("<%s> \"%s\"", getName().c_str(), TalkMan.getString(strRef).c_str());
 }
 
 void Object::playAnimation(const Common::UString &animation,
-                           bool UNUSED(restart), int32 UNUSED(loopCount)) {
+                           bool UNUSED(restart), int32_t UNUSED(loopCount)) {
 
 	warning("TODO: Object::playAnimation(\"%s\")", animation.c_str());
 }

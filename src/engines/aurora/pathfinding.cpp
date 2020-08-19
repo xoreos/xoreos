@@ -40,7 +40,7 @@
 
 namespace Engines {
 
-Pathfinding::Pathfinding(std::vector<bool> walkableProperties, uint32 polygonEdges) :
+Pathfinding::Pathfinding(std::vector<bool> walkableProperties, uint32_t polygonEdges) :
                          _polygonEdges(polygonEdges), _verticesCount(0), _facesCount(0),
                          _epsilon(0.f), _pathVisible(false), _walkmeshVisible(false),
                          _walkableProperties(walkableProperties), _aStarAlgorithm(0) {
@@ -79,7 +79,7 @@ void Pathfinding::showWalkmesh(bool visible) {
 }
 
 bool Pathfinding::findPath(float startX, float startY, float endX, float endY,
-	                       std::vector<uint32> &facePath, float width, uint32 nbrIt) {
+	                       std::vector<uint32_t> &facePath, float width, uint32_t nbrIt) {
 	if (!_aStarAlgorithm)
 		error("An AStar algorithm must be set");
 
@@ -107,7 +107,7 @@ glm::vec3 Pathfinding::getOrthonormalVec(glm::vec3 segment, bool clockwise) cons
 }
 
 void Pathfinding::smoothPath(float startX, float startY, float endX, float endY,
-                             std::vector<uint32> &facePath, std::vector<glm::vec3> &path) {
+                             std::vector<uint32_t> &facePath, std::vector<glm::vec3> &path) {
 	// Use Vector3 for simplicity and vectorial operations.
 	glm::vec3 start(startX, startY, 0.f);
 	glm::vec3 end(endX, endY, 0.f);
@@ -118,7 +118,7 @@ void Pathfinding::smoothPath(float startX, float startY, float endX, float endY,
 	std::vector<bool> tunnelLeftRight;
 
 	// Vector that will store the vertices that we will keep.
-	std::vector<uint32> funnelIdx;
+	std::vector<uint32_t> funnelIdx;
 
 	tunnel.push_back(start);
 	tunnelLeftRight.push_back(true);
@@ -132,8 +132,8 @@ void Pathfinding::smoothPath(float startX, float startY, float endX, float endY,
 	tunnelLeftRight.push_back(true);
 	tunnelLeftRight.push_back(false);
 
-	uint32 apex = 0;
-	uint32 feeler[2] = {0, 0};
+	uint32_t apex = 0;
+	uint32_t feeler[2] = {0, 0};
 	glm::vec3 feelerVector[2] = {glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f)};
 
 	for (size_t c = 1; c < tunnel.size(); ++c ) {
@@ -194,13 +194,13 @@ void Pathfinding::smoothPath(float startX, float startY, float endX, float endY,
 	_pathDrawing->setVertices(pathToDraw);
 }
 
-void Pathfinding::getVerticesTunnel(std::vector<uint32> &facePath, std::vector<glm::vec3> &tunnel,
+void Pathfinding::getVerticesTunnel(std::vector<uint32_t> &facePath, std::vector<glm::vec3> &tunnel,
                                     std::vector<bool> &tunnelLeftRight) {
 	if (facePath.size() < 2)
 		return;
 
 	std::vector<glm::vec3> cVerts, pVerts;
-	int32 returnPoint = -1;
+	int32_t returnPoint = -1;
 
 	for (size_t face = 1; face < facePath.size(); ++face) {
 		getVertices(facePath[face], cVerts, false);
@@ -208,10 +208,10 @@ void Pathfinding::getVerticesTunnel(std::vector<uint32> &facePath, std::vector<g
 
 		if (face == 1) {
 			// Find the first left and right by comparing to the next face.
-			uint8 startVert = _polygonEdges;
-			for (uint8 pV = 0; pV < _polygonEdges; ++pV) {
+			uint8_t startVert = _polygonEdges;
+			for (uint8_t pV = 0; pV < _polygonEdges; ++pV) {
 				bool equal = false;
-				for (uint8 cV = 0; cV < _polygonEdges; ++cV) {
+				for (uint8_t cV = 0; cV < _polygonEdges; ++cV) {
 					if (close(pVerts[pV], cVerts[cV])) {
 						equal = true;
 						break;
@@ -240,9 +240,9 @@ void Pathfinding::getVerticesTunnel(std::vector<uint32> &facePath, std::vector<g
 			// the left and one to the right. Otherwise tunnel and tunnelLeftRight
 			// sizes will mismatch.
 			bool otherVertSide = true;
-			for (uint8 cV = 0; cV < _polygonEdges; ++cV) {
+			for (uint8_t cV = 0; cV < _polygonEdges; ++cV) {
 				bool equal = false;
-				for (uint8 pV = 0; pV < _polygonEdges; ++pV) {
+				for (uint8_t pV = 0; pV < _polygonEdges; ++pV) {
 					if (close(pVerts[pV], cVerts[cV])) {
 						equal = true;
 						break;
@@ -251,7 +251,7 @@ void Pathfinding::getVerticesTunnel(std::vector<uint32> &facePath, std::vector<g
 				if (equal) {
 					// Check if it is a new vertex or an already added vertex.
 					bool alreadyThere = false;
-					for (int32 t = tunnel.size() - 1; t > returnPoint;--t) {
+					for (int32_t t = tunnel.size() - 1; t > returnPoint;--t) {
 						if (close(cVerts[cV], tunnel[t])) {
 							// The new vertex has to be the vertex from the previous face which we hadn't add last time.
 							// So if we know on which side the vertex we previously added, we can deduce the side of the new added vertex.
@@ -277,17 +277,17 @@ void Pathfinding::getVerticesTunnel(std::vector<uint32> &facePath, std::vector<g
 	}
 }
 
-void Pathfinding::getVertices(uint32 faceID, std::vector<glm::vec3> &vertices, bool xyPlane) const {
+void Pathfinding::getVertices(uint32_t faceID, std::vector<glm::vec3> &vertices, bool xyPlane) const {
 	vertices.clear();
 	vertices.resize(_polygonEdges);
 
-	for (uint32 v = 0; v < _polygonEdges; ++v) {
+	for (uint32_t v = 0; v < _polygonEdges; ++v) {
 		getVertex(_faces[faceID * _polygonEdges + v], vertices[v], xyPlane);
 	}
 }
 
 
-void Pathfinding::getVertex(uint32 vertexID, glm::vec3 &vertex, bool xyPlane) const {
+void Pathfinding::getVertex(uint32_t vertexID, glm::vec3 &vertex, bool xyPlane) const {
 	// Don't take the z component into account.
 	vertex = glm::vec3(_vertices[vertexID * 3],
 	                         _vertices[vertexID * 3 + 1],
@@ -306,7 +306,7 @@ bool Pathfinding::walkableAASquare(glm::vec3 center, float halfWidth) {
 
 	std::vector<glm::vec3> vertices;
 	for (std::vector<Common::AABBNode *>::iterator n = nodesIn.begin(); n != nodesIn.end(); ++n) {
-		uint32 face = (*n)->getProperty();
+		uint32_t face = (*n)->getProperty();
 		getVertices(face, vertices);
 
 		if (_polygonEdges == 3) {
@@ -335,7 +335,7 @@ bool Pathfinding::walkableSegment(glm::vec3 start, glm::vec3 end) {
 
 	std::vector<glm::vec3> vertFace;
 	for (std::vector<Common::AABBNode *>::iterator n = nodesIn.begin(); n != nodesIn.end(); ++n) {
-		uint32 face = (*n)->getProperty();
+		uint32_t face = (*n)->getProperty();
 		getVertices(face, vertFace);
 
 		if (_polygonEdges == 3) {
@@ -354,7 +354,7 @@ bool Pathfinding::walkableSegment(glm::vec3 start, glm::vec3 end) {
 }
 
 bool Pathfinding::walkable(glm::vec3 point) {
-	uint32 face = findFace(point[0], point[1]);
+	uint32_t face = findFace(point[0], point[1]);
 	if (face == UINT32_MAX)
 		return false;
 
@@ -381,7 +381,7 @@ float Pathfinding::getHeight(float x, float y, bool onlyWalkable) const {
 	return FLT_MIN;
 }
 
-uint32 Pathfinding::findFace(float x, float y, bool onlyWalkable) {
+uint32_t Pathfinding::findFace(float x, float y, bool onlyWalkable) {
 	for (std::vector<Common::AABBNode *>::iterator it = _aabbTrees.begin(); it != _aabbTrees.end(); ++it) {
 		if (*it == 0)
 			continue;
@@ -392,7 +392,7 @@ uint32 Pathfinding::findFace(float x, float y, bool onlyWalkable) {
 		std::vector<Common::AABBNode *> nodes;
 		(*it)->getNodes(x, y, nodes);
 		for (uint n = 0; n < nodes.size(); ++n) {
-			uint32 face = nodes[n]->getProperty();
+			uint32_t face = nodes[n]->getProperty();
 			// Check walkability
 			if (onlyWalkable && !faceWalkable(face))
 				continue;
@@ -419,7 +419,7 @@ bool Pathfinding::findIntersection(float x1, float y1, float z1, float x2, float
 		std::vector<Common::AABBNode *> nodes;
 		_aabbTrees[it]->getNodes(x1, y1, z1, x2, y2, z2, nodes);
 		for (uint n = 0; n < nodes.size(); ++n) {
-			uint32 face = nodes[n]->getProperty();
+			uint32_t face = nodes[n]->getProperty();
 			if (!inFace(face, glm::vec3(x1, y1, z1), glm::vec3(x2, y2, z2), intersect))
 				continue;
 
@@ -434,7 +434,7 @@ bool Pathfinding::findIntersection(float x1, float y1, float z1, float x2, float
 	return false;
 }
 
-bool Pathfinding::goThrough(uint32 fromFace, uint32 toFace, float width) {
+bool Pathfinding::goThrough(uint32_t fromFace, uint32_t toFace, float width) {
 	if (width <= 0.f)
 		return true;
 
@@ -472,14 +472,14 @@ bool Pathfinding::goThrough(uint32 fromFace, uint32 toFace, float width) {
 	return walkableSegment(side1, side2);
 }
 
-void Pathfinding::getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint32> &adjFaces,
+void Pathfinding::getAdjacentFaces(uint32_t face, uint32_t parent, std::vector<uint32_t> &adjFaces,
                                    bool onlyWalkable) const {
 	adjFaces.clear();
 
 	// Get adjacent faces
-	for (uint8 f = 0; f < _polygonEdges; ++f) {
+	for (uint8_t f = 0; f < _polygonEdges; ++f) {
 		// Get adjacent face.
-		uint32 adjFace = _adjFaces[face * _polygonEdges + f];
+		uint32_t adjFace = _adjFaces[face * _polygonEdges + f];
 
 		// Check if it is a border or the parent face.
 		if (adjFace == UINT32_MAX || adjFace == parent)
@@ -493,16 +493,16 @@ void Pathfinding::getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint3
 	}
 }
 
-void Pathfinding::getAdjacencyCenter(uint32 faceA, uint32 faceB, float &x, float &y) const {
+void Pathfinding::getAdjacencyCenter(uint32_t faceA, uint32_t faceB, float &x, float &y) const {
 	bool adjacent = false;
 	// Get vertices from the closest edge to the face we are looking at.
-	for (uint8 f = 0; f < _polygonEdges; ++f) {
+	for (uint8_t f = 0; f < _polygonEdges; ++f) {
 		if (_adjFaces[faceA * _polygonEdges + f] != faceB)
 			continue;
 
 		adjacent = true;
-		uint32 vert1 = _faces[faceA * _polygonEdges + f];
-		uint32 vert2 = _faces[faceA * _polygonEdges + (f + 1) % _polygonEdges];
+		uint32_t vert1 = _faces[faceA * _polygonEdges + f];
+		uint32_t vert2 = _faces[faceA * _polygonEdges + (f + 1) % _polygonEdges];
 
 		// Compute the center of the edge.
 		x = (_vertices[vert1 * 3] + _vertices[vert2 * 3]) / 2;
@@ -523,7 +523,7 @@ bool Pathfinding::close(glm::vec3 &pointA, glm::vec3 &pointB) const {
 	return glm::distance(pointA, pointB) < _epsilon;
 }
 
-bool Pathfinding::inFace(uint32 faceID, glm::vec3 point) const {
+bool Pathfinding::inFace(uint32_t faceID, glm::vec3 point) const {
 	// Ensure we are in the XY plane.
 	point[2] = 0.f;
 
@@ -543,7 +543,7 @@ bool Pathfinding::inFace(uint32 faceID, glm::vec3 point) const {
 	return false;
 }
 
-bool Pathfinding::inFace(uint32 faceID, glm::vec3 lineStart, glm::vec3 lineEnd, glm::vec3 &intersect) const {
+bool Pathfinding::inFace(uint32_t faceID, glm::vec3 lineStart, glm::vec3 lineEnd, glm::vec3 &intersect) const {
 	std::vector<glm::vec3> vertices;
 	getVertices(faceID, vertices, false);
 
@@ -561,8 +561,8 @@ bool Pathfinding::inFace(uint32 faceID, glm::vec3 lineStart, glm::vec3 lineEnd, 
 	return false;
 }
 
-bool Pathfinding::getSharedVertices(uint32 face1, uint32 face2, glm::vec3 &vert1, glm::vec3 &vert2) const {
-	for (uint8 i = 0; i < _polygonEdges; ++i) {
+bool Pathfinding::getSharedVertices(uint32_t face1, uint32_t face2, glm::vec3 &vert1, glm::vec3 &vert2) const {
+	for (uint8_t i = 0; i < _polygonEdges; ++i) {
 		if (_adjFaces[face1 * _polygonEdges + i] == face2) {
 			std::vector<glm::vec3> vertices;
 			getVertices(face1, vertices);
@@ -581,14 +581,14 @@ void Pathfinding::setAStarAlgorithm(AStar *aStarAlgorithm) {
 	_aStarAlgorithm = aStarAlgorithm;
 }
 
-bool Pathfinding::faceWalkable(uint32 faceID) const {
+bool Pathfinding::faceWalkable(uint32_t faceID) const {
 	if (faceID >= _faceProperty.size())
 		return false;
 
 	return surfaceWalkable(_faceProperty[faceID]);
 }
 
-bool Pathfinding::surfaceWalkable(uint32 surfaceID) const {
+bool Pathfinding::surfaceWalkable(uint32_t surfaceID) const {
 	if (surfaceID >= _walkableProperties.size())
 		return false;
 

@@ -29,7 +29,7 @@
 
 namespace Common {
 
-AABBNode::AABBNode(float min[3], float max[3], int32 property) : _property(property) {
+AABBNode::AABBNode(float min[3], float max[3], int32_t property) : _property(property) {
 	_min[0] = min[0];
 	_min[1] = min[1];
 	_min[2] = min[2];
@@ -103,7 +103,7 @@ void AABBNode::rotate(float angle, float x, float y, float z) {
 	_rightChild->rotate(angle, x, y, z);
 }
 
-void AABBNode::setOrientation(uint8 orientation) {
+void AABBNode::setOrientation(uint8_t orientation) {
 	rotate((float) orientation * 90.f, 0.f, 0.f, 1.f);
 }
 
@@ -150,11 +150,11 @@ void AABBNode::getNodes(float x1, float y1, float z1, float x2, float y2, float 
 	_rightChild->getNodes(x1, y1, z1, x2, y2, z2, nodes);
 }
 
-int32 AABBNode::getProperty() const {
+int32_t AABBNode::getProperty() const {
 	return _property;
 }
 
-void AABBNode::adjustChildrenProperty(int32 adjust) {
+void AABBNode::adjustChildrenProperty(int32_t adjust) {
 	if (!hasChildren()) {
 		_property += adjust;
 		return;
@@ -178,7 +178,7 @@ void AABBNode::surroundParent() {
 	_parent->getMin(min[0], min[1], min[2]);
 	_parent->getMax(max[0], max[1], max[2]);
 
-	for (uint32 i = 0; i < 3; ++i) {
+	for (uint32_t i = 0; i < 3; ++i) {
 		if (min[i] > leftMin[i] || min[i] > rightMin[i]) {
 			_parent->_min[i] = MIN(leftMin[i], rightMin[i]);
 			changed = true;

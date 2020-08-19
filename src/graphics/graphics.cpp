@@ -237,7 +237,7 @@ int GraphicsManager::getCurrentFSAA() const {
 	return _fsaa;
 }
 
-uint32 GraphicsManager::getFPS() const {
+uint32_t GraphicsManager::getFPS() const {
 	return _fpsCounter->getFPS();
 }
 
@@ -305,7 +305,7 @@ static void outputGLDebug(GLenum source, GLenum type, GLuint id, GLenum severity
                           GLsizei UNUSED(length), const GLchar *message,
                           const void *UNUSED(userParam)) {
 
-	static const uint32 kSourceLookup[] = {
+	static const uint32_t kSourceLookup[] = {
 		GL_DEBUG_SOURCE_API_ARB            , Common::kDebugGLAPI,
 		GL_DEBUG_SOURCE_SHADER_COMPILER_ARB, Common::kDebugGLWindow,
 		GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB  , Common::kDebugGLShader,
@@ -314,7 +314,7 @@ static void outputGLDebug(GLenum source, GLenum type, GLuint id, GLenum severity
 		GL_DEBUG_SOURCE_OTHER_ARB          , Common::kDebugGLOther
 	};
 
-	static const uint32 kTypeLookup[] = {
+	static const uint32_t kTypeLookup[] = {
 		GL_DEBUG_TYPE_ERROR_ARB              , Common::kDebugGLTypeError,
 		GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB, Common::kDebugGLTypeDeprecated,
 		GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB , Common::kDebugGLTypeUndefined,
@@ -323,7 +323,7 @@ static void outputGLDebug(GLenum source, GLenum type, GLuint id, GLenum severity
 		GL_DEBUG_TYPE_OTHER_ARB              , Common::kDebugGLTypeOther
 	};
 
-	static const uint32 kLevelLookup[] = {
+	static const uint32_t kLevelLookup[] = {
 		GL_DEBUG_SEVERITY_HIGH_ARB    , 1,
 		GL_DEBUG_SEVERITY_MEDIUM_ARB  , 2,
 		GL_DEBUG_SEVERITY_LOW_ARB     , 3,
@@ -340,7 +340,7 @@ static void outputGLDebug(GLenum source, GLenum type, GLuint id, GLenum severity
 		if (type == (GLenum) kTypeLookup[i + 0])
 			debugType = (Common::DebugGLType) kTypeLookup[i + 1];
 
-	uint32 debugLevel = 5;
+	uint32_t debugLevel = 5;
 	for (size_t i = 0; i < ARRAYSIZE(kLevelLookup); i += 2)
 		if (severity == (GLenum) kLevelLookup[i + 0])
 			debugLevel = kLevelLookup[i + 1];
@@ -786,7 +786,7 @@ bool GraphicsManager::unproject(float x, float y,
 
 void GraphicsManager::lockFrame() {
 	// Increase the lock counter and make sure we don't overflow
-	const uint32 lock = _frameLock.fetch_add(1, std::memory_order_acquire);
+	const uint32_t lock = _frameLock.fetch_add(1, std::memory_order_acquire);
 	assert(lock != 0xFFFFFFFF);
 
 	/* Wait for the frame to end, because the caller doesn't want to do
@@ -807,7 +807,7 @@ void GraphicsManager::lockFrame() {
 
 void GraphicsManager::unlockFrame() {
 	// Decrease the lock counter and make sure we don't underflow
-	const uint32 lock = _frameLock.fetch_sub(1, std::memory_order_release);
+	const uint32_t lock = _frameLock.fetch_sub(1, std::memory_order_release);
 	assert(lock != 0);
 }
 
@@ -843,13 +843,13 @@ void GraphicsManager::recalculateObjectDistances() {
 	QueueMan.unlockQueue(kQueueVisibleGUIBackObject);
 }
 
-uint32 GraphicsManager::createRenderableID() {
+uint32_t GraphicsManager::createRenderableID() {
 	std::lock_guard<std::recursive_mutex> lock(_renderableIDMutex);
 
 	return ++_renderableID;
 }
 
-void GraphicsManager::abandon(TextureID *ids, uint32 count) {
+void GraphicsManager::abandon(TextureID *ids, uint32_t count) {
 	if (count == 0)
 		return;
 
@@ -862,7 +862,7 @@ void GraphicsManager::abandon(TextureID *ids, uint32 count) {
 	_hasAbandoned = true;
 }
 
-void GraphicsManager::abandon(ListID ids, uint32 count) {
+void GraphicsManager::abandon(ListID ids, uint32_t count) {
 	if (count == 0)
 		return;
 

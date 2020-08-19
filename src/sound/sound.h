@@ -85,9 +85,9 @@ public:
 	bool isPaused(const ChannelHandle &handle);
 
 	/** Return the number of samples this channel has already played. */
-	uint64 getChannelSamplesPlayed(const ChannelHandle &handle);
+	uint64_t getChannelSamplesPlayed(const ChannelHandle &handle);
 	/** Return the time this channel has already played in milliseconds. */
-	uint64 getChannelDurationPlayed(const ChannelHandle &handle);
+	uint64_t getChannelDurationPlayed(const ChannelHandle &handle);
 	// '---
 
 	// .--- Playing sounds
@@ -200,8 +200,8 @@ private:
 
 	/** A sound channel. */
 	struct Channel {
-		uint32 id;    ///< The channel's ID.
-		size_t index; ///< The channel's index.
+		uint32_t id;    ///< The channel's ID.
+		size_t   index; ///< The channel's index.
 
 		ALint state; ///< The sound's state.
 
@@ -218,11 +218,11 @@ private:
 		TypeList::iterator typeIt; ///< Iterator into the type list.
 
 		/** Number of bytes in all buffers that finished playing and were unqueued. */
-		uint64 finishedBuffers;
+		uint64_t finishedBuffers;
 
 		float gain; ///< The channel's gain.
 
-		Channel(uint32 i, size_t idx, SoundType t, const TypeList::iterator &ti, AudioStream *s, bool d);
+		Channel(uint32_t i, size_t idx, SoundType t, const TypeList::iterator &ti, AudioStream *s, bool d);
 	};
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
@@ -235,7 +235,7 @@ private:
 	std::unique_ptr<Channel> _channels[kChannelCount]; ///< The sound channels.
 	Type _types[kSoundTypeMAX]; ///< The sound types.
 
-	uint32 _curID; ///< The ID the next sound will get.
+	uint32_t _curID; ///< The ID the next sound will get.
 
 	std::recursive_mutex _mutex;
 

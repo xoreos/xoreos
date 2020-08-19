@@ -36,55 +36,55 @@ class SerializationStream {
 public:
 	virtual ~SerializationStream();
 
-	/** Read or write a uint64 little endian value. */
-	virtual void readOrWriteUint64LE(uint64 &value) = 0;
-	/** Read or write a uint32 little endian value. */
-	virtual void readOrWriteUint32LE(uint32 &value) = 0;
-	/** Read or write a uint16 little endian value. */
-	virtual void readOrWriteUint16LE(uint16 &value) = 0;
-	/** Read or write a uint64 big endian value. */
-	virtual void readOrWriteUint64BE(uint64 &value) = 0;
-	/** Read or write a uint32 big endian value. */
-	virtual void readOrWriteUint32BE(uint32 &value) = 0;
-	/** Read or write a uint16 big endian value. */
-	virtual void readOrWriteUint16BE(uint16 &value) = 0;
-	/** Read or write a int64 little endian value. */
-	virtual void readOrWriteSint64LE(int64 &value) = 0;
-	/** Read or write a int32 little endian value. */
-	virtual void readOrWriteSint32LE(int32 &value) = 0;
-	/** Read or write a int16 little endian value. */
-	virtual void readOrWriteSint16LE(int16 &value) = 0;
-	/** Read or write a int64 big endian value. */
-	virtual void readOrWriteSint64BE(int64 &value) = 0;
-	/** Read or write a int32 big endian value. */
-	virtual void readOrWriteSint32BE(int32 &value) = 0;
-	/** Read or write a int16 big endian value. */
-	virtual void readOrWriteSint16BE(int16 &value) = 0;
+	/** Read or write a uint64_t little endian value. */
+	virtual void readOrWriteUint64LE(uint64_t &value) = 0;
+	/** Read or write a uint32_t little endian value. */
+	virtual void readOrWriteUint32LE(uint32_t &value) = 0;
+	/** Read or write a uint16_t little endian value. */
+	virtual void readOrWriteUint16LE(uint16_t &value) = 0;
+	/** Read or write a uint64_t big endian value. */
+	virtual void readOrWriteUint64BE(uint64_t &value) = 0;
+	/** Read or write a uint32_t big endian value. */
+	virtual void readOrWriteUint32BE(uint32_t &value) = 0;
+	/** Read or write a uint16_t big endian value. */
+	virtual void readOrWriteUint16BE(uint16_t &value) = 0;
+	/** Read or write a int64_t little endian value. */
+	virtual void readOrWriteSint64LE(int64_t &value) = 0;
+	/** Read or write a int32_t little endian value. */
+	virtual void readOrWriteSint32LE(int32_t &value) = 0;
+	/** Read or write a int16_t little endian value. */
+	virtual void readOrWriteSint16LE(int16_t &value) = 0;
+	/** Read or write a int64_t big endian value. */
+	virtual void readOrWriteSint64BE(int64_t &value) = 0;
+	/** Read or write a int32_t big endian value. */
+	virtual void readOrWriteSint32BE(int32_t &value) = 0;
+	/** Read or write a int16_t big endian value. */
+	virtual void readOrWriteSint16BE(int16_t &value) = 0;
 
-	/** Read or write a uint64 little endian value. */
-	virtual void readOrWriteUint64LE(const uint64 &value) = 0;
-	/** Read or write a uint32 little endian value. */
-	virtual void readOrWriteUint32LE(const uint32 &value) = 0;
-	/** Read or write a uint16 little endian value. */
-	virtual void readOrWriteUint16LE(const uint16 &value) = 0;
-	/** Read or write a uint64 big endian value. */
-	virtual void readOrWriteUint64BE(const uint64 &value) = 0;
-	/** Read or write a uint32 big endian value. */
-	virtual void readOrWriteUint32BE(const uint32 &value) = 0;
-	/** Read or write a uint16 big endian value. */
-	virtual void readOrWriteUint16BE(const uint16 &value) = 0;
-	/** Read or write a int64 little endian value. */
-	virtual void readOrWriteSint64LE(const int64 &value) = 0;
-	/** Read or write a int32 little endian value. */
-	virtual void readOrWriteSint32LE(const int32 &value) = 0;
-	/** Read or write a int16 little endian value. */
-	virtual void readOrWriteSint16LE(const int16 &value) = 0;
-	/** Read or write a int64 big endian value. */
-	virtual void readOrWriteSint64BE(const int64 &value) = 0;
-	/** Read or write a int32 big endian value. */
-	virtual void readOrWriteSint32BE(const int32 &value) = 0;
-	/** Read or write a int16 big endian value. */
-	virtual void readOrWriteSint16BE(const int16 &value) = 0;
+	/** Read or write a uint64_t little endian value. */
+	virtual void readOrWriteUint64LE(const uint64_t &value) = 0;
+	/** Read or write a uint32_t little endian value. */
+	virtual void readOrWriteUint32LE(const uint32_t &value) = 0;
+	/** Read or write a uint16_t little endian value. */
+	virtual void readOrWriteUint16LE(const uint16_t &value) = 0;
+	/** Read or write a uint64_t big endian value. */
+	virtual void readOrWriteUint64BE(const uint64_t &value) = 0;
+	/** Read or write a uint32_t big endian value. */
+	virtual void readOrWriteUint32BE(const uint32_t &value) = 0;
+	/** Read or write a uint16_t big endian value. */
+	virtual void readOrWriteUint16BE(const uint16_t &value) = 0;
+	/** Read or write a int64_t little endian value. */
+	virtual void readOrWriteSint64LE(const int64_t &value) = 0;
+	/** Read or write a int32_t little endian value. */
+	virtual void readOrWriteSint32LE(const int32_t &value) = 0;
+	/** Read or write a int16_t little endian value. */
+	virtual void readOrWriteSint16LE(const int16_t &value) = 0;
+	/** Read or write a int64_t big endian value. */
+	virtual void readOrWriteSint64BE(const int64_t &value) = 0;
+	/** Read or write a int32_t big endian value. */
+	virtual void readOrWriteSint32BE(const int32_t &value) = 0;
+	/** Read or write a int16_t big endian value. */
+	virtual void readOrWriteSint16BE(const int16_t &value) = 0;
 
 	/** Read or write byte. */
 	virtual void readOrWriteByte(byte &value) = 0;
@@ -103,7 +103,7 @@ public:
 	virtual void readOrWriteBytePrefixedASCIIString(Common::UString &value) = 0;
 
 	/** Read or write the string given as value as ascii string, prefixed with
-	 *  a little endian uint32 representing the length of value.
+	 *  a little endian uint32_t representing the length of value.
 	 *
 	 *  @param value the string to write.
 	 */
@@ -117,7 +117,7 @@ public:
 	virtual void readOrWriteBytePrefixedASCIIString(const Common::UString &value) = 0;
 
 	/** Read or write the string given as value as ascii string, prefixed with
-	 *  a little endian uint32 representing the length of value.
+	 *  a little endian uint32_t representing the length of value.
 	 *
 	 *  @param value the string to write.
 	 */
@@ -129,31 +129,31 @@ class SerializationReadStream : public SerializationStream {
 public:
 	SerializationReadStream(SeekableReadStream &stream);
 
-	void readOrWriteUint64LE(uint64 &value);
-	void readOrWriteUint32LE(uint32 &value);
-	void readOrWriteUint16LE(uint16 &value);
-	void readOrWriteUint64BE(uint64 &value);
-	void readOrWriteUint32BE(uint32 &value);
-	void readOrWriteUint16BE(uint16 &value);
-	void readOrWriteSint64LE(int64 &value);
-	void readOrWriteSint32LE(int32 &value);
-	void readOrWriteSint16LE(int16 &value);
-	void readOrWriteSint64BE(int64 &value);
-	void readOrWriteSint32BE(int32 &value);
-	void readOrWriteSint16BE(int16 &value);
+	void readOrWriteUint64LE(uint64_t &value);
+	void readOrWriteUint32LE(uint32_t &value);
+	void readOrWriteUint16LE(uint16_t &value);
+	void readOrWriteUint64BE(uint64_t &value);
+	void readOrWriteUint32BE(uint32_t &value);
+	void readOrWriteUint16BE(uint16_t &value);
+	void readOrWriteSint64LE(int64_t &value);
+	void readOrWriteSint32LE(int32_t &value);
+	void readOrWriteSint16LE(int16_t &value);
+	void readOrWriteSint64BE(int64_t &value);
+	void readOrWriteSint32BE(int32_t &value);
+	void readOrWriteSint16BE(int16_t &value);
 
-	void readOrWriteUint64LE(const uint64 &value);
-	void readOrWriteUint32LE(const uint32 &value);
-	void readOrWriteUint16LE(const uint16 &value);
-	void readOrWriteUint64BE(const uint64 &value);
-	void readOrWriteUint32BE(const uint32 &value);
-	void readOrWriteUint16BE(const uint16 &value);
-	void readOrWriteSint64LE(const int64 &value);
-	void readOrWriteSint32LE(const int32 &value);
-	void readOrWriteSint16LE(const int16 &value);
-	void readOrWriteSint64BE(const int64 &value);
-	void readOrWriteSint32BE(const int32 &value);
-	void readOrWriteSint16BE(const int16 &value);
+	void readOrWriteUint64LE(const uint64_t &value);
+	void readOrWriteUint32LE(const uint32_t &value);
+	void readOrWriteUint16LE(const uint16_t &value);
+	void readOrWriteUint64BE(const uint64_t &value);
+	void readOrWriteUint32BE(const uint32_t &value);
+	void readOrWriteUint16BE(const uint16_t &value);
+	void readOrWriteSint64LE(const int64_t &value);
+	void readOrWriteSint32LE(const int32_t &value);
+	void readOrWriteSint16LE(const int16_t &value);
+	void readOrWriteSint64BE(const int64_t &value);
+	void readOrWriteSint32BE(const int32_t &value);
+	void readOrWriteSint16BE(const int16_t &value);
 
 	void readOrWriteByte(byte &value);
 	void readOrWriteByte(const byte &value);
@@ -175,31 +175,31 @@ class SerializationWriteStream : public SerializationStream {
 public:
 	SerializationWriteStream(WriteStream &stream);
 
-	void readOrWriteUint64LE(uint64 &value);
-	void readOrWriteUint32LE(uint32 &value);
-	void readOrWriteUint16LE(uint16 &value);
-	void readOrWriteUint64BE(uint64 &value);
-	void readOrWriteUint32BE(uint32 &value);
-	void readOrWriteUint16BE(uint16 &value);
-	void readOrWriteSint64LE(int64 &value);
-	void readOrWriteSint32LE(int32 &value);
-	void readOrWriteSint16LE(int16 &value);
-	void readOrWriteSint64BE(int64 &value);
-	void readOrWriteSint32BE(int32 &value);
-	void readOrWriteSint16BE(int16 &value);
+	void readOrWriteUint64LE(uint64_t &value);
+	void readOrWriteUint32LE(uint32_t &value);
+	void readOrWriteUint16LE(uint16_t &value);
+	void readOrWriteUint64BE(uint64_t &value);
+	void readOrWriteUint32BE(uint32_t &value);
+	void readOrWriteUint16BE(uint16_t &value);
+	void readOrWriteSint64LE(int64_t &value);
+	void readOrWriteSint32LE(int32_t &value);
+	void readOrWriteSint16LE(int16_t &value);
+	void readOrWriteSint64BE(int64_t &value);
+	void readOrWriteSint32BE(int32_t &value);
+	void readOrWriteSint16BE(int16_t &value);
 
-	void readOrWriteUint64LE(const uint64 &value);
-	void readOrWriteUint32LE(const uint32 &value);
-	void readOrWriteUint16LE(const uint16 &value);
-	void readOrWriteUint64BE(const uint64 &value);
-	void readOrWriteUint32BE(const uint32 &value);
-	void readOrWriteUint16BE(const uint16 &value);
-	void readOrWriteSint64LE(const int64 &value);
-	void readOrWriteSint32LE(const int32 &value);
-	void readOrWriteSint16LE(const int16 &value);
-	void readOrWriteSint64BE(const int64 &value);
-	void readOrWriteSint32BE(const int32 &value);
-	void readOrWriteSint16BE(const int16 &value);
+	void readOrWriteUint64LE(const uint64_t &value);
+	void readOrWriteUint32LE(const uint32_t &value);
+	void readOrWriteUint16LE(const uint16_t &value);
+	void readOrWriteUint64BE(const uint64_t &value);
+	void readOrWriteUint32BE(const uint32_t &value);
+	void readOrWriteUint16BE(const uint16_t &value);
+	void readOrWriteSint64LE(const int64_t &value);
+	void readOrWriteSint32LE(const int32_t &value);
+	void readOrWriteSint16LE(const int16_t &value);
+	void readOrWriteSint64BE(const int64_t &value);
+	void readOrWriteSint32BE(const int32_t &value);
+	void readOrWriteSint16BE(const int16_t &value);
 
 	void readOrWriteByte(byte &value);
 	void readOrWriteByte(const byte &value);

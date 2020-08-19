@@ -51,8 +51,8 @@ CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
 	_formatRaw = sides[0]->getFormatRaw();
 	_dataType  = sides[0]->getDataType();
 
-	const int32 width  = sides[0]->getMipMap(0).width;
-	const int32 height = sides[0]->getMipMap(0).height;
+	const int32_t width  = sides[0]->getMipMap(0).width;
+	const int32_t height = sides[0]->getMipMap(0).height;
 
 	for (size_t i = 0; i < ARRAYSIZE(sides); i++) {
 		if (!sides[i])

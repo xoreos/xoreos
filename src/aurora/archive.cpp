@@ -37,7 +37,7 @@ Archive::Archive() {
 Archive::~Archive() {
 }
 
-uint32 Archive::getResourceSize(uint32 UNUSED(index)) const {
+uint32_t Archive::getResourceSize(uint32_t UNUSED(index)) const {
 	return 0xFFFFFFFF;
 }
 
@@ -45,7 +45,7 @@ Common::HashAlgo Archive::getNameHashAlgo() const {
 	return Common::kHashNone;
 }
 
-uint32 Archive::findResource(uint64 hash) const {
+uint32_t Archive::findResource(uint64_t hash) const {
 	if (getNameHashAlgo() == Common::kHashNone)
 		return 0xFFFFFFFF;
 
@@ -56,7 +56,7 @@ uint32 Archive::findResource(uint64 hash) const {
 	return 0xFFFFFFFF;
 }
 
-uint32 Archive::findResource(const Common::UString &name, FileType type) const {
+uint32_t Archive::findResource(const Common::UString &name, FileType type) const {
 	for (ResourceList::const_iterator r = getResources().begin(); r != getResources().end(); ++r)
 		if ((r->type == type) && (r->name == name))
 			return r->index;

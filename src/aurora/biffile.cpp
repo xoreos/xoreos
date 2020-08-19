@@ -36,9 +36,9 @@
 #include "src/aurora/biffile.h"
 #include "src/aurora/keyfile.h"
 
-static const uint32 kBIFID     = MKTAG('B', 'I', 'F', 'F');
-static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
-static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
+static const uint32_t kBIFID     = MKTAG('B', 'I', 'F', 'F');
+static const uint32_t kVersion1  = MKTAG('V', '1', ' ', ' ');
+static const uint32_t kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 
@@ -60,15 +60,15 @@ void BIFFile::load(Common::SeekableReadStream &bif) {
 	if ((_version != kVersion1) && (_version != kVersion11))
 		throw Common::Exception("Unsupported BIF file version %s", Common::debugTag(_version).c_str());
 
-	uint32 varResCount = bif.readUint32LE();
-	uint32 fixResCount = bif.readUint32LE();
+	uint32_t varResCount = bif.readUint32LE();
+	uint32_t fixResCount = bif.readUint32LE();
 
 	if (fixResCount != 0)
 		throw Common::Exception("TODO: Fixed BIF resources");
 
 	_iResources.resize(varResCount);
 
-	uint32 offVarResTable = bif.readUint32LE();
+	uint32_t offVarResTable = bif.readUint32LE();
 
 	try {
 
@@ -81,7 +81,7 @@ void BIFFile::load(Common::SeekableReadStream &bif) {
 
 }
 
-void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
+void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32_t offset) {
 	bif.seek(offset);
 
 	for (IResourceList::iterator res = _iResources.begin(); res != _iResources.end(); ++res) {
@@ -96,7 +96,7 @@ void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
 	}
 }
 
-void BIFFile::mergeKEY(const KEYFile &key, uint32 dataFileIndex) {
+void BIFFile::mergeKEY(const KEYFile &key, uint32_t dataFileIndex) {
 	const KEYFile::ResourceList &keyResList = key.getResources();
 
 	for (KEYFile::ResourceList::const_iterator keyRes = keyResList.begin(); keyRes != keyResList.end(); ++keyRes) {
@@ -127,18 +127,18 @@ const Archive::ResourceList &BIFFile::getResources() const {
 	return _resources;
 }
 
-const BIFFile::IResource &BIFFile::getIResource(uint32 index) const {
+const BIFFile::IResource &BIFFile::getIResource(uint32_t index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }
 
-uint32 BIFFile::getResourceSize(uint32 index) const {
+uint32_t BIFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *BIFFile::getResource(uint32 index, bool tryNoCopy) const {
+Common::SeekableReadStream *BIFFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy)

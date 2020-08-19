@@ -37,7 +37,7 @@ PEResourceID::PEResourceID() : _idType(kIDTypeNull) {
 PEResourceID::PEResourceID(UString x) : _idType(kIDTypeString), _name(x) {
 }
 
-PEResourceID::PEResourceID(uint32 x) : _idType(kIDTypeNumerical), _id(x) {
+PEResourceID::PEResourceID(uint32_t x) : _idType(kIDTypeNumerical), _id(x) {
 }
 
 PEResourceID &PEResourceID::operator=(UString string) {
@@ -46,7 +46,7 @@ PEResourceID &PEResourceID::operator=(UString string) {
 	return *this;
 }
 
-PEResourceID &PEResourceID::operator=(uint32 x) {
+PEResourceID &PEResourceID::operator=(uint32_t x) {
 	_id = x;
 	_idType = kIDTypeNumerical;
 	return *this;
@@ -56,7 +56,7 @@ bool PEResourceID::operator==(const UString &x) const {
 	return _idType == kIDTypeString && _name.equalsIgnoreCase(x);
 }
 
-bool PEResourceID::operator==(const uint32 &x) const {
+bool PEResourceID::operator==(const uint32_t &x) const {
 	return _idType == kIDTypeNumerical && _id == x;
 }
 
@@ -81,7 +81,7 @@ UString PEResourceID::getString() const {
 	return _name;
 }
 
-uint32 PEResourceID::getID() const {
+uint32_t PEResourceID::getID() const {
 	if (_idType != kIDTypeNumerical)
 		return 0xffffffff;
 
@@ -117,9 +117,9 @@ bool PEResources::loadFromEXE(SeekableReadStream &exe) {
 
 	exe.skip(58);
 
-	uint32 peOffset = exe.readUint32LE();
+	uint32_t peOffset = exe.readUint32LE();
 
-	if (!peOffset || peOffset >= (uint32)exe.size())
+	if (!peOffset || peOffset >= (uint32_t)exe.size())
 		return false;
 
 	exe.seek(peOffset);
@@ -128,13 +128,13 @@ bool PEResources::loadFromEXE(SeekableReadStream &exe) {
 		return false;
 
 	exe.skip(2);
-	uint16 sectionCount = exe.readUint16LE();
+	uint16_t sectionCount = exe.readUint16LE();
 	exe.skip(12);
-	uint16 optionalHeaderSize = exe.readUint16LE();
+	uint16_t optionalHeaderSize = exe.readUint16LE();
 	exe.skip(optionalHeaderSize + 2);
 
 	// Read in all the sections
-	for (uint16 i = 0; i < sectionCount; i++) {
+	for (uint16_t i = 0; i < sectionCount; i++) {
 		char sectionName[9];
 		exe.read(sectionName, 8);
 		sectionName[8] = 0;
@@ -160,25 +160,25 @@ bool PEResources::loadFromEXE(SeekableReadStream &exe) {
 }
 
 void PEResources::parseResourceLevel(SeekableReadStream &exe,
-                                     Section &section, uint32 offset, int level) {
+                                     Section &section, uint32_t offset, int level) {
 	exe.seek(offset + 12);
 
-	uint16 entryCount = exe.readUint16LE(); // named entry count
+	uint16_t entryCount = exe.readUint16LE(); // named entry count
 	entryCount += exe.readUint16LE();       // id entry count
 
-	for (uint32 i = 0; i < entryCount; i++) {
-		uint32 value = exe.readUint32LE();
+	for (uint32_t i = 0; i < entryCount; i++) {
+		uint32_t value = exe.readUint32LE();
 
 		PEResourceID id;
 
 		if (value & 0x80000000) {
 			value &= 0x7fffffff;
 
-			uint32 startPos = exe.pos();
+			uint32_t startPos = exe.pos();
 			exe.seek(section.offset + (value & 0x7fffffff));
 
 			// Read in the name, UTF-16LE
-			uint16  nameLength = exe.readUint16LE() * 2;
+			uint16_t  nameLength = exe.readUint16LE() * 2;
 			UString name       = readStringFixed(exe, kEncodingUTF16LE, nameLength);
 
 			exe.seek(startPos);
@@ -188,8 +188,8 @@ void PEResources::parseResourceLevel(SeekableReadStream &exe,
 			id = value;
 		}
 
-		uint32 nextOffset = exe.readUint32LE();
-		uint32 lastOffset = exe.pos();
+		uint32_t nextOffset = exe.readUint32LE();
+		uint32_t lastOffset = exe.pos();
 
 		if (level == 0)
 			_curType = id;

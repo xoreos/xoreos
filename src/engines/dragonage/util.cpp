@@ -33,7 +33,7 @@ namespace Engines {
 
 namespace DragonAge {
 
-const Aurora::GDAFile &getMGDA(uint32 id) {
+const Aurora::GDAFile &getMGDA(uint32_t id) {
 	const Aurora::GDAFile &m2da  = TwoDAReg.getMGDA("m2da_");
 
 	const Common::UString sheetName = m2da.getString(m2da.findRow(id), "Worksheet");

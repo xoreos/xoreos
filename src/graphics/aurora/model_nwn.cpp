@@ -69,55 +69,55 @@ static const int kNodeFlagHasAnim      = 0x00000080;
 static const int kNodeFlagHasDangly    = 0x00000100;
 static const int kNodeFlagHasAABB      = 0x00000200;
 
-static const uint16 kControllerTypePosition             = 8;
-static const uint16 kControllerTypeOrientation          = 20;
-static const uint16 kControllerTypeScale                = 36;
-static const uint16 kControllerTypeColor                = 76;
-static const uint16 kControllerTypeRadius               = 88;
-static const uint16 kControllerTypeShadowRadius         = 96;
-static const uint16 kControllerTypeVerticalDisplacement = 100;
-static const uint16 kControllerTypeMultiplier           = 140;
-static const uint16 kControllerTypeAlphaEnd             = 80;
-static const uint16 kControllerTypeAlphaStart           = 84;
-static const uint16 kControllerTypeBirthRate            = 88;
-static const uint16 kControllerTypeBounce_Co            = 92;
-static const uint16 kControllerTypeColorEnd             = 96;
-static const uint16 kControllerTypeColorStart           = 108;
-static const uint16 kControllerTypeCombineTime          = 120;
-static const uint16 kControllerTypeDrag                 = 124;
-static const uint16 kControllerTypeFPS                  = 128;
-static const uint16 kControllerTypeFrameEnd             = 132;
-static const uint16 kControllerTypeFrameStart           = 136;
-static const uint16 kControllerTypeGrav                 = 140;
-static const uint16 kControllerTypeLifeExp              = 144;
-static const uint16 kControllerTypeMass                 = 148;
-static const uint16 kControllerTypeP2P_Bezier2          = 152;
-static const uint16 kControllerTypeP2P_Bezier3          = 156;
-static const uint16 kControllerTypeParticleRot          = 160;
-static const uint16 kControllerTypeRandVel              = 164;
-static const uint16 kControllerTypeSizeStart            = 168;
-static const uint16 kControllerTypeSizeEnd              = 172;
-static const uint16 kControllerTypeSizeStart_Y          = 176;
-static const uint16 kControllerTypeSizeEnd_Y            = 180;
-static const uint16 kControllerTypeSpread               = 184;
-static const uint16 kControllerTypeThreshold            = 188;
-static const uint16 kControllerTypeVelocity             = 192;
-static const uint16 kControllerTypeXSize                = 196;
-static const uint16 kControllerTypeYSize                = 200;
-static const uint16 kControllerTypeBlurLength           = 204;
-static const uint16 kControllerTypeLightningDelay       = 208;
-static const uint16 kControllerTypeLightningRadius      = 212;
-static const uint16 kControllerTypeLightningScale       = 216;
-static const uint16 kControllerTypeDetonate             = 228;
-static const uint16 kControllerTypeAlphaMid             = 464;
-static const uint16 kControllerTypeColorMid             = 468;
-static const uint16 kControllerTypePercentStart         = 480;
-static const uint16 kControllerTypePercentMid           = 481;
-static const uint16 kControllerTypePercentEnd           = 482;
-static const uint16 kControllerTypeSizeMid              = 484;
-static const uint16 kControllerTypeSizeMid_Y            = 488;
-static const uint16 kControllerTypeSelfIllumColor       = 100;
-static const uint16 kControllerTypeAlpha                = 128;
+static const uint16_t kControllerTypePosition             = 8;
+static const uint16_t kControllerTypeOrientation          = 20;
+static const uint16_t kControllerTypeScale                = 36;
+static const uint16_t kControllerTypeColor                = 76;
+static const uint16_t kControllerTypeRadius               = 88;
+static const uint16_t kControllerTypeShadowRadius         = 96;
+static const uint16_t kControllerTypeVerticalDisplacement = 100;
+static const uint16_t kControllerTypeMultiplier           = 140;
+static const uint16_t kControllerTypeAlphaEnd             = 80;
+static const uint16_t kControllerTypeAlphaStart           = 84;
+static const uint16_t kControllerTypeBirthRate            = 88;
+static const uint16_t kControllerTypeBounce_Co            = 92;
+static const uint16_t kControllerTypeColorEnd             = 96;
+static const uint16_t kControllerTypeColorStart           = 108;
+static const uint16_t kControllerTypeCombineTime          = 120;
+static const uint16_t kControllerTypeDrag                 = 124;
+static const uint16_t kControllerTypeFPS                  = 128;
+static const uint16_t kControllerTypeFrameEnd             = 132;
+static const uint16_t kControllerTypeFrameStart           = 136;
+static const uint16_t kControllerTypeGrav                 = 140;
+static const uint16_t kControllerTypeLifeExp              = 144;
+static const uint16_t kControllerTypeMass                 = 148;
+static const uint16_t kControllerTypeP2P_Bezier2          = 152;
+static const uint16_t kControllerTypeP2P_Bezier3          = 156;
+static const uint16_t kControllerTypeParticleRot          = 160;
+static const uint16_t kControllerTypeRandVel              = 164;
+static const uint16_t kControllerTypeSizeStart            = 168;
+static const uint16_t kControllerTypeSizeEnd              = 172;
+static const uint16_t kControllerTypeSizeStart_Y          = 176;
+static const uint16_t kControllerTypeSizeEnd_Y            = 180;
+static const uint16_t kControllerTypeSpread               = 184;
+static const uint16_t kControllerTypeThreshold            = 188;
+static const uint16_t kControllerTypeVelocity             = 192;
+static const uint16_t kControllerTypeXSize                = 196;
+static const uint16_t kControllerTypeYSize                = 200;
+static const uint16_t kControllerTypeBlurLength           = 204;
+static const uint16_t kControllerTypeLightningDelay       = 208;
+static const uint16_t kControllerTypeLightningRadius      = 212;
+static const uint16_t kControllerTypeLightningScale       = 216;
+static const uint16_t kControllerTypeDetonate             = 228;
+static const uint16_t kControllerTypeAlphaMid             = 464;
+static const uint16_t kControllerTypeColorMid             = 468;
+static const uint16_t kControllerTypePercentStart         = 480;
+static const uint16_t kControllerTypePercentMid           = 481;
+static const uint16_t kControllerTypePercentEnd           = 482;
+static const uint16_t kControllerTypeSizeMid              = 484;
+static const uint16_t kControllerTypeSizeMid_Y            = 488;
+static const uint16_t kControllerTypeSelfIllumColor       = 100;
+static const uint16_t kControllerTypeAlpha                = 128;
 
 namespace Graphics {
 
@@ -214,8 +214,8 @@ Model_NWN::~Model_NWN() {
 void Model_NWN::loadBinary(ParserContext &ctx) {
 	ctx.mdl->seek(4);
 
-	uint32 sizeModelData = ctx.mdl->readUint32LE();
-	uint32 sizeRawData   = ctx.mdl->readUint32LE();
+	uint32_t sizeModelData = ctx.mdl->readUint32LE();
+	uint32_t sizeRawData   = ctx.mdl->readUint32LE();
 
 	ctx.offModelData = 12;
 	ctx.offRawData   = ctx.offModelData + sizeModelData;
@@ -227,21 +227,21 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	       _name.c_str());
 	ctx.mdlName = _name;
 
-	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
-	uint32 nodeCount       = ctx.mdl->readUint32LE();
+	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32_t nodeCount       = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(24 + 4); // Unknown + Reference count
 
-	uint8 type = ctx.mdl->readByte();
+	uint8_t type = ctx.mdl->readByte();
 
 	ctx.mdl->skip(3 + 2); // Padding + Unknown
 
-	uint8 classification = ctx.mdl->readByte();
-	uint8 fogged         = ctx.mdl->readByte();
+	uint8_t classification = ctx.mdl->readByte();
+	uint8_t fogged         = ctx.mdl->readByte();
 
 	ctx.mdl->skip(4); // Unknown
 
-	uint32 animOffset, animCount;
+	uint32_t animOffset, animCount;
 	readArrayDef(*ctx.mdl, animOffset, animCount);
 
 	ctx.mdl->skip(4); // Parent model pointer
@@ -272,10 +272,10 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 
 	addState(ctx);
 
-	std::vector<uint32> animOffsets;
+	std::vector<uint32_t> animOffsets;
 	readArray(*ctx.mdl, ctx.offModelData + animOffset, animCount, animOffsets);
 
-	for (std::vector<uint32>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
+	for (std::vector<uint32_t>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
 		newState(ctx);
 
 		readAnimBinary(ctx, ctx.offModelData + *offset);
@@ -344,7 +344,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 
 	addState(ctx);
 
-	for (std::vector<uint32>::iterator a = ctx.anims.begin(); a != ctx.anims.end(); ++a) {
+	for (std::vector<uint32_t>::iterator a = ctx.anims.begin(); a != ctx.anims.end(); ++a) {
 		ctx.mdl->seek(*a);
 		readAnimASCII(ctx);
 	}
@@ -420,19 +420,19 @@ void Model_NWN::addState(ParserContext &ctx) {
 	ctx.nodes.clear();
 }
 
-void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
+void Model_NWN::readAnimBinary(ParserContext &ctx, uint32_t offset) {
 	ctx.mdl->seek(offset);
 
 	ctx.mdl->skip(8); // Function pointers
 
 	ctx.state->name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 
-	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
-	uint32 nodeCount       = ctx.mdl->readUint32LE();
+	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32_t nodeCount       = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(24 + 4); // Unknown + Reference count
 
-	uint8 type = ctx.mdl->readByte();
+	uint8_t type = ctx.mdl->readByte();
 
 	ctx.mdl->skip(3); // Padding
 
@@ -441,13 +441,13 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 
 	Common::UString animRoot = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 
-	uint32 eventOffset, eventCount;
+	uint32_t eventOffset, eventCount;
 	readArrayDef(*ctx.mdl, eventOffset, eventCount);
 
 	// Associated events
 	// TODO: Save in array, then pass to animation class
 	ctx.mdl->seek(ctx.offModelData + eventOffset);
-	for (uint32 i = 0; i < eventCount; i++) {
+	for (uint32_t i = 0; i < eventCount; i++) {
 		float after = ctx.mdl->readIEEEFloatLE();
 
 		Common::UString eventName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
@@ -547,7 +547,7 @@ Common::UString ModelNode_NWN_Binary::loadName(Model_NWN::ParserContext &ctx) {
 void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(24); // Function pointers
 
-	uint32 inheritColorFlag = ctx.mdl->readUint32LE();
+	uint32_t inheritColorFlag = ctx.mdl->readUint32LE();
 
 	_nodeNumber = ctx.mdl->readUint32LE();
 
@@ -558,23 +558,23 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 	ctx.mdl->skip(8); // Parent pointers
 
-	uint32 childrenOffset, childrenCount;
+	uint32_t childrenOffset, childrenCount;
 	Model::readArrayDef(*ctx.mdl, childrenOffset, childrenCount);
 
-	std::vector<uint32> children;
+	std::vector<uint32_t> children;
 	Model::readArray(*ctx.mdl, ctx.offModelData + childrenOffset, childrenCount, children);
 
-	uint32 controllerKeyOffset, controllerKeyCount;
+	uint32_t controllerKeyOffset, controllerKeyCount;
 	Model::readArrayDef(*ctx.mdl, controllerKeyOffset, controllerKeyCount);
 
-	uint32 controllerDataOffset, controllerDataCount;
+	uint32_t controllerDataOffset, controllerDataCount;
 	Model::readArrayDef(*ctx.mdl, controllerDataOffset, controllerDataCount);
 
 	std::vector<float> controllerData;
 	Model::readArray(*ctx.mdl, ctx.offModelData + controllerDataOffset,
 	                 controllerDataCount, controllerData);
 
-	uint32 flags = ctx.mdl->readUint32LE();
+	uint32_t flags = ctx.mdl->readUint32LE();
 
 	if ((flags & 0xFFFFFC00) != 0)
 		throw Common::Exception("Unknown model node flags %08X", flags);
@@ -634,7 +634,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	}
 
 
-	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
+	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 
 		ctx.hasPosition    = false;
@@ -689,9 +689,9 @@ void ModelNode_NWN_Binary::checkDuplicateNode(Model_NWN::ParserContext &ctx, Mod
 struct Face {
 	float normal[3];
 
-	uint32 smooth;
+	uint32_t smooth;
 
-	uint16 index[3];
+	uint16_t index[3];
 };
 
 static bool fuzzyEqual(const float *a, const float *b) {
@@ -703,7 +703,7 @@ static bool fuzzyEqual(const float *a, const float *b) {
 void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
-	uint32 facesOffset, facesCount;
+	uint32_t facesOffset, facesCount;
 	Model::readArrayDef(*ctx.mdl, facesOffset, facesCount);
 
 	_mesh = new Mesh();
@@ -768,21 +768,21 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	ctx.mdl->skip(3 + 4); // Padding + Unknown
 
-	uint32 vertexOffset = ctx.mdl->readUint32LE();
-	uint16 vertexCount  = ctx.mdl->readUint16LE();
-	uint16 textureCount = ctx.mdl->readUint16LE();
+	uint32_t vertexOffset = ctx.mdl->readUint32LE();
+	uint16_t vertexCount  = ctx.mdl->readUint16LE();
+	uint16_t textureCount = ctx.mdl->readUint16LE();
 
-	uint32 textureVertexOffset[4];
+	uint32_t textureVertexOffset[4];
 	textureVertexOffset[0] = ctx.mdl->readUint32LE();
 	textureVertexOffset[1] = ctx.mdl->readUint32LE();
 	textureVertexOffset[2] = ctx.mdl->readUint32LE();
 	textureVertexOffset[3] = ctx.mdl->readUint32LE();
 
-	uint32 normalOffset = ctx.mdl->readUint32LE(); // Vertex normals
-	uint32 colorOffset = ctx.mdl->readUint32LE(); // Vertex RGBA colors
+	uint32_t normalOffset = ctx.mdl->readUint32LE(); // Vertex normals
+	uint32_t colorOffset = ctx.mdl->readUint32LE(); // Vertex RGBA colors
 
-	uint32 textureAnimOffset[6]; // Texture animation data
-	for (uint32 i = 0; i < 6; i++)
+	uint32_t textureAnimOffset[6]; // Texture animation data
+	for (uint32_t i = 0; i < 6; i++)
 		textureAnimOffset[i] = ctx.mdl->readUint32LE();
 
 	bool lightMapped = ctx.mdl->readByte() == 1;
@@ -857,7 +857,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 			const float *fV = &vertices[f->index[i] * 3];
 
-			for (uint32 j = 0; j < vertices.size() / 3; j++)
+			for (uint32_t j = 0; j < vertices.size() / 3; j++)
 				if (fuzzyEqual(fV, &vertices[j * 3]))
 					vFaces[j].push_back(&*f);
 		}
@@ -868,13 +868,13 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	std::vector<float> texCoords;
 	texCoords.resize(textureCount * vertexCount * 2);
 
-	for (uint16 t = 0; t < textureCount; t++) {
+	for (uint16_t t = 0; t < textureCount; t++) {
 		const bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
 		if (hasTexture)
 			ctx.mdl->seek(ctx.offRawData + textureVertexOffset[t]);
 
 		float *v = &texCoords[t * vertexCount * 2];
-		for (uint32 i = 0; i < vertexCount; i++) {
+		for (uint32_t i = 0; i < vertexCount; i++) {
 			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
 			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
 		}
@@ -892,11 +892,11 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(facesCount * 3, vertexDecl);
 
 	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
-	for (uint32 i = 0; i < facesCount; i++) {
+	for (uint32_t i = 0; i < facesCount; i++) {
 		const Face &face = faces[i];
 
-		for (uint32 j = 0; j < 3; j++) {
-			const uint16 index = face.index[j];
+		for (uint32_t j = 0; j < 3; j++) {
+			const uint16_t index = face.index[j];
 			assert((size_t)(index * 3) < vertices.size());
 
 			// Vertices
@@ -906,7 +906,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 			// Normals, smoothed
 			glm::vec3 normal(0.0f, 0.0f, 0.0f);
-			uint32 n = 0;
+			uint32_t n = 0;
 
 			for (std::list<Face *>::const_iterator vF = vFaces[index].begin(); vF != vFaces[index].end(); ++vF) {
 				if (face.smooth != (*vF)->smooth)
@@ -926,7 +926,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 			*v++ = normal[2];
 
 			// Texture coordinates
-			for (uint32 t = 0; t < textureCount; t++) {
+			for (uint32_t t = 0; t < textureCount; t++) {
 				*v++ = texCoords[t * vertexCount * 2 + index * 2 + 0];
 				*v++ = texCoords[t * vertexCount * 2 + index * 2 + 1];
 			}
@@ -935,10 +935,10 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	// Create index buffer
 
-	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
-	for (uint16 i = 0; i < facesCount * 3; i++)
+	uint16_t *f = reinterpret_cast<uint16_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
+	for (uint16_t i = 0; i < facesCount * 3; i++)
 		*f++ = i;
 
 	createBound();
@@ -972,35 +972,35 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
 	float samplePeriod = ctx.mdl->readIEEEFloatLE();
 
-	uint32 a0S, a0C;
+	uint32_t a0S, a0C;
 	Model::readArrayDef(*ctx.mdl, a0S, a0C);
 
-	uint32 a1S, a1C;
+	uint32_t a1S, a1C;
 	Model::readArrayDef(*ctx.mdl, a1S, a1C);
 
-	uint32 a2S, a2C;
+	uint32_t a2S, a2C;
 	Model::readArrayDef(*ctx.mdl, a2S, a2C);
 
-	uint32 offAnimVertices        = ctx.mdl->readUint32LE();
-	uint32 offAnimTextureVertices = ctx.mdl->readUint32LE();
+	uint32_t offAnimVertices        = ctx.mdl->readUint32LE();
+	uint32_t offAnimTextureVertices = ctx.mdl->readUint32LE();
 
-	uint32 verticesCount        = ctx.mdl->readUint32LE();
-	uint32 textureVerticesCount = ctx.mdl->readUint32LE();
+	uint32_t verticesCount        = ctx.mdl->readUint32LE();
+	uint32_t textureVerticesCount = ctx.mdl->readUint32LE();
 }
 
 void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
-		uint32 offset, uint32 count, std::vector<float> &data) {
+		uint32_t offset, uint32_t count, std::vector<float> &data) {
 
-	uint32 pos = ctx.mdl->seek(offset);
+	uint32_t pos = ctx.mdl->seek(offset);
 
 	// TODO: readNodeControllers: Implement this properly :P
 
-	for (uint32 i = 0; i < count; i++) {
-		uint32 type        = ctx.mdl->readUint32LE();
-		uint16 rowCount    = ctx.mdl->readUint16LE();
-		uint16 timeIndex   = ctx.mdl->readUint16LE();
-		uint16 dataIndex   = ctx.mdl->readUint16LE();
-		uint8  columnCount = ctx.mdl->readByte();
+	for (uint32_t i = 0; i < count; i++) {
+		uint32_t type        = ctx.mdl->readUint32LE();
+		uint16_t rowCount    = ctx.mdl->readUint16LE();
+		uint16_t timeIndex   = ctx.mdl->readUint16LE();
+		uint16_t dataIndex   = ctx.mdl->readUint16LE();
+		uint8_t  columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(1);
 
 		if (rowCount == 0xFFFF)
@@ -1150,12 +1150,12 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 			Common::parseString(line[1], _mesh->transparencyHint);
 		} else if (line[0] == "danglymesh") {
 		} else if (line[0] == "constraints") {
-			uint32 n;
+			uint32_t n;
 
 			Common::parseString(line[1], n);
 			readConstraints(ctx, n);
 		} else if (line[0] == "weights") {
-			uint32 n;
+			uint32_t n;
 
 			Common::parseString(line[1], n);
 			readWeights(ctx, n);
@@ -1222,8 +1222,8 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		buildMaterial();
 }
 
-void ModelNode_NWN_ASCII::readConstraints(Model_NWN::ParserContext &ctx, uint32 n) {
-	for (uint32 i = 0; i < n; ) {
+void ModelNode_NWN_ASCII::readConstraints(Model_NWN::ParserContext &ctx, uint32_t n) {
+	for (uint32_t i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
 		size_t count = ctx.tokenize->getTokens(*ctx.mdl, line, 1);
@@ -1238,8 +1238,8 @@ void ModelNode_NWN_ASCII::readConstraints(Model_NWN::ParserContext &ctx, uint32 
 	}
 }
 
-void ModelNode_NWN_ASCII::readWeights(Model_NWN::ParserContext &ctx, uint32 n) {
-	for (uint32 i = 0; i < n; ) {
+void ModelNode_NWN_ASCII::readWeights(Model_NWN::ParserContext &ctx, uint32_t n) {
+	for (uint32_t i = 0; i < n; ) {
 		std::vector<Common::UString> line;
 
 		size_t count = ctx.tokenize->getTokens(*ctx.mdl, line, 1);
@@ -1255,12 +1255,12 @@ void ModelNode_NWN_ASCII::readWeights(Model_NWN::ParserContext &ctx, uint32 n) {
 }
 
 void ModelNode_NWN_ASCII::readFloats(const std::vector<Common::UString> &strings,
-                                     float *floats, uint32 n, uint32 start) {
+                                     float *floats, uint32_t n, uint32_t start) {
 
 	if (strings.size() < (start + n))
 		throw Common::Exception("Missing tokens");
 
-	for (uint32 i = 0; i < n; i++)
+	for (uint32_t i = 0; i < n; i++)
 		Common::parseString(strings[start + i], floats[i]);
 }
 
@@ -1269,7 +1269,7 @@ void ModelNode_NWN_ASCII::readVCoords(Model_NWN::ParserContext &ctx, Mesh &mesh)
 	mesh.vY.resize(mesh.vCount);
 	mesh.vZ.resize(mesh.vCount);
 
-	for (uint32 i = 0; i < mesh.vCount; ) {
+	for (uint32_t i = 0; i < mesh.vCount; ) {
 		std::vector<Common::UString> line;
 
 		size_t count = ctx.tokenize->getTokens(*ctx.mdl, line, 3);
@@ -1292,7 +1292,7 @@ void ModelNode_NWN_ASCII::readTCoords(Model_NWN::ParserContext &ctx, Mesh &mesh)
 	mesh.tX.resize(mesh.tCount);
 	mesh.tY.resize(mesh.tCount);
 
-	for (uint32 i = 0; i < mesh.tCount; ) {
+	for (uint32_t i = 0; i < mesh.tCount; ) {
 		std::vector<Common::UString> line;
 
 		size_t count = ctx.tokenize->getTokens(*ctx.mdl, line, 2);
@@ -1322,7 +1322,7 @@ void ModelNode_NWN_ASCII::readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh) {
 	mesh.smooth.resize(mesh.faceCount);
 	mesh.mat.resize(mesh.faceCount);
 
-	for (uint32 i = 0; i < mesh.faceCount; ) {
+	for (uint32_t i = 0; i < mesh.faceCount; ) {
 		std::vector<Common::UString> line;
 
 		size_t count = ctx.tokenize->getTokens(*ctx.mdl, line, 8);
@@ -1352,8 +1352,8 @@ void ModelNode_NWN_ASCII::readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh) {
 typedef glm::vec3 Vec3;
 
 struct FaceVert {
-	uint32 p, t; // position, texture coord indices
-	uint32 i;    // unique vertex id
+	uint32_t p, t; // position, texture coord indices
+	uint32_t i;    // unique vertex id
 	Vec3 n;      // normal vector
 };
 
@@ -1365,9 +1365,9 @@ std::size_t hash_value(const FaceVert &b) {
 	std::size_t seed = 0;
 	boost::hash_combine(seed, b.p);
 	boost::hash_combine(seed, b.t);
-	boost::hash_combine(seed, uint32(b.n[0] * 1E4));
-	boost::hash_combine(seed, uint32(b.n[1] * 1E4));
-	boost::hash_combine(seed, uint32(b.n[2] * 1E4));
+	boost::hash_combine(seed, uint32_t(b.n[0] * 1E4));
+	boost::hash_combine(seed, uint32_t(b.n[1] * 1E4));
+	boost::hash_combine(seed, uint32_t(b.n[2] * 1E4));
 	return seed;
 }
 
@@ -1388,17 +1388,17 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 
 	// Read faces
 
-	uint32 facesCount = mesh.faceCount;
-	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
+	uint32_t facesCount = mesh.faceCount;
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint32_t), GL_UNSIGNED_INT);
 
 	boost::unordered_set<FaceVert> verts;
 	typedef boost::unordered_set<FaceVert>::iterator verts_set_it;
 
-	uint32 vertexCount = 0;
-	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
-	for (uint32 i = 0; i < facesCount; i++) {
-		const uint32 v[3] = {mesh.vIA[i], mesh.vIB[i], mesh.vIC[i]};
-		const uint32 t[3] = {mesh.tIA[i], mesh.tIB[i], mesh.tIC[i]};
+	uint32_t vertexCount = 0;
+	uint32_t *f = reinterpret_cast<uint32_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
+	for (uint32_t i = 0; i < facesCount; i++) {
+		const uint32_t v[3] = {mesh.vIA[i], mesh.vIB[i], mesh.vIC[i]};
+		const uint32_t t[3] = {mesh.tIA[i], mesh.tIB[i], mesh.tIC[i]};
 
 		// Face normal
 		const Vec3 p1(mesh.vX[v[0]], mesh.vY[v[0]], mesh.vZ[v[0]]);
@@ -1406,7 +1406,7 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 		const Vec3 p3(mesh.vX[v[2]], mesh.vY[v[2]], mesh.vZ[v[2]]);
 		const Vec3 n = glm::normalize(glm::cross(p2 - p1, p3 - p2));
 
-		for (uint32 j = 0; j < 3; j++) {
+		for (uint32_t j = 0; j < 3; j++) {
 			FaceVert fv;
 			fv.i = vertexCount;
 			fv.p = v[j];
@@ -1455,7 +1455,7 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 			*v++ = 0.0f;
 			*v++ = 0.0f;
 		}
-		for (uint16 t = 1; t < textureCount; t++) {
+		for (uint16_t t = 1; t < textureCount; t++) {
 			*v++ = 0.0f;
 			*v++ = 0.0f;
 		}

@@ -63,7 +63,7 @@ public:
 	Area *getCurrentArea();
 
 	/** Move the player character to this area. */
-	void movePC(int32 area);
+	void movePC(int32_t area);
 
 
 protected:
@@ -72,7 +72,7 @@ protected:
 	bool _running; ///< Are we currently running a module?
 	bool _exit;    ///< Should we exit the module?
 
-	int32 _newArea; ///< The new area to enter.
+	int32_t _newArea; ///< The new area to enter.
 
 	std::unique_ptr<Area> _area; ///< The current area.
 

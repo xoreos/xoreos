@@ -74,8 +74,8 @@ static const size_t kRoundCount   = 16;
 static const size_t kBlockSize    =  8;
 
 struct BlowfishContext {
-	uint32 P[kRoundCount + 2]; ///< Blowfish round keys.
-	uint32 S[4][256];          ///< Key-dependant S-boxes.
+	uint32_t P[kRoundCount + 2]; ///< Blowfish round keys.
+	uint32_t S[4][256];          ///< Key-dependant S-boxes.
 
 	BlowfishContext() {
 		std::memset(P, 0, sizeof(P));
@@ -91,13 +91,13 @@ struct BlowfishContext {
 	}
 };
 
-static const uint32 P[kRoundCount + 2] = {
+static const uint32_t P[kRoundCount + 2] = {
 	0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344, 0xA4093822, 0x299F31D0, 0x082EFA98, 0xEC4E6C89,
 	0x452821E6, 0x38D01377, 0xBE5466CF, 0x34E90C6C, 0xC0AC29B7, 0xC97C50DD, 0x3F84D5B5, 0xB5470917,
 	0x9216D5D9, 0x8979FB1B
 };
 
-static const uint32 S[4][256] = {
+static const uint32_t S[4][256] = {
 	{
 		0xD1310BA6, 0x98DFB5AC, 0x2FFD72DB, 0xD01ADFB7, 0xB8E1AFED, 0x6A267E96, 0xBA7C9045, 0xF12C7F99,
 		0x24A19947, 0xB3916CF7, 0x0801F2E2, 0x858EFC16, 0x636920D8, 0x71574E69, 0xA458FEA3, 0xF4933D7E,
@@ -233,19 +233,19 @@ static const uint32 S[4][256] = {
 	}
 };
 
-static uint32 F(const BlowfishContext &ctx, uint32 x) {
-	const uint16 d = (uint16)(x & 0xFF);
+static uint32_t F(const BlowfishContext &ctx, uint32_t x) {
+	const uint16_t d = (uint16_t)(x & 0xFF);
 	x >>= 8;
-	const uint16 c = (uint16)(x & 0xFF);
+	const uint16_t c = (uint16_t)(x & 0xFF);
 	x >>= 8;
-	const uint16 b = (uint16)(x & 0xFF);
+	const uint16_t b = (uint16_t)(x & 0xFF);
 	x >>= 8;
-	const uint16 a = (uint16)(x & 0xFF);
+	const uint16_t a = (uint16_t)(x & 0xFF);
 
 	return ((ctx.S[0][a] + ctx.S[1][b]) ^ ctx.S[2][c]) + ctx.S[3][d];
 }
 
-static void blowfishEnc(BlowfishContext &ctx, uint32 &xl, uint32 &xr) {
+static void blowfishEnc(BlowfishContext &ctx, uint32_t &xl, uint32_t &xr) {
 	for (size_t i = 0; i < kRoundCount; i++) {
 		xl = xl ^ ctx.P[i];
 		xr = F(ctx, xl) ^ xr;
@@ -259,7 +259,7 @@ static void blowfishEnc(BlowfishContext &ctx, uint32 &xl, uint32 &xr) {
 	xl = xl ^ ctx.P[kRoundCount + 1];
 }
 
-static void blowfishDec(BlowfishContext &ctx, uint32 &xl, uint32 &xr) {
+static void blowfishDec(BlowfishContext &ctx, uint32_t &xl, uint32_t &xr) {
 	for (size_t i = kRoundCount + 1; i > 1; i--) {
 		xl = xl ^ ctx.P[i];
 		xr = F(ctx, xl) ^ xr;
@@ -284,7 +284,7 @@ static void blowfishSetKey(BlowfishContext &ctx, const byte *key, size_t keyLeng
 
 	size_t k = 0;
 	for (size_t i = 0; i < kRoundCount + 2; i++) {
-		uint32 data = 0x00000000;
+		uint32_t data = 0x00000000;
 
 		for (size_t j = 0; j < 4; j++) {
 			data = (data << 8) | key[k++];
@@ -295,8 +295,8 @@ static void blowfishSetKey(BlowfishContext &ctx, const byte *key, size_t keyLeng
 		ctx.P[i] = P[i] ^ data;
 	}
 
-	uint32 dataL = 0x00000000;
-	uint32 dataR = 0x00000000;
+	uint32_t dataL = 0x00000000;
+	uint32_t dataR = 0x00000000;
 
 	for (size_t i = 0; i < kRoundCount + 2; i += 2) {
 		blowfishEnc(ctx, dataL, dataR);
@@ -316,8 +316,8 @@ static void blowfishSetKey(BlowfishContext &ctx, const byte *key, size_t keyLeng
 }
 
 static void blowfishECB(BlowfishContext &ctx, Mode mode, const byte *input, byte *output) {
-	uint32 X0 = READ_BE_UINT32(input);
-	uint32 X1 = READ_BE_UINT32(input + 4);
+	uint32_t X0 = READ_BE_UINT32(input);
+	uint32_t X1 = READ_BE_UINT32(input + 4);
 
 	switch (mode) {
 		case kModeDecrypt:

@@ -39,7 +39,7 @@
 #include "src/engines/aurora/console.h"
 
 /** Time between clicks to still be considered a double-click. */
-static const uint32 kDoubleClickTime = 500;
+static const uint32_t kDoubleClickTime = 500;
 
 namespace Engines {
 
@@ -95,7 +95,7 @@ void GUI::hide() {
 	GfxMan.unlockFrame();
 }
 
-uint32 GUI::run(uint32 startCode) {
+uint32_t GUI::run(uint32_t startCode) {
 	_startCode  = startCode;
 	_returnCode = kReturnCodeNone;
 
@@ -168,7 +168,7 @@ void GUI::addEvent(const Events::Event &event) {
 	_eventQueue.push_back(event);
 }
 
-uint32 GUI::processEventQueue() {
+uint32_t GUI::processEventQueue() {
 	bool hasMove = false;
 
 	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
@@ -350,7 +350,7 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 				(*a)->addGroupMember(**b);
 }
 
-uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf, bool hideSelf) {
+uint32_t GUI::sub(GUI &gui, uint32_t startCode, bool showSelf, bool hideSelf) {
 	GfxMan.lockFrame();
 
 	_sub = &gui;
@@ -374,7 +374,7 @@ uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf, bool hideSelf) {
 	GfxMan.unlockFrame();
 
 	// Run the sub GUI
-	uint32 code = gui.run(startCode);
+	uint32_t code = gui.run(startCode);
 
 	GfxMan.lockFrame();
 
@@ -591,13 +591,13 @@ void GUI::mouseDown(Widget *widget, const Events::Event &event) {
 
 void GUI::mouseUp(Widget *widget, const Events::Event &event) {
 	if (widget) {
-		uint8 button = event.button.button;
+		uint8_t button = event.button.button;
 		float x      = toGUIX(event.button.x);
 		float y      = toGUIY(event.button.y);
 
 		widget->mouseUp(button, x, y);
 
-		uint32 curTime = EventMan.getTimestamp();
+		uint32_t curTime = EventMan.getTimestamp();
 		if (((curTime - widget->_lastClickTime) < kDoubleClickTime) &&
 		    (widget->_lastClickButton == button) &&
 		    (widget->_lastClickX == x) && (widget->_lastClickY == y)) {

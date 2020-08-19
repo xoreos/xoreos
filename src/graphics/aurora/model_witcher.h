@@ -54,18 +54,18 @@ private:
 
 		std::list<ModelNode_Witcher *> nodes;
 
-		uint16 fileVersion;
+		uint16_t fileVersion;
 
-		uint32 offModelData;
-		uint32 modelDataSize;
+		uint32_t offModelData;
+		uint32_t modelDataSize;
 
-		uint32 offRawData;
-		uint32 rawDataSize;
+		uint32_t offRawData;
+		uint32_t rawDataSize;
 
-		uint32 offTextureInfo;
+		uint32_t offTextureInfo;
 
-		uint32 offTexData;
-		uint32 texDatasize;
+		uint32_t offTexData;
+		uint32_t texDatasize;
 
 		ParserContext(const Common::UString &name);
 		~ParserContext();
@@ -104,10 +104,10 @@ private:
 	void readTextures(Model_Witcher::ParserContext &ctx,
 	                  std::vector<Common::UString> &textures);
 	void readNodeControllers(Model_Witcher::ParserContext &ctx,
-	                         uint32 offset, uint32 count, std::vector<float> &data);
+	                         uint32_t offset, uint32_t count, std::vector<float> &data);
 
 	void evaluateTextures(int n, std::vector<Common::UString> &textures,
-	                      const Common::UString *staticTextures, const uint32 *tVertsCount,
+	                      const Common::UString *staticTextures, const uint32_t *tVertsCount,
 	                      bool lightMapDayNight, const Common::UString &lightMapName);
 
 protected:

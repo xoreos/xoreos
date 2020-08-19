@@ -64,7 +64,7 @@ const std::vector<float> &DoorWalkmesh::getVertices() const {
 	return ObjectWalkmesh::getVertices();
 }
 
-const std::vector<uint32> &DoorWalkmesh::getFaces() const {
+const std::vector<uint32_t> &DoorWalkmesh::getFaces() const {
 	if (_door->isOpen())
 		return _noFaces;
 

@@ -89,7 +89,7 @@ static void compareData(const byte *a, const byte *b, size_t n) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeUint16LE) {
-	static const uint16 compValue = 4660;
+	static const uint16_t compValue = 4660;
 	static const byte compData[2] = { 0x34, 0x12 };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -102,7 +102,7 @@ GTEST_TEST(MemoryWriteStream, writeUint16LE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeSint16LE) {
-	static const int16 compValue = -292;
+	static const int16_t compValue = -292;
 	static const byte compData[2] = { 0xDC, 0xFE };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -115,7 +115,7 @@ GTEST_TEST(MemoryWriteStream, writeSint16LE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeUint16BE) {
-	static const uint16 compValue = 4660;
+	static const uint16_t compValue = 4660;
 	static const byte compData[2] = { 0x12, 0x34 };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -128,7 +128,7 @@ GTEST_TEST(MemoryWriteStream, writeUint16BE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeSint16BE) {
-	static const int16 compValue = -292;
+	static const int16_t compValue = -292;
 	static const byte compData[2] = { 0xFE, 0xDC };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -141,7 +141,7 @@ GTEST_TEST(MemoryWriteStream, writeSint16BE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeUint32LE) {
-	static const uint32 compValue = 305419896;
+	static const uint32_t compValue = 305419896;
 	static const byte compData[4] = { 0x78, 0x56, 0x34, 0x12 };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -154,7 +154,7 @@ GTEST_TEST(MemoryWriteStream, writeUint32LE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeSint32LE) {
-	static const int32 compValue = -19088887;
+	static const int32_t compValue = -19088887;
 	static const byte compData[4] = { 0x09, 0xBA, 0xDC, 0xFE };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -167,7 +167,7 @@ GTEST_TEST(MemoryWriteStream, writeSint32LE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeUint32BE) {
-	static const uint32 compValue = 305419896;
+	static const uint32_t compValue = 305419896;
 	static const byte compData[4] = { 0x12, 0x34, 0x56, 0x78 };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -180,7 +180,7 @@ GTEST_TEST(MemoryWriteStream, writeUint32BE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeSint32BE) {
-	static const int32 compValue = -19088887;
+	static const int32_t compValue = -19088887;
 	static const byte compData[4] = { 0xFE, 0xDC, 0xBA, 0x09 };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -193,7 +193,7 @@ GTEST_TEST(MemoryWriteStream, writeSint32BE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeUint64LE) {
-	static const uint64 compValue = UINT64_C(1311768467294899695);
+	static const uint64_t compValue = UINT64_C(1311768467294899695);
 	static const byte compData[8] = { 0xEF, 0xCD, 0xAB, 0x90, 0x78, 0x56, 0x34, 0x12 };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -206,7 +206,7 @@ GTEST_TEST(MemoryWriteStream, writeUint64LE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeSint64LE) {
-	static const int64 compValue = INT64_C(-81986143110479071);
+	static const int64_t compValue = INT64_C(-81986143110479071);
 	static const byte compData[8] = { 0x21, 0x43, 0x65, 0x87, 0x09, 0xBA, 0xDC, 0xFE };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -219,7 +219,7 @@ GTEST_TEST(MemoryWriteStream, writeSint64LE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeUint64BE) {
-	static const uint64 compValue = UINT64_C(1311768467294899695);
+	static const uint64_t compValue = UINT64_C(1311768467294899695);
 	static const byte compData[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };
@@ -232,7 +232,7 @@ GTEST_TEST(MemoryWriteStream, writeUint64BE) {
 }
 
 GTEST_TEST(MemoryWriteStream, writeSint64BE) {
-	static const int64 compValue = INT64_C(-81986143110479071);
+	static const int64_t compValue = INT64_C(-81986143110479071);
 	static const byte compData[8] = { 0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21 };
 
 	byte data[ARRAYSIZE(compData)] = { 0 };

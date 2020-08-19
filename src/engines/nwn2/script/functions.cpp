@@ -70,7 +70,7 @@ void Functions::registerFunctions() {
 		const FunctionSignature &fSig = kFunctionSignatures[i];
 		const FunctionDefaults  &fDef = kFunctionDefaults[i];
 
-		const uint32 id = fPtr.id;
+		const uint32_t id = fPtr.id;
 
 		assert((fSig.id == id) && (fDef.id == id));
 
@@ -102,11 +102,11 @@ void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
 	                           ctx.getName().c_str(), Aurora::NWScript::formatParams(ctx).c_str());
 }
 
-int32 Functions::getRandom(int min, int max, int32 n) {
+int32_t Functions::getRandom(int min, int max, int32_t n) {
 	if (n < 1)
 		n = 1;
 
-	int32 r = 0;
+	int32_t r = 0;
 
 	while (n-- > 0)
 		r += RNG.getNext(min, max + 1);
@@ -136,7 +136,7 @@ Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::Func
 }
 
 void Functions::getGameDifficulty(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) _game->getGameDifficulty();
+	ctx.getReturn() = (int32_t) _game->getGameDifficulty();
 }
 
 void Functions::jumpTo(NWN2::Object *object, Area *area, float x, float y, float z) {

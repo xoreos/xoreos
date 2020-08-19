@@ -90,7 +90,7 @@ public:
 	 * The same holds true for more channels. Channel configurations recognized:
 	 * - 5.1: front left, front right, front center, low frequency rear left, rear right
 	 */
-	virtual size_t readBuffer(int16 *buffer, const size_t numSamples) = 0;
+	virtual size_t readBuffer(int16_t *buffer, const size_t numSamples) = 0;
 
 	/** Return the number channels in this stream. */
 	virtual int getChannels() const = 0;
@@ -125,7 +125,7 @@ public:
  */
 class RewindableAudioStream : public AudioStream {
 public:
-	static const uint64 kInvalidLength = UINT64_C(0xFFFFFFFFFFFFFFFF);
+	static const uint64_t kInvalidLength = UINT64_C(0xFFFFFFFFFFFFFFFF);
 
 	/**
 	 * Rewinds the stream to its start.
@@ -138,13 +138,13 @@ public:
 	 * Estimate the total number of samples per channel in this stream.
 	 * If this value is not calculatable, return kInvalidLength.
 	 */
-	virtual uint64 getLength() const { return kInvalidLength; }
+	virtual uint64_t getLength() const { return kInvalidLength; }
 
 	/**
 	 * Estimate the total duration of the stream in milliseconds.
 	 * If this value is not calculable, return kInvalidLength.
 	 */
-	virtual uint64 getDuration() const {
+	virtual uint64_t getDuration() const {
 		if ((getLength() == kInvalidLength) || (getRate() <= 0))
 			return kInvalidLength;
 
@@ -157,7 +157,7 @@ class EmptyAudioStream : public RewindableAudioStream {
 public:
 	EmptyAudioStream() { }
 
-	size_t readBuffer(int16 *UNUSED(buffer), const size_t UNUSED(numSamples)) { return 0; }
+	size_t readBuffer(int16_t *UNUSED(buffer), const size_t UNUSED(numSamples)) { return 0; }
 
 	int getChannels() const { return 1; }
 
@@ -166,7 +166,7 @@ public:
 	bool endOfData() const { return true; }
 	bool rewind() { return true; }
 
-	uint64 getLength() const { return 0; }
+	uint64_t getLength() const { return 0; }
 };
 
 /**
@@ -187,7 +187,7 @@ public:
 	LoopingAudioStream(RewindableAudioStream *stream, size_t loops, bool disposeAfterUse = true);
 	~LoopingAudioStream();
 
-	size_t readBuffer(int16 *buffer, const size_t numSamples);
+	size_t readBuffer(int16_t *buffer, const size_t numSamples);
 	bool endOfData() const;
 
 	int getChannels() const { return _parent->getChannels(); }
@@ -198,13 +198,13 @@ public:
 
 	bool rewind();
 
-	uint64 getLength() const;
-	uint64 getDuration() const;
+	uint64_t getLength() const;
+	uint64_t getDuration() const;
 
 	/** Return the length of one loop. */
-	uint64 getLengthOnce() const;
+	uint64_t getLengthOnce() const;
 	/** Return the duration of one loop. */
-	uint64 getDurationOnce() const;
+	uint64_t getDurationOnce() const;
 
 private:
 	Common::DisposablePtr<RewindableAudioStream> _parent;
@@ -307,7 +307,7 @@ public:
 	// AudioStream API
 	int getChannels() const { return _channels; }
 	int getRate() const { return _rate; }
-	size_t readBuffer(int16 *data, const size_t numSamples) { return _stream->readBuffer(data, numSamples); }
+	size_t readBuffer(int16_t *data, const size_t numSamples) { return _stream->readBuffer(data, numSamples); }
 	bool endOfData() const { return _stream->endOfData(); }
 	bool endOfStream() const { return _stream->endOfStream(); }
 

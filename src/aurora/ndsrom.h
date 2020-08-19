@@ -57,10 +57,10 @@ public:
 	const ResourceList &getResources() const;
 
 	/** Return the size of a resource. */
-	uint32 getResourceSize(uint32 index) const;
+	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
+	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
 
 	/** Return the game title string stored in the NDS header. */
 	const Common::UString &getTitle() const;
@@ -76,8 +76,8 @@ public:
 private:
 	/** Internal resource information. */
 	struct IResource {
-		uint32 offset; ///< The offset of the resource within the NDS.
-		uint32 size;   ///< The resource's size.
+		uint32_t offset; ///< The offset of the resource within the NDS.
+		uint32_t size;   ///< The resource's size.
 	};
 
 	typedef std::vector<IResource> IResourceList;
@@ -95,10 +95,10 @@ private:
 	IResourceList _iResources;
 
 	void load(Common::SeekableReadStream &nds);
-	void readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 length);
-	void readFAT(Common::SeekableReadStream &nds, uint32 offset);
+	void readNames(Common::SeekableReadStream &nds, uint32_t offset, uint32_t length);
+	void readFAT(Common::SeekableReadStream &nds, uint32_t offset);
 
-	const IResource &getIResource(uint32 index) const;
+	const IResource &getIResource(uint32_t index) const;
 };
 
 } // End of namespace Aurora

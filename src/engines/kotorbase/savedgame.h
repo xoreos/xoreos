@@ -48,7 +48,7 @@ public:
 
 	const Common::UString &getName() const;
 	const Common::UString &getModuleName() const;
-	uint32 getTimePlayed() const;
+	uint32_t getTimePlayed() const;
 
 	bool isPCLoaded() const;
 
@@ -57,8 +57,8 @@ public:
 protected:
 	Common::UString _name;
 	Common::UString _moduleName;
-	uint32 _timePlayed;
-	uint8 _pcGender;
+	uint32_t _timePlayed;
+	uint8_t _pcGender;
 	float _pcPosition[3];
 	bool _pcLoaded;
 

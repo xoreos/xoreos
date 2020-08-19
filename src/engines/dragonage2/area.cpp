@@ -50,11 +50,11 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-static const uint32 kARLID     = MKTAG('A', 'R', 'L', ' ');
-static const uint32 kAREID     = MKTAG('A', 'R', 'E', ' ');
-static const uint32 kVersion40 = MKTAG('V', '4', '.', '0');
+static const uint32_t kARLID     = MKTAG('A', 'R', 'L', ' ');
+static const uint32_t kAREID     = MKTAG('A', 'R', 'E', ' ');
+static const uint32_t kVersion40 = MKTAG('V', '4', '.', '0');
 
-static const uint32 kROOMID    = MKTAG('R', 'O', 'O', 'M');
+static const uint32_t kROOMID    = MKTAG('R', 'O', 'O', 'M');
 
 using ::Aurora::GFF3File;
 using ::Aurora::GFF3Struct;
@@ -119,7 +119,7 @@ void Area::loadEnvironment(const Common::UString &resRef) {
 
 	const GFF4Struct &arlTop = arl.getTopLevel();
 
-	_environmentID = (uint32) ((int32) arlTop.getSint(kGFF4EnvAreaID, -1));
+	_environmentID = (uint32_t) ((int32_t) arlTop.getSint(kGFF4EnvAreaID, -1));
 
 	_environmentName = arlTop.getString(kGFF4EnvAreaName);
 	_skyDome         = arlTop.getString(kGFF4EnvAreaSkydomeModel);
@@ -173,9 +173,9 @@ void Area::loadObject(DragonAge2::Object &object) {
 	_campaign->addObject(object);
 
 	if (!object.isStatic()) {
-		const std::list<uint32> &ids = object.getIDs();
+		const std::list<uint32_t> &ids = object.getIDs();
 
-		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+		for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 			_objectMap.insert(std::make_pair(*id, &object));
 	}
 }
@@ -239,7 +239,7 @@ Common::UString Area::getName(const Common::UString &resRef, const Common::UStri
 				throw 0;
 
 			const Aurora::RIMFile rim(rimStream);
-			const uint32 areIndex = rim.findResource(resRef, Aurora::kFileTypeARE);
+			const uint32_t areIndex = rim.findResource(resRef, Aurora::kFileTypeARE);
 
 			const GFF3File are(rim.getResource(areIndex), kAREID);
 

@@ -62,7 +62,7 @@ IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
 	return *this;
 }
 
-void IndexBuffer::setSize(uint32 indexCount, uint32 indexSize, GLenum indexType) {
+void IndexBuffer::setSize(uint32_t indexCount, uint32_t indexSize, GLenum indexType) {
 	_count = indexCount;
 	_size  = indexSize;
 	_type  = indexType;
@@ -83,7 +83,7 @@ const GLvoid *IndexBuffer::getData() const {
 	return static_cast<const GLvoid *>(_data);
 }
 
-uint32 IndexBuffer::getCount() const {
+uint32_t IndexBuffer::getCount() const {
 	return _count;
 }
 

@@ -85,13 +85,13 @@ public:
 
 	// Music/Sound
 
-	uint32 getMusicDayTrack   () const; ///< Return the music track ID playing by day.
-	uint32 getMusicNightTrack () const; ///< Return the music track ID playing by night.
-	uint32 getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
+	uint32_t getMusicDayTrack   () const; ///< Return the music track ID playing by day.
+	uint32_t getMusicNightTrack () const; ///< Return the music track ID playing by night.
+	uint32_t getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
 
-	void setMusicDayTrack   (uint32 track); ///< Set the music track ID playing by day.
-	void setMusicNightTrack (uint32 track); ///< Set the music track ID playing by night.
-	void setMusicBattleTrack(uint32 track); ///< Set the music track ID playing in battle.
+	void setMusicDayTrack   (uint32_t track); ///< Set the music track ID playing by day.
+	void setMusicNightTrack (uint32_t track); ///< Set the music track ID playing by night.
+	void setMusicBattleTrack(uint32_t track); ///< Set the music track ID playing in battle.
 
 	void stopSound();        ///< Stop all sounds.
 	void stopAmbientMusic(); ///< Stop the ambient music.
@@ -125,7 +125,7 @@ public:
 	// Factions
 
 	/** Get the source's reputation with the faction. */
-	uint8 getFactionReputation(Object *source, uint32 faction);
+	uint8_t getFactionReputation(Object *source, uint32_t faction);
 
 protected:
 	/** Notify the area that the camera has been moved. */
@@ -145,7 +145,7 @@ private:
 	struct Tile {
 		bool metaTile; ///< Is this tile a meta tile?
 
-		uint32 tileID; ///< ID of the tile's appearance.
+		uint32_t tileID; ///< ID of the tile's appearance.
 
 		float position[3];       ///< The tile's position.
 		Orientation orientation; ///< The tile's orientation.
@@ -161,7 +161,7 @@ private:
 	};
 
 	typedef Common::PtrList<Engines::NWN2::Object> ObjectList;
-	typedef std::map<uint32, Engines::NWN2::Object *> ObjectMap;
+	typedef std::map<uint32_t, Engines::NWN2::Object *> ObjectMap;
 
 
 	Module *_module;
@@ -173,9 +173,9 @@ private:
 	Common::UString _ambientDay;   ///< Ambient sound that plays by day.
 	Common::UString _ambientNight; ///< Ambient sound that plays by night.
 
-	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
-	uint32 _musicNightTrack;  ///< Music track ID that plays by night.
-	uint32 _musicBattleTrack; ///< Music track ID that plays in battle.
+	uint32_t _musicDayTrack;    ///< Music track ID that plays by day.
+	uint32_t _musicNightTrack;  ///< Music track ID that plays by night.
+	uint32_t _musicBattleTrack; ///< Music track ID that plays in battle.
 
 	Common::UString _musicDay;    ///< Music that plays by day.
 	Common::UString _musicNight;  ///< Music that plays by night.
@@ -189,15 +189,15 @@ private:
 
 	bool _visible; ///< Is the area currently visible?
 
-	uint32 _flags;   ///< Natural/Underground bit flags.
+	uint32_t _flags;   ///< Natural/Underground bit flags.
 
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
 	bool _hasTerrain; ///< Does area have terrain or is it purely tile-based?
 
-	uint32 _width;  ///< Width  of the area in tiles, as seen from top-down.
-	uint32 _height; ///< Height of the area in tiles, as seen from top-down.
+	uint32_t _width;  ///< Width  of the area in tiles, as seen from top-down.
+	uint32_t _height; ///< Height of the area in tiles, as seen from top-down.
 
 	std::unique_ptr<TRXFile> _terrain; ///< The area's terrain.
 	std::vector<Tile>          _tiles;   ///< The area's tiles.

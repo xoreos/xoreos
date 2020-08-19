@@ -39,7 +39,7 @@ public:
 	~FPSCounter();
 
 	/** Get the current FPS value. */
-	uint32 getFPS() const;
+	uint32_t getFPS() const;
 
 	/** Reset the counter. */
 	void reset();
@@ -48,16 +48,16 @@ public:
 	void finishedFrame();
 
 private:
-	uint32 _lastSampled;     ///< The last time a finished frame was signaled.
+	uint32_t _lastSampled;     ///< The last time a finished frame was signaled.
 
 	size_t _seconds;       ///< Number of seconds over which to average the FPS.
 	size_t _currentSecond; ///< Current second we measure.
 
 	bool _hasFullSeconds; ///< Got all samples?
 
-	uint32 _fps; ///< The current FPS value.
+	uint32_t _fps; ///< The current FPS value.
 
-	std::unique_ptr<uint32[]> _frames; ///< All frame counters.
+	std::unique_ptr<uint32_t[]> _frames; ///< All frame counters.
 
 	void calculateFPS(); ///< Calculate the average FPS value.
 };

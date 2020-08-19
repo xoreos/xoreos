@@ -136,7 +136,7 @@ void Functions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getObjectType(Aurora::NWScript::FunctionContext &ctx) {
 	Jade::Object *object = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (object ? object->getType() : -1);
+	ctx.getReturn() = (int32_t) (object ? object->getType() : -1);
 }
 
 void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -239,9 +239,9 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	// Bitfield of type(s) to check for
-	uint32 type = ctx.getParams()[0].getInt();
+	uint32_t type = ctx.getParams()[0].getInt();
 	// We want the nth nearest object
-	size_t nth  = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
+	size_t nth  = MAX<int32_t>(ctx.getParams()[2].getInt() - 1, 0);
 
 	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjects());
 	Aurora::NWScript::Object *object = 0;
@@ -254,7 +254,7 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 			continue;
 
 		// Ignore invalid object types
-		uint32 objectType = (uint32) nwnObject->getType();
+		uint32_t objectType = (uint32_t) nwnObject->getType();
 		if ((objectType == kObjectTypeInvalid) || (objectType >= kObjectTypeMAX))
 			continue;
 
@@ -324,7 +324,7 @@ void Functions::getObjectConversationResref(Aurora::NWScript::FunctionContext &c
 
 void Functions::getPriorActivation(Aurora::NWScript::FunctionContext &ctx) {
 	Jade::Object *object = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));
-	ctx.getReturn() = (int32) (object->getLastTriggerer() != 0);
+	ctx.getReturn() = (int32_t) (object->getLastTriggerer() != 0);
 }
 
 void Functions::setObjectNoCollide(Aurora::NWScript::FunctionContext &ctx) {

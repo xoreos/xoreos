@@ -38,11 +38,11 @@ void AuroraFile::clear() {
 	_utf16le = false;
 }
 
-uint32 AuroraFile::getID() const {
+uint32_t AuroraFile::getID() const {
 	return _id;
 }
 
-uint32 AuroraFile::getVersion() const {
+uint32_t AuroraFile::getVersion() const {
 	return _version;
 }
 
@@ -50,7 +50,7 @@ bool AuroraFile::isUTF16LE() const {
 	return _utf16le;
 }
 
-void AuroraFile::readHeader(Common::ReadStream &stream, uint32 &id, uint32 &version, bool &utf16le) {
+void AuroraFile::readHeader(Common::ReadStream &stream, uint32_t &id, uint32_t &version, bool &utf16le) {
 	id      = stream.readUint32BE();
 	version = stream.readUint32BE();
 
@@ -61,21 +61,21 @@ void AuroraFile::readHeader(Common::ReadStream &stream, uint32 &id, uint32 &vers
 
 		id = convertUTF16LE(id, version);
 
-		uint32 version1 = stream.readUint32BE();
-		uint32 version2 = stream.readUint32BE();
+		uint32_t version1 = stream.readUint32BE();
+		uint32_t version2 = stream.readUint32BE();
 
 		version = convertUTF16LE(version1, version2);
 	} else
 		utf16le = false;
 }
 
-void AuroraFile::readHeader(Common::ReadStream &stream, uint32 &id, uint32 &version) {
+void AuroraFile::readHeader(Common::ReadStream &stream, uint32_t &id, uint32_t &version) {
 	bool utf16le;
 	readHeader(stream, id, version, utf16le);
 }
 
-uint32 AuroraFile::readHeaderID(Common::ReadStream &stream) {
-	uint32 id, version;
+uint32_t AuroraFile::readHeaderID(Common::ReadStream &stream) {
+	uint32_t id, version;
 	readHeader(stream, id, version);
 
 	return id;
@@ -85,7 +85,7 @@ void AuroraFile::readHeader(Common::ReadStream &stream) {
 	readHeader(stream, _id, _version, _utf16le);
 }
 
-uint32 AuroraFile::convertUTF16LE(uint32 x1, uint32 x2) {
+uint32_t AuroraFile::convertUTF16LE(uint32_t x1, uint32_t x2) {
 	// Take 8 byte and remove every second byte
 
 	return ((x1 & 0xFF000000)      ) | ((x1 & 0x0000FF00) << 8) |

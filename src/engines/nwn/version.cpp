@@ -35,9 +35,9 @@
 #include "src/engines/nwn/version.h"
 
 
-#define MAKE_NWN_VERSION(MAJOR, MINOR, BUILD) ((((uint64)(MAJOR)) << 32) + \
-                                               (((uint64)(MINOR)) << 16) + \
-                                               (((uint64)(BUILD))))
+#define MAKE_NWN_VERSION(MAJOR, MINOR, BUILD) ((((uint64_t)(MAJOR)) << 32) + \
+                                               (((uint64_t)(MINOR)) << 16) + \
+                                               (((uint64_t)(BUILD))))
 
 static const byte kVersionWin[23] = {
 	'\0','F','\0','i','\0','l','\0','e','\0','V','\0','e','\0','r','\0','s','\0','i','\0','o','\0','n','\0'
@@ -75,19 +75,19 @@ Common::UString Version::getPlatformName() const {
 	return Aurora::getPlatformDescription(_platform);
 }
 
-uint64 Version::getVersion() const {
+uint64_t Version::getVersion() const {
 	return _version;
 }
 
-uint16 Version::getVersionMajor() const {
+uint16_t Version::getVersionMajor() const {
 	return _versionMajor;
 }
 
-uint16 Version::getVersionMinor() const {
+uint16_t Version::getVersionMinor() const {
 	return _versionMinor;
 }
 
-uint16 Version::getVersionBuild() const {
+uint16_t Version::getVersionBuild() const {
 	return _versionBuild;
 }
 
@@ -95,19 +95,19 @@ Common::UString Version::getVersionString() const {
 	return Common::UString::format("%d.%d.%d", _versionMajor, _versionMinor, _versionBuild);
 }
 
-uint64 Version::getOptimumVersion() {
+uint64_t Version::getOptimumVersion() {
 	return MAKE_NWN_VERSION(kOptimumVersionMajor, kOptimumVersionMinor, kOptimumVersionBuild);
 }
 
-uint16 Version::getOptimumVersionMajor() {
+uint16_t Version::getOptimumVersionMajor() {
 	return kOptimumVersionMajor;
 }
 
-uint16 Version::getOptimumVersionMinor() {
+uint16_t Version::getOptimumVersionMinor() {
 	return kOptimumVersionMinor;
 }
 
-uint16 Version::getOptimumVersionBuild() {
+uint16_t Version::getOptimumVersionBuild() {
 	return kOptimumVersionBuild;
 }
 

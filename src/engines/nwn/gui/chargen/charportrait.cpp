@@ -64,7 +64,7 @@ float WidgetGridItemPortrait::getWidth() const {
 	return _portraitWidget->getWidth();
 }
 
-void WidgetGridItemPortrait::mouseDown(uint8 state, float x, float y) {
+void WidgetGridItemPortrait::mouseDown(uint8_t state, float x, float y) {
 	activate();
 
 	dynamic_cast<CharPortrait &>(*_gui).setMainTexture(_portrait);
@@ -158,7 +158,7 @@ void CharPortrait::callbackActive(Widget &widget) {
 const std::vector<Common::UString> CharPortrait::initPortraitList() {
 	const Aurora::TwoDAFile &twodaPortraits = TwoDAReg.get2DA("portraits");
 
-	uint32 race = _choices->getCharacter().getRace();
+	uint32_t race = _choices->getCharacter().getRace();
 	// Portraits for half-elf and human are the same.
 	if (race == 4)
 		race = 6;
@@ -175,7 +175,7 @@ const std::vector<Common::UString> CharPortrait::initPortraitList() {
 		if (rowPortrait.getInt("plot"))
 			continue;
 
-		if ((uint32)rowPortrait.getInt("Sex") != (uint32)_choices->getCharacter().getGender())
+		if ((uint32_t)rowPortrait.getInt("Sex") != (uint32_t)_choices->getCharacter().getGender())
 			continue;
 
 		if (rowPortrait.empty("Race"))
@@ -183,7 +183,7 @@ const std::vector<Common::UString> CharPortrait::initPortraitList() {
 
 		// TODO Implement Low Gore option.
 		// TODO Add user portraits.
-		if ((uint32) rowPortrait.getInt("Race") == race)
+		if ((uint32_t) rowPortrait.getInt("Race") == race)
 			racePortraits.push_back("po_" + rowPortrait.getString("BaseResRef"));
 		else
 			portraits.push_back("po_" + rowPortrait.getString("BaseResRef"));

@@ -55,7 +55,7 @@ public:
 	/** Return the module context. */
 	Module &getModule();
 	/** Return the game difficulty setting. */
-	int32 getGameDifficulty();
+	int32_t getGameDifficulty();
 
 	/** Overwrite all currently playing music. */
 	void playMusic(const Common::UString &music = "");

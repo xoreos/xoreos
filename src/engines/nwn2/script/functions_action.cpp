@@ -59,7 +59,7 @@ void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 	if (script.empty())
 		throw Common::Exception("Functions::assignCommand(): Script needed");
 
-	uint32 delay = ctx.getParams()[0].getFloat() * 1000;
+	uint32_t delay = ctx.getParams()[0].getFloat() * 1000;
 
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
 

@@ -85,13 +85,13 @@ class GFF3Struct;
 class GFF3File : boost::noncopyable, public AuroraFile {
 public:
 	/** Take over this stream and read a GFF3 file out of it. */
-	GFF3File(Common::SeekableReadStream *gff3, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
+	GFF3File(Common::SeekableReadStream *gff3, uint32_t id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	/** Request this resource from the ResourceManager and read a GFF3 file out of it. */
-	GFF3File(const Common::UString &gff3, FileType type, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
+	GFF3File(const Common::UString &gff3, FileType type, uint32_t id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	virtual ~GFF3File();
 
 	/** Return the GFF3's specific type. */
-	uint32 getType() const;
+	uint32_t getType() const;
 
 	/** Returns the top-level struct. */
 	const GFF3Struct &getTopLevel() const;
@@ -100,18 +100,18 @@ public:
 private:
 	/** A GFF3 header. */
 	struct Header {
-		uint32 structOffset;       ///< Offset to the struct definitions.
-		uint32 structCount;        ///< Number of structs.
-		uint32 fieldOffset;        ///< Offset to the field definitions.
-		uint32 fieldCount;         ///< Number of fields.
-		uint32 labelOffset;        ///< Offset to the field labels.
-		uint32 labelCount;         ///< Number of labels.
-		uint32 fieldDataOffset;    ///< Offset to the field data.
-		uint32 fieldDataCount;     ///< Number of field data fields.
-		uint32 fieldIndicesOffset; ///< Offset to the field indices.
-		uint32 fieldIndicesCount;  ///< Number of field indices.
-		uint32 listIndicesOffset;  ///< Offset to the list indices.
-		uint32 listIndicesCount;   ///< Number of list indices.
+		uint32_t structOffset;       ///< Offset to the struct definitions.
+		uint32_t structCount;        ///< Number of structs.
+		uint32_t fieldOffset;        ///< Offset to the field definitions.
+		uint32_t fieldCount;         ///< Number of fields.
+		uint32_t labelOffset;        ///< Offset to the field labels.
+		uint32_t labelCount;         ///< Number of labels.
+		uint32_t fieldDataOffset;    ///< Offset to the field data.
+		uint32_t fieldDataCount;     ///< Number of field data fields.
+		uint32_t fieldIndicesOffset; ///< Offset to the field indices.
+		uint32_t fieldIndicesCount;  ///< Number of field indices.
+		uint32_t listIndicesOffset;  ///< Offset to the list indices.
+		uint32_t listIndicesCount;   ///< Number of list indices.
 
 		Header();
 
@@ -129,32 +129,32 @@ private:
 	/** Should we try to read GFF3 files found in Neverwinter Nights premium modules? */
 	bool   _repairNWNPremium;
 	/** The correctional value for offsets to repair Neverwinter Nights premium modules. */
-	uint32 _offsetCorrection;
+	uint32_t _offsetCorrection;
 
 	StructArray _structs; ///< Our structs.
 	ListArray   _lists;   ///< Our lists.
 
 	/** To convert list offsets found in GFF3 to real indices. */
-	std::vector<uint32> _listOffsetToIndex;
+	std::vector<uint32_t> _listOffsetToIndex;
 
 
 	// .--- Loading helpers
-	void load(uint32 id);
-	void loadHeader(uint32 id);
+	void load(uint32_t id);
+	void loadHeader(uint32_t id);
 	void loadStructs();
 	void loadLists();
 	// '---
 
 	// .--- Helper methods called by GFF3Struct
 	/** Return the GFF3 stream. */
-	Common::SeekableReadStream &getStream(uint32 offset) const;
+	Common::SeekableReadStream &getStream(uint32_t offset) const;
 	/** Return the GFF3 stream seeked to the start of the field data. */
 	Common::SeekableReadStream &getFieldData() const;
 
 	/** Return a struct within the GFF3. */
-	const GFF3Struct &getStruct(uint32 i) const;
+	const GFF3Struct &getStruct(uint32_t i) const;
 	/** Return a list within the GFF3. */
-	const GFF3List   &getList  (uint32 i) const;
+	const GFF3List   &getList  (uint32_t i) const;
 	// '---
 
 	friend class GFF3Struct;
@@ -196,7 +196,7 @@ public:
 	 *  The purpose of the ID in a GFF3 struct is comparable to the label in
 	 *  a GFF4 struct.
 	 */
-	uint32 getID() const;
+	uint32_t getID() const;
 
 	/** Return the number of fields in this struct. */
 	size_t getFieldCount() const;
@@ -212,8 +212,8 @@ public:
 
 	// .--- Read field values
 	char   getChar(const Common::UString &field, char   def = '\0' ) const;
-	uint64 getUint(const Common::UString &field, uint64 def = 0    ) const;
-	 int64 getSint(const Common::UString &field,  int64 def = 0    ) const;
+	uint64_t getUint(const Common::UString &field, uint64_t def = 0    ) const;
+	 int64_t getSint(const Common::UString &field,  int64_t def = 0    ) const;
 	bool   getBool(const Common::UString &field, bool   def = false) const;
 
 	double getDouble(const Common::UString &field, double def = 0.0) const;
@@ -245,11 +245,11 @@ private:
 	/** A field in the GFF3 struct. */
 	struct Field {
 		FieldType type;     ///< Type of the field.
-		uint32    data;     ///< Data of the field.
+		uint32_t  data;     ///< Data of the field.
 		bool      extended; ///< Does this field need extended data?
 
 		Field();
-		Field(FieldType t, uint32 d);
+		Field(FieldType t, uint32_t d);
 	};
 
 	typedef std::map<Common::UString, Field> FieldMap;
@@ -257,9 +257,9 @@ private:
 
 	const GFF3File *_parent; ///< The parent GFF3.
 
-	uint32 _id;         ///< The struct's ID.
-	uint32 _fieldIndex; ///< Field / Field indices index.
-	uint32 _fieldCount; ///< Field count.
+	uint32_t _id;         ///< The struct's ID.
+	uint32_t _fieldIndex; ///< Field / Field indices index.
+	uint32_t _fieldCount; ///< Field count.
 
 	FieldMap _fields; ///< The fields, indexed by their label.
 
@@ -268,17 +268,17 @@ private:
 
 
 	// .--- Loader
-	GFF3Struct(const GFF3File &parent, uint32 offset);
+	GFF3Struct(const GFF3File &parent, uint32_t offset);
 	~GFF3Struct();
 
-	void load(uint32 offset);
+	void load(uint32_t offset);
 
-	void readField  (Common::SeekableReadStream &data, uint32 index);
-	void readFields (Common::SeekableReadStream &data, uint32 index, uint32 count);
+	void readField  (Common::SeekableReadStream &data, uint32_t index);
+	void readFields (Common::SeekableReadStream &data, uint32_t index, uint32_t count);
 	void readIndices(Common::SeekableReadStream &data,
-	                 std::vector<uint32> &indices, uint32 count) const;
+	                 std::vector<uint32_t> &indices, uint32_t count) const;
 
-	Common::UString readLabel(Common::SeekableReadStream &data, uint32 index) const;
+	Common::UString readLabel(Common::SeekableReadStream &data, uint32_t index) const;
 	// '---
 
 	// .--- Field and field data accessors

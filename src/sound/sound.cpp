@@ -64,7 +64,7 @@ static const size_t kOpenALBufferSize = 32768;
 
 namespace Sound {
 
-SoundManager::Channel::Channel(uint32 i, size_t idx, SoundType t,
+SoundManager::Channel::Channel(uint32_t i, size_t idx, SoundType t,
                                const TypeList::iterator &ti, AudioStream *s, bool d) :
 	id(i), index(idx), state(AL_PAUSED), stream(s, d), source(0),
 	type(t), typeIt(ti), finishedBuffers(0), gain(1.0f) {
@@ -243,7 +243,7 @@ bool SoundManager::isPaused(const ChannelHandle &handle) {
 
 AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	bool isMP3 = false;
-	uint32 tag = stream->readUint32BE();
+	uint32_t tag = stream->readUint32BE();
 
 	if (tag == 0xfff360c4) {
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
@@ -271,7 +271,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		if (tag != MKTAG('d', 'a', 't', 'a'))
 			throw Common::Exception("Found invalid tag in WAVE file: %s", Common::debugTag(tag).c_str());
 
-		uint32 dataSize = stream->readUint32LE();
+		uint32_t dataSize = stream->readUint32LE();
 		if (dataSize == 0) {
 			isMP3 = true;
 			stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
@@ -611,7 +611,7 @@ void SoundManager::setChannelDistance(const ChannelHandle &handle, float minDist
 	}
 }
 
-uint64 SoundManager::getChannelSamplesPlayed(const ChannelHandle &handle) {
+uint64_t SoundManager::getChannelSamplesPlayed(const ChannelHandle &handle) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	Channel *channel = getChannel(handle);
@@ -626,13 +626,13 @@ uint64 SoundManager::getChannelSamplesPlayed(const ChannelHandle &handle) {
 	alGetSourcei(channel->source, AL_BYTE_OFFSET, &currentPosition);
 
 	// Total number of bytes processed
-	uint64 byteCount = channel->finishedBuffers + currentPosition;
+	uint64_t byteCount = channel->finishedBuffers + currentPosition;
 
 	// Number of 16bit samples per channel
 	return byteCount / channel->stream->getChannels() / 2;
 }
 
-uint64 SoundManager::getChannelDurationPlayed(const ChannelHandle &handle) {
+uint64_t SoundManager::getChannelDurationPlayed(const ChannelHandle &handle) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	Channel *channel = getChannel(handle);
@@ -701,7 +701,7 @@ bool SoundManager::fillBuffer(const Channel &channel, ALuint alBuffer,
 	std::unique_ptr<byte[]> buffer = std::make_unique<byte[]>(kOpenALBufferSize);
 	std::memset(buffer.get(), 0, kOpenALBufferSize);
 
-	numSamples = stream->readBuffer(reinterpret_cast<int16 *>(buffer.get()), numSamples);
+	numSamples = stream->readBuffer(reinterpret_cast<int16_t *>(buffer.get()), numSamples);
 	if (numSamples == AudioStream::kSizeInvalid) {
 		warning("Failed reading from stream while filling buffer in %s", formatChannel(&channel).c_str());
 		return false;

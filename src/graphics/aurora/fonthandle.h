@@ -41,7 +41,7 @@ namespace Aurora {
 /** A managed font, storing how often it's referenced. */
 struct ManagedFont {
 	std::unique_ptr<Font> font;
-	uint32 referenceCount;
+	uint32_t referenceCount;
 
 	ManagedFont(Font *f);
 };

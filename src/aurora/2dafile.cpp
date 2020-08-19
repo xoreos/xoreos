@@ -44,10 +44,10 @@
 #include "src/aurora/gdaheaders.h"
 #include "src/aurora/gff4file.h"
 
-static const uint32 k2DAID     = MKTAG('2', 'D', 'A', ' ');
-static const uint32 k2DAIDTab  = MKTAG('2', 'D', 'A', '\t');
-static const uint32 kVersion2a = MKTAG('V', '2', '.', '0');
-static const uint32 kVersion2b = MKTAG('V', '2', '.', 'b');
+static const uint32_t k2DAID     = MKTAG('2', 'D', 'A', ' ');
+static const uint32_t k2DAIDTab  = MKTAG('2', 'D', 'A', '\t');
+static const uint32_t kVersion2a = MKTAG('V', '2', '.', '0');
+static const uint32_t kVersion2b = MKTAG('V', '2', '.', 'b');
 
 namespace Aurora {
 
@@ -73,7 +73,7 @@ const Common::UString &TwoDARow::getString(const Common::UString &column) const 
 	return cell;
 }
 
-int32 TwoDARow::getInt(size_t column) const {
+int32_t TwoDARow::getInt(size_t column) const {
 	const Common::UString &cell = getCell(column);
 	if (cell.empty() || (cell == "****"))
 		return _parent->_defaultInt;
@@ -81,7 +81,7 @@ int32 TwoDARow::getInt(size_t column) const {
 	return _parent->parseInt(cell);
 }
 
-int32 TwoDARow::getInt(const Common::UString &column) const {
+int32_t TwoDARow::getInt(const Common::UString &column) const {
 	const Common::UString &cell = getCell(_parent->headerToColumn(column));
 	if (cell.empty() || (cell == "****"))
 		return _parent->_defaultInt;
@@ -280,7 +280,7 @@ void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
 	 * there are.
 	 */
 
-	const uint32 rowCount = twoda.readUint32LE();
+	const uint32_t rowCount = twoda.readUint32LE();
 	_rows.resize(rowCount, 0);
 
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
@@ -304,7 +304,7 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 	const size_t rowCount    = _rows.size();
 	const size_t cellCount   = columnCount * rowCount;
 
-	std::unique_ptr<uint32[]> offsets = std::make_unique<uint32[]>(cellCount);
+	std::unique_ptr<uint32_t[]> offsets = std::make_unique<uint32_t[]>(cellCount);
 
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
@@ -530,7 +530,7 @@ void TwoDAFile::writeBinary(Common::WriteStream &out) const {
 
 	// Write the row indices
 
-	out.writeUint32LE((uint32) rowCount);
+	out.writeUint32LE((uint32_t) rowCount);
 	for (size_t i = 0; i < rowCount; i++) {
 		out.writeString(Common::composeString(i));
 		out.writeByte('\t');
@@ -597,10 +597,10 @@ void TwoDAFile::writeBinary(Common::WriteStream &out) const {
 
 	// Write cell data offsets
 	for (std::vector<size_t>::const_iterator c = cells.begin(); c != cells.end(); ++c)
-		out.writeUint16LE((uint16) *c);
+		out.writeUint16LE((uint16_t) *c);
 
 	// Size of the all cell data strings
-	out.writeUint16LE((uint16) dataSize);
+	out.writeUint16LE((uint16_t) dataSize);
 
 	// Write cell data strings
 	for (std::vector<Common::UString>::const_iterator d = data.begin(); d != data.end(); ++d) {
@@ -675,11 +675,11 @@ bool TwoDAFile::writeCSV(const Common::UString &fileName) const {
 	return true;
 }
 
-int32 TwoDAFile::parseInt(const Common::UString &str) {
+int32_t TwoDAFile::parseInt(const Common::UString &str) {
 	if (str.empty())
 		return 0;
 
-	int32 v = 0;
+	int32_t v = 0;
 
 	try {
 		Common::parseString(str, v);

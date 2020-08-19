@@ -49,6 +49,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <cstddef>
 
 #include "src/common/memreadstream.h"
 #include "src/common/error.h"

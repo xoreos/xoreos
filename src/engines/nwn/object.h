@@ -73,7 +73,7 @@ public:
 	virtual void hide(); ///< Hide the object's model(s).
 
 	/** Return the object's model IDs. */
-	const std::list<uint32> &getIDs() const;
+	const std::list<uint32_t> &getIDs() const;
 
 	// Basic properties
 
@@ -138,7 +138,7 @@ public:
 	// Object (text) talking
 
 	/** Speak the specified string. */
-	virtual void speakString(const Common::UString &string, uint32 volume);
+	virtual void speakString(const Common::UString &string, uint32_t volume);
 
 	/** Speak an one-liner from the specified conversation file. */
 	void speakOneLiner(Common::UString conv, Object *tokenTarget = 0);
@@ -169,13 +169,13 @@ protected:
 
 	Common::UString _conversation; ///< The object's default conversation.
 
-	uint32 _soundSet; ///< The object's sound set, as an index into soundset.2da.
+	uint32_t _soundSet; ///< The object's sound set, as an index into soundset.2da.
 	std::unique_ptr<Aurora::SSFFile> _ssf; ///< The object's sound set.
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
 
-	std::list<uint32> _ids; ///< The object's model IDs.
+	std::list<uint32_t> _ids; ///< The object's model IDs.
 
 	Aurora::NWScript::Object *_pcSpeaker; ///< The current PC speaking with the object.
 

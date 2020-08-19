@@ -110,7 +110,7 @@ public:
 	void removeObject(Object &object);
 
 	/** Find a specific object by ID. */
-	Object *getObjectByID(uint32 id) const;
+	Object *getObjectByID(uint32_t id) const;
 
 	/** Return the first object. */
 	Object *getFirstObject() const;
@@ -129,7 +129,7 @@ protected:
 
 
 private:
-	typedef std::map<uint32, Object *> ObjectIDMap;
+	typedef std::map<uint32_t, Object *> ObjectIDMap;
 	typedef SearchList::type ObjectList;
 	typedef SearchTagMap::type ObjectTagMap;
 

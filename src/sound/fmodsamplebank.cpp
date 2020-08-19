@@ -96,8 +96,8 @@ bool FMODSampleBank::hasSample(const Common::UString &name) const {
 	return _sampleMap.find(name) != _sampleMap.end();
 }
 
-static constexpr uint32 kSampleFlagMP3      = 0x00000200;
-static constexpr uint32 kSampleFlagIMAADPCM = 0x00400000;
+static constexpr uint32_t kSampleFlagMP3      = 0x00000200;
+static constexpr uint32_t kSampleFlagIMAADPCM = 0x00400000;
 
 RewindableAudioStream *FMODSampleBank::getSample(const Sample &sample) const {
 	_fsb->seek(sample.offset);
@@ -138,12 +138,12 @@ RewindableAudioStream *FMODSampleBank::getSample(const Common::UString &name) co
 	return getSample(*s->second);
 }
 
-static constexpr uint32 kHeaderFlagSimpleInfo = 0x00000002;
+static constexpr uint32_t kHeaderFlagSimpleInfo = 0x00000002;
 
 void FMODSampleBank::load(Common::SeekableReadStream &fsb) {
-	static constexpr uint32 kFSBID = MKTAG('F', 'S', 'B', '4');
+	static constexpr uint32_t kFSBID = MKTAG('F', 'S', 'B', '4');
 
-	const uint32 id = fsb.readUint32BE();
+	const uint32_t id = fsb.readUint32BE();
 	if (id != kFSBID)
 		throw Common::Exception("Not a FSB file (%s)", Common::debugTag(id).c_str());
 
@@ -153,7 +153,7 @@ void FMODSampleBank::load(Common::SeekableReadStream &fsb) {
 	fsb.skip(4); // sampleDataSize
 
 	fsb.skip(4); // version
-	const uint32 flags   = fsb.readUint32LE();
+	const uint32_t flags   = fsb.readUint32LE();
 
 	fsb.skip(24); // Unknown
 

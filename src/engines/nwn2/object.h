@@ -74,7 +74,7 @@ public:
 	virtual void hide(); ///< Hide the object's model(s).
 
 	/** Return the object's model IDs. */
-	const std::list<uint32> &getIDs() const;
+	const std::list<uint32_t> &getIDs() const;
 
 	// Basic properties
 
@@ -100,7 +100,7 @@ public:
 
 	void setUsable(const bool usable); ///< Set the usable state.
 
-	virtual Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
+	virtual Item *createItemOnObject(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag);
 
 	// Object/Object interactions
 
@@ -138,7 +138,7 @@ public:
 	// Object (text) talking
 
 	/** Speak the specified string. */
-	void speakString(const Common::UString &string, uint32 volume);
+	void speakString(const Common::UString &string, uint32_t volume);
 	/** Speak an one-liner from the specified conversation file. */
 	void speakOneLiner(Common::UString conv, Object *tokenTarget = 0);
 
@@ -152,9 +152,9 @@ public:
 	// Faction
 
 	/** Return this object's faction. */
-	uint32 getFaction() const;
+	uint32_t getFaction() const;
 	/** Get this object's reputation with source. */
-	uint8 getReputation(Object *source) const;
+	uint8_t getReputation(Object *source) const;
 	bool getIsEnemy(Object *source) const;
 	bool getIsFriend(Object *source) const;
 	bool getIsNeutral(Object *source) const;
@@ -163,11 +163,11 @@ public:
 
 	bool getIsListening();
 	void setListening(bool listen);
-	int32 getListenPatternNumber(const Common::UString &pattern);
-	void setListenPattern(const Common::UString &pattern, int32 number = 0);
+	int32_t getListenPatternNumber(const Common::UString &pattern);
+	void setListenPattern(const Common::UString &pattern, int32_t number = 0);
 
 protected:
-	typedef std::map<Common::UString, int32> ListenMap;
+	typedef std::map<Common::UString, int32_t> ListenMap;
 
 	ObjectType _type; ///< The object's type.
 
@@ -176,9 +176,9 @@ protected:
 
 	Common::UString _conversation; ///< The object's default conversation.
 
-	uint32 _faction;  ///< The object's faction.
+	uint32_t _faction;  ///< The object's faction.
 
-	uint32 _soundSet; ///< The object's sound set, as an index into soundset.2da.
+	uint32_t _soundSet; ///< The object's sound set, as an index into soundset.2da.
 	std::unique_ptr<Aurora::SSFFile> _ssf; ///< The object's sound set.
 
 	bool _static; ///< Is the object static?
@@ -187,7 +187,7 @@ protected:
 
 	bool _container; ///< Can the object hold an inventory of items?
 
-	std::list<uint32> _ids; ///< The object's model IDs.
+	std::list<uint32_t> _ids; ///< The object's model IDs.
 
 	ListenMap _patterns; ///< The object's listening patterns
 

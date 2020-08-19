@@ -57,10 +57,10 @@ public:
 	TTFFont(const Common::UString &name, int height);
 	~TTFFont();
 
-	float getWidth (uint32 c) const;
-	float getHeight()         const;
+	float getWidth (uint32_t c) const;
+	float getHeight()           const;
 
-	void draw(uint32 c) const;
+	void draw(uint32_t c) const;
 
 	void buildChars(const Common::UString &str);
 
@@ -70,7 +70,7 @@ public:
 	 *                    this is expected to be the identity matrix.
 	 */
 	virtual void renderBind(const glm::mat4 &transform) const;
-	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
+	virtual void render(uint32_t c, float &x, float &y, float *rgba) const;
 	virtual void renderUnbind() const;
 
 private:
@@ -81,11 +81,11 @@ private:
 
 		bool needRebuild;
 
-		uint32 curX;
-		uint32 curY;
+		uint32_t curX;
+		uint32_t curY;
 
-		uint32 heightLeft;
-		uint32 widthLeft;
+		uint32_t heightLeft;
+		uint32_t widthLeft;
 
 		Page();
 
@@ -106,12 +106,12 @@ private:
 	std::unique_ptr<TTFRenderer> _ttf;
 
 	Common::PtrVector<Page> _pages;
-	std::map<uint32, Char> _chars;
+	std::map<uint32_t, Char> _chars;
 
-	std::map<uint32, Char>::const_iterator _missingChar;
+	std::map<uint32_t, Char>::const_iterator _missingChar;
 	float _missingWidth;
 
-	uint32 _height;
+	uint32_t _height;
 
 	Mesh::MeshFont *_mesh;
 	Shader::ShaderMaterial *_material;
@@ -121,7 +121,7 @@ private:
 	void load(Common::SeekableReadStream *ttf, int height);
 
 	void rebuildPages();
-	void addChar(uint32 c);
+	void addChar(uint32_t c);
 	void drawMissing() const;
 };
 

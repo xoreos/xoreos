@@ -53,19 +53,19 @@ public:
 	TextureFont(const Common::UString &name);
 	~TextureFont();
 
-	float getWidth (uint32 c) const;
-	float getHeight()         const;
+	float getWidth (uint32_t c) const;
+	float getHeight()           const;
 
 	float getLineSpacing() const;
 
-	void draw(uint32 c) const;
+	void draw(uint32_t c) const;
 
 	/**
 	 * @brief Bind the font for rendering. Must be performed before render is called.
 	 * @param transform  Base modelview transform. Under most circumstances this is expected to be the identity matrix.
 	 */
 	virtual void renderBind(const glm::mat4 &transform) const;
-	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
+	virtual void render(uint32_t c, float &x, float &y, float *rgba) const;
 	virtual void renderUnbind() const;
 
 
@@ -79,7 +79,7 @@ private:
 
 	TextureHandle _texture;
 
-	std::map<uint32, Char> _chars;
+	std::map<uint32_t, Char> _chars;
 
 	float _height;
 	float _spaceR;

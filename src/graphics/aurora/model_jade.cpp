@@ -162,7 +162,7 @@ void Model_Jade::load(ParserContext &ctx) {
 	 *
 	 * We only support version 7 of the PC version.
 	 */
-	uint32 version = ctx.mdl->readUint32BE();
+	uint32_t version = ctx.mdl->readUint32BE();
 	if (version != 0x00008700)
 		throw Common::Exception("Unsupported MDL: 0x%08X", version);
 
@@ -186,13 +186,13 @@ void Model_Jade::load(ParserContext &ctx) {
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 	ctx.mdlName = _name;
 
-	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
-	uint32 nodeCount       = ctx.mdl->readUint32LE();
+	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32_t nodeCount       = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(24); // Unknown
 	ctx.mdl->skip( 4); // Pointer to the MDL file
 
-	uint8 type = ctx.mdl->readByte();
+	uint8_t type = ctx.mdl->readByte();
 
 	ctx.mdl->skip(3); // Padding
 	ctx.mdl->skip(4); // Unknown
@@ -224,10 +224,10 @@ void Model_Jade::load(ParserContext &ctx) {
 	ctx.mdl->skip(12); // Unknown
 	ctx.mdl->skip( 4); // Pointer to the MDX file
 
-	uint32 nameOffset, nameCount;
+	uint32_t nameOffset, nameCount;
 	readArrayDef(*ctx.mdl, nameOffset, nameCount);
 
-	std::vector<uint32> nameOffsets;
+	std::vector<uint32_t> nameOffsets;
 	readArray(*ctx.mdl, ctx.offModelData + nameOffset, nameCount, nameOffsets);
 
 	readStrings(*ctx.mdl, nameOffsets, ctx.offModelData, ctx.names);
@@ -244,13 +244,13 @@ void Model_Jade::load(ParserContext &ctx) {
 }
 
 void Model_Jade::readStrings(Common::SeekableReadStream &mdl,
-		const std::vector<uint32> &offsets, uint32 offset,
+		const std::vector<uint32_t> &offsets, uint32_t offset,
 		std::vector<Common::UString> &strings) {
 
 	size_t pos = mdl.pos();
 
 	strings.reserve(offsets.size());
-	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
+	for (std::vector<uint32_t>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
 		mdl.seek(offset + *o);
 
 		strings.push_back(Common::readString(mdl, Common::kEncodingASCII));
@@ -300,13 +300,13 @@ ModelNode_Jade::~ModelNode_Jade() {
 }
 
 void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
-	uint32 type = ctx.mdl->readUint32LE();
+	uint32_t type = ctx.mdl->readUint32LE();
 
 	// Node number in tree order
-	uint16 nodeNumber1 = ctx.mdl->readUint16LE();
+	uint16_t nodeNumber1 = ctx.mdl->readUint16LE();
 
 	// Sequentially node number as found in the file
-	uint16 nodeNumber2 = ctx.mdl->readUint16LE();
+	uint16_t nodeNumber2 = ctx.mdl->readUint16LE();
 
 	if (nodeNumber2 < ctx.names.size())
 		_name = ctx.names[nodeNumber2];
@@ -322,13 +322,13 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	_orientation[1] = ctx.mdl->readIEEEFloatLE();
 	_orientation[2] = ctx.mdl->readIEEEFloatLE();
 
-	uint32 childrenOffset = ctx.mdl->readUint32LE();
-	uint32 childrenCount  = ctx.mdl->readUint32LE();
+	uint32_t childrenOffset = ctx.mdl->readUint32LE();
+	uint32_t childrenCount  = ctx.mdl->readUint32LE();
 
 	float nodeScale       = ctx.mdl->readIEEEFloatLE();
 	float maxAnimDistance = ctx.mdl->readIEEEFloatLE();
 
-	std::vector<uint32> children;
+	std::vector<uint32_t> children;
 	Model::readArray(*ctx.mdl, ctx.offModelData + childrenOffset, childrenCount, children);
 
 	if (type & kNodeTypeHasMesh) {
@@ -336,7 +336,7 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		createMesh(ctx);
 	}
 
-	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
+	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_Jade *childNode = new ModelNode_Jade(*_model);
 		ctx.nodes.push_back(childNode);
 		ctx.newNode();
@@ -409,8 +409,8 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	_mesh = new Mesh();
 
-	uint32 transparencyHint = ctx.mdl->readUint32LE();
-	uint16 flags            = ctx.mdl->readUint16LE();
+	uint32_t transparencyHint = ctx.mdl->readUint32LE();
+	uint16_t flags            = ctx.mdl->readUint16LE();
 
 	_mesh->shadow = ctx.mdl->readUint16LE() != 0;
 
@@ -424,10 +424,10 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
-	uint32 indexCount = ctx.mdl->readUint32LE();
+	uint32_t indexCount = ctx.mdl->readUint32LE();
 
 	// Offset of the face indices into the MDL. If 0, use faceOffsetMDX.
-	uint32 faceOffsetMDL = ctx.mdl->readUint32LE();
+	uint32_t faceOffsetMDL = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -439,19 +439,19 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	// - 4: Triangle strip
 	// - 5: Triangle fan
 	// - 6: ???
-	uint32 meshType = ctx.mdl->readUint32LE();
+	uint32_t meshType = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(12); // Unknown
 
-	uint32 mdxStructSize = ctx.mdl->readUint32LE();
+	uint32_t mdxStructSize = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(8); // Unknown
 
-	uint32 offNormals = ctx.mdl->readUint32LE();
+	uint32_t offNormals = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Unknown
 
-	uint32 offUV[4];
+	uint32_t offUV[4];
 	offUV[0] = ctx.mdl->readUint32LE();
 	offUV[1] = ctx.mdl->readUint32LE();
 	offUV[2] = ctx.mdl->readUint32LE();
@@ -459,16 +459,16 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	ctx.mdl->skip(20); // Unknown
 
-	uint16 vertexCount  = ctx.mdl->readUint16LE();
-	uint16 textureCount = MIN<uint16>(ctx.mdl->readUint16LE(), 4);
+	uint16_t vertexCount  = ctx.mdl->readUint16LE();
+	uint16_t textureCount = MIN<uint16_t>(ctx.mdl->readUint16LE(), 4);
 
-	uint32 vertexOffset = ctx.mdl->readUint32LE();
+	uint32_t vertexOffset = ctx.mdl->readUint32LE();
 	ctx.mdl->skip(4); // Unknown
 
-	uint32 materialID = ctx.mdl->readUint32LE();
+	uint32_t materialID = ctx.mdl->readUint32LE();
 
 	// Group id is likely used to select an appropriate shader.
-	uint32 materialGroupID = ctx.mdl->readUint32LE();
+	uint32_t materialGroupID = ctx.mdl->readUint32LE();
 
 	_mesh->selfIllum[0] = ctx.mdl->readIEEEFloatLE();
 	_mesh->selfIllum[1] = ctx.mdl->readIEEEFloatLE();
@@ -481,7 +481,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	ctx.mdl->skip(4); // Unknown
 
 	// Offset of the face indices into the MDX. If 0, use faceOffsetMDL.
-	uint32 faceOffsetMDX = ctx.mdl->readUint32LE();
+	uint32_t faceOffsetMDX = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -504,18 +504,18 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	ctx.vertices.resize(vertexCount * 3);
 
 	ctx.texCoords.resize(textureCount);
-	for (uint32 i = 0; i < textureCount; i++)
+	for (uint32_t i = 0; i < textureCount; i++)
 		ctx.texCoords[i].resize(vertexCount * 2);
 
 	// TODO: Figure out the correct layout of the vertex struct
-	for (uint32 i = 0; i < vertexCount; i++) {
+	for (uint32_t i = 0; i < vertexCount; i++) {
 		ctx.mdx->seek(vertexOffset + i * mdxStructSize);
 
 		ctx.vertices[i * 3 + 0] = ctx.mdx->readIEEEFloatLE();
 		ctx.vertices[i * 3 + 1] = ctx.mdx->readIEEEFloatLE();
 		ctx.vertices[i * 3 + 2] = ctx.mdx->readIEEEFloatLE();
 
-		for (uint32 t = 0; t < textureCount; t++) {
+		for (uint32_t t = 0; t < textureCount; t++) {
 			if ((offUV[t] != 0xFFFFFFFF) && ((offUV[t] + 8) <= mdxStructSize)) {
 				ctx.mdx->seek(vertexOffset + i * mdxStructSize + offUV[t]);
 
@@ -539,41 +539,41 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	unfoldFaces(ctx.indices, meshType);
 }
 
-void ModelNode_Jade::readPlainIndices(Common::SeekableReadStream &stream, std::vector<uint16> &indices,
-                                      uint32 offset, uint32 count) {
+void ModelNode_Jade::readPlainIndices(Common::SeekableReadStream &stream, std::vector<uint16_t> &indices,
+                                      uint32_t offset, uint32_t count) {
 
 	size_t pos = stream.pos();
 
 	stream.seek(offset);
 
 	indices.resize(count);
-	for (std::vector<uint16>::iterator i = indices.begin(); i != indices.end(); ++i)
+	for (std::vector<uint16_t>::iterator i = indices.begin(); i != indices.end(); ++i)
 		*i = stream.readUint16LE();
 
 	stream.seek(pos);
 }
 
-void ModelNode_Jade::readChunkedIndices(Common::SeekableReadStream &stream, std::vector<uint16> &indices,
-                                        uint32 offset, uint32 count) {
+void ModelNode_Jade::readChunkedIndices(Common::SeekableReadStream &stream, std::vector<uint16_t> &indices,
+                                        uint32_t offset, uint32_t count) {
 
 	size_t pos = stream.pos();
 
 	stream.seek(offset);
 
-	uint32 stopValue = stream.readUint32LE();
+	uint32_t stopValue = stream.readUint32LE();
 	stream.skip(4); // Unknown
 
 	indices.reserve(count);
 
 	while (count > 0) {
-		uint32 chunk = stream.readUint32LE();
+		uint32_t chunk = stream.readUint32LE();
 		if (chunk == stopValue)
 			break;
 
-		uint32 chunkLength = ((chunk >> 16) & 0x1FFF) / 2;
-		uint32 toRead = MIN(chunkLength, count);
+		uint32_t chunkLength = ((chunk >> 16) & 0x1FFF) / 2;
+		uint32_t toRead = MIN(chunkLength, count);
 
-		for (uint32 i = 0; i < toRead; i++)
+		for (uint32_t i = 0; i < toRead; i++)
 			indices.push_back(stream.readUint16LE());
 
 		count -= toRead;
@@ -583,7 +583,7 @@ void ModelNode_Jade::readChunkedIndices(Common::SeekableReadStream &stream, std:
 }
 
 /** Unfolds triangle strips / fans into triangle lists. */
-void ModelNode_Jade::unfoldFaces(std::vector<uint16> &indices, uint32 meshType) {
+void ModelNode_Jade::unfoldFaces(std::vector<uint16_t> &indices, uint32_t meshType) {
 	switch (meshType) {
 		case 0: // Point list?
 		case 1: // Line list?
@@ -608,13 +608,13 @@ void ModelNode_Jade::unfoldFaces(std::vector<uint16> &indices, uint32 meshType) 
 	}
 }
 
-void ModelNode_Jade::unfoldTriangleStrip(std::vector<uint16> &indices) {
+void ModelNode_Jade::unfoldTriangleStrip(std::vector<uint16_t> &indices) {
 	if (indices.size() < 3) {
 		indices.clear();
 		return;
 	}
 
-	std::vector<uint16> unfolded;
+	std::vector<uint16_t> unfolded;
 	unfolded.reserve((indices.size() - 2) * 3);
 
 	for (size_t i = 0; i < indices.size() - 2; i++) {
@@ -632,13 +632,13 @@ void ModelNode_Jade::unfoldTriangleStrip(std::vector<uint16> &indices) {
 	indices.swap(unfolded);
 }
 
-void ModelNode_Jade::unfoldTriangleFan(std::vector<uint16> &indices) {
+void ModelNode_Jade::unfoldTriangleFan(std::vector<uint16_t> &indices) {
 	if (indices.size() < 3) {
 		indices.clear();
 		return;
 	}
 
-	std::vector<uint16> unfolded;
+	std::vector<uint16_t> unfolded;
 	unfolded.reserve((indices.size() - 2) * 3);
 
 	for (size_t i = 1; i < indices.size() - 1; i++) {
@@ -651,9 +651,9 @@ void ModelNode_Jade::unfoldTriangleFan(std::vector<uint16> &indices) {
 }
 
 void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
-	const uint32 vertexCount  = ctx.vertices.size() / 3;
-	const uint32 indexCount   = ctx.indices.size();
-	const uint32 textureCount = ctx.texCoords.size();
+	const uint32_t vertexCount  = ctx.vertices.size() / 3;
+	const uint32_t indexCount   = ctx.indices.size();
+	const uint32_t textureCount = ctx.texCoords.size();
 	if ((vertexCount == 0) || (indexCount == 0))
 		return;
 
@@ -674,7 +674,7 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
 	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
-	for (uint32 i = 0; i < vertexCount; i++) {
+	for (uint32_t i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.vertices[i * 3 + 0];
 		*v++ = ctx.vertices[i * 3 + 1];
@@ -687,10 +687,10 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 		}
 	}
 
-	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
-	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16));
+	uint16_t *f = reinterpret_cast<uint16_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
+	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16_t));
 
 	createBound();
 }
@@ -699,7 +699,7 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
  *
  *  TODO: Proper material support.
  */
-void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common::UString> &textures) {
+void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Common::UString> &textures) {
 	if (materialID == 0xFFFFFFFF) {
 		textures.clear();
 		return;
@@ -715,7 +715,7 @@ void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common:
 	textures.reserve(4);
 
 	try {
-		uint32 size = mab->readUint32LE();
+		uint32_t size = mab->readUint32LE();
 		if (size != 292)
 			throw Common::Exception("Invalid size in binary material %s.mab", mabFile.c_str());
 

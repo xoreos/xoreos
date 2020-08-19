@@ -42,11 +42,11 @@ public:
 	Semaphore(uint value = 0);
 	~Semaphore();
 
-	bool lock(uint32 timeout = 0);
+	bool lock(uint32_t timeout = 0);
 	bool lockTry();
 	void unlock();
 
-	uint32 getValue();
+	uint32_t getValue();
 
 private:
 	SDL_sem *_semaphore;

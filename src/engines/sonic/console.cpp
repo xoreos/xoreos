@@ -85,7 +85,7 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 
 	const Aurora::GDAFile &areas = TwoDAReg.getGDA("areas");
 
-	for (std::set<int32>::const_iterator a = _areas.begin(); a != _areas.end(); ++a)
+	for (std::set<int32_t>::const_iterator a = _areas.begin(); a != _areas.end(); ++a)
 		printf("%d (\"%s\")", *a, TalkMan.getString(areas.getInt(*a, "Name")).c_str());
 }
 
@@ -95,7 +95,7 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	int32 areaID = -1;
+	int32_t areaID = -1;
 	try {
 		Common::parseString(cl.args, areaID);
 	} catch (...) {
@@ -103,7 +103,7 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	std::set<int32>::const_iterator area = _areas.find(areaID);
+	std::set<int32_t>::const_iterator area = _areas.find(areaID);
 	if (area == _areas.end()) {
 		printf("No such area %d", areaID);
 		return;

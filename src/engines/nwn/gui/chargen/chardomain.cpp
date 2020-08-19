@@ -45,7 +45,7 @@ namespace NWN {
 
 WidgetListItemDomain::WidgetListItemDomain(::Engines::GUI &gui, const Common::UString &name,
                                            const Common::UString &icon, const Common::UString &desc,
-                                           uint8 domainId)
+                                           uint8_t domainId)
                                            : WidgetListItemButton(gui, "ctl_cg_btn_dom", name, icon, kMoveButton)
                                            , _name(name), _description(desc), _domainId(domainId) {
 
@@ -55,7 +55,7 @@ WidgetListItemDomain::WidgetListItemDomain(::Engines::GUI &gui, const Common::US
 WidgetListItemDomain::~WidgetListItemDomain() {
 }
 
-void WidgetListItemDomain::mouseUp(uint8 state, float x, float y) {
+void WidgetListItemDomain::mouseUp(uint8_t state, float x, float y) {
 	WidgetListItemButton::mouseUp(state, x, y);
 
 	// Show description text
@@ -65,7 +65,7 @@ void WidgetListItemDomain::mouseUp(uint8 state, float x, float y) {
 	gui.getLabel("DomainName", true)->setText(_name);
 }
 
-void WidgetListItemDomain::mouseDblClick(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetListItemDomain::mouseDblClick(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	// Remove double click behaviour.
 }
 
@@ -143,7 +143,7 @@ void CharDomain::createDomainList() {
 		const Common::UString desc = TalkMan.getString(domainRow.getInt("Description"));
 		const Common::UString icon = domainRow.getString("Icon");
 
-		_domainListBox->add(new WidgetListItemDomain(*this, name, icon, desc, static_cast<uint8>(d)), true);
+		_domainListBox->add(new WidgetListItemDomain(*this, name, icon, desc, static_cast<uint8_t>(d)), true);
 	}
 	_domainListBox->sortByTag();
 
@@ -211,7 +211,7 @@ void CharDomain::updateChosenDomains() {
 void CharDomain::setRecommendedDomains() {
 	reset();
 
-	uint8 domain1, domain2;
+	uint8_t domain1, domain2;
 	_choices->getPrefDomains(domain1, domain2);
 	while (_chosenDomains.size() < 2) {
 		for (std::vector<WidgetListItem *>::iterator d = _domainListBox->begin(); d != _domainListBox->end(); ++d) {

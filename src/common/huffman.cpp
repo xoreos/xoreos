@@ -31,7 +31,7 @@
 
 namespace Common {
 
-Huffman::Symbol::Symbol(uint32 c, uint32 s) : code(c), symbol(s) {
+Huffman::Symbol::Symbol(uint32_t c, uint32_t s) : code(c), symbol(s) {
 }
 
 
@@ -39,14 +39,14 @@ Huffman::Huffman(const HuffmanTable &table) {
 	init(table.maxLength, table.codeCount, table.codes, table.lengths, table.symbols);
 }
 
-Huffman::Huffman(uint8 maxLength, size_t codeCount, const uint32 *codes,
-                 const uint8 *lengths, const uint32 *symbols) {
+Huffman::Huffman(uint8_t maxLength, size_t codeCount, const uint32_t *codes,
+                 const uint8_t *lengths, const uint32_t *symbols) {
 
 	init(maxLength, codeCount, codes, lengths, symbols);
 }
 
-void Huffman::init(uint8 maxLength, size_t codeCount, const uint32 *codes,
-                   const uint8 *lengths, const uint32 *symbols) {
+void Huffman::init(uint8_t maxLength, size_t codeCount, const uint32_t *codes,
+                   const uint8_t *lengths, const uint32_t *symbols) {
 
 	assert(codeCount > 0);
 
@@ -64,7 +64,7 @@ void Huffman::init(uint8 maxLength, size_t codeCount, const uint32 *codes,
 
 	for (size_t i = 0; i < codeCount; i++) {
 		// The symbol. If none were specified, just assume it's identical to the code index
-		uint32 symbol = symbols ? symbols[i] : i;
+		uint32_t symbol = symbols ? symbols[i] : i;
 
 		// Put the code and symbol into the correct list
 		_codes[lengths[i] - 1].push_back(Symbol(codes[i], symbol));
@@ -77,13 +77,13 @@ void Huffman::init(uint8 maxLength, size_t codeCount, const uint32 *codes,
 Huffman::~Huffman() {
 }
 
-void Huffman::setSymbols(const uint32 *symbols) {
+void Huffman::setSymbols(const uint32_t *symbols) {
 	for (size_t i = 0; i < _symbols.size(); i++)
 		_symbols[i]->symbol = symbols ? *symbols++ : i;
 }
 
-uint32 Huffman::getSymbol(BitStream &bits) const {
-	uint32 code = 0;
+uint32_t Huffman::getSymbol(BitStream &bits) const {
+	uint32_t code = 0;
 
 	for (size_t i = 0; i < _codes.size(); i++) {
 		bits.addBit(code, i);

@@ -33,9 +33,9 @@ namespace Common {
 
 namespace Graphics {
 
-void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
-void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
-void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch);
+void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32_t width, uint32_t height, uint32_t pitch);
+void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32_t width, uint32_t height, uint32_t pitch);
+void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32_t width, uint32_t height, uint32_t pitch);
 
 } // End of namespace Graphics
 

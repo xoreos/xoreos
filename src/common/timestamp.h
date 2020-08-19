@@ -112,7 +112,7 @@ public:
 	 * @param msecs     starting time in milliseconds
 	 * @param framerate number of frames per second (must be > 0)
 	 */
-	Timestamp(uint64 msecs = 0, uint64 framerate = 1);
+	Timestamp(uint64_t msecs = 0, uint64_t framerate = 1);
 
 	/**
 	 * Set up a timestamp with a given time, frames and framerate.
@@ -120,7 +120,7 @@ public:
 	 * @param frames    starting frames
 	 * @param framerate number of frames per second (must be > 0)
 	 */
-	Timestamp(uint64 secs, uint64 frames, uint64 framerate);
+	Timestamp(uint64_t secs, uint64_t frames, uint64_t framerate);
 
 	/**
 	 * Set up a timestamp with a given time, frames and framerate
@@ -128,14 +128,14 @@ public:
 	 * @param frames    starting frames
 	 * @param framerate number of frames per second (must be > 0)
 	 */
-	Timestamp(uint64 secs, uint64 frames, const Rational &framerate);
+	Timestamp(uint64_t secs, uint64_t frames, const Rational &framerate);
 
 	/**
 	 * Return a timestamp which represents as closely as possible
 	 * the point in time describes by this timestamp, but with
 	 * a different framerate.
 	 */
-	Timestamp convertToFramerate(uint64 newFramerate) const;
+	Timestamp convertToFramerate(uint64_t newFramerate) const;
 
 	/**
 	 * Check whether to timestamps describe the exact same moment
@@ -154,14 +154,14 @@ public:
 	 * by this timestamp with the given number of frames added.
 	 * @param frames     number of frames to add
 	 */
-	Timestamp addFrames(int64 frames) const;
+	Timestamp addFrames(int64_t frames) const;
 
 	/**
 	 * Returns a new timestamp, which corresponds to the time encoded
 	 * by this timestamp with the given number of milliseconds added.
 	 * @param msecs     number of milliseconds to add
 	 */
-	Timestamp addMsecs(int64 msecs) const;
+	Timestamp addMsecs(int64_t msecs) const;
 
 
 	// unary minus
@@ -184,30 +184,30 @@ public:
 	 * The frames are with respect to the framerate used by this
 	 * Timestamp (which may differ from the framerate used by ts).
 	 */
-	int64 frameDiff(const Timestamp &ts) const;
+	int64_t frameDiff(const Timestamp &ts) const;
 
 	/** Computes the number off milliseconds between this timestamp and ts. */
-	int64 msecsDiff(const Timestamp &ts) const;
+	int64_t msecsDiff(const Timestamp &ts) const;
 
 	/**
 	 * Return the time in milliseconds described by this timestamp,
 	 * rounded down.
 	 */
-	int64 msecs() const;
+	int64_t msecs() const;
 
 	/**
 	 * Return the time in seconds described by this timestamp,
 	 * rounded down.
 	 */
-	inline int64 secs() const {
+	inline int64_t secs() const {
 		return _secs;
 	}
 
 	/**
 	 * Return the time in frames described by this timestamp.
 	 */
-	inline int64 totalNumberOfFrames() const {
-		return _numFrames / (int64)_framerateFactor + _secs * (int64)(_framerate / _framerateFactor);
+	inline int64_t totalNumberOfFrames() const {
+		return _numFrames / (int64_t)_framerateFactor + _secs * (int64_t)(_framerate / _framerateFactor);
 	}
 
 	/**
@@ -215,19 +215,19 @@ public:
 	 * of frames, the latter describing a fraction of a second.
 	 * This method returns the latter number.
 	 */
-	inline int64 numberOfFrames() const {
-		return _numFrames / (int64)_framerateFactor;
+	inline int64_t numberOfFrames() const {
+		return _numFrames / (int64_t)_framerateFactor;
 	}
 
 	/** Return the framerate used by this timestamp. */
-	inline uint64 framerate() const { return _framerate / _framerateFactor; }
+	inline uint64_t framerate() const { return _framerate / _framerateFactor; }
 
 protected:
 	/**
 	 * Compare this timestamp to another one and return
 	 * a value similar to strcmp.
 	 */
-	int64 cmp(const Timestamp &ts) const;
+	int64_t cmp(const Timestamp &ts) const;
 
 	/**
 	 * Normalize this timestamp by making _numFrames non-negative
@@ -247,7 +247,7 @@ protected:
 	 * computed as follows:
 	 *   _secs + (double)_numFrames / _framerate
 	 */
-	int64 _secs;
+	int64_t _secs;
 
 	/**
 	 * The number of frames which together with _secs encodes the
@@ -261,7 +261,7 @@ protected:
 	 * The only reason this is an int and not an uint is to
 	 * allow intermediate negative values.
 	 */
-	int64 _numFrames;
+	int64_t _numFrames;
 
 	/**
 	 * The internal framerate, i.e. the number of frames per second.
@@ -270,13 +270,13 @@ protected:
 	 * This way, we ensure that we can store both frames and
 	 * milliseconds without any rounding losses.
 	 */
-	uint64 _framerate;
+	uint64_t _framerate;
 
 	/**
 	 * Factor by which the original framerate specified by the client
 	 * code was multipled to obtain the internal _framerate value.
 	 */
-	uint64 _framerateFactor;
+	uint64_t _framerateFactor;
 };
 
 

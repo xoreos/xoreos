@@ -43,8 +43,8 @@ public:
 	int getHotspotY() const;
 
 private:
-	uint16 _imageCount;
-	uint16 _iconType;
+	uint16_t _imageCount;
+	uint16_t _iconType;
 
 	int _hotspotX;
 	int _hotspotY;

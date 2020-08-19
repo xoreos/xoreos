@@ -231,9 +231,9 @@ void Area::loadObject(Object &object) {
 	_module->addObject(object);
 
 	if (!object.isStatic()) {
-		const std::list<uint32> &ids = object.getIDs();
+		const std::list<uint32_t> &ids = object.getIDs();
 
-		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+		for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 			_objectMap.insert(std::make_pair(*id, &object));
 	}
 }

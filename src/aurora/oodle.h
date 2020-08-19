@@ -40,7 +40,7 @@ namespace Aurora {
  *  @param stop1 The stop1 value
  *  @return A stream of the decompressed data
  */
-Common::ReadStream *decompressOodle1(byte *data, size_t compressedSize, size_t decompressedSize, uint32 stop0, uint32 stop1);
+Common::ReadStream *decompressOodle1(byte *data, size_t compressedSize, size_t decompressedSize, uint32_t stop0, uint32_t stop1);
 
 } // End of namespace Aurora
 

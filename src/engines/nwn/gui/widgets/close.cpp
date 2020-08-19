@@ -53,7 +53,7 @@ void WidgetClose::leave() {
 	_model->setState("");
 }
 
-void WidgetClose::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
+void WidgetClose::mouseDown(uint8_t state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -64,7 +64,7 @@ void WidgetClose::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	playSound("gui_button", Sound::kSoundTypeSFX);
 }
 
-void WidgetClose::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetClose::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

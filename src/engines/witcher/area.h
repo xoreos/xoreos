@@ -82,13 +82,13 @@ public:
 
 	// Music/Sound
 
-	uint32 getMusicDayTrack   () const; ///< Return the music track ID playing by day.
-	uint32 getMusicNightTrack () const; ///< Return the music track ID playing by night.
-	uint32 getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
+	uint32_t getMusicDayTrack   () const; ///< Return the music track ID playing by day.
+	uint32_t getMusicNightTrack () const; ///< Return the music track ID playing by night.
+	uint32_t getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
 
-	void setMusicDayTrack   (uint32 track); ///< Set the music track ID playing by day.
-	void setMusicNightTrack (uint32 track); ///< Set the music track ID playing by night.
-	void setMusicBattleTrack(uint32 track); ///< Set the music track ID playing in battle.
+	void setMusicDayTrack   (uint32_t track); ///< Set the music track ID playing by day.
+	void setMusicNightTrack (uint32_t track); ///< Set the music track ID playing by night.
+	void setMusicBattleTrack(uint32_t track); ///< Set the music track ID playing in battle.
 
 	void stopAmbientMusic(); ///< Stop the ambient music.
 
@@ -117,16 +117,16 @@ protected:
 
 private:
 	typedef Common::PtrList<Engines::Witcher::Object> ObjectList;
-	typedef std::map<uint32, Engines::Witcher::Object *> ObjectMap;
+	typedef std::map<uint32_t, Engines::Witcher::Object *> ObjectMap;
 
 
 	Module *_module;
 
 	Common::UString _resRef; ///< The area's resref (resource ID).
 
-	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
-	uint32 _musicNightTrack;  ///< Music track ID that plays by night.
-	uint32 _musicBattleTrack; ///< Music track ID that plays in battle.
+	uint32_t _musicDayTrack;    ///< Music track ID that plays by day.
+	uint32_t _musicNightTrack;  ///< Music track ID that plays by night.
+	uint32_t _musicBattleTrack; ///< Music track ID that plays in battle.
 
 	Common::UString _musicDay;    ///< Music that plays by day.
 	Common::UString _musicNight;  ///< Music that plays by night.

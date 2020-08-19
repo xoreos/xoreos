@@ -27,6 +27,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -35,10 +36,10 @@
 #include "src/aurora/talktable_gff.h"
 #include "src/aurora/gff4file.h"
 
-static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');
-static const uint32 kVersion02 = MKTAG('V', '0', '.', '2');
-static const uint32 kVersion04 = MKTAG('V', '0', '.', '4');
-static const uint32 kVersion05 = MKTAG('V', '0', '.', '5');
+static const uint32_t kTLKID     = MKTAG('T', 'L', 'K', ' ');
+static const uint32_t kVersion02 = MKTAG('V', '0', '.', '2');
+static const uint32_t kVersion04 = MKTAG('V', '0', '.', '4');
+static const uint32_t kVersion05 = MKTAG('V', '0', '.', '5');
 
 namespace Aurora {
 
@@ -51,12 +52,12 @@ TalkTable_GFF::TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding e
 TalkTable_GFF::~TalkTable_GFF() {
 }
 
-bool TalkTable_GFF::hasEntry(uint32 strRef) const {
+bool TalkTable_GFF::hasEntry(uint32_t strRef) const {
 	return _entries.find(strRef) != _entries.end();
 }
 
 static const Common::UString kEmptyString = "";
-const Common::UString &TalkTable_GFF::getString(uint32 strRef) const {
+const Common::UString &TalkTable_GFF::getString(uint32_t strRef) const {
 	Entries::iterator e = _entries.find(strRef);
 	if (e == _entries.end())
 		return kEmptyString;
@@ -66,11 +67,11 @@ const Common::UString &TalkTable_GFF::getString(uint32 strRef) const {
 	return e->second->text;
 }
 
-const Common::UString &TalkTable_GFF::getSoundResRef(uint32 UNUSED(strRef)) const {
+const Common::UString &TalkTable_GFF::getSoundResRef(uint32_t UNUSED(strRef)) const {
 	return kEmptyString;
 }
 
-uint32 TalkTable_GFF::getSoundID(uint32 UNUSED(strRef)) const {
+uint32_t TalkTable_GFF::getSoundID(uint32_t UNUSED(strRef)) const {
 	return kFieldIDInvalid;
 }
 
@@ -107,7 +108,7 @@ void TalkTable_GFF::load02(const GFF4Struct &top) {
 		if (!*s)
 			continue;
 
-		uint32 strRef = (*s)->getUint(kGFF4TalkStringID, 0xFFFFFFFF);
+		uint32_t strRef = (*s)->getUint(kGFF4TalkStringID, 0xFFFFFFFF);
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
@@ -131,7 +132,7 @@ void TalkTable_GFF::load05(const GFF4Struct &top) {
 		if (!*s)
 			continue;
 
-		uint32 strRef = (*s)->getUint(kGFF4HuffTalkStringID, 0xFFFFFFFF);
+		uint32_t strRef = (*s)->getUint(kGFF4HuffTalkStringID, 0xFFFFFFFF);
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
@@ -190,12 +191,12 @@ void TalkTable_GFF::readString05(Common::SeekableSubReadStreamEndian &huffTree,
 	 * Kudos to Rick (gibbed) (<http://gib.me/>).
 	 */
 
-	std::vector<uint16> utf16Str;
+	std::vector<uint16_t> utf16Str;
 
-	const uint32 startOffset = entry.strct->getUint(kGFF4HuffTalkStringBitOffset);
+	const uint32_t startOffset = entry.strct->getUint(kGFF4HuffTalkStringBitOffset);
 
-	uint32 index = startOffset >> 5;
-	uint32 shift = startOffset & 0x1F;
+	uint32_t index = startOffset >> 5;
+	uint32_t shift = startOffset & 0x1F;
 
 	do {
 		ptrdiff_t e = (huffTree.size() / 8) - 1;

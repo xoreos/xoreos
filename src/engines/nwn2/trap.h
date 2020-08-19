@@ -48,11 +48,11 @@ public:
 	};
 
 	Trap(const Aurora::GFF3Struct &trap);
-	Trap(const uint8 type, const Creature *creator);
+	Trap(const uint8_t type, const Creature *creator);
 	virtual ~Trap();
 
-	void createTrapBaseType(uint8 trapType);
-	virtual void createTrap(uint8 trapType, uint32 faction,
+	void createTrapBaseType(uint8_t trapType);
+	virtual void createTrap(uint8_t trapType, uint32_t faction,
 	                        const Common::UString &disarm,
 	                        const Common::UString &triggered);
 
@@ -67,13 +67,13 @@ public:
 	bool getTrapOneShot() const;
 	bool getTrapRecoverable() const;
 
-	uint8 getTrapBaseType() const;
-	uint8 getTrapDetectDC() const;
-	uint8 getTrapDisarmDC() const;
+	uint8_t getTrapBaseType() const;
+	uint8_t getTrapDetectDC() const;
+	uint8_t getTrapDisarmDC() const;
 
 	Common::UString getTrapKeyTag() const;
 
-	uint32 getTrapCreator() const;
+	uint32_t getTrapCreator() const;
 
 	void setTrapActive(bool active);
 	void setTrapDetectable(bool detectable = true);
@@ -83,8 +83,8 @@ public:
 	void setTrapRecoverable(bool recoverable);
 	void setTrapDisabled();
 
-	void setTrapDetectDC(uint8 detectDC);
-	void setTrapDisarmDC(uint8 disarmDC);
+	void setTrapDetectDC(uint8_t detectDC);
+	void setTrapDisarmDC(uint8_t disarmDC);
 
 	void setTrapKeyTag(const Common::UString &keyTag);
 
@@ -102,20 +102,20 @@ private:
 	bool _isFlagged;        ///< Is the trap visible to all creatures?
 	bool _isAutoRemoveKey;  ///< Automatically remove the key?
 
-	uint8 _trapType;        ///< Row number in traps.2da.
-	uint8 _detectDC;        ///< DC to detect trap.
-	uint8 _disarmDC;        ///< DC to disarm trap.
+	uint8_t _trapType;        ///< Row number in traps.2da.
+	uint8_t _detectDC;        ///< DC to detect trap.
+	uint8_t _disarmDC;        ///< DC to disarm trap.
 
 	Common::UString _keyTag;     ///< Tag of disabling key
 	Common::UString _itemResRef; ///< Recoverable item
 
-	uint32 _detectedBy;     ///< Creature that detected the trap.
-	uint32 _createdBy;      ///< Creature that created the trap.
+	uint32_t _detectedBy;     ///< Creature that detected the trap.
+	uint32_t _createdBy;      ///< Creature that created the trap.
 
 	void init();
 
 	void load(const Aurora::GFF3Struct &trap);
-	void load(const uint8 type, const Creature *creator);
+	void load(const uint8_t type, const Creature *creator);
 };
 
 } // End of namespace NWN2

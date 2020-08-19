@@ -59,9 +59,9 @@ public:
 	bool isPressed() const;
 	void setDisabled(bool disabled);
 
-	void mouseDown (uint8 state, float x, float y);
-	void mouseUp   (uint8 state, float x, float y);
-	void mouseWheel(uint8 state, int x, int y);
+	void mouseDown (uint8_t state, float x, float y);
+	void mouseUp   (uint8_t state, float x, float y);
+	void mouseWheel(uint8_t state, int x, int y);
 
 private:
 	Common::UString _sound;

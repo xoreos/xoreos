@@ -146,11 +146,11 @@ private:
 		MeshDeclUse use;
 		const ::Aurora::GFF4Struct *gff;
 
-		int32 offset;
+		int32_t offset;
 		MeshDeclType type;
 
 		MeshDeclaration(MeshDeclUse u = kMeshDeclUseUnused, const ::Aurora::GFF4Struct *g = 0,
-		                int32 o = -1, MeshDeclType t = kMeshDeclTypeUnused) :
+		                int32_t o = -1, MeshDeclType t = kMeshDeclTypeUnused) :
 			use(u), gff(g), offset(o), type(t) {
 		}
 	};

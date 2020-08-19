@@ -148,7 +148,7 @@ VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 	return *this;
 }
 
-void VertexBuffer::setSize(uint32 vertCount, uint32 vertSize) {
+void VertexBuffer::setSize(uint32_t vertCount, uint32_t vertSize) {
 	_count = vertCount;
 	_size  = vertSize;
 
@@ -164,7 +164,7 @@ void VertexBuffer::setVertexDecl(const VertexDecl &decl) {
 	_decl = decl;
 }
 
-uint32 VertexBuffer::getTypeSize(GLenum type) {
+uint32_t VertexBuffer::getTypeSize(GLenum type) {
 	switch (type) {
 		case GL_UNSIGNED_BYTE:
 			return 1;
@@ -188,8 +188,8 @@ uint32 VertexBuffer::getTypeSize(GLenum type) {
 	return 0;
 }
 
-void VertexBuffer::setVertexDeclLinear(uint32 vertCount, VertexDecl &decl) {
-	uint32 vertSize = 0;
+void VertexBuffer::setVertexDeclLinear(uint32_t vertCount, VertexDecl &decl) {
+	uint32_t vertSize = 0;
 	_decl.clear();
 	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a)
 		vertSize += a->size * getTypeSize(a->type);
@@ -206,15 +206,15 @@ void VertexBuffer::setVertexDeclLinear(uint32 vertCount, VertexDecl &decl) {
 	}
 }
 
-void VertexBuffer::setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl) {
-	uint32 vertSize = 0;
+void VertexBuffer::setVertexDeclInterleave(uint32_t vertCount, VertexDecl &decl) {
+	uint32_t vertSize = 0;
 	_decl.clear();
 	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a)
 		vertSize += a->size * getTypeSize(a->type);
 
 	setSize(vertCount, vertSize);
 
-	uint32 offset = 0;
+	uint32_t offset = 0;
 	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a) {
 		a->stride  = vertSize;
 		a->pointer = _data + offset;
@@ -248,11 +248,11 @@ const VertexDecl &VertexBuffer::getVertexDecl() const {
 	return _decl;
 }
 
-uint32 VertexBuffer::getCount() const {
+uint32_t VertexBuffer::getCount() const {
 	return _count;
 }
 
-uint32 VertexBuffer::getSize() const {
+uint32_t VertexBuffer::getSize() const {
 	return _size;
 }
 

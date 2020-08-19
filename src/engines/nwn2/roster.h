@@ -51,8 +51,8 @@ public:
 	Common::UString getNextRosterMember();
 
 	/** Limit on number of Roster NPCs added via Party Selection GUI. */
-	uint32 getRosterNPCPartyLimit();
-	void setRosterNPCPartyLimit(uint32 limit);
+	uint32_t getRosterNPCPartyLimit();
+	void setRosterNPCPartyLimit(uint32_t limit);
 
 	/** Fetch roster member information. */
 	bool getIsRosterMemberAvailable(const Common::UString &name) const;
@@ -88,13 +88,13 @@ private:
 
 	std::list<Member> _members; ///< List of roster member instances.
 
-	uint32 _partyLimit; ///< Maximum selectable roster companions.
+	uint32_t _partyLimit; ///< Maximum selectable roster companions.
 
 	Common::UString _partyName;  ///< Name of the player's party.
 	Common::UString _partyMotto; ///< Motto for the player's party.
 	Common::UString _partyBio;   ///< Player's party biography.
 
-	uint32 _lastRetrieved; ///< Index of last retrieved member.
+	uint32_t _lastRetrieved; ///< Index of last retrieved member.
 
 	/** Load members from 'ROSTER.rst' file. */
 	void load();

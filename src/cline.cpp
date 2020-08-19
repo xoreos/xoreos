@@ -101,7 +101,7 @@ static void displayVersion() {
 	std::printf("\n");
 }
 
-static Common::UString convertShortToLongOption(uint32 shortOption) {
+static Common::UString convertShortToLongOption(uint32_t shortOption) {
 	static const char * const kOptions[] = {
 		"p", "path",
 		"c", "config",
@@ -119,7 +119,7 @@ static Common::UString convertShortToLongOption(uint32 shortOption) {
 	};
 
 	for (size_t i = 0; i < (ARRAYSIZE(kOptions) / 2); i++)
-		if (((uint32) kOptions[2 * i + 0][0]) == shortOption)
+		if (((uint32_t) kOptions[2 * i + 0][0]) == shortOption)
 			return kOptions[2 * i + 1];
 
 	return "";

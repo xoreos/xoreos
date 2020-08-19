@@ -98,7 +98,7 @@ public:
 	void delayScript(const Common::UString &script,
 	                 const Aurora::NWScript::ScriptState &state,
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
-	                 uint32 delay);
+	                 uint32_t delay);
 
 	// .--- PC management
 	/** Move the player character to this area. */
@@ -153,7 +153,7 @@ private:
 		Aurora::NWScript::ObjectReference owner;
 		Aurora::NWScript::ObjectReference triggerer;
 
-		uint32 timestamp;
+		uint32_t timestamp;
 
 		bool operator<(const Action &s) const;
 	};

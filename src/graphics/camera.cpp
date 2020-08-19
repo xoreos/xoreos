@@ -161,7 +161,7 @@ void CameraManager::moveRelative(float x, float y, float z) {
 	move(relative[0], relative[1], relative[2]);
 }
 
-uint32 CameraManager::lastChanged() const {
+uint32_t CameraManager::lastChanged() const {
 	return _lastChanged;
 }
 

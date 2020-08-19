@@ -73,11 +73,11 @@ Texture::~Texture() {
 		GfxMan.abandon(&_textureID, 1);
 }
 
-uint32 Texture::getWidth() const {
+uint32_t Texture::getWidth() const {
 	return _width;
 }
 
-uint32 Texture::getHeight() const {
+uint32_t Texture::getHeight() const {
 	return _height;
 }
 

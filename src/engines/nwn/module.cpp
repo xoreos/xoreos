@@ -60,8 +60,8 @@
 
 struct GenderToken {
 	const char *token;
-	uint32 male;
-	uint32 female;
+	uint32_t male;
+	uint32_t female;
 };
 
 static const GenderToken kGenderTokens[] = {
@@ -195,13 +195,13 @@ void Module::loadModule(const Common::UString &module) {
 }
 
 void Module::checkXPs() {
-	uint16 hasXP = 0;
+	uint16_t hasXP = 0;
 
 	hasXP |= ConfigMan.getBool("NWN_hasXP1") ? 1 : 0;
 	hasXP |= ConfigMan.getBool("NWN_hasXP2") ? 2 : 0;
 	hasXP |= ConfigMan.getBool("NWN_hasXP3") ? 4 : 0;
 
-	uint16 xp = _ifo.getExpansions();
+	uint16_t xp = _ifo.getExpansions();
 
 	for (int i = 0; i < 16; i++, xp >>= 1, hasXP >>= 1)
 		if ((xp & 1) && !(hasXP & 1))
@@ -234,7 +234,7 @@ void Module::setPCTokens() {
 	TokenMan.set("<Deity>", _pc->getDeity());
 
 	for (size_t i = 0; i < ARRAYSIZE(kGenderTokens); i++) {
-		const uint32 strRef = _pc->isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
+		const uint32_t strRef = _pc->isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
 
 		TokenMan.set(kGenderTokens[i].token, TalkMan.getString(strRef));
 	}
@@ -520,7 +520,7 @@ void Module::handleEvents() {
 }
 
 void Module::handleActions() {
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 
 	while (!_delayedActions.empty()) {
 		ActionQueue::iterator action = _delayedActions.begin();
@@ -669,7 +669,7 @@ void Module::loadSurfaceTypes() {
 	_walkableSurfaces.clear();
 
 	const Aurora::TwoDAFile &surfacematTwoDA = TwoDAReg.get2DA("surfacemat");
-	for (uint32 s = 0; s < surfacematTwoDA.getRowCount(); ++s) {
+	for (uint32_t s = 0; s < surfacematTwoDA.getRowCount(); ++s) {
 		const Aurora::TwoDARow &row = surfacematTwoDA.getRow(s);
 		_walkableSurfaces.push_back(static_cast<bool>(row.getInt("Walk")));
 	}
@@ -772,7 +772,7 @@ Area *Module::getCurrentArea() {
 void Module::delayScript(const Common::UString &script,
                          const Aurora::NWScript::ScriptState &state,
                          Aurora::NWScript::Object *owner,
-                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+                         Aurora::NWScript::Object *triggerer, uint32_t delay) {
 	Action action;
 
 	action.type      = kActionScript;

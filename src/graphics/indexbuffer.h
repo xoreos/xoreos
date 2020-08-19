@@ -41,7 +41,7 @@ public:
 	IndexBuffer &operator=(const IndexBuffer &other);
 
 	/** Change buffer size. Will allocate memory, free previous. */
-	void setSize(uint32 indexCount, uint32 indexSize, GLenum indexType);
+	void setSize(uint32_t indexCount, uint32_t indexSize, GLenum indexType);
 
 	/** Access buffer data. */
 	GLvoid *getData();
@@ -50,7 +50,7 @@ public:
 	const GLvoid *getData() const;
 
 	/** Get element count. */
-	uint32 getCount() const;
+	uint32_t getCount() const;
 
 	/** Get element type. */
 	GLenum getType() const;
@@ -67,8 +67,8 @@ public:
 	GLuint getIBO() const;
 
 private:
-	uint32 _count; ///< Number of elements in buffer.
-	uint32 _size;  ///< Size of a buffer element in bytes.
+	uint32_t _count; ///< Number of elements in buffer.
+	uint32_t _size;  ///< Size of a buffer element in bytes.
 	GLenum _type;  ///< Element type (GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, ...).
 	byte  *_data;  ///< Buffer data.
 

@@ -50,6 +50,8 @@
 #ifndef COMMON_WRITESTREAM_H
 #define COMMON_WRITESTREAM_H
 
+#include <cstddef>
+
 #include "src/common/types.h"
 #include "src/common/endianness.h"
 #include "src/common/util.h"
@@ -90,42 +92,42 @@ public:
 			throw Exception(kWriteError);
 	}
 
-	void writeSByte(int8 value) {
+	void writeSByte(int8_t value) {
 		if (write(&value, 1) != 1)
 			throw Exception(kWriteError);
 	}
 
-	void writeUint16LE(uint16 value) {
+	void writeUint16LE(uint16_t value) {
 		value = TO_LE_16(value);
 		if (write(&value, 2) != 2)
 			throw Exception(kWriteError);
 	}
 
-	void writeUint32LE(uint32 value) {
+	void writeUint32LE(uint32_t value) {
 		value = TO_LE_32(value);
 		if (write(&value, 4) != 4)
 			throw Exception(kWriteError);
 	}
 
-	void writeUint64LE(uint64 value) {
+	void writeUint64LE(uint64_t value) {
 		value = TO_LE_64(value);
 		if (write(&value, 8) != 8)
 			throw Exception(kWriteError);
 	}
 
-	void writeUint16BE(uint16 value) {
+	void writeUint16BE(uint16_t value) {
 		value = TO_BE_16(value);
 		if (write(&value, 2) != 2)
 			throw Exception(kWriteError);
 	}
 
-	void writeUint32BE(uint32 value) {
+	void writeUint32BE(uint32_t value) {
 		value = TO_BE_32(value);
 		if (write(&value, 4) != 4)
 			throw Exception(kWriteError);
 	}
 
-	void writeUint64BE(uint64 value) {
+	void writeUint64BE(uint64_t value) {
 		value = TO_BE_64(value);
 		if (write(&value, 8) != 8)
 			throw Exception(kWriteError);
@@ -144,44 +146,44 @@ public:
 		writeBytes(0, n);
 	}
 
-	FORCEINLINE void writeSint16LE(int16 value) {
-		writeUint16LE((uint16)value);
+	FORCEINLINE void writeSint16LE(int16_t value) {
+		writeUint16LE((uint16_t)value);
 	}
 
-	FORCEINLINE void writeSint32LE(int32 value) {
-		writeUint32LE((uint32)value);
+	FORCEINLINE void writeSint32LE(int32_t value) {
+		writeUint32LE((uint32_t)value);
 	}
 
-	FORCEINLINE void writeSint64LE(int64 value) {
-		writeUint64LE((uint64)value);
+	FORCEINLINE void writeSint64LE(int64_t value) {
+		writeUint64LE((uint64_t)value);
 	}
 
-	FORCEINLINE void writeSint16BE(int16 value) {
-		writeUint16BE((uint16)value);
+	FORCEINLINE void writeSint16BE(int16_t value) {
+		writeUint16BE((uint16_t)value);
 	}
 
-	FORCEINLINE void writeSint32BE(int32 value) {
-		writeUint32BE((uint32)value);
+	FORCEINLINE void writeSint32BE(int32_t value) {
+		writeUint32BE((uint32_t)value);
 	}
 
-	FORCEINLINE void writeSint64BE(int64 value) {
-		writeUint64BE((uint64)value);
+	FORCEINLINE void writeSint64BE(int64_t value) {
+		writeUint64BE((uint64_t)value);
 	}
 
 	FORCEINLINE void writeIEEEFloatLE(float value) {
-		writeUint32LE((uint32)convertIEEEFloat(value));
+		writeUint32LE((uint32_t)convertIEEEFloat(value));
 	}
 
 	FORCEINLINE void writeIEEEFloatBE(float value) {
-		writeUint32BE((uint32)convertIEEEFloat(value));
+		writeUint32BE((uint32_t)convertIEEEFloat(value));
 	}
 
 	FORCEINLINE void writeIEEEDoubleLE(double value) {
-		writeUint64LE((uint64)convertIEEEDouble(value));
+		writeUint64LE((uint64_t)convertIEEEDouble(value));
 	}
 
 	FORCEINLINE void writeIEEEDoubleBE(double value) {
-		writeUint64BE((uint64)convertIEEEDouble(value));
+		writeUint64BE((uint64_t)convertIEEEDouble(value));
 	}
 
 	/** Copy n bytes of the given stream into the stream.

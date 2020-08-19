@@ -46,9 +46,9 @@ public:
 	// '---
 
 	/** Get the reputation of the trigger with the source. */
-	uint8 getReputation(Object *source) const;
+	uint8_t getReputation(Object *source) const;
 	/** Create a trap on the trigger. */
-	void createTrap(uint8 trapType, uint32 faction,
+	void createTrap(uint8_t trapType, uint32_t faction,
 	                const Common::UString &disarm,
 	                const Common::UString &triggered);
 

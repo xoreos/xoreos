@@ -50,7 +50,7 @@ void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,
 	assert(dbf);
 
 	// Read header
-	uint32 recordSize, recordCount, firstRecordPos;
+	uint32_t recordSize, recordCount, firstRecordPos;
 	loadHeader(*dbf, recordSize, recordCount, firstRecordPos);
 	if (_hasIndex && !cdx)
 		throw Exception("Index needed");
@@ -73,8 +73,8 @@ void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,
 	// TODO: Read the compound index (CDX) file
 }
 
-void FoxPro::loadHeader(SeekableReadStream &dbf, uint32 &recordSize, uint32 &recordCount,
-                        uint32 &firstRecordPos) {
+void FoxPro::loadHeader(SeekableReadStream &dbf, uint32_t &recordSize, uint32_t &recordCount,
+                        uint32_t &firstRecordPos) {
 
 	byte version = dbf.readByte();
 	if (version != 0xF5)
@@ -104,9 +104,9 @@ void FoxPro::loadHeader(SeekableReadStream &dbf, uint32 &recordSize, uint32 &rec
 	dbf.skip(2); // Reserved
 }
 
-void FoxPro::loadFields(SeekableReadStream &dbf, uint32 recordSize) {
+void FoxPro::loadFields(SeekableReadStream &dbf, uint32_t recordSize) {
 	// Read all field descriptions, 0x0D is the end marker
-	uint32 fieldsLength = 0;
+	uint32_t fieldsLength = 0;
 	while (!dbf.eos() && (dbf.readByte() != 0x0D)) {
 		Field field;
 
@@ -142,7 +142,7 @@ void FoxPro::loadFields(SeekableReadStream &dbf, uint32 recordSize) {
 		throw Exception("Length of all fields does not equal the record size");
 }
 
-void FoxPro::loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 recordCount) {
+void FoxPro::loadRecords(SeekableReadStream &dbf, uint32_t recordSize, uint32_t recordCount) {
 	_pool.push_back(new byte[recordSize * recordCount]);
 	byte *recordData = _pool.back();
 
@@ -152,11 +152,11 @@ void FoxPro::loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 reco
 	if (dbf.readByte() != 0x1A)
 		throw Exception("Record end marker missing");
 
-	uint32 fieldCount = _fields.size();
+	uint32_t fieldCount = _fields.size();
 
 	// Create the records array
 	_records.resize(recordCount);
-	for (uint32 i = 0; i < recordCount; i++) {
+	for (uint32_t i = 0; i < recordCount; i++) {
 		Record &record = _records[i];
 		byte *data = recordData + i * recordSize;
 
@@ -167,7 +167,7 @@ void FoxPro::loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 reco
 		record.deleted = status == '*';
 
 		record.fields.resize(fieldCount);
-		for (uint32 j = 0; j < fieldCount; j++) {
+		for (uint32_t j = 0; j < fieldCount; j++) {
 			record.fields[j] = data;
 			data += _fields[j].size;
 		}
@@ -229,10 +229,10 @@ void FoxPro::saveHeader(WriteStream &dbf) const {
 	dbf.writeUint32LE(_records.size());
 
 	//                    Header + fields + field end marker
-	uint16 firstRecordPos = 32 + _fields.size() * 32 + 1;
+	uint16_t firstRecordPos = 32 + _fields.size() * 32 + 1;
 	dbf.writeUint16LE(firstRecordPos);
 
-	uint16 recordSize = _fields.back().offset + _fields.back().size;
+	uint16_t recordSize = _fields.back().offset + _fields.back().size;
 	dbf.writeUint16LE(recordSize);
 
 	dbf.writeUint32LE(0x00000000); // Reserved
@@ -240,7 +240,7 @@ void FoxPro::saveHeader(WriteStream &dbf) const {
 	dbf.writeUint32LE(0x00000000); // Reserved
 	dbf.writeUint32LE(0x00000000); // Reserved
 
-	uint8 flags = (_hasIndex ? 0x01 : 0x00) | (_hasMemo ? 0x02 : 0x00);
+	uint8_t flags = (_hasIndex ? 0x01 : 0x00) | (_hasMemo ? 0x02 : 0x00);
 	dbf.writeByte(flags);
 
 	dbf.writeByte(0x00); // Codepage marker
@@ -306,7 +306,7 @@ void FoxPro::saveMemos(WriteStream &fpt) const {
 		fpt.write(_memos[i], _memoBlockSize);
 }
 
-void FoxPro::getLastUpdate(uint16 &lastUpdateYear, uint8 &lastUpdateMonth, uint8 &lastUpdateDay) const {
+void FoxPro::getLastUpdate(uint16_t &lastUpdateYear, uint8_t &lastUpdateMonth, uint8_t &lastUpdateDay) const {
 	lastUpdateYear  = _lastUpdateYear;
 	lastUpdateMonth = _lastUpdateMonth;
 	lastUpdateDay   = _lastUpdateDay;
@@ -353,12 +353,12 @@ UString FoxPro::getString(const Record &record, size_t field) const {
 	return str;
 }
 
-int32 FoxPro::getInt(const Record &record, size_t field) const {
+int32_t FoxPro::getInt(const Record &record, size_t field) const {
 	assert(field < _fields.size());
 
 	const Field &f = _fields[field];
 
-	int32 i = 0;
+	int32_t i = 0;
 	if        (f.type == kTypeNumber) {
 
 		if (!getInt(record.fields[field], f.size, i))
@@ -433,7 +433,7 @@ double FoxPro::getDouble(const Record &record, size_t field) const {
 	return d;
 }
 
-void FoxPro::getDate(const Record &record, size_t field, uint16 &year, uint8 &month, uint8 &day) {
+void FoxPro::getDate(const Record &record, size_t field, uint16_t &year, uint8_t &month, uint8_t &day) {
 	assert(field < _fields.size());
 
 	const Field &f = _fields[field];
@@ -465,11 +465,11 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 	if (f.type != kTypeMemo)
 		throw Exception("Field is not of memo type ('%c')", f.type);
 
-	int32 i = 0;
+	int32_t i = 0;
 	if (!getInt(record.fields[field], f.size, i) || (i < 1))
 		return 0;
 
-	size_t block = ((uint32) i) - 1;
+	size_t block = ((uint32_t) i) - 1;
 
 	if (block >= _memos.size())
 		throw Exception("Memo block #%u >= memo block count %u", (uint)block, (uint)_memos.size());
@@ -524,7 +524,7 @@ void FoxPro::checkName(const UString &name) {
 			throw Common::Exception("FoxPro field names need to be in unextended ASCII");
 }
 
-size_t FoxPro::addFieldString(const UString &name, uint8 size) {
+size_t FoxPro::addFieldString(const UString &name, uint8_t size) {
 	checkName(name);
 
 	size_t offset = 1;
@@ -550,7 +550,7 @@ size_t FoxPro::addFieldString(const UString &name, uint8 size) {
 	return _fields.size() - 1;
 }
 
-size_t FoxPro::addFieldNumber(const UString &name, uint8 size, uint8 decimals) {
+size_t FoxPro::addFieldNumber(const UString &name, uint8_t size, uint8_t decimals) {
 	checkName(name);
 
 	size_t offset = 1;
@@ -682,7 +682,7 @@ size_t FoxPro::addFieldMemo(const UString &name) {
 	return _fields.size() - 1;
 }
 
-void FoxPro::addField(uint8 size) {
+void FoxPro::addField(uint8_t size) {
 	if (_records.empty())
 		return;
 
@@ -745,7 +745,7 @@ void FoxPro::setString(size_t record, size_t field, const UString &value) {
 	updateUpdate();
 }
 
-void FoxPro::setInt(size_t record, size_t field, int32 value) {
+void FoxPro::setInt(size_t record, size_t field, int32_t value) {
 	assert((record < _records.size()) && (field < _fields.size()));
 
 	Record &r = _records[record];
@@ -803,7 +803,7 @@ void FoxPro::setDouble(size_t record, size_t field, double value) {
 	if        (f.type == kTypeNumber) {
 
 		if (f.decimals != 0)
-			snprintf(data, f.size, "%*d", f.size, (int32) value);
+			snprintf(data, f.size, "%*d", f.size, (int32_t) value);
 		else
 			snprintf(data, f.size, "%*.*f", f.size, f.decimals, value);
 
@@ -827,7 +827,7 @@ void FoxPro::setDouble(size_t record, size_t field, double value) {
 	updateUpdate();
 }
 
-void FoxPro::setDate(size_t record, size_t field, uint16 year, uint8 month, uint8 day) {
+void FoxPro::setDate(size_t record, size_t field, uint16_t year, uint8_t month, uint8_t day) {
 	assert((record < _records.size()) && (field < _fields.size()));
 
 	Record &r = _records[record];
@@ -901,7 +901,7 @@ void FoxPro::setMemo(size_t record, size_t field, SeekableReadStream *value) {
 	updateUpdate();
 }
 
-bool FoxPro::getInt(const byte *data, size_t size, int32 &i) {
+bool FoxPro::getInt(const byte *data, size_t size, int32_t &i) {
 	char n[32];
 
 	if (size > 31)

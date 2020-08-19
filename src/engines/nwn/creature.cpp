@@ -50,7 +50,7 @@
 #include "src/engines/nwn/item.h"
 #include "src/engines/nwn/area.h"
 
-static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
+static const uint32_t kBICID = MKTAG('B', 'I', 'C', ' ');
 
 namespace Engines {
 
@@ -175,7 +175,7 @@ void Creature::setOrientation(float x, float y, float z, float angle) {
 		_model->setOrientation(x, y, z, angle);
 }
 
-uint32 Creature::lastChangedGUIDisplay() const {
+uint32_t Creature::lastChangedGUIDisplay() const {
 	return _lastChangedGUIDisplay;
 }
 
@@ -202,11 +202,11 @@ bool Creature::isFemale() const {
 	return _gender == kGenderFemale;
 }
 
-uint32 Creature::getRace() const {
+uint32_t Creature::getRace() const {
 	return _race;
 }
 
-void Creature::setRace(uint32 race) {
+void Creature::setRace(uint32_t race) {
 	if (race >= kRaceInvalid)
 		error("Unable to set race, raceID is invalid.");
 
@@ -231,31 +231,31 @@ bool Creature::isDM() const {
 	return _isDM;
 }
 
-uint32 Creature::getAge() const {
+uint32_t Creature::getAge() const {
 	return _age;
 }
 
-uint32 Creature::getXP() const {
+uint32_t Creature::getXP() const {
 	return _xp;
 }
 
-int32 Creature::getCurrentHP() const {
+int32_t Creature::getCurrentHP() const {
 	return _currentHP + _bonusHP;
 }
 
-int32 Creature::getMaxHP() const {
+int32_t Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
 }
 
-uint8 Creature::getStartingPackage() const {
+uint8_t Creature::getStartingPackage() const {
 	return _startingPackage;
 }
 
-void Creature::setStartingPackage(uint8 package) {
+void Creature::setStartingPackage(uint8_t package) {
 	_startingPackage = package;
 }
 
-void Creature::getDomains(uint32 classID, uint8 &domain1, uint8 &domain2) {
+void Creature::getDomains(uint32_t classID, uint8_t &domain1, uint8_t &domain2) {
 	Class *creatureClass = findClass(classID);
 	if (!creatureClass) {
 		domain1 = UINT8_MAX;
@@ -267,7 +267,7 @@ void Creature::getDomains(uint32 classID, uint8 &domain1, uint8 &domain2) {
 	domain2 = creatureClass->domain2;
 }
 
-void Creature::setDomains(uint32 classID, uint8 domain1, uint8 domain2) {
+void Creature::setDomains(uint32_t classID, uint8_t domain1, uint8_t domain2) {
 	Class *creatureClass = findClass(classID);
 	if (!creatureClass)
 		return;
@@ -276,7 +276,7 @@ void Creature::setDomains(uint32 classID, uint8 domain1, uint8 domain2) {
 	creatureClass->domain2 = domain2;
 }
 
-bool Creature::hasSpell(uint32 classID, size_t spellLevel, uint16 spell) {
+bool Creature::hasSpell(uint32_t classID, size_t spellLevel, uint16_t spell) {
 	Class *creatureClass = findClass(classID);
 	if (!creatureClass)
 		return false;
@@ -284,16 +284,16 @@ bool Creature::hasSpell(uint32 classID, size_t spellLevel, uint16 spell) {
 	if (creatureClass->knownList.size() < spellLevel)
 		return false;
 
-	std::vector<uint16> &spellLvlList = creatureClass->knownList[spellLevel];
+	std::vector<uint16_t> &spellLvlList = creatureClass->knownList[spellLevel];
 	// Check if the creature already knows the spell.
-	for (std::vector<uint16>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
+	for (std::vector<uint16_t>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
 		if (*s == spell)
 			return true;
 
 	return false;
 }
 
-void Creature::setSchool(uint32 classID, uint8 school) {
+void Creature::setSchool(uint32_t classID, uint8_t school) {
 	Class *creatureClass = findClass(classID);
 	if (!creatureClass)
 		return;
@@ -301,7 +301,7 @@ void Creature::setSchool(uint32 classID, uint8 school) {
 	creatureClass->school = school;
 }
 
-void Creature::setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell) {
+void Creature::setKnownSpell(uint32_t classID, size_t spellLevel, uint16_t spell) {
 	Class *creatureClass = findClass(classID);
 	if (!creatureClass)
 		return;
@@ -309,9 +309,9 @@ void Creature::setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell) {
 	if (creatureClass->knownList.size() < spellLevel + 1)
 		creatureClass->knownList.resize(spellLevel + 1);
 
-	std::vector<uint16> &spellLvlList = creatureClass->knownList[spellLevel];
+	std::vector<uint16_t> &spellLvlList = creatureClass->knownList[spellLevel];
 	// Check if the creature already knows the spell.
-	for (std::vector<uint16>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
+	for (std::vector<uint16_t>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
 		if (*s == spell)
 			return;
 
@@ -319,7 +319,7 @@ void Creature::setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell) {
 	return;
 }
 
-void Creature::setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell) {
+void Creature::setMemorizedSpell(uint32_t classID, size_t spellLevel, uint16_t spell) {
 	Class *creatureClass = findClass(classID);
 	if (!creatureClass)
 		return;
@@ -327,9 +327,9 @@ void Creature::setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell
 	if (creatureClass->memorizedList.size() < spellLevel + 1)
 		creatureClass->memorizedList.resize(spellLevel + 1);
 
-	std::vector<uint16> &spellLvlList = creatureClass->memorizedList[spellLevel];
+	std::vector<uint16_t> &spellLvlList = creatureClass->memorizedList[spellLevel];
 	// Check if the creature already knows the spell.
-	for (std::vector<uint16>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
+	for (std::vector<uint16_t>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
 		if (*s == spell)
 			return;
 
@@ -337,31 +337,31 @@ void Creature::setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell
 	return;
 }
 
-void Creature::setAppearance(uint32 appearanceID) {
+void Creature::setAppearance(uint32_t appearanceID) {
 	_appearanceID = appearanceID;
 }
 
-void Creature::setPhenotype(uint32 phenotype) {
+void Creature::setPhenotype(uint32_t phenotype) {
 	_phenotype = phenotype;
 }
 
-void Creature::setColorSkin(uint32 colorSkin) {
+void Creature::setColorSkin(uint32_t colorSkin) {
 	_colorSkin = colorSkin;
 }
 
-void Creature::setColorHair(uint32 colorHair) {
+void Creature::setColorHair(uint32_t colorHair) {
 	_colorHair = colorHair;
 }
 
-void Creature::setColorTatto1(uint32 colorTattoo1) {
+void Creature::setColorTatto1(uint32_t colorTattoo1) {
 	_colorTattoo1 = colorTattoo1;
 }
 
-void Creature::setColorTatto2(uint32 colorTattoo2) {
+void Creature::setColorTatto2(uint32_t colorTattoo2) {
 	_colorTattoo2 = colorTattoo2;
 }
 
-void Creature::setHead(uint32 headID) {
+void Creature::setHead(uint32_t headID) {
 	_bodyParts[kBodyPartHead].id = headID;
 }
 
@@ -433,7 +433,7 @@ void Creature::setCommandable(bool commandable) {
 	_isCommandable = commandable;
 }
 
-void Creature::constructPartName(const Common::UString &type, uint32 id,
+void Creature::constructPartName(const Common::UString &type, uint32_t id,
 		const Common::UString &gender, const Common::UString &race,
 		const Common::UString &phenoType, Common::UString &part) {
 
@@ -441,7 +441,7 @@ void Creature::constructPartName(const Common::UString &type, uint32 id,
 	       gender.c_str(), race.c_str(), phenoType.c_str(), type.c_str(), id);
 }
 
-void Creature::constructPartName(const Common::UString &type, uint32 id,
+void Creature::constructPartName(const Common::UString &type, uint32_t id,
 		const Common::UString &gender, const Common::UString &race,
 		const Common::UString &phenoType, const Common::UString &phenoTypeAlt,
 		Aurora::FileType fileType, Common::UString &part) {
@@ -455,7 +455,7 @@ void Creature::constructPartName(const Common::UString &type, uint32 id,
 		part.clear();
 }
 
-void Creature::constructModelName(const Common::UString &type, uint32 id,
+void Creature::constructModelName(const Common::UString &type, uint32_t id,
 		const Common::UString &gender, const Common::UString &race,
 		const Common::UString &phenoType, const Common::UString &phenoTypeAlt,
 		Common::UString &model, Common::UString &texture) {
@@ -545,7 +545,7 @@ void Creature::getArmorModels() {
 
 		// Set the body part models
 		for (size_t i = 0; i < kBodyPartMAX; i++) {
-			uint32 id = item.getArmorPart(i);
+			uint32_t id = item.getArmorPart(i);
 			if (id != Aurora::kFieldIDInvalid)
 				_bodyParts[i].idArmor = id;
 		}
@@ -560,7 +560,7 @@ void Creature::getArmorModels() {
 	}
 }
 
-Creature::Class *Creature::findClass(uint32 classID) {
+Creature::Class *Creature::findClass(uint32_t classID) {
 	for (std::vector<Class>::iterator c = _classes.begin(); c != _classes.end(); ++c) {
 		if (c->classID != classID)
 			continue;
@@ -774,7 +774,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	loadPortrait(gff, _portrait);
 
 	// Gender
-	_gender = (Gender) gff.getUint("Gender", (uint64) _gender);
+	_gender = (Gender) gff.getUint("Gender", (uint64_t) _gender);
 
 	// Race
 	_race = gff.getUint("Race", _race);
@@ -870,7 +870,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 }
 
 void Creature::loadPortrait(const Aurora::GFF3Struct &gff, Common::UString &portrait) {
-	uint32 portraitID = gff.getUint("PortraitId");
+	uint32_t portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 
@@ -892,7 +892,7 @@ void Creature::loadEquippedItems(const Aurora::GFF3Struct &gff) {
 }
 
 void Creature::loadClasses(const Aurora::GFF3Struct &gff,
-                           std::vector<Class> &classes, uint8 &hitDice) {
+                           std::vector<Class> &classes, uint8_t &hitDice) {
 
 	if (!gff.hasField("ClassList"))
 		return;
@@ -914,19 +914,19 @@ void Creature::loadClasses(const Aurora::GFF3Struct &gff,
 }
 
 const Common::UString &Creature::getConvRace() const {
-	const uint32 strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("ConverName");
+	const uint32_t strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("ConverName");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvrace() const {
-	const uint32 strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("ConverNameLower");
+	const uint32_t strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("ConverNameLower");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvRaces() const {
-	const uint32 strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("NamePlural");
+	const uint32_t strRef = TwoDAReg.get2DA("racialtypes").getRow(_race).getInt("NamePlural");
 
 	return TalkMan.getString(strRef);
 }
@@ -935,7 +935,7 @@ const Common::UString &Creature::getSubRace() const {
 	return _subRace;
 }
 
-void Creature::getClass(uint32 position, uint32 &classID, uint16 &level) const {
+void Creature::getClass(uint32_t position, uint32_t &classID, uint16_t &level) const {
 	if (position >= _classes.size()) {
 		classID = kClassInvalid;
 		level   = 0;
@@ -946,7 +946,7 @@ void Creature::getClass(uint32 position, uint32 &classID, uint16 &level) const {
 	level   = _classes[position].level;
 }
 
-uint16 Creature::getClassLevel(uint32 classID) const {
+uint16_t Creature::getClassLevel(uint32_t classID) const {
 	for (std::vector<Class>::const_iterator c = _classes.begin(); c != _classes.end(); ++c)
 		if (c->classID == classID)
 			return c->level;
@@ -954,7 +954,7 @@ uint16 Creature::getClassLevel(uint32 classID) const {
 	return 0;
 }
 
-void Creature::changeClassLevel(uint32 classID, int16 levelChange) {
+void Creature::changeClassLevel(uint32_t classID, int16_t levelChange) {
 	for (std::vector<Class>::iterator c = _classes.begin(); c != _classes.end(); ++c) {
 		if (c->classID != classID)
 			continue;
@@ -976,22 +976,22 @@ void Creature::changeClassLevel(uint32 classID, int16 levelChange) {
 }
 
 const Common::UString &Creature::getConvClass() const {
-	const uint32 classID = _classes.front().classID;
-	const uint32 strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Name");
+	const uint32_t classID = _classes.front().classID;
+	const uint32_t strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Name");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvclass() const {
-	const uint32 classID = _classes.front().classID;
-	const uint32 strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Lower");
+	const uint32_t classID = _classes.front().classID;
+	const uint32_t strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Lower");
 
 	return TalkMan.getString(strRef);
 }
 
 const Common::UString &Creature::getConvClasses() const {
-	const uint32 classID = _classes.front().classID;
-	const uint32 strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Plural");
+	const uint32_t classID = _classes.front().classID;
+	const uint32_t strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Plural");
 
 	return TalkMan.getString(strRef);
 }
@@ -1000,23 +1000,23 @@ const Common::UString &Creature::getDeity() const {
 	return _deity;
 }
 
-uint8 Creature::getGoodEvil() const {
+uint8_t Creature::getGoodEvil() const {
 	return _goodEvil;
 }
 
-void Creature::setGoodEvil(uint8 goodness) {
+void Creature::setGoodEvil(uint8_t goodness) {
 	_goodEvil = goodness;
 }
 
-uint8 Creature::getLawChaos() const {
+uint8_t Creature::getLawChaos() const {
 	return _lawChaos;
 }
 
-void Creature::setLawChaos(uint8 lawfulness) {
+void Creature::setLawChaos(uint8_t lawfulness) {
 	_lawChaos = lawfulness;
 }
 
-void Creature::setSoundSet(uint32 soundSet) {
+void Creature::setSoundSet(uint32_t soundSet) {
 	_soundSet = soundSet;
 }
 
@@ -1028,45 +1028,45 @@ Common::UString Creature::getClassString() const {
 	return classString;
 }
 
-uint8 Creature::getHitDice() const {
+uint8_t Creature::getHitDice() const {
 	return _hitDice;
 }
 
-uint8 Creature::getAbility(Ability ability) const {
+uint8_t Creature::getAbility(Ability ability) const {
 	assert((ability >= 0) && (ability < kAbilityMAX));
 
 	return _abilities[ability];
 }
 
-void Creature::setAbility(Ability ability, uint8 score) {
+void Creature::setAbility(Ability ability, uint8_t score) {
 	assert((ability >= 0) && ability < kAbilityMAX);
 
 	_abilities[ability] = score;
 }
 
-int8 Creature::getSkillRank(uint32 skill) const {
+int8_t Creature::getSkillRank(uint32_t skill) const {
 	if (skill >= _skills.size())
 		return -1;
 
 	return _skills[skill];
 }
 
-void Creature::setSkillRank(size_t skill, uint8 rank) {
+void Creature::setSkillRank(size_t skill, uint8_t rank) {
 	if (skill >= _skills.size())
 		return;
 
 	_skills[skill] = rank;
 }
 
-void Creature::setFeat(uint32 feat) {
+void Creature::setFeat(uint32_t feat) {
 	if (hasFeat(feat))
 		return;
 
 	_feats.push_back(feat);
 }
 
-bool Creature::hasFeat(uint32 feat) const {
-	for (std::vector<uint32>::const_iterator f = _feats.begin(); f != _feats.end(); ++f)
+bool Creature::hasFeat(uint32_t feat) const {
+	for (std::vector<uint32_t>::const_iterator f = _feats.begin(); f != _feats.end(); ++f)
 		if (*f == feat)
 			return true;
 
@@ -1175,7 +1175,7 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
 
 	// Reading classes
 	std::vector<Class> classLevels;
-	uint8 hitDice;
+	uint8_t hitDice;
 
 	loadClasses(top, classLevels, hitDice);
 	getClassString(classLevels, classes);
@@ -1195,7 +1195,7 @@ void Creature::getClassString(const std::vector<Class> &classes, Common::UString
 		if (!str.empty())
 			str += '/';
 
-		uint32 strRef = TwoDAReg.get2DA("classes").getRow(c->classID).getInt("Name");
+		uint32_t strRef = TwoDAReg.get2DA("classes").getRow(c->classID).getInt("Name");
 
 		str += TalkMan.getString(strRef);
 	}

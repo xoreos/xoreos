@@ -77,12 +77,12 @@ static Jade::Object kDefaultValueObjectInvalid(kObjectTypeInvalid);
 static Jade::Object kDefaultValueObjectCreature(kObjectTypeCreature);
 static Jade::Object kDefaultValueObjectSelf(kObjectTypeSelf);
 
-static const Aurora::NWScript::Variable kDefaultIntMinus1((int32)  -1);
-static const Aurora::NWScript::Variable kDefaultInt0     ((int32)   0);
-static const Aurora::NWScript::Variable kDefaultInt1     ((int32)   1);
-static const Aurora::NWScript::Variable kDefaultInt7     ((int32)   7);
-static const Aurora::NWScript::Variable kDefaultInt9     ((int32)   9);
-static const Aurora::NWScript::Variable kDefaultInt18    ((int32)  18);
+static const Aurora::NWScript::Variable kDefaultIntMinus1((int32_t)  -1);
+static const Aurora::NWScript::Variable kDefaultInt0     ((int32_t)   0);
+static const Aurora::NWScript::Variable kDefaultInt1     ((int32_t)   1);
+static const Aurora::NWScript::Variable kDefaultInt7     ((int32_t)   7);
+static const Aurora::NWScript::Variable kDefaultInt9     ((int32_t)   9);
+static const Aurora::NWScript::Variable kDefaultInt18    ((int32_t)  18);
 
 static const Aurora::NWScript::Variable kDefaultFloatMinus1_0  (-1.0f);
 static const Aurora::NWScript::Variable kDefaultFloat0_0       ( 0.0f);
@@ -98,7 +98,7 @@ static const Aurora::NWScript::Variable kDefaultStringEmpty     (Common::UString
 static const Aurora::NWScript::Variable kDefaultStringMinus1    (Common::UString("-1"));
 static const Aurora::NWScript::Variable kDefaultStringWorldEntry(Common::UString("World Entry"));
 
-static const Aurora::NWScript::Variable kDefaultObjectTypeCreature ((int32) kObjectTypeCreature);
+static const Aurora::NWScript::Variable kDefaultObjectTypeCreature ((int32_t) kObjectTypeCreature);
 
 static const Aurora::NWScript::Variable kDefaultObjectInvalid (&kDefaultValueObjectInvalid);
 static const Aurora::NWScript::Variable kDefaultObjectCreature(&kDefaultValueObjectCreature);
@@ -106,21 +106,21 @@ static const Aurora::NWScript::Variable kDefaultObjectSelf    (&kDefaultValueObj
 
 // TODO: Add the relevant enums to types.h, and use these values.
 
-static const Aurora::NWScript::Variable kDefaultACDodgeBonus                   ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultACVsDamageTypeAll              ((int32)   4103);
-static const Aurora::NWScript::Variable kDefaultAttackBonusMisc                ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultProjectilePathTypeDefault      ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultEngineAnimationBlendtypeLinear ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultCombatAreaActive               ((int32)      1);
-static const Aurora::NWScript::Variable kDefaultDamagetypeHealth               ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultDialogshotSideAuto             ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultEvadeForward                   ((int32)      1);
-static const Aurora::NWScript::Variable kDefaultFacingTurnshortest             ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultMovespeedDefault               ((int32)     -1);
-static const Aurora::NWScript::Variable kDefaultStylemapNone                   ((int32)      0);
+static const Aurora::NWScript::Variable kDefaultACDodgeBonus                   ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultACVsDamageTypeAll              ((int32_t)   4103);
+static const Aurora::NWScript::Variable kDefaultAttackBonusMisc                ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultProjectilePathTypeDefault      ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultEngineAnimationBlendtypeLinear ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultCombatAreaActive               ((int32_t)      1);
+static const Aurora::NWScript::Variable kDefaultDamagetypeHealth               ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultDialogshotSideAuto             ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultEvadeForward                   ((int32_t)      1);
+static const Aurora::NWScript::Variable kDefaultFacingTurnshortest             ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultMovespeedDefault               ((int32_t)     -1);
+static const Aurora::NWScript::Variable kDefaultStylemapNone                   ((int32_t)      0);
 
-static const Aurora::NWScript::Variable kDefaultFalse                          ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultTrue                           ((int32)      1);
+static const Aurora::NWScript::Variable kDefaultFalse                          ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultTrue                           ((int32_t)      1);
 
 /** The table defining the name and function pointer of each engine function. */
 const Functions::FunctionPointer Functions::kFunctionPointers[] = {

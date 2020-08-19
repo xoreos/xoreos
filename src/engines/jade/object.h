@@ -67,7 +67,7 @@ public:
 	virtual void hide(); ///< Hide the object's model(s).
 
 	/** Return the object's model IDs. */
-	const std::list<uint32> &getIDs() const;
+	const std::list<uint32_t> &getIDs() const;
 
 	// Basic properties
 
@@ -134,12 +134,12 @@ public:
 	// Object (text) talking
 
 	/** Speak the specified string. */
-	void speakString(int32 resref);
+	void speakString(int32_t resref);
 
 	// Animation
 
 	/** Play an object animation. */
-	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32_t loopCount = 0);
 	/** Play a default object animation. */
 	virtual void playAnimation(Animation animation);
 
@@ -157,7 +157,7 @@ protected:
 
 	bool _noCollide; ///< Is collision checking for the object disabled?
 
-	std::list<uint32> _ids; ///< The object's model IDs.
+	std::list<uint32_t> _ids; ///< The object's model IDs.
 
 	Aurora::NWScript::Object *_pcSpeaker; ///< The current PC speaking with the object.
 

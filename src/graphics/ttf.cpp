@@ -59,7 +59,7 @@ TTFRenderer::TTFRenderer(Common::SeekableReadStream &ttfFile, int height) :
 	} BOOST_SCOPE_EXIT_END
 
 	const size_t size = ttfFile.size();
-	_fileBuffer = std::make_unique<uint8[]>(size);
+	_fileBuffer = std::make_unique<uint8_t[]>(size);
 
 	if (ttfFile.read(_fileBuffer.get(), size) != size)
 		throw Common::Exception(Common::kReadError);
@@ -112,11 +112,11 @@ void TTFRenderer::getFaceMetrics(int &advance, int &yOffset, int &xMin) const {
 	advance = ftCeil26_6(metrics.horiAdvance);
 }
 
-bool TTFRenderer::hasChar(uint32 ch) const {
+bool TTFRenderer::hasChar(uint32_t ch) const {
 	return FT_Get_Char_Index(_face, ch) != 0;
 }
 
-int TTFRenderer::getCharWidth(uint32 ch) const {
+int TTFRenderer::getCharWidth(uint32_t ch) const {
 	FT_UInt slot = FT_Get_Char_Index(_face, ch);
 	if (!slot)
 		throw Common::Exception("TTFRenderer: Font does not contain glyph 0x%X", ch);
@@ -131,7 +131,7 @@ int TTFRenderer::getCharWidth(uint32 ch) const {
 	return advance;
 }
 
-void TTFRenderer::drawCharacter(uint32 ch, Surface &surface, int x, int y) {
+void TTFRenderer::drawCharacter(uint32_t ch, Surface &surface, int x, int y) {
 	FT_UInt slot = FT_Get_Char_Index(_face, ch);
 	if (!slot)
 		throw Common::Exception("TTFRenderer: Font does not contain glyph 0x%X", ch);
@@ -150,7 +150,7 @@ void TTFRenderer::drawCharacter(uint32 ch, Surface &surface, int x, int y) {
 	getFaceMetrics(advance, yOffset, xMin);
 
 	const FT_Bitmap &bitmap = _face->glyph->bitmap;
-	const uint8 *src = bitmap.buffer;
+	const uint8_t *src = bitmap.buffer;
 	int srcPitch = bitmap.pitch;
 	if (srcPitch < 0) {
 		src += (bitmap.rows - 1) * srcPitch;

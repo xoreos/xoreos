@@ -55,7 +55,7 @@ void PersonalReputation::clear() {
  * creature, set reputation argument to that value and
  * return true. Otherwise return false.
  */
-bool PersonalReputation::getPersonalRep(Object *source, uint8 *reputation) {
+bool PersonalReputation::getPersonalRep(Object *source, uint8_t *reputation) {
 	// Quick bypass for most objects
 	if (_reputation.size() == 0 || source == 0)
 		return false;
@@ -64,7 +64,7 @@ bool PersonalReputation::getPersonalRep(Object *source, uint8 *reputation) {
 	decayPersonalRep();
 
 	// Cycle through the stored reputations, looking for a matching ID
-	uint32 id = source->getID();
+	uint32_t id = source->getID();
 	for (std::vector<PersonalRep>::const_iterator it = _reputation.begin(); it != _reputation.end(); ++it) {
 		if (id == it->objectId) {
 			// Found a matching rep
@@ -77,7 +77,7 @@ bool PersonalReputation::getPersonalRep(Object *source, uint8 *reputation) {
 }
 
 /**  Set a personal reputation of the creature with the subject. */
-void PersonalReputation::setPersonalRep(Object *source, uint8 reputation, bool decays, uint16 duration) {
+void PersonalReputation::setPersonalRep(Object *source, uint8_t reputation, bool decays, uint16_t duration) {
 	assert(source);
 
 	// Clean out decayed reputations
@@ -125,7 +125,7 @@ void PersonalReputation::clearPersonalRep(Object *subject) {
 	decayPersonalRep();
 
 	// Cycle through the stored reputations, looking for a matching ID
-	uint32 id = subject->getID();
+	uint32_t id = subject->getID();
 	for (std::vector<PersonalRep>::iterator it = _reputation.begin(); it != _reputation.end(); ++it) {
 		if (id == it->objectId) {
 			// Erase the matching rep
@@ -150,7 +150,7 @@ Factions::~Factions() {
 }
 
 /** Get the source's reputation with the faction. */
-uint8 Factions::getReputation(Object *source, uint32 faction) {
+uint8_t Factions::getReputation(Object *source, uint32_t faction) {
 	assert(source);
 	assert(faction < _factionList.size());
 
@@ -161,7 +161,7 @@ uint8 Factions::getReputation(Object *source, uint32 faction) {
 	 * matching the 'source's faction and the 'faction'
 	 * column, then return the cell's factionRep value.
 	 */
-	uint32 sFaction = source->getFaction();
+	uint32_t sFaction = source->getFaction();
 	size_t index = (_count * sFaction) + faction;
 
 	assert(index < _repList.size());
@@ -171,7 +171,7 @@ uint8 Factions::getReputation(Object *source, uint32 faction) {
 }
 
 /** Get the faction name. */
-Common::UString Factions::getFactionName(uint32 faction) {
+Common::UString Factions::getFactionName(uint32_t faction) {
 	assert(faction < _factionList.size());
 	return _factionList[faction].name;
 }

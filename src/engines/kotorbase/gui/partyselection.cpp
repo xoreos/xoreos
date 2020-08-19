@@ -125,7 +125,7 @@ const Common::UString PartySelectionGUI::getPortrait(const Common::UString &temp
 	const Aurora::GFF3Struct &gff = utc->getTopLevel();
 	Common::UString portrait;
 
-	uint32 portraitId = gff.getUint("PortraitId");
+	uint32_t portraitId = gff.getUint("PortraitId");
 	if (portraitId != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 		portrait = twoda.getRow(portraitId).getString("BaseResRef");

@@ -61,23 +61,23 @@ public:
 	Variable pop();
 	void push(const Variable &obj);
 
-	Variable &getRelSP(int32 pos);
-	void setRelSP(int32 pos, const Variable &obj);
+	Variable &getRelSP(int32_t pos);
+	void setRelSP(int32_t pos, const Variable &obj);
 
-	Variable &getRelBP(int32 pos);
-	void setRelBP(int32 pos, const Variable &obj);
+	Variable &getRelBP(int32_t pos);
+	void setRelBP(int32_t pos, const Variable &obj);
 
-	int32 getStackPtr();
-	void  setStackPtr(int32 pos);
+	int32_t getStackPtr();
+	void  setStackPtr(int32_t pos);
 
-	int32 getBasePtr();
-	void  setBasePtr(int32 pos);
+	int32_t getBasePtr();
+	void  setBasePtr(int32_t pos);
 
 	void print() const;
 
 private:
-	int32 _stackPtr;
-	int32 _basePtr;
+	int32_t _stackPtr;
+	int32_t _basePtr;
 };
 
 #define DECLARE_OPCODE(x) void x(InstructionType type)
@@ -191,7 +191,7 @@ private:
 
 	VariableContainer _env;
 
-	std::stack<uint32> _returnOffsets;
+	std::stack<uint32_t> _returnOffsets;
 
 	Variable _storedState;
 
@@ -217,7 +217,7 @@ private:
 
 	void decompile(); // TODO
 
-	void callEngine(Aurora::NWScript::FunctionContext &ctx, uint32 function, uint8 argCount);
+	void callEngine(Aurora::NWScript::FunctionContext &ctx, uint32_t function, uint8_t argCount);
 
 	// Opcode declarations
 	DECLARE_OPCODE(o_nop);

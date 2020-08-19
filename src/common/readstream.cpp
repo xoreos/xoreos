@@ -48,6 +48,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 
 #include <memory>
 
@@ -57,7 +58,7 @@
 
 namespace Common {
 
-const uint32 ReadStream::kEOF;
+const uint32_t ReadStream::kEOF;
 
 ReadStream::ReadStream() {
 }

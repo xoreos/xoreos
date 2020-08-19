@@ -73,62 +73,62 @@ public:
 	const Common::UString &getLastName() const;
 
 	/** Get the creature's gender. */
-	uint32 getGender() const;
+	uint32_t getGender() const;
 	/** Set the creature's gender. */
-	void setGender(uint32 gender);
+	void setGender(uint32_t gender);
 	/** Is the creature female, do we need female dialogs tokens? */
 	bool isFemale() const;
 
 	/** Return the creature's race value. */
-	uint32 getRace() const;
+	uint32_t getRace() const;
 	/** Set the creature's race. */
-	void setRace(uint32 race);
+	void setRace(uint32_t race);
 
 	/** Return the creature's subrace value. */
-	uint32 getSubRace() const;
+	uint32_t getSubRace() const;
 	/** Set the creature's subrace. */
-	void setSubRace(uint32 subRace);
+	void setSubRace(uint32_t subRace);
 
 	/** Get the creature's class and level at that class slot position. */
-	void getClass(uint32 position, uint32 &classID, uint16 &level) const;
+	void getClass(uint32_t position, uint32_t &classID, uint16_t &level) const;
 	/** Get the creature's level for this class. */
-	uint16 getClassLevel(uint32 classID) const;
+	uint16_t getClassLevel(uint32_t classID) const;
 
 	/** Returns the number of hit dice, which is effectively the total number of levels. */
-	uint8 getHitDice() const;
+	uint8_t getHitDice() const;
 
 	/** Return a creature's ability score. */
-	uint8 getAbility(Ability ability) const;
+	uint8_t getAbility(Ability ability) const;
 	/** Return a creature's ability score modifier */
-	int8 getAbilityModifier(Ability ability) const;
+	int8_t getAbilityModifier(Ability ability) const;
 	/** Return true if skill is valid and useable */
-	bool getHasSkill(uint32 skill) const;
+	bool getHasSkill(uint32_t skill) const;
 	/** Return the creature's rank in this skill. */
-	int8 getSkillRank(uint32 skill, bool baseOnly = false) const;
+	int8_t getSkillRank(uint32_t skill, bool baseOnly = false) const;
 	/** Does the creature have this feat? */
-	bool  hasFeat(uint32 feat) const;
+	bool  hasFeat(uint32_t feat) const;
 
-	bool featAdd(uint32 feat, bool checkRequirements);
+	bool featAdd(uint32_t feat, bool checkRequirements);
 
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 
-	uint8 getGoodEvil() const;
-	uint8 getLawChaos() const;
+	uint8_t getGoodEvil() const;
+	uint8_t getLawChaos() const;
 
 	bool isPC() const; ///< Is the creature a player character?
 	bool isDM() const; ///< Is the creature a dungeon master?
 
 	/** Return the creature's age. */
-	uint32 getAge() const;
+	uint32_t getAge() const;
 
 	/** Return the creature's XP. */
-	uint32 getXP() const;
+	uint32_t getXP() const;
 
 	/** Return the current HP this creature has. */
-	int32 getCurrentHP() const;
+	int32_t getCurrentHP() const;
 	/** Return the max HP this creature can have. */
-	int32 getMaxHP() const;
+	int32_t getMaxHP() const;
 
 	bool getIsDead() const;
 	bool getImmortal() const;
@@ -141,18 +141,18 @@ public:
 	void setLootable(bool lootable);
 
 	/** Create an item in the creature's inventory. */
-	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
+	Item *createItemOnObject(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag);
 
 	// Reputation
 
-	uint8 getReputation(Object *source) const;
+	uint8_t getReputation(Object *source) const;
 
 	/** Add a journal quest entry. */
-	void addJournalQuestEntry(const Common::UString &plotID, uint32 state, bool override);
+	void addJournalQuestEntry(const Common::UString &plotID, uint32_t state, bool override);
 	/** Remove a journal quest entry. */
 	void removeJournalQuestEntry(const Common::UString &plotID);
 	/** Return the state of a journal quest entry. */
-	uint32 getJournalEntry(const Common::UString &plotID);
+	uint32_t getJournalEntry(const Common::UString &plotID);
 
 	// Positioning
 
@@ -175,49 +175,49 @@ public:
 	// Tests
 
 	/** Make a skill check */
-	bool getIsSkillSuccessful(uint32 skill, int DC);
+	bool getIsSkillSuccessful(uint32_t skill, int DC);
 
 private:
 	typedef Common::PtrList<Graphics::Aurora::Model> ModelParts;
 
 	/** A class. */
 	struct Class {
-		uint32 classID; ///< Index into classes.2da.
-		uint16 level;   ///< Levels of that class.
+		uint32_t classID; ///< Index into classes.2da.
+		uint16_t level;   ///< Levels of that class.
 	};
 
 	/** A level. */
 	struct LevelStats {
-		uint32 classID;
-		uint16 skillPoints;
-		uint8  ability;          ///< Ability to increase
-		uint8  hitDice;          ///< Hit Dice for the class
-		uint8  ranks[kSkillMAX]; ///< Rank increases
+		uint32_t classID;
+		uint16_t skillPoints;
+		uint8_t  ability;          ///< Ability to increase
+		uint8_t  hitDice;          ///< Hit Dice for the class
+		uint8_t  ranks[kSkillMAX]; ///< Rank increases
 	};
 
 	/** A quest status. */
 	struct QuestState {
 		Common::UString plotID; ///< Journal category identifier.
-		uint32 state;           ///< Journal entry id.
+		uint32_t state;         ///< Journal entry id.
 	};
 
 	Common::UString _firstName; ///< The creature's first name.
 	Common::UString _lastName;  ///< The creature's last name.
 
-	uint32 _gender;  ///< The creature's gender.
-	uint32 _race;    ///< The creature's race.
-	uint32 _subRace; ///< The creature's subrace.
+	uint32_t _gender;  ///< The creature's gender.
+	uint32_t _race;    ///< The creature's race.
+	uint32_t _subRace; ///< The creature's subrace.
 
 	bool _isPC; ///< Is the creature a PC?
 	bool _isDM; ///< Is the creature a DM?
 
-	uint32 _age; ///< The creature's age.
+	uint32_t _age; ///< The creature's age.
 
-	uint32 _xp; ///< The creature's experience.
+	uint32_t _xp; ///< The creature's experience.
 
-	int32 _baseHP;    ///< The creature's base maximum health points.
-	int32 _bonusHP;   ///< The creature's bonus health points.
-	int32 _currentHP; ///< The creature's current health points.
+	int32_t _baseHP;    ///< The creature's base maximum health points.
+	int32_t _bonusHP;   ///< The creature's bonus health points.
+	int32_t _currentHP; ///< The creature's current health points.
 
 	bool _isImmortal;           ///< Can the creature never drop below 1 hp?
 	bool _isPlot;               ///< Is this a plot creature that takes no damage?
@@ -227,35 +227,35 @@ private:
 	bool _isNoPermanentDeath;   ///< Can the creature not permanently die?
 	bool _isSelectableWhenDead; ///< Can the body can be selected when dead.
 
-	uint8 _abilities[kAbilityMAX]; ///< The creature's abilities.
+	uint8_t _abilities[kAbilityMAX]; ///< The creature's abilities.
 
-	std::vector<Class>  _classes;    ///< The creature's classes.
+	std::vector<Class> _classes;     ///< The creature's classes.
 	std::vector<LevelStats> _levels; ///< Level data for the creature.
-	std::unique_ptr<Feats> _feats; ///< The creature's feats.
+	std::unique_ptr<Feats> _feats;   ///< The creature's feats.
 
-	uint8 _ranks[kSkillMAX]; ///< Total skill ranks across levels.
+	uint8_t _ranks[kSkillMAX]; ///< Total skill ranks across levels.
 
-	uint8 _hitDice; ///< The creature's hit dice.
+	uint8_t _hitDice; ///< The creature's hit dice.
 
 	Common::UString _deity; ///< The creature's deity.
 
-	uint8 _goodEvil; ///< The creature's good/evil value (0-100).
-	uint8 _lawChaos; ///< The creature's law/chaos value (0-100).
+	uint8_t _goodEvil; ///< The creature's good/evil value (0-100).
+	uint8_t _lawChaos; ///< The creature's law/chaos value (0-100).
 
 	std::unique_ptr<PersonalReputation> _personalRep; ///< The creature's reputation tracker.
-	std::vector<QuestState> _questStates;               ///< Status of the creature's quests.
+	std::vector<QuestState> _questStates;             ///< Status of the creature's quests.
 
-	uint32 _appearanceID; ///< The creature's general appearance.
+	uint32_t _appearanceID; ///< The creature's general appearance.
 
-	uint8 _armorVisualType;
-	uint8 _armorVariation;
+	uint8_t _armorVisualType;
+	uint8_t _armorVariation;
 
-	uint8 _bootsVisualType;
-	uint8 _bootsVariation;
+	uint8_t _bootsVisualType;
+	uint8_t _bootsVariation;
 
-	uint8 _appearanceHead;  ///< The model variant used for the head.
-	uint8 _appearanceMHair; ///< The model variant used for male hair.
-	uint8 _appearanceFHair; ///< The model variant used for female hair.
+	uint8_t _appearanceHead;  ///< The model variant used for the head.
+	uint8_t _appearanceMHair; ///< The model variant used for male hair.
+	uint8_t _appearanceFHair; ///< The model variant used for female hair.
 
 	ModelParts _modelParts;
 
@@ -275,7 +275,7 @@ private:
 
 	/** Load the creature's classes. */
 	static void loadClasses (const Aurora::GFF3Struct &gff,
-	                         std::vector<Class> &classes, uint8 &hitDice);
+	                         std::vector<Class> &classes, uint8_t &hitDice);
 
 	/** Load the level stats for the creature. */
 	static void loadLevelStats(const Aurora::GFF3Struct &gff,
@@ -284,12 +284,12 @@ private:
 
 	/** Load the creature's skill ranks. */
 	static void loadSkills(const Aurora::GFF3Struct &gff,
-	                       uint8 ranks[]);
+	                       uint8_t ranks[]);
 
 	/** Load the creature's feats. */
 	static void loadFeats(const Aurora::GFF3Struct &gff,
 	                      std::unique_ptr<Feats> &feats,
-	                      uint32 level = 0);
+	                      uint32_t level = 0);
 
 	/** Load the listening patterns. */
 	void loadListenPatterns(const Aurora::GFF3Struct &gff);
@@ -298,9 +298,9 @@ private:
 
 	Common::UString getBaseModel(const Common::UString &base);
 	bool loadArmorModel(const Common::UString &body, const Common::UString &armor,
-	                    uint8 visualType, uint8 variation);
-	bool loadHeadModel(uint8 appearance);
-	bool loadHairModel(uint8 appearance);
+	                    uint8_t visualType, uint8_t variation);
+	bool loadHeadModel(uint8_t appearance);
+	bool loadHairModel(uint8_t appearance);
 
 	static Aurora::GFF3File *openPC(const Common::UString &bic, bool local);
 };

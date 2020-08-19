@@ -40,13 +40,13 @@ MenuMap::MenuMap(Console *console) : KotORBase::GUI(console) {
 	load("map");
 }
 
-void MenuMap::setReturnStrref(uint32 id) {
+void MenuMap::setReturnStrref(uint32_t id) {
 	Odyssey::WidgetButton *btnReturn = getButton("BTN_RETURN");
 	if (btnReturn)
 		btnReturn->setText(TalkMan.getString(id));
 }
 
-void MenuMap::setReturnQueryStrref(uint32 id) {
+void MenuMap::setReturnQueryStrref(uint32_t id) {
 	_returnQueryMessage = TalkMan.getString(id);
 }
 

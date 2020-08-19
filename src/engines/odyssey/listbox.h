@@ -91,7 +91,7 @@ public:
 	void setItemWidgetFactoryFunction(const ItemWidgetFactoryFunc &f);
 
 	/** Create the specified number of list box item widgets. */
-	void createItemWidgets(uint32 count);
+	void createItemWidgets(uint32_t count);
 	/** Refresh list box items widgets. */
 	void refreshItemWidgets();
 
@@ -105,12 +105,12 @@ public:
 	// Positioning
 
 	void setHeight(float height);
-	void setPadding(uint32 padding);
+	void setPadding(uint32_t padding);
 
 	// Widget/cursor interactions
 
 	void subActive(Engines::Widget &widget);
-	void mouseWheel(uint8 state, int x, int y);
+	void mouseWheel(uint8_t state, int x, int y);
 
 	// Sound
 
@@ -128,7 +128,7 @@ private:
 	std::vector<Common::UString> _items;
 	ItemWidgetFactoryFunc _itemWidgetFactoryFunc;
 
-	uint32 _padding;
+	uint32_t _padding;
 	bool _leftScrollbar;
 	bool _itemSelectionEnabled;
 	bool _adjustHeight;

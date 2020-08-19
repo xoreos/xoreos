@@ -299,7 +299,7 @@ static const byte kStaticIcon[32 * 32 * 4] = {
 };
 
 static SDL_Surface *createStaticIconSurface() {
-	uint32 rMask, gMask, bMask, aMask;
+	uint32_t rMask, gMask, bMask, aMask;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	rMask = 0xFF000000;

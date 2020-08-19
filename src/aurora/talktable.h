@@ -53,12 +53,12 @@ class TalkTable : boost::noncopyable {
 public:
 	virtual ~TalkTable();
 
-	virtual bool hasEntry(uint32 strRef) const = 0;
+	virtual bool hasEntry(uint32_t strRef) const = 0;
 
-	virtual const Common::UString &getString     (uint32 strRef) const = 0;
-	virtual const Common::UString &getSoundResRef(uint32 strRef) const = 0;
+	virtual const Common::UString &getString     (uint32_t strRef) const = 0;
+	virtual const Common::UString &getSoundResRef(uint32_t strRef) const = 0;
 
-	virtual uint32 getSoundID(uint32 strRef) const = 0;
+	virtual uint32_t getSoundID(uint32_t strRef) const = 0;
 
 	/** Take over this stream and read a talk table (of either format) out of it. */
 	static TalkTable *load(Common::SeekableReadStream *tlk, Common::Encoding encoding);

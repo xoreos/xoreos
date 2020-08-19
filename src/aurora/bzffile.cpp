@@ -38,8 +38,8 @@
 #include "src/aurora/bzffile.h"
 #include "src/aurora/keyfile.h"
 
-static const uint32 kBZFID     = MKTAG('B', 'I', 'F', 'F');
-static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
+static const uint32_t kBZFID     = MKTAG('B', 'I', 'F', 'F');
+static const uint32_t kVersion1  = MKTAG('V', '1', ' ', ' ');
 
 namespace Aurora {
 
@@ -61,15 +61,15 @@ void BZFFile::load(Common::SeekableReadStream &bzf) {
 	if (_version != kVersion1)
 		throw Common::Exception("Unsupported BZF file version %s", Common::debugTag(_version).c_str());
 
-	uint32 varResCount = bzf.readUint32LE();
-	uint32 fixResCount = bzf.readUint32LE();
+	uint32_t varResCount = bzf.readUint32LE();
+	uint32_t fixResCount = bzf.readUint32LE();
 
 	if (fixResCount != 0)
 		throw Common::Exception("TODO: Fixed BZF resources");
 
 	_iResources.resize(varResCount);
 
-	uint32 offVarResTable = bzf.readUint32LE();
+	uint32_t offVarResTable = bzf.readUint32LE();
 
 	try {
 
@@ -82,10 +82,10 @@ void BZFFile::load(Common::SeekableReadStream &bzf) {
 
 }
 
-void BZFFile::readVarResTable(Common::SeekableReadStream &bzf, uint32 offset) {
+void BZFFile::readVarResTable(Common::SeekableReadStream &bzf, uint32_t offset) {
 	bzf.seek(offset);
 
-	for (uint32 i = 0; i < _iResources.size(); i++) {
+	for (uint32_t i = 0; i < _iResources.size(); i++) {
 		bzf.skip(4); // ID
 
 		_iResources[i].offset = bzf.readUint32LE();
@@ -100,7 +100,7 @@ void BZFFile::readVarResTable(Common::SeekableReadStream &bzf, uint32 offset) {
 		_iResources.back().packedSize = bzf.size() - _iResources.back().offset;
 }
 
-void BZFFile::mergeKEY(const KEYFile &key, uint32 dataFileIndex) {
+void BZFFile::mergeKEY(const KEYFile &key, uint32_t dataFileIndex) {
 	const KEYFile::ResourceList &keyResList = key.getResources();
 
 	for (KEYFile::ResourceList::const_iterator keyRes = keyResList.begin(); keyRes != keyResList.end(); ++keyRes) {
@@ -131,18 +131,18 @@ const Archive::ResourceList &BZFFile::getResources() const {
 	return _resources;
 }
 
-const BZFFile::IResource &BZFFile::getIResource(uint32 index) const {
+const BZFFile::IResource &BZFFile::getIResource(uint32_t index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }
 
-uint32 BZFFile::getResourceSize(uint32 index) const {
+uint32_t BZFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *BZFFile::getResource(uint32 index, bool UNUSED(tryNoCopy)) const {
+Common::SeekableReadStream *BZFFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	const IResource &res = getIResource(index);
 
 	_bzf->seek(res.offset);

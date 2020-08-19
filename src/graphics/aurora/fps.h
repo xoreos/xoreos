@@ -45,7 +45,7 @@ public:
 	void renderImmediate(const glm::mat4 &parentTransform);
 
 private:
-	uint32 _fps;
+	uint32_t _fps;
 
 	void init();
 

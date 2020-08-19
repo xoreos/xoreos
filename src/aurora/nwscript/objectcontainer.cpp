@@ -77,7 +77,7 @@ void ObjectContainer::removeObject(Object &object) {
 	}
 }
 
-Object *ObjectContainer::getObjectByID(uint32 id) const {
+Object *ObjectContainer::getObjectByID(uint32_t id) const {
 	ObjectIDMap::const_iterator o = _objectsByID.find(id);
 	if (o != _objectsByID.end())
 		return o->second;

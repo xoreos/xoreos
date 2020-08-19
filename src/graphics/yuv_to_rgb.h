@@ -84,7 +84,7 @@ private:
 	const YUVToRGBLookup *getLookup(LuminanceScale scale);
 
 	std::unique_ptr<YUVToRGBLookup> _lookup;
-	int16 _colorTab[4 * 256]; // 2048 bytes
+	int16_t _colorTab[4 * 256]; // 2048 bytes
 };
 
 } // End of namespace Graphics

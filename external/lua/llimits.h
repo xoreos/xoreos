@@ -7,6 +7,8 @@
 #ifndef llimits_h
 #define llimits_h
 
+#include <climits>
+
 #include "src/common/types.h"
 
 #include "lua.h"

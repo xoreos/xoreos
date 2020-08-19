@@ -58,7 +58,7 @@ DateTime::DateTime(const UString &value) : ptime(not_a_date_time) {
 	}
 }
 
-UString DateTime::formatDateISO(uint32 sep) const {
+UString DateTime::formatDateISO(uint32_t sep) const {
 	const UString sepStr(sep, sep ? 1 : 0);
 
 	return UString::format("%04d%s%02d%s%02d",
@@ -67,7 +67,7 @@ UString DateTime::formatDateISO(uint32 sep) const {
 	                       (int) date().day());
 }
 
-UString DateTime::formatTimeISO(uint32 sep) const {
+UString DateTime::formatTimeISO(uint32_t sep) const {
 	const UString sepStr(sep, sep ? 1 : 0);
 
 	return UString::format("%02d%s%02d%s%02d",
@@ -76,7 +76,7 @@ UString DateTime::formatTimeISO(uint32 sep) const {
 	                       (int) time_of_day().seconds());
 }
 
-UString DateTime::formatDateTimeISO(uint32 sep, uint32 sepDate, uint32 sepTime) const {
+UString DateTime::formatDateTimeISO(uint32_t sep, uint32_t sepDate, uint32_t sepTime) const {
 	const UString sepStr(sep, sep ? 1 : 0);
 
 	return UString::format("%s%s%s", formatDateISO(sepDate).c_str(), sepStr.c_str(),

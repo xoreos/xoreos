@@ -107,7 +107,7 @@ void Placeable::loadProperties() {
 	// Modelname
 	_modelName = placeable.getString("modelname");
 
-	uint32 strref = placeable.getInt("strref");
+	uint32_t strref = placeable.getInt("strref");
 	_name = TalkMan.getString(strref);
 }
 
@@ -181,7 +181,7 @@ void Placeable::highlight(bool enabled) {
 }
 
 bool Placeable::open(Object *opener) {
-	int32 newState = nextState("open");
+	int32_t newState = nextState("open");
 
 	if (newState == -1) {
 		runScript(kScriptOnFailToOpen, this, opener);
@@ -198,7 +198,7 @@ bool Placeable::open(Object *opener) {
 }
 
 bool Placeable::close(Object *closer) {
-	int32 newState = nextState("closed");
+	int32_t newState = nextState("closed");
 
 	if (newState != -1) {
 		_lastClosedBy = closer;
@@ -212,12 +212,12 @@ bool Placeable::close(Object *closer) {
 	return false;
 }
 
-int32 Placeable::nextState(const Common::UString &input) {
+int32_t Placeable::nextState(const Common::UString &input) {
 	const Aurora::GFF3Struct &top = _fsm->getTopLevel();
 
 	const Aurora::GFF3Struct &trans = top.getStruct("StateTrans");
 
-	int32 inputCount = top.getSint("InputCount");
+	int32_t inputCount = top.getSint("InputCount");
 
 	const Aurora::GFF3Struct &inputs = top.getStruct("InputNames");
 	for (int i = 0;i < inputCount; i++) {

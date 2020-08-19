@@ -38,11 +38,11 @@ namespace Engines {
 namespace NWN2 {
 
 void Functions::getRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) _game->getModule().getRoster().getRosterNPCPartyLimit();
+	ctx.getReturn() = (int32_t) _game->getModule().getRoster().getRosterNPCPartyLimit();
 }
 
 void Functions::setRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx) {
-	const uint32 limit = (uint32) ctx.getParams()[0].getInt();
+	const uint32_t limit = (uint32_t) ctx.getParams()[0].getInt();
 	_game->getModule().getRoster().setRosterNPCPartyLimit(limit);
 }
 

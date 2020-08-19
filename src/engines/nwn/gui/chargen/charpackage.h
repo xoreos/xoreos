@@ -56,7 +56,7 @@ private:
 	Common::PtrVector<CharGenBase> _subGUIs;
 
 	std::vector<Common::UString> _packageNames;
-	std::vector<uint8>           _packageID;
+	std::vector<uint8_t>           _packageID;
 	std::vector<Common::UString> _helpTexts;
 };
 

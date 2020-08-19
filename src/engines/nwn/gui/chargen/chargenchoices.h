@@ -41,9 +41,9 @@ class Creature;
 class Module;
 
 struct SkillItem {
-	uint8 rank;
-	uint8 maxRank;
-	uint8 minRank;
+	uint8_t rank;
+	uint8_t maxRank;
+	uint8_t minRank;
 	size_t skillID;
 	bool isClassSkill;
 	Common::UString name;
@@ -52,13 +52,13 @@ struct SkillItem {
 };
 
 struct FeatItem {
-	uint32 featId;
+	uint32_t featId;
 	Common::UString name;
 	Common::UString description;
 	Common::UString icon;
-	uint8 list; ///< The kind of list the feat belongs to: 0 (general feat), 2 (bonus feat), 1 (both)
+	uint8_t list; ///< The kind of list the feat belongs to: 0 (general feat), 2 (bonus feat), 1 (both)
 	bool isMasterFeat;
-	uint32 masterFeat;
+	uint32_t masterFeat;
 
 	bool operator < (const FeatItem& f) const {
 		return (name < f.name);
@@ -77,62 +77,62 @@ public:
 	void resetPackage();
 	const Creature &getCharacter();
 	void setGender(Gender gender);
-	void setRace(uint32 race);
+	void setRace(uint32_t race);
 	void setPortrait(const Common::UString &portrait);
-	void setClass(uint32 classId);
-	void setAlign(uint8 goodness, uint8 lawfulness);
-	void setAbilities(std::vector<uint8> abilities, std::vector<uint8> racialAbilities);
-	void setPackage(uint8 package);
-	void setSkill(size_t skillIndex, uint8 rank);
-	void setNotUsedSkills(uint8 notUsedSkills);
-	void setFeat(uint32 feat);
-	void setSpellSchool(uint8 spellSchool);
-	void setDomains(uint8 domain1, uint8 domain2);
-	void setSpell(size_t spellLevel, uint16 spell);
-	void setSoundSet(uint32 soundSetID);
+	void setClass(uint32_t classId);
+	void setAlign(uint8_t goodness, uint8_t lawfulness);
+	void setAbilities(std::vector<uint8_t> abilities, std::vector<uint8_t> racialAbilities);
+	void setPackage(uint8_t package);
+	void setSkill(size_t skillIndex, uint8_t rank);
+	void setNotUsedSkills(uint8_t notUsedSkills);
+	void setFeat(uint32_t feat);
+	void setSpellSchool(uint8_t spellSchool);
+	void setDomains(uint8_t domain1, uint8_t domain2);
+	void setSpell(size_t spellLevel, uint16_t spell);
+	void setSoundSet(uint32_t soundSetID);
 	void useCharacter(Module *module);
 
-	bool hasFeat(uint32 featId) const;
-	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
-	uint32 getClass() const;
-	uint32 getRace() const;
-	bool getAlign(uint8 &goodness, uint8 &lawfulness) const;
-	uint8 getAbility(Ability ability) const;
-	uint8 getTotalAbility(Ability ability) const;
-	int8 getAbilityModifier(Ability ability);
-	void getFeats(std::vector<uint32> &feats);
-	uint8 getPackage() const;
-	uint8 getSpellSchool() const;
+	bool hasFeat(uint32_t featId) const;
+	bool hasPrereqFeat(uint32_t featId, bool isClassFeat);
+	uint32_t getClass() const;
+	uint32_t getRace() const;
+	bool getAlign(uint8_t &goodness, uint8_t &lawfulness) const;
+	uint8_t getAbility(Ability ability) const;
+	uint8_t getTotalAbility(Ability ability) const;
+	int8_t getAbilityModifier(Ability ability);
+	void getFeats(std::vector<uint32_t> &feats);
+	uint8_t getPackage() const;
+	uint8_t getSpellSchool() const;
 
-	void getPrefFeats(std::vector<uint32> &feats);
-	uint8 getPrefSpellSchool();
-	void getPrefSkills(std::vector<uint8> &skills);
-	void getPrefDomains(uint8 &domain1, uint8 &domain2);
-	void getPrefSpells(std::vector<std::vector<uint16> > &spells);
+	void getPrefFeats(std::vector<uint32_t> &feats);
+	uint8_t getPrefSpellSchool();
+	void getPrefSkills(std::vector<uint8_t> &skills);
+	void getPrefDomains(uint8_t &domain1, uint8_t &domain2);
+	void getPrefSpells(std::vector<std::vector<uint16_t> > &spells);
 
-	uint8 computeAvailSkillRank();
+	uint8_t computeAvailSkillRank();
 	void getSkillItems(std::vector<SkillItem> &skills);
-	void getFeatItems(std::list<FeatItem> &feats, uint8 &normalFeats, uint8 &bonusFeats);
+	void getFeatItems(std::list<FeatItem> &feats, uint8_t &normalFeats, uint8_t &bonusFeats);
 
 private:
 	Creature *_creature;
-	std::vector<std::vector<uint16> > _spells;
-	std::vector<uint32> _normalFeats;
-	std::vector<uint32> _racialFeats;
-	std::vector<uint32> _classFeats;
-	std::vector<uint8> _abilities;
-	std::vector<uint8> _racialAbilities;
-	std::vector<uint8> _skills;
+	std::vector<std::vector<uint16_t> > _spells;
+	std::vector<uint32_t> _normalFeats;
+	std::vector<uint32_t> _racialFeats;
+	std::vector<uint32_t> _classFeats;
+	std::vector<uint8_t> _abilities;
+	std::vector<uint8_t> _racialAbilities;
+	std::vector<uint8_t> _skills;
 
-	uint32 _classId;
-	uint32 _soundSet;
-	uint8 _goodness;
-	uint8 _lawfulness;
-	uint8 _package;
-	uint8 _notUsedSkills;
-	uint8 _spellSchool;
-	uint8 _domain1;
-	uint8 _domain2;
+	uint32_t _classId;
+	uint32_t _soundSet;
+	uint8_t _goodness;
+	uint8_t _lawfulness;
+	uint8_t _package;
+	uint8_t _notUsedSkills;
+	uint8_t _spellSchool;
+	uint8_t _domain1;
+	uint8_t _domain2;
 
 	void init();
 	bool _characterUsed;

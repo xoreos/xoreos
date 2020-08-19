@@ -50,7 +50,7 @@ ObjectWalkmesh::~ObjectWalkmesh() {
 
 void ObjectWalkmesh::load(const Common::UString &resRef, float orientation[4], float position[3]) {
 	WalkmeshLoader loader;
-	std::vector<uint32> faceProperties;
+	std::vector<uint32_t> faceProperties;
 	loader.load(Aurora::kFileTypePWK, resRef, orientation, position,
 	            _vertices, _faces, faceProperties);
 
@@ -65,7 +65,7 @@ bool ObjectWalkmesh::in(const glm::vec3 &start, const glm::vec3 &end) const {
 	glm::vec3 segment = end - start;
 
 	// Avoid division by zero.
-	for (uint8 i = 0; i < 3; ++i) {
+	for (uint8_t i = 0; i < 3; ++i) {
 		if (fabs(segment[i]) < 0.00001f)
 			segment[i] = 0.00001f;
 	}
@@ -155,7 +155,7 @@ const std::vector<float> &ObjectWalkmesh::getVertices() const {
 	return _vertices;
 }
 
-const std::vector<uint32> &ObjectWalkmesh::getFaces() const {
+const std::vector<uint32_t> &ObjectWalkmesh::getFaces() const {
 	return _faces;
 }
 

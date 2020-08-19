@@ -35,7 +35,7 @@ namespace Engines {
 
 namespace Jade {
 
-Room::Room(const Common::UString &resRef, uint32 id, float x, float y, float z, bool walkable) :
+Room::Room(const Common::UString &resRef, uint32_t id, float x, float y, float z, bool walkable) :
            _resRef(resRef), _walkable(walkable) {
 
 	load(resRef, id, x, y, z);
@@ -56,7 +56,7 @@ bool Room::isWalkable() const {
 	return _walkable;
 }
 
-void Room::load(const Common::UString &resRef, uint32 id, float x, float y, float z) {
+void Room::load(const Common::UString &resRef, uint32_t id, float x, float y, float z) {
 	if (resRef == "****")
 		return;
 

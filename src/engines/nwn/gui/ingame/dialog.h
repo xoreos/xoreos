@@ -111,7 +111,7 @@ public:
 	/** Clear the PC replies. */
 	void clearReplies();
 	/** Add a PC reply. */
-	void addReply(const Common::UString &reply, uint32 id);
+	void addReply(const Common::UString &reply, uint32_t id);
 	/** Finished adding PC replies. */
 	void finishReplies();
 
@@ -122,10 +122,10 @@ public:
 	/** Notify the box that the mouse was clicked. */
 	void mouseClick(int x, int y);
 	/** Pick the reply number n. */
-	void pickReply(uint32 n);
+	void pickReply(uint32_t n);
 
 	/** Return the reply ID that was clicked. */
-	uint32 getPickedID() const;
+	uint32_t getPickedID() const;
 
 
 	// Renderable
@@ -138,9 +138,9 @@ private:
 	/** A PC reply. */
 	struct Reply {
 		Common::UString reply;
-		uint32 id;
+		uint32_t id;
 
-		Reply(const Common::UString &r = "", uint32 i = 0xFFFFFFFF);
+		Reply(const Common::UString &r = "", uint32_t i = 0xFFFFFFFF);
 	};
 
 	/** A line of a PC reply. */
@@ -175,7 +175,7 @@ private:
 	Common::PtrList<Graphics::Aurora::Text> _entryLines; ///< The NPC text lines.
 	std::list<ReplyLine> _replyLines; ///< The PC text lines.
 
-	uint32 _replyCount;      ///< The number of replies.
+	uint32_t _replyCount;      ///< The number of replies.
 	float  _replyCountWidth; ///< The max width of a reply number text.
 
 	std::list<ReplyLine>::iterator _highlightedReply; ///< The currently highlighted reply.

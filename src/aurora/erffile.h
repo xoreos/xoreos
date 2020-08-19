@@ -124,15 +124,15 @@ public:
 	const ResourceList &getResources() const;
 
 	/** Return the size of a resource. */
-	uint32 getResourceSize(uint32 index) const;
+	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
+	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
 
 	/** Return the year the ERF was built. */
-	uint32 getBuildYear() const;
+	uint32_t getBuildYear() const;
 	/** Return the day of year the ERF was built. */
-	uint32 getBuildDay() const;
+	uint32_t getBuildDay() const;
 
 	/** Return the description. */
 	const LocString &getDescription() const;
@@ -161,26 +161,26 @@ private:
 
 	/** The header of an ERF file. */
 	struct ERFHeader {
-		uint32 resCount;         ///< Number of resources in this ERF.
+		uint32_t resCount;         ///< Number of resources in this ERF.
 
-		uint32 langCount;        ///< Number of language strings in the description.
-		uint32 descriptionID;    ///< ID of the description.
+		uint32_t langCount;        ///< Number of language strings in the description.
+		uint32_t descriptionID;    ///< ID of the description.
 
-		uint32 offDescription;   ///< Offset to the description.
-		uint32 offKeyList;       ///< Offset to the key list.
-		uint32 offResList;       ///< Offset to the resource list.
+		uint32_t offDescription;   ///< Offset to the description.
+		uint32_t offKeyList;       ///< Offset to the key list.
+		uint32_t offResList;       ///< Offset to the resource list.
 
-		uint32 descriptionSize;  ///< Number of bytes in the description structure.
+		uint32_t descriptionSize;  ///< Number of bytes in the description structure.
 
-		uint32 buildYear;        ///< The year the ERF was built.
-		uint32 buildDay;         ///< The day of year the ERF was built.
+		uint32_t buildYear;        ///< The year the ERF was built.
+		uint32_t buildDay;         ///< The day of year the ERF was built.
 
-		bool   isNWNPremium;     ///< Is this a Neverwinter Nights premium module?
+		bool     isNWNPremium;     ///< Is this a Neverwinter Nights premium module?
 
 		std::unique_ptr<char[]> stringTable; ///< String table used for hashed ERFs.
-		uint32 stringTableSize;              ///< Size of the string table.
+		uint32_t stringTableSize;            ///< Size of the string table.
 
-		uint32 moduleID;         ///< ID of the module this ERF belongs to.
+		uint32_t moduleID;       ///< ID of the module this ERF belongs to.
 
 		Encryption  encryption;  ///< The encryption algorithm in use.
 		Compression compression; ///< The compression algorithm in use.
@@ -199,9 +199,9 @@ private:
 
 	/** Internal resource information. */
 	struct IResource {
-		uint32 offset;       ///< The offset of the resource within the ERF.
-		uint32 packedSize;   ///< The resource's packed size.
-		uint32 unpackedSize; ///< The resource's unpacked size.
+		uint32_t offset;       ///< The offset of the resource within the ERF.
+		uint32_t packedSize;   ///< The resource's packed size.
+		uint32_t unpackedSize; ///< The resource's unpacked size.
 	};
 
 	typedef std::vector<IResource> IResourceList;
@@ -225,9 +225,9 @@ private:
 	void load();
 
 	// .--- Header
-	static void verifyVersion(uint32 id, uint32 version, bool utf16le);
+	static void verifyVersion(uint32_t id, uint32_t version, bool utf16le);
 
-	static void readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version,
+	static void readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32_t version,
 	                          std::vector<byte> &password);
 	static void readDescription(LocString &description, Common::SeekableReadStream &erf,
                               const ERFHeader &header);
@@ -257,12 +257,12 @@ private:
 	// '---
 
 	// .--- V2.2
-	static void readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags);
+	static void readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32_t &flags);
 	void readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 	// '---
 
 	// .--- V3.0
-	static void readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags);
+	static void readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32_t &flags);
 	void readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 	// '---
 
@@ -291,20 +291,20 @@ private:
 
 	// .--- Compression
 	Common::SeekableReadStream *decompress(Common::MemoryReadStream *packedStream,
-	                                       uint32 unpackedSize) const;
+	                                       uint32_t unpackedSize) const;
 
 	Common::SeekableReadStream *decompressBiowareZlib   (Common::MemoryReadStream *packedStream,
-	                                                     uint32 unpackedSize) const;
+	                                                     uint32_t unpackedSize) const;
 	Common::SeekableReadStream *decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
-	                                                     uint32 unpackedSize) const;
+	                                                     uint32_t unpackedSize) const;
 	Common::SeekableReadStream *decompressStandardZlib  (Common::MemoryReadStream *packedStream,
-	                                                     uint32 unpackedSize) const;
+	                                                     uint32_t unpackedSize) const;
 
-	Common::SeekableReadStream *decompressZlib(const byte *compressedData, uint32 packedSize,
-	                                           uint32 unpackedSize, int windowBits) const;
+	Common::SeekableReadStream *decompressZlib(const byte *compressedData, uint32_t packedSize,
+	                                           uint32_t unpackedSize, int windowBits) const;
 	// '---
 
-	const IResource &getIResource(uint32 index) const;
+	const IResource &getIResource(uint32_t index) const;
 };
 
 } // End of namespace Aurora

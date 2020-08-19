@@ -62,10 +62,10 @@ void HUD::setPosition(float UNUSED(x), float UNUSED(y)) {
 void HUD::setRotation(float UNUSED(angle)) {
 }
 
-void HUD::setReturnStrref(uint32 UNUSED(id)) {
+void HUD::setReturnStrref(uint32_t UNUSED(id)) {
 }
 
-void HUD::setReturnQueryStrref(uint32 UNUSED(id)) {
+void HUD::setReturnQueryStrref(uint32_t UNUSED(id)) {
 }
 
 void HUD::setReturnEnabled(bool UNUSED(enabled)) {

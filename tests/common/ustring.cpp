@@ -37,7 +37,7 @@ static const char kTestStringUpper1[] = "FOOBAR BARFOO";
 
 // Foobar, o and a with diaereses
 static const byte   kTestStringUTF8 [10] = { 'F', 0xC3, 0xB6, 0xC3, 0xB6, 'b', 0xC3, 0xA4, 'r', 0 };
-static const uint32 kTestStringUTF32[ 7] = { 'F', 0xF6,       0xF6,       'b', 0xE4,       'r', 0 };
+static const uint32_t kTestStringUTF32[ 7] = { 'F', 0xF6,       0xF6,       'b', 0xE4,       'r', 0 };
 
 // FOOBAR, O and A with diaereses
 static const byte kTestStringUpperUTF8[10] = { 'F', 0xC3, 0x96, 0xC3, 0x96, 'B', 0xC3, 0x84, 'R', 0 };

@@ -144,9 +144,9 @@ public:
 	/** Get the specified node, from the named state, if it exists. */
 	const ModelNode *getNode(const Common::UString &stateName, const Common::UString &node) const;
 	/** Get node by node number. */
-	ModelNode *getNode(uint16 nodeNumber);
+	ModelNode *getNode(uint16_t nodeNumber);
 	/** Get node by node number. */
-	const ModelNode *getNode(uint16 nodeNumber) const;
+	const ModelNode *getNode(uint16_t nodeNumber) const;
 
 	/** Get all nodes in the current state. */
 	const std::vector<ModelNode *> &getNodes();
@@ -170,7 +170,7 @@ public:
 
 	void addAnimationChannel(AnimationChannelName name);
 	void clearDefaultAnimations();
-	void addDefaultAnimation(const Common::UString &anim, uint8 probability);
+	void addDefaultAnimation(const Common::UString &anim, uint8_t probability);
 	void playDefaultAnimation();
 
 	void playAnimation(const Common::UString &anim,
@@ -308,15 +308,15 @@ private:
 public:
 	// General loading helpers
 
-	static void readValue(Common::SeekableReadStream &stream, uint32 &value);
+	static void readValue(Common::SeekableReadStream &stream, uint32_t &value);
 	static void readValue(Common::SeekableReadStream &stream, float  &value);
 
 	static void readArrayDef(Common::SeekableReadStream &stream,
-	                         uint32 &offset, uint32 &count);
+	                         uint32_t &offset, uint32_t &count);
 
 	template<typename T>
 	static void readArray(Common::SeekableReadStream &stream,
-	                      uint32 offset, uint32 count, std::vector<T> &values);
+	                      uint32_t offset, uint32_t count, std::vector<T> &values);
 
 	friend class ModelNode;
 	friend class Animation;

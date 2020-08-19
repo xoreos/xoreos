@@ -45,29 +45,29 @@ Store::Store(const Aurora::GFF3Struct &store) : Object(kObjectTypeStore) {
 Store::~Store() {
 }
 
-int32 Store::getStoreIdentifyCost() const {
+int32_t Store::getStoreIdentifyCost() const {
 	return _identifyPrice;
 }
 
-int32 Store::getStoreGold() const {
+int32_t Store::getStoreGold() const {
 	return _storeGold;
 }
 
-int32 Store::getStoreMaximumBuyPrice() const {
+int32_t Store::getStoreMaximumBuyPrice() const {
 	return _maxBuyPrice;
 }
 
-void Store::setStoreIdentifyCost(int32 identify) {
+void Store::setStoreIdentifyCost(int32_t identify) {
 	// -1 indicates store will not identify items
 	_identifyPrice = (identify < 0) ? -1 : identify;
 }
 
-void Store::setStoreGold(int32 gold) {
+void Store::setStoreGold(int32_t gold) {
 	// -1 indicates it is not using gold
 	_storeGold = (gold < 0) ? -1 : gold;
 }
 
-void Store::setStoreMaximumBuyPrice(int32 max) {
+void Store::setStoreMaximumBuyPrice(int32_t max) {
 	// -1 indicates price unlimited
 	_maxBuyPrice  = (max < 0) ? -1 : max;
 }
@@ -186,9 +186,9 @@ void Store::loadBaseItemTypes(const Aurora::GFF3Struct &gff, const Common::UStri
 	const Aurora::GFF3List &list = gff.getList(field);
 	for (Aurora::GFF3List::const_iterator b = list.begin(); b != list.end(); ++b) {
 		// Make the default value be an error condition
-		int32 baseItem = (*b)->getSint("BaseItem", -1);
+		int32_t baseItem = (*b)->getSint("BaseItem", -1);
 		if (baseItem >= 0 && baseItem <= UINT8_MAX)
-			types.push_back(static_cast<uint8>(baseItem));
+			types.push_back(static_cast<uint8_t>(baseItem));
 		else
 			throw Common::Exception("Invalid BaseItem type '%d'", baseItem);
 	}

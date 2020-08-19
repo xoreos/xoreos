@@ -41,13 +41,13 @@
 #include "src/aurora/resman.h"
 #include "src/aurora/ssffile.h"
 
-static const uint32 kSSFID     = MKTAG('S', 'S', 'F', ' ');
-static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
-static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
+static const uint32_t kSSFID     = MKTAG('S', 'S', 'F', ' ');
+static const uint32_t kVersion10 = MKTAG('V', '1', '.', '0');
+static const uint32_t kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 
-SSFFile::Sound::Sound(const Common::UString &f, uint32 s) : soundFile(f), strRef(s) {
+SSFFile::Sound::Sound(const Common::UString &f, uint32_t s) : soundFile(f), strRef(s) {
 }
 
 
@@ -113,7 +113,7 @@ SSFFile::Version SSFFile::readSSFHeader(Common::SeekableReadStream &ssf,
 
 	// Sanity check
 	if ((offEntryTable > ssf.size()) || (((ssf.size() - offEntryTable) % 4) != 0))
-		throw Common::Exception("Invalid SSF header (%u, %u)", (uint32) ssf.size(), (uint32) offEntryTable);
+		throw Common::Exception("Invalid SSF header (%u, %u)", (uint32_t) ssf.size(), (uint32_t) offEntryTable);
 
 	// KotOR's V1.1
 	return kVersion11_KotOR;
@@ -147,7 +147,7 @@ void SSFFile::readEntriesNWN(Common::SeekableReadStream &ssf, size_t soundFileLe
 
 	size_t count = _sounds.size();
 
-	std::vector<uint32> offsets;
+	std::vector<uint32_t> offsets;
 
 	offsets.resize(count);
 
@@ -182,14 +182,14 @@ const Common::UString &SSFFile::getSoundFile(size_t index) const {
 	return _sounds[index].soundFile;
 }
 
-uint32 SSFFile::getStrRef(size_t index) const {
+uint32_t SSFFile::getStrRef(size_t index) const {
 	if (index >= _sounds.size())
 		return kStrRefInvalid;
 
 	return _sounds[index].strRef;
 }
 
-void SSFFile::getSound(size_t index, Common::UString &soundFile, uint32 &strRef) const {
+void SSFFile::getSound(size_t index, Common::UString &soundFile, uint32_t &strRef) const {
 	if (index >= _sounds.size()) {
 		soundFile.clear();
 		strRef = kStrRefInvalid;
@@ -211,7 +211,7 @@ void SSFFile::setSoundFile(size_t index, const Common::UString &soundFile) {
 	_sounds[index].soundFile = soundFile;
 }
 
-void SSFFile::setStrRef(size_t index, uint32 strRef) {
+void SSFFile::setStrRef(size_t index, uint32_t strRef) {
 	if (index >= UINT32_MAX)
 		throw Common::Exception("Sound index out of range");
 
@@ -221,7 +221,7 @@ void SSFFile::setStrRef(size_t index, uint32 strRef) {
 	_sounds[index].strRef = strRef;
 }
 
-void SSFFile::setSound(size_t index, const Common::UString &soundFile, uint32 strRef) {
+void SSFFile::setSound(size_t index, const Common::UString &soundFile, uint32_t strRef) {
 	if (index >= UINT32_MAX)
 		throw Common::Exception("Sound index out of range");
 

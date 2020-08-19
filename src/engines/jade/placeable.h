@@ -68,14 +68,14 @@ protected:
 	Common::UString _soundCue;  ///< The placeable's sound cue.
 	Common::UString _resRef;    ///< The placeable's description resref.
 
-	uint32 _appearanceType;     ///< The index within the placeable 2DA.
+	uint32_t _appearanceType;     ///< The index within the placeable 2DA.
 
 	Object *_lastOpenedBy; ///< The object that last opened this placeable object.
 	Object *_lastClosedBy; ///< The object that last closed this placeable object.
 
 	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The placeable's model.
 
-	int32 _state; ///< The placeable's current state.
+	int32_t _state; ///< The placeable's current state.
 	std::unique_ptr<Aurora::GFF3File> _fsm; ///< The placeable's state file.
 
 private:
@@ -90,7 +90,7 @@ private:
 	/** Load appearance-specific properties. */
 	void loadAppearance();
 	/** Determines the result State according to the state model */
-	int32 nextState(const Common::UString &input);
+	int32_t nextState(const Common::UString &input);
 };
 
 } // End of namespace Jade

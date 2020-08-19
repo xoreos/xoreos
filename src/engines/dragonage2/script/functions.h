@@ -50,19 +50,19 @@ private:
 	typedef void (Functions::*funcPtr)(Aurora::NWScript::FunctionContext &ctx);
 
 	struct FunctionPointer {
-		uint32 id;
+		uint32_t id;
 		const char *name;
 		funcPtr func;
 	};
 
 	struct FunctionSignature {
-		uint32 id;
+		uint32_t id;
 		Aurora::NWScript::Type returnType;
 		Aurora::NWScript::Type parameters[15];
 	};
 
 	struct FunctionDefaults {
-		uint32 id;
+		uint32_t id;
 		const Aurora::NWScript::Variable *defaults[7];
 	};
 

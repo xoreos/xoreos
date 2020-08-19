@@ -61,14 +61,14 @@
 
 #include "src/aurora/nsbtxfile.h"
 
-static const uint32 kXEOSID = MKTAG('X', 'E', 'O', 'S');
-static const uint32 kITEXID = MKTAG('I', 'T', 'E', 'X');
+static const uint32_t kXEOSID = MKTAG('X', 'E', 'O', 'S');
+static const uint32_t kITEXID = MKTAG('I', 'T', 'E', 'X');
 
-static const uint32 kXEOSITEXHeaderSize       = 4 + 4 + 4 + 4 + 4 + 1 + 1 + 1 + 1 + 1 + 1;
-static const uint32 kXEOSITEXMipMapHeaderSize = 4 + 4 + 4;
+static const uint32_t kXEOSITEXHeaderSize       = 4 + 4 + 4 + 4 + 4 + 1 + 1 + 1 + 1 + 1 + 1;
+static const uint32_t kXEOSITEXMipMapHeaderSize = 4 + 4 + 4;
 
-static const uint32 kBTX0ID = MKTAG('B', 'T', 'X', '0');
-static const uint32 kTEX0ID = MKTAG('T', 'E', 'X', '0');
+static const uint32_t kBTX0ID = MKTAG('B', 'T', 'X', '0');
+static const uint32_t kTEX0ID = MKTAG('T', 'E', 'X', '0');
 
 namespace Aurora {
 
@@ -96,11 +96,11 @@ const Archive::ResourceList &NSBTXFile::getResources() const {
 	return _resources;
 }
 
-uint32 NSBTXFile::getITEXSize(const Texture &texture) {
+uint32_t NSBTXFile::getITEXSize(const Texture &texture) {
 	return kXEOSITEXHeaderSize + kXEOSITEXMipMapHeaderSize + texture.width * texture.height * 4;
 }
 
-uint32 NSBTXFile::getResourceSize(uint32 index) const {
+uint32_t NSBTXFile::getResourceSize(uint32_t index) const {
 	if (index >= _textures.size())
 		throw Common::Exception("Texture index out of range (%u/%u)", index, (uint)_textures.size());
 
@@ -113,11 +113,11 @@ void NSBTXFile::writeITEXHeader(const ReadContext &ctx) {
 	ctx.stream->writeUint32LE(0); // Version
 	ctx.stream->writeUint32LE(4); // Pixel format / bytes per pixel
 
-	ctx.stream->writeByte((uint8) ctx.texture->wrapX);
-	ctx.stream->writeByte((uint8) ctx.texture->wrapY);
-	ctx.stream->writeByte((uint8) ctx.texture->flipX);
-	ctx.stream->writeByte((uint8) ctx.texture->flipY);
-	ctx.stream->writeByte((uint8) ctx.texture->coordTransform);
+	ctx.stream->writeByte((uint8_t) ctx.texture->wrapX);
+	ctx.stream->writeByte((uint8_t) ctx.texture->wrapY);
+	ctx.stream->writeByte((uint8_t) ctx.texture->flipX);
+	ctx.stream->writeByte((uint8_t) ctx.texture->flipY);
+	ctx.stream->writeByte((uint8_t) ctx.texture->coordTransform);
 
 	ctx.stream->writeByte(0x00); // Don't filter the texture
 
@@ -136,12 +136,12 @@ void NSBTXFile::writePixel(const ReadContext &ctx, byte r, byte g, byte b, byte 
 }
 
 void NSBTXFile::getTexture2bpp(const ReadContext &ctx) {
-	for (uint32 y = 0; y < ctx.texture->height; y++) {
-		for (uint32 x = 0; x < ctx.texture->width; ) {
+	for (uint32_t y = 0; y < ctx.texture->height; y++) {
+		for (uint32_t x = 0; x < ctx.texture->width; ) {
 
-			uint8 pixels = ctx.nsbtx->readByte();
-			for (uint32 n = 0; n < 4; n++, x++, pixels >>= 2) {
-				const uint8 pixel = pixels & 3;
+			uint8_t pixels = ctx.nsbtx->readByte();
+			for (uint32_t n = 0; n < 4; n++, x++, pixels >>= 2) {
+				const uint8_t pixel = pixels & 3;
 
 				const byte r = ctx.palette[pixel * 3 + 0];
 				const byte g = ctx.palette[pixel * 3 + 1];
@@ -157,12 +157,12 @@ void NSBTXFile::getTexture2bpp(const ReadContext &ctx) {
 }
 
 void NSBTXFile::getTexture4bpp(const ReadContext &ctx) {
-	for (uint32 y = 0; y < ctx.texture->height; y++) {
-		for (uint32 x = 0; x < ctx.texture->width; ) {
+	for (uint32_t y = 0; y < ctx.texture->height; y++) {
+		for (uint32_t x = 0; x < ctx.texture->width; ) {
 
-			uint8 pixels = ctx.nsbtx->readByte();
-			for (uint32 n = 0; n < 2; n++, x++, pixels >>= 4) {
-				const uint8 pixel = pixels & 0xF;
+			uint8_t pixels = ctx.nsbtx->readByte();
+			for (uint32_t n = 0; n < 2; n++, x++, pixels >>= 4) {
+				const uint8_t pixel = pixels & 0xF;
 
 				const byte r = ctx.palette[pixel * 3 + 0];
 				const byte g = ctx.palette[pixel * 3 + 1];
@@ -178,9 +178,9 @@ void NSBTXFile::getTexture4bpp(const ReadContext &ctx) {
 }
 
 void NSBTXFile::getTexture8bpp(const ReadContext &ctx) {
-	for (uint32 y = 0; y < ctx.texture->height; y++) {
-		for (uint32 x = 0; x < ctx.texture->width; x++) {
-			const uint8 pixel = ctx.nsbtx->readByte();
+	for (uint32_t y = 0; y < ctx.texture->height; y++) {
+		for (uint32_t x = 0; x < ctx.texture->width; x++) {
+			const uint8_t pixel = ctx.nsbtx->readByte();
 
 			const byte r = ctx.palette[pixel * 3 + 0];
 			const byte g = ctx.palette[pixel * 3 + 1];
@@ -194,9 +194,9 @@ void NSBTXFile::getTexture8bpp(const ReadContext &ctx) {
 }
 
 void NSBTXFile::getTexture16bpp(const ReadContext &ctx) {
-	for (uint32 y = 0; y < ctx.texture->height; y++) {
-		for (uint32 x = 0; x < ctx.texture->width; x++) {
-			const uint16 pixel = ctx.nsbtx->readUint16();
+	for (uint32_t y = 0; y < ctx.texture->height; y++) {
+		for (uint32_t x = 0; x < ctx.texture->width; x++) {
+			const uint16_t pixel = ctx.nsbtx->readUint16();
 
 			const byte r = ( pixel        & 0x1F) << 3;
 			const byte g = ((pixel >>  5) & 0x1F) << 3;
@@ -210,11 +210,11 @@ void NSBTXFile::getTexture16bpp(const ReadContext &ctx) {
 }
 
 void NSBTXFile::getTextureA3I5(const ReadContext &ctx) {
-	for (uint32 y = 0; y < ctx.texture->height; y++) {
-		for (uint32 x = 0; x < ctx.texture->width; x++) {
-			const uint8 pixel = ctx.nsbtx->readByte();
+	for (uint32_t y = 0; y < ctx.texture->height; y++) {
+		for (uint32_t x = 0; x < ctx.texture->width; x++) {
+			const uint8_t pixel = ctx.nsbtx->readByte();
 
-			const uint8 index = pixel & 0x1F;
+			const uint8_t index = pixel & 0x1F;
 
 			const byte r = ctx.palette[index * 3 + 0];
 			const byte g = ctx.palette[index * 3 + 1];
@@ -228,11 +228,11 @@ void NSBTXFile::getTextureA3I5(const ReadContext &ctx) {
 }
 
 void NSBTXFile::getTextureA5I3(const ReadContext &ctx) {
-	for (uint32 y = 0; y < ctx.texture->height; y++) {
-		for (uint32 x = 0; x < ctx.texture->width; x++) {
-			const uint8 pixel = ctx.nsbtx->readByte();
+	for (uint32_t y = 0; y < ctx.texture->height; y++) {
+		for (uint32_t x = 0; x < ctx.texture->width; x++) {
+			const uint8_t pixel = ctx.nsbtx->readByte();
 
-			const uint8 index = pixel & 0x07;
+			const uint8_t index = pixel & 0x07;
 
 			const byte r = ctx.palette[index * 3 + 0];
 			const byte g = ctx.palette[index * 3 + 1];
@@ -262,9 +262,9 @@ const NSBTXFile::Palette *NSBTXFile::findPalette(const Texture &texture) const {
 }
 
 void NSBTXFile::getPalette(ReadContext &ctx) const {
-	static const uint16 kPaletteSize[] = { 0, 32, 4, 16, 256, 256, 8,  0 };
+	static const uint16_t kPaletteSize[] = { 0, 32, 4, 16, 256, 256, 8,  0 };
 
-	const uint16 size = kPaletteSize[(size_t)ctx.texture->format] * 3;
+	const uint16_t size = kPaletteSize[(size_t)ctx.texture->format] * 3;
 	if (size == 0)
 		return;
 
@@ -277,10 +277,10 @@ void NSBTXFile::getPalette(ReadContext &ctx) const {
 
 	ctx.nsbtx->seek(palette->offset);
 
-	const uint16 palDataSize = MIN<size_t>(size, ((ctx.nsbtx->size() - ctx.nsbtx->pos()) / 2) * 3);
+	const uint16_t palDataSize = MIN<size_t>(size, ((ctx.nsbtx->size() - ctx.nsbtx->pos()) / 2) * 3);
 
-	for (uint16 i = 0; i < palDataSize; i += 3) {
-		const uint16 pixel = ctx.nsbtx->readUint16();
+	for (uint16_t i = 0; i < palDataSize; i += 3) {
+		const uint16_t pixel = ctx.nsbtx->readUint16();
 
 		palData[i + 0] = ( pixel        & 0x1F) << 3;
 		palData[i + 1] = ((pixel >>  5) & 0x1F) << 3;
@@ -324,7 +324,7 @@ void NSBTXFile::getTexture(const ReadContext &ctx) {
 	}
 }
 
-Common::SeekableReadStream *NSBTXFile::getResource(uint32 index, bool UNUSED(tryNoCopy)) const {
+Common::SeekableReadStream *NSBTXFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	if (index >= _textures.size())
 		throw Common::Exception("Texture index out of range (%u/%u)", index, (uint)_textures.size());
 
@@ -361,28 +361,28 @@ void NSBTXFile::readHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
 }
 
 void NSBTXFile::readFileHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
-	const uint32 tag = nsbtx.readUint32BE();
+	const uint32_t tag = nsbtx.readUint32BE();
 	if (tag != kBTX0ID)
 		throw Common::Exception("Invalid NSBTX file (%s)", Common::debugTag(tag).c_str());
 
-	const uint16 bom = nsbtx.readUint16();
+	const uint16_t bom = nsbtx.readUint16();
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
 
-	const uint8 versionMajor = nsbtx.readByte();
-	const uint8 versionMinor = nsbtx.readByte();
+	const uint8_t versionMajor = nsbtx.readByte();
+	const uint8_t versionMinor = nsbtx.readByte();
 	if ((versionMajor != 1) || (versionMinor != 0))
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
-	const uint32 fileSize = nsbtx.readUint32();
-	if (fileSize > (uint32)nsbtx.size())
+	const uint32_t fileSize = nsbtx.readUint32();
+	if (fileSize > (uint32_t)nsbtx.size())
 		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)nsbtx.size());
 
-	const uint16 headerSize = nsbtx.readUint16();
+	const uint16_t headerSize = nsbtx.readUint16();
 	if (headerSize != 16)
 		throw Common::Exception("Invalid header size (%u)", headerSize);
 
-	const uint16 sectionCount = nsbtx.readUint16();
+	const uint16_t sectionCount = nsbtx.readUint16();
 	if (sectionCount != 1)
 		throw Common::Exception("Invalid number of sections (%u)", sectionCount);
 
@@ -392,7 +392,7 @@ void NSBTXFile::readFileHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
 void NSBTXFile::readInfoHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
 	nsbtx.seek(_textureOffset);
 
-	const uint32 tag = nsbtx.readUint32BE();
+	const uint32_t tag = nsbtx.readUint32BE();
 	if (tag != kTEX0ID)
 		throw Common::Exception("Invalid NSBTX texture (%s)", Common::debugTag(tag).c_str());
 
@@ -421,7 +421,7 @@ void NSBTXFile::readTextures(Common::SeekableSubReadStreamEndian &nsbtx) {
 
 	nsbtx.skip(1); // Unknown
 
-	const uint8 textureCount = nsbtx.readByte();
+	const uint8_t textureCount = nsbtx.readByte();
 
 	nsbtx.skip(2); // Section size
 	nsbtx.skip(2 + 2 + 4 + textureCount * (2 + 2)); // Unknown
@@ -432,11 +432,11 @@ void NSBTXFile::readTextures(Common::SeekableSubReadStreamEndian &nsbtx) {
 	for (Textures::iterator t = _textures.begin(); t != _textures.end(); ++t) {
 		t->offset = _textureDataOffset + nsbtx.readUint16() * 8;
 
-		const uint16 flags = nsbtx.readUint16();
+		const uint16_t flags = nsbtx.readUint16();
 
 		nsbtx.skip(1); // Unknown
 
-		const uint8 unknown = nsbtx.readByte();
+		const uint8_t unknown = nsbtx.readByte();
 
 		nsbtx.skip(2); // Unknown
 
@@ -485,7 +485,7 @@ void NSBTXFile::readPalettes(Common::SeekableSubReadStreamEndian &nsbtx) {
 
 	nsbtx.skip(1); // Unknown
 
-	const uint8 paletteCount = nsbtx.readByte();
+	const uint8_t paletteCount = nsbtx.readByte();
 
 	nsbtx.skip(2); // Section size
 	nsbtx.skip(2 + 2 + 4 + paletteCount * (2 + 2)); // Unknown
@@ -494,10 +494,10 @@ void NSBTXFile::readPalettes(Common::SeekableSubReadStreamEndian &nsbtx) {
 
 	_palettes.resize(paletteCount);
 	for (Palettes::iterator p = _palettes.begin(); p != _palettes.end(); ++p) {
-		const uint16 offset = nsbtx.readUint16() & 0x1FFF;
-		const uint16 flags  = nsbtx.readUint16();
+		const uint16_t offset = nsbtx.readUint16() & 0x1FFF;
+		const uint16_t flags  = nsbtx.readUint16();
 
-		const uint8 paletteStep = ((flags & 1) != 0) ? 16 : 8;
+		const uint8_t paletteStep = ((flags & 1) != 0) ? 16 : 8;
 
 		p->offset = _paletteDataOffset + offset * paletteStep;
 	}
@@ -512,7 +512,7 @@ void NSBTXFile::createResourceList() {
 	ResourceList::iterator res = _resources.begin();
 	Textures::iterator     tex = _textures.begin();
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	for ( ; (res != _resources.end()) && (tex != _textures.end()); ++res, ++tex, ++index) {
 		res->name  = tex->name;
 		res->type  = kFileTypeXEOSITEX;

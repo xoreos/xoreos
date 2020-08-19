@@ -54,21 +54,21 @@ void ZipFile::load(SeekableReadStream &zip) {
 
 	zip.skip(4); // Header, already checked
 
-	uint16 curDisk        = zip.readUint16LE();
-	uint16 centralDirDisk = zip.readUint16LE();
+	uint16_t curDisk        = zip.readUint16LE();
+	uint16_t centralDirDisk = zip.readUint16LE();
 
-	uint16 curDiskDirs = zip.readUint16LE();
-	uint16 totalDirs   = zip.readUint16LE();
+	uint16_t curDiskDirs = zip.readUint16LE();
+	uint16_t totalDirs   = zip.readUint16LE();
 
 	if ((curDisk != 0) || (curDisk != centralDirDisk) || (curDiskDirs != totalDirs))
 		throw Exception("Unsupported multi-disk ZIP file");
 
 	zip.skip(4); // Size of central directory
 
-	uint32 centralDirPos = zip.readUint32LE();
+	uint32_t centralDirPos = zip.readUint32LE();
 	zip.seek(centralDirPos);
 
-	uint32 tag = zip.readUint32LE();
+	uint32_t tag = zip.readUint32LE();
 	if (tag != 0x02014B50)
 		throw Exception("Unknown ZIP record %08X", tag);
 
@@ -81,10 +81,10 @@ void ZipFile::load(SeekableReadStream &zip) {
 
 		iFile.size = zip.readUint32LE();
 
-		uint16 nameLength    = zip.readUint16LE();
-		uint16 extraLength   = zip.readUint16LE();
-		uint16 commentLength = zip.readUint16LE();
-		uint16 diskNum       = zip.readUint16LE();
+		uint16_t nameLength    = zip.readUint16LE();
+		uint16_t extraLength   = zip.readUint16LE();
+		uint16_t commentLength = zip.readUint16LE();
+		uint16_t diskNum       = zip.readUint16LE();
 
 		if (diskNum != 0)
 			throw Exception("Unsupported multi-disk ZIP file");
@@ -122,7 +122,7 @@ const ZipFile::FileList &ZipFile::getFiles() const {
 	return _files;
 }
 
-const ZipFile::IFile &ZipFile::getIFile(uint32 index) const {
+const ZipFile::IFile &ZipFile::getIFile(uint32_t index) const {
 	if (index >= _iFiles.size())
 		throw Exception("File index out of range (%u/%u)", index, (uint)_iFiles.size());
 
@@ -130,11 +130,11 @@ const ZipFile::IFile &ZipFile::getIFile(uint32 index) const {
 }
 
 void ZipFile::getFileProperties(SeekableReadStream &zip, const IFile &file,
-		uint16 &compMethod, uint32 &compSize, uint32 &realSize) const {
+		uint16_t &compMethod, uint32_t &compSize, uint32_t &realSize) const {
 
 	zip.seek(file.offset);
 
-	uint32 tag = zip.readUint32LE();
+	uint32_t tag = zip.readUint32LE();
 	if (tag != 0x04034B50)
 		throw Exception("Unknown ZIP record %08X", tag);
 
@@ -147,23 +147,23 @@ void ZipFile::getFileProperties(SeekableReadStream &zip, const IFile &file,
 	compSize = zip.readUint32LE();
 	realSize = zip.readUint32LE();
 
-	uint16 nameLength  = zip.readUint16LE();
-	uint16 extraLength = zip.readUint16LE();
+	uint16_t nameLength  = zip.readUint16LE();
+	uint16_t extraLength = zip.readUint16LE();
 
 	zip.skip(nameLength);
 	zip.skip(extraLength);
 }
 
-size_t ZipFile::getFileSize(uint32 index) const {
+size_t ZipFile::getFileSize(uint32_t index) const {
 	return getIFile(index).size;
 }
 
-SeekableReadStream *ZipFile::getFile(uint32 index, bool tryNoCopy) const {
+SeekableReadStream *ZipFile::getFile(uint32_t index, bool tryNoCopy) const {
 	const IFile &file = getIFile(index);
 
-	uint16 compMethod;
-	uint32 compSize;
-	uint32 realSize;
+	uint16_t compMethod;
+	uint32_t compSize;
+	uint32_t realSize;
 
 	getFileProperties(*_zip, file, compMethod, compSize, realSize);
 
@@ -173,8 +173,8 @@ SeekableReadStream *ZipFile::getFile(uint32 index, bool tryNoCopy) const {
 	return decompressFile(*_zip, compMethod, compSize, realSize);
 }
 
-SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 method,
-		uint32 compSize, uint32 realSize) {
+SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32_t method,
+		uint32_t compSize, uint32_t realSize) {
 
 	if (method == 0) {
 		// Uncompressed

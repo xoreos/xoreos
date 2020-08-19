@@ -100,8 +100,8 @@ void Door::loadAppearance() {
 		_portrait = "po_door01_";
 }
 
-void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
-	uint32 modelColumn = twoda.headerToColumn("ModelName");
+void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32_t id) {
+	uint32_t modelColumn = twoda.headerToColumn("ModelName");
 	if (modelColumn == Aurora::kFieldIDInvalid)
 		modelColumn = twoda.headerToColumn("Model");
 

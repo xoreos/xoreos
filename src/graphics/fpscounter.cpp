@@ -35,7 +35,7 @@ namespace Graphics {
 FPSCounter::FPSCounter(size_t secs) : _seconds(secs) {
 	assert(_seconds > 0);
 
-	_frames = std::make_unique<uint32[]>(_seconds);
+	_frames = std::make_unique<uint32_t[]>(_seconds);
 
 	reset();
 }
@@ -43,7 +43,7 @@ FPSCounter::FPSCounter(size_t secs) : _seconds(secs) {
 FPSCounter::~FPSCounter() {
 }
 
-uint32 FPSCounter::getFPS() const {
+uint32_t FPSCounter::getFPS() const {
 	return _fps;
 }
 
@@ -61,7 +61,7 @@ void FPSCounter::reset() {
 }
 
 void FPSCounter::finishedFrame() {
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 
 	if (_lastSampled == 0)
 		_lastSampled = now;
@@ -90,7 +90,7 @@ void FPSCounter::finishedFrame() {
 
 void FPSCounter::calculateFPS() {
 	size_t seconds = _hasFullSeconds ? _seconds : _currentSecond;
-	uint32 frames = 0;
+	uint32_t frames = 0;
 	for (size_t i = 0; i < seconds; i++)
 		frames += _frames[i];
 

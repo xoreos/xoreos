@@ -325,7 +325,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff, bool clearScripts) 
 }
 
 void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
-	uint32 portraitID = gff.getUint("PortraitId");
+	uint32_t portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 
@@ -367,7 +367,7 @@ void Creature::loadAbilities(const Aurora::GFF3Struct &gff) {
 		_info.setAbilityScore(kAbilityCharisma, gff.getUint("Cha"));
 }
 
-void Creature::getModelState(uint32 &state, uint8 &textureVariation) {
+void Creature::getModelState(uint32_t &state, uint8_t &textureVariation) {
 	state = 'a';
 	textureVariation = 1;
 
@@ -378,7 +378,7 @@ void Creature::getModelState(uint32 &state, uint8 &textureVariation) {
 	}
 }
 
-void Creature::getPartModels(PartModels &parts, uint32 state, uint8 textureVariation) {
+void Creature::getPartModels(PartModels &parts, uint32_t state, uint8_t textureVariation) {
 	const Aurora::TwoDARow &appearance = TwoDAReg.get2DA("appearance").getRow(_appearance);
 
 	_modelType = appearance.getString("modeltype");
@@ -455,8 +455,8 @@ void Creature::loadMovementRate(const Common::UString &name) {
 }
 
 void Creature::loadEquippedModel() {
-	uint32 state;
-	uint8 textureVariation;
+	uint32_t state;
+	uint8_t textureVariation;
 	getModelState(state, textureVariation);
 
 	PartModels parts;

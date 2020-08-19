@@ -56,7 +56,7 @@ public:
 private:
 	int _baseItem;
 	Common::UString _itemClass;
-	int32 _equipableSlotsMask;
+	int32_t _equipableSlotsMask;
 	WeaponWield _weaponWield;
 	bool _rangedWeapon;
 	float _maxAttackRange;

@@ -51,7 +51,7 @@ void Feats::clear() {
 }
 
 /** Add the feat to the list at the given level */
-void Feats::featAdd(const uint32 id, uint16 level) {
+void Feats::featAdd(const uint32_t id, uint16_t level) {
 	Feat feat;
 	feat.id = id;
 	feat.level = level;
@@ -65,7 +65,7 @@ void Feats::featAdd(const uint32 id, uint16 level) {
  * feat bonuses and modifiers. If 'maxLevel' is
  * zero, ignore the level limit for the reset.
  */
-void Feats::featRemove(const uint32 id, uint16 maxLevel) {
+void Feats::featRemove(const uint32_t id, uint16_t maxLevel) {
 	// Look for a matching feat
 	for (std::vector<Feat>::iterator it = _feats.begin(); it != _feats.end(); ++it) {
 		if (it->id == id) {
@@ -84,7 +84,7 @@ void Feats::featRemove(const uint32 id, uint16 maxLevel) {
  * level at or below maxLevel. If 'maxLevel' is
  * zero, ignore the level limit.
  */
-bool Feats::getHasFeat(uint32 id, uint16 maxLevel) const {
+bool Feats::getHasFeat(uint32_t id, uint16_t maxLevel) const {
 	bool ignoreLimit = (maxLevel == 0);
 
 	// Look for a matching feat
@@ -97,12 +97,12 @@ bool Feats::getHasFeat(uint32 id, uint16 maxLevel) const {
 }
 
 /** Return the cumulative modifier for this skill */
-int Feats::getFeatsSkillBonus(uint32 skill) const {
+int Feats::getFeatsSkillBonus(uint32_t skill) const {
 	assert(skill < kSkillMAX);
 	return _skillBonus[skill];
 }
 
-int Feats::getFeatsSaveVsBonus(uint32 type) const {
+int Feats::getFeatsSaveVsBonus(uint32_t type) const {
 	assert(type < kSaveMAX);
 	return _saveVsBonus[type];
 }
@@ -140,7 +140,7 @@ bool Feats::getHasCustomFeat(Custom feat) const {
 }
 
 /** Return true only if the creature satisfies the feat requirements */
-bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
+bool Feats::meetsRequirements(const Creature &creature, uint32_t id) const {
 	static const Common::UString kFeatMinCols[] = {"MINSTR", "MINDEX", "MINCON", "MININT", "MINWIS", "MINCHA"};
 	static const Common::UString kFeatMaxCols[] = {"MAXSTR", "MAXDEX", "MAXCON", "MAXINT", "MAXWIS", "MAXCHA"};
 	static const Common::UString kFeatOrReq[] = {"OrReqFeat0", "OrReqFeat1", "OrReqFeat2", "OrReqFeat3", "OrReqFeat4", "OrReqFeat5"};
@@ -160,35 +160,35 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	const Aurora::TwoDARow &row = twoDA.getRow(id);
 
 	// Check if feat was removed by the developers
-	const uint16 removed = row.getInt(kFeatRemoved);
+	const uint16_t removed = row.getInt(kFeatRemoved);
 	if (removed == 1)
 		return false;
 
 	// Check the ability range
 	for (uint i = (uint)kAbilityStrength; i < (uint)kAbilityMAX; i++) {
 		// Check minimum ability
-		const uint16 min = row.getInt(kFeatMinCols[i]);
+		const uint16_t min = row.getInt(kFeatMinCols[i]);
 		if (min != 0) {
-			const uint16 ability = creature.getAbility((Ability)i);
+			const uint16_t ability = creature.getAbility((Ability)i);
 			if (ability < min)
 				return false;
 		}
 
 		// Check maximum ability
-		const uint16 max = row.getInt(kFeatMaxCols[i]);
+		const uint16_t max = row.getInt(kFeatMaxCols[i]);
 		if (max != 0) {
-			const uint16 ability = creature.getAbility((Ability)i);
+			const uint16_t ability = creature.getAbility((Ability)i);
 			if (ability > min)
 				return false;
 		}
 	}
 
 	// Check feat prerequisites
-	const uint32 prereq1 = row.getInt(kFeatPrereq1);
+	const uint32_t prereq1 = row.getInt(kFeatPrereq1);
 	if (prereq1 != 0 && !getHasFeat(prereq1))
 		return false;
 
-	const uint32 prereq2 = row.getInt(kFeatPrereq2);
+	const uint32_t prereq2 = row.getInt(kFeatPrereq2);
 	if (prereq2 != 0 && !getHasFeat(prereq2))
 		return false;
 
@@ -196,7 +196,7 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	bool hasOrReq = false;
 	bool isOrReqSatisfied = false;
 	for (uint j = 0; j < 6; j++) {
-		uint32 orReq = row.getInt(kFeatOrReq[j]);
+		uint32_t orReq = row.getInt(kFeatOrReq[j]);
 		if (orReq != 0) {
 			// Found an "or" required feat
 			hasOrReq = true;
@@ -214,11 +214,11 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	}
 
 	// Check for required skill ranks
-	uint32 skill = row.getInt(kFeatReqSkill1);
+	uint32_t skill = row.getInt(kFeatReqSkill1);
 	if (skill != 0) {
-		uint32 rankMin = row.getInt(kFeatReqSkillMinRanks1);
+		uint32_t rankMin = row.getInt(kFeatReqSkillMinRanks1);
 		if (rankMin != 0) {
-			uint32 ranks = creature.getSkillRank(skill, true);
+			uint32_t ranks = creature.getSkillRank(skill, true);
 			if (ranks < rankMin)
 				return false;
 
@@ -235,20 +235,20 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	}
 
 	// Check for required minimum class level
-	const uint32 reqClass = row.getInt(kFeatMinLevelClass);
+	const uint32_t reqClass = row.getInt(kFeatMinLevelClass);
 	if (reqClass != 0) {
 		const uint minLevel = row.getInt(kFeatMinLevel);
 		if (minLevel != 0) {
-			const uint32 classLevel = creature.getClassLevel(reqClass);
+			const uint32_t classLevel = creature.getClassLevel(reqClass);
 			if (classLevel < minLevel)
 				return false;
 		}
 	}
 
 	// Check the maximum allowed level
-	const uint8 maxLevel = row.getInt(kFeatMaxLevel);
+	const uint8_t maxLevel = row.getInt(kFeatMaxLevel);
 	if (maxLevel != 0) {
-		const uint8 hitDice = creature.getHitDice();
+		const uint8_t hitDice = creature.getHitDice();
 		if (hitDice > maxLevel)
 			return false;
 	}
@@ -287,7 +287,7 @@ void Feats::initParameters() {
  * Apply all feats with level at or below 'maxLevel'.
  * If 'maxLevel' is zero, ignore the level limit.
  */
-void Feats::resetFeats(uint16 maxLevel) {
+void Feats::resetFeats(uint16_t maxLevel) {
 	bool ignoreLimit = (maxLevel == 0);
 
 	// Reset the parameters
@@ -309,7 +309,7 @@ void Feats::resetFeats(uint16 maxLevel) {
  * This function uses a single large switch statement
  * so the compiler can build an indexed branch table.
  */
-void Feats::applyFeat(const uint32 id) {
+void Feats::applyFeat(const uint32_t id) {
 	switch(id) {
 
 		/* ---- PC History feats ---- */

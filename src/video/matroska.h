@@ -55,54 +55,54 @@ private:
 	/** A description of where a matroska cluster is. */
 	struct Cluster {
 		Cluster() : offset(0), size(0), timestamp(0) {}
-		uint64 offset;
-		uint64 size;
-		uint64 timestamp;
+		uint64_t offset;
+		uint64_t size;
+		uint64_t timestamp;
 	};
 
 	/** Information on a packet. */
 	struct Packet {
 		Packet() : offset(0), size(0), timestamp(0) {}
-		uint64 offset;
-		uint64 size;
-		uint64 timestamp;
+		uint64_t offset;
+		uint64_t size;
+		uint64_t timestamp;
 	};
 
 	/** The status of the track. */
 	struct TrackStatus {
 		TrackStatus() : curCluster(nullptr), curPos(0) {}
 		Cluster *curCluster;
-		uint64 curPos;
+		uint64_t curPos;
 		Packet nextPacket;
 	};
 
 	/** A Matroska video track. */
 	class MatroskaVideoTrack : public VideoTrack {
 	public:
-		MatroskaVideoTrack(uint64 trackNumber, uint32 width, uint32 height, uint64 defaultDuration);
+		MatroskaVideoTrack(uint64_t trackNumber, uint32_t width, uint32_t height, uint64_t defaultDuration);
 
 		bool endOfTrack() const { return _finished; }
 
-		uint32 getWidth() const { return _width; }
-		uint32 getHeight() const { return _height; }
+		uint32_t getWidth() const { return _width; }
+		uint32_t getHeight() const { return _height; }
 		int getCurFrame() const { return _curFrame; }
 		Common::Timestamp getNextFrameStartTime() const;
 
-		void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &frameData, uint64 timestamp);
+		void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &frameData, uint64_t timestamp);
 		void initCodec(const std::string &codec, Common::SeekableReadStream *extraData);
 		void finish() { _finished = true; }
 
 		/** Get the track number. */
-		uint64 getTrackNumber() const { return _trackNumber; }
+		uint64_t getTrackNumber() const { return _trackNumber; }
 
 	private:
-		uint64 _trackNumber;
-		uint32 _width;
-		uint32 _height;
-		uint64 _defaultDuration;
+		uint64_t _trackNumber;
+		uint32_t _width;
+		uint32_t _height;
+		uint64_t _defaultDuration;
 		int _curFrame;
 		bool _finished;
-		uint64 _timestamp;
+		uint64_t _timestamp;
 
 		/** The video codec. */
 		std::unique_ptr<Codec> _videoCodec;
@@ -111,7 +111,7 @@ private:
 	/** A Matroska audio track. */
 	class MatroskaAudioTrack : public AudioTrack {
 	public:
-		MatroskaAudioTrack(uint64 trackNumber, uint32 channelCount, uint32 sampleRate, const std::string &codec, Common::SeekableReadStream *extraData);
+		MatroskaAudioTrack(uint64_t trackNumber, uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData);
 
 		/** Queue audio stream data belonging to this track. */
 		void queueAudio(Common::SeekableReadStream *stream);
@@ -120,23 +120,23 @@ private:
 		void finish();
 
 		/** Get the track number. */
-		uint64 getTrackNumber() const { return _trackNumber; }
+		uint64_t getTrackNumber() const { return _trackNumber; }
 
 		/** Get the last timestamp of data. */
-		uint64 getLastTimestamp() const { return _lastTimestamp; }
+		uint64_t getLastTimestamp() const { return _lastTimestamp; }
 
 		/** Set the last timestamp of data. */
-		void setLastTimestamp(uint64 lastTimestamp) { _lastTimestamp = lastTimestamp; }
+		void setLastTimestamp(uint64_t lastTimestamp) { _lastTimestamp = lastTimestamp; }
 
 		// AudioTrack API
 		bool canBufferData() const;
 		Sound::AudioStream *getAudioStream() const;
 
 	private:
-		uint64 _trackNumber;
-		uint64 _lastTimestamp;
+		uint64_t _trackNumber;
+		uint64_t _lastTimestamp;
 		std::unique_ptr<Sound::PacketizedAudioStream> _audioStream;
-		Sound::PacketizedAudioStream *createStream(uint32 channelCount, uint32 sampleRate, const std::string &codec, Common::SeekableReadStream *extraData) const;
+		Sound::PacketizedAudioStream *createStream(uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData) const;
 	};
 
 	std::unique_ptr<Common::SeekableReadStream> _fd;
@@ -145,23 +145,23 @@ private:
 	std::vector<Cluster> _clusters;
 
 	/** The map from the track number to the current status. */
-	std::map<uint64, TrackStatus> _status;
+	std::map<uint64_t, TrackStatus> _status;
 
 	/** The map from the track number to each video track. */
-	std::map<uint64, MatroskaVideoTrack*> _trackMap;
+	std::map<uint64_t, MatroskaVideoTrack*> _trackMap;
 
 	/** The time code scale. */
-	uint64 _timeCodeScale;
+	uint64_t _timeCodeScale;
 
 
 	/** Load a Matroska video. */
 	void load();
 
 	/** Get the next packet for the given track. */
-	Common::SeekableReadStream *getNextPacket(uint64 trackNumber, uint64 &nextTimestamp);
+	Common::SeekableReadStream *getNextPacket(uint64_t trackNumber, uint64_t &nextTimestamp);
 
 	/** Find the next packet information for a track. */
-	void findNextPacket(uint64 trackNumber, TrackStatus& status);
+	void findNextPacket(uint64_t trackNumber, TrackStatus& status);
 };
 
 } // End of namespace Video

@@ -41,8 +41,8 @@ CharSchool::CharSchool(CharGenChoices &choices, Console *console) : CharGenBase(
 	// Init buttons and helpbox.
 	_buttons = std::make_unique<ButtonsGroup>(getEditBox("HelpBox", true));
 
-	uint32 textID = 10320;
-	uint32 titleID = 373;
+	uint32_t textID = 10320;
+	uint32_t titleID = 373;
 	_buttons->addButton(getButton("General", true), TalkMan.getString(5633), TalkMan.getString(5634));
 	_buttons->addButton(getButton("Abjuration", true), TalkMan.getString(titleID), TalkMan.getString(textID));
 	_buttons->addButton(getButton("Conjuration", true), TalkMan.getString(++titleID), TalkMan.getString(++textID));
@@ -80,7 +80,7 @@ void CharSchool::hide() {
 
 void CharSchool::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setSpellSchool((uint8) _buttons->getChoice());
+		_choices->setSpellSchool((uint8_t) _buttons->getChoice());
 		_returnCode = 2;
 		return;
 	}

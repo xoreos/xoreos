@@ -25,6 +25,8 @@
 #ifndef COMMON_HUFFMAN_H
 #define COMMON_HUFFMAN_H
 
+#include <cstddef>
+
 #include <vector>
 #include <list>
 
@@ -35,12 +37,12 @@ namespace Common {
 class BitStream;
 
 struct HuffmanTable {
-	uint8  maxLength; ///< Maximal code length. If 0, it's searched for.
-	size_t codeCount; ///< Number of codes.
+	uint8_t maxLength; ///< Maximal code length. If 0, it's searched for.
+	size_t  codeCount; ///< Number of codes.
 
-	const uint32 *codes;   ///< The actual codes.
-	const uint8  *lengths; ///< The lengths of the individual codes.
-	const uint32 *symbols; ///< The symbols, 0 if identical to the codes.
+	const uint32_t *codes;   ///< The actual codes.
+	const uint8_t  *lengths; ///< The lengths of the individual codes.
+	const uint32_t *symbols; ///< The symbols, 0 if identical to the codes.
 };
 
 /** Decode a Huffman'd bitstream. */
@@ -54,23 +56,23 @@ public:
 	 *  @param lengths Lengths of the individual codes.
 	 *  @param symbols The symbols. If 0, assume they are identical to the code indices.
 	 */
-	Huffman(uint8 maxLength, size_t codeCount, const uint32 *codes,
-	        const uint8 *lengths, const uint32 *symbols = 0);
+	Huffman(uint8_t maxLength, size_t codeCount, const uint32_t *codes,
+	        const uint8_t *lengths, const uint32_t *symbols = 0);
 	Huffman(const HuffmanTable &table);
 	~Huffman();
 
 	/** Modify the codes' symbols. */
-	void setSymbols(const uint32 *symbols = 0);
+	void setSymbols(const uint32_t *symbols = 0);
 
 	/** Return the next symbol in the bitstream. */
-	uint32 getSymbol(BitStream &bits) const;
+	uint32_t getSymbol(BitStream &bits) const;
 
 private:
 	struct Symbol {
-		uint32 code;
-		uint32 symbol;
+		uint32_t code;
+		uint32_t symbol;
 
-		Symbol(uint32 c, uint32 s);
+		Symbol(uint32_t c, uint32_t s);
 	};
 
 	typedef std::list<Symbol>     CodeList;
@@ -83,8 +85,8 @@ private:
 	/** Sorted list of pointers to the symbols. */
 	SymbolList _symbols;
 
-	void init(uint8 maxLength, size_t codeCount, const uint32 *codes,
-	          const uint8 *lengths, const uint32 *symbols);
+	void init(uint8_t maxLength, size_t codeCount, const uint32_t *codes,
+	          const uint8_t *lengths, const uint32_t *symbols);
 };
 
 } // End of namespace Common

@@ -39,7 +39,7 @@ class Texture;
 /** A managed texture, storing how often it's referenced. */
 struct ManagedTexture {
 	Texture *texture;
-	uint32 referenceCount;
+	uint32_t referenceCount;
 
 	ManagedTexture(Texture *t);
 	~ManagedTexture();

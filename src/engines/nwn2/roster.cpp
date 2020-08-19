@@ -45,11 +45,11 @@ Roster::Roster() : _partyLimit(3), _lastRetrieved(UINT32_MAX) {
 Roster::~Roster() {
 }
 
-uint32 Roster::getRosterNPCPartyLimit() {
+uint32_t Roster::getRosterNPCPartyLimit() {
 	return _partyLimit;
 }
 
-void Roster::setRosterNPCPartyLimit(uint32 limit) {
+void Roster::setRosterNPCPartyLimit(uint32_t limit) {
 	_partyLimit = limit;
 }
 

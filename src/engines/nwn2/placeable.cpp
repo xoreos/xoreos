@@ -198,7 +198,7 @@ bool Placeable::isActivated() const {
 	return isOpen();
 }
 
-void Placeable::createTrap(uint8 trapType, uint32 faction,
+void Placeable::createTrap(uint8_t trapType, uint32_t faction,
                            const Common::UString &disarm,
                            const Common::UString &triggered) {
 	Trap::createTrap(trapType, faction, disarm, triggered);
@@ -209,7 +209,7 @@ void Placeable::createTrap(uint8 trapType, uint32 faction,
 		setScript(kScriptTrapTriggered, triggered);
 }
 
-Item *Placeable::createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+Item *Placeable::createItemOnObject(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag) {
 	if (!getHasInventory())
 		return 0;
 
@@ -335,7 +335,7 @@ bool Placeable::deactivate(Object *user) {
 	return true;
 }
 
-uint8 Placeable::getReputation(Object *source) const {
+uint8_t Placeable::getReputation(Object *source) const {
 	return getArea()->getFactionReputation(source, _faction);
 }
 

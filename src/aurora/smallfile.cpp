@@ -34,25 +34,25 @@
 
 namespace Aurora {
 
-static void readSmallHeader(Common::ReadStream &small, uint32 &type, uint32 &size) {
-	uint32 data = small.readUint32LE();
+static void readSmallHeader(Common::ReadStream &small, uint32_t &type, uint32_t &size) {
+	uint32_t data = small.readUint32LE();
 
 	type = data & 0x000000FF;
 	size = data >> 8;
 }
 
-static void writeSmallHeader(Common::WriteStream &small, uint32 type, uint32 size) {
+static void writeSmallHeader(Common::WriteStream &small, uint32_t type, uint32_t size) {
 	type &= 0x000000FF;
 	size &= 0x00FFFFFF;
 
 	small.writeUint32LE((size << 8) | type);
 }
 
-static void decompress00(Common::ReadStream &small, Common::WriteStream &out, uint32 size) {
+static void decompress00(Common::ReadStream &small, Common::WriteStream &out, uint32_t size) {
 	out.writeStream(small, size);
 }
 
-static void compress00(Common::ReadStream &in, Common::WriteStream &small, uint32 size) {
+static void compress00(Common::ReadStream &in, Common::WriteStream &small, uint32_t size) {
 	small.writeStream(in, size);
 }
 
@@ -63,13 +63,13 @@ static void compress00(Common::ReadStream &in, Common::WriteStream &small, uint3
  * See <https://github.com/gravgun/dsdecmp/blob/master/CSharp/DSDecmp/Formats/Nitro/LZ10.cs#L121>
  * and <https://code.google.com/p/dsdecmp/>.
  */
-static void decompress10(Common::ReadStream &small, Common::WriteStream &out, uint32 size) {
-	byte   buffer[0x10000];
-	uint32 bufferPos = 0;
+static void decompress10(Common::ReadStream &small, Common::WriteStream &out, uint32_t size) {
+	byte     buffer[0x10000];
+	uint32_t bufferPos = 0;
 
-	uint16 flags = 0xFF00;
+	uint16_t flags = 0xFF00;
 
-	uint32 outSize = 0;
+	uint32_t outSize = 0;
 	while (outSize < size) {
 		// Only our canaries left => Read flags for the next 8 blocks
 		if (flags == 0xFF00)
@@ -82,14 +82,14 @@ static void decompress10(Common::ReadStream &small, Common::WriteStream &out, ui
 			const byte data2 = small.readByte();
 
 			// Copy how many bytes from where (relative) in the buffer?
-			const uint8  length = (data1 >> 4) + 3;
-			const uint16 offset = (((data1 & 0x0F) << 8) | data2) + 1;
+			const uint8_t  length = (data1 >> 4) + 3;
+			const uint16_t offset = (((data1 & 0x0F) << 8) | data2) + 1;
 
 			// Direct offset. Add size of the buffer once, to protect from overroll
-			uint32 copyOffset = bufferPos + sizeof(buffer) - offset;
+			uint32_t copyOffset = bufferPos + sizeof(buffer) - offset;
 
 			// Copy length bytes (and store each back into the buffer)
-			for (uint8 i = 0; i < length; i++, copyOffset++) {
+			for (uint8_t i = 0; i < length; i++, copyOffset++) {
 				if ((copyOffset % sizeof(buffer)) >= outSize)
 					throw Common::Exception("Tried to copy past the buffer");
 
@@ -182,7 +182,7 @@ size_t getOccurrenceLength(const byte *newPtr, size_t newLength,
  * See <https://github.com/gravgun/dsdecmp/blob/master/CSharp/DSDecmp/Formats/Nitro/LZ10.cs#L249>
  * and <https://code.google.com/p/dsdecmp/>.
  */
-static void compress10(Common::ReadStream &in, Common::WriteStream &small, uint32 size) {
+static void compress10(Common::ReadStream &in, Common::WriteStream &small, uint32_t size) {
 	std::unique_ptr<byte[]> inBuffer = std::make_unique<byte[]>(size);
 	if (in.read(inBuffer.get(), size) != size)
 		throw Common::Exception(Common::kReadError);
@@ -245,7 +245,7 @@ static void compress10(Common::ReadStream &in, Common::WriteStream &small, uint3
 }
 
 static void decompress(Common::ReadStream &small, Common::WriteStream &out,
-                       uint32 type, uint32 size) {
+                       uint32_t type, uint32_t size) {
 
 	if      (type == 0x00)
 		decompress00(small, out, size);
@@ -256,7 +256,7 @@ static void decompress(Common::ReadStream &small, Common::WriteStream &out,
 }
 
 void Small::decompress(Common::ReadStream &small, Common::WriteStream &out) {
-	uint32 type, size;
+	uint32_t type, size;
 	readSmallHeader(small, type, size);
 
 	try {
@@ -273,7 +273,7 @@ Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small)
 
 	assert(in);
 
-	uint32 type, size;
+	uint32_t type, size;
 	readSmallHeader(*in, type, size);
 
 	const size_t pos = in->pos();
@@ -296,7 +296,7 @@ Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small)
 }
 
 Common::SeekableReadStream *Small::decompress(Common::ReadStream &small) {
-	uint32 type, size;
+	uint32_t type, size;
 	readSmallHeader(small, type, size);
 
 	Common::MemoryWriteStreamDynamic out(true, size);

@@ -64,19 +64,19 @@ public:
 	 *  @param fun The function that should be called in
 	 *  @return The id of the interval to have the ability to later stop it
 	 */
-	virtual uint32 setInterval(double interval, IntervalFunction fun) = 0;
+	virtual uint32_t setInterval(double interval, IntervalFunction fun) = 0;
 
 	/** Stop a running interval function.
 	 *
 	 *  @param id the id of the function to stop.
 	 */
-	virtual void clearInterval(uint32 id) = 0;
+	virtual void clearInterval(uint32_t id) = 0;
 
 	/** Get the elapsed time after the program start.
 	 *
 	 *  @return the elapsed time since the program started.
 	 */
-	virtual uint32 getTime() = 0;
+	virtual uint32_t getTime() = 0;
 };
 
 /** The Action script virtual machine (AVM). */
@@ -104,8 +104,8 @@ public:
 	 */
 	void fsCommand(const Common::UString &name, const Common::UString &value);
 
-	void pushRegisters(uint8 n);
-	void popRegisters(uint8 n);
+	void pushRegisters(uint8_t n);
+	void popRegisters(uint8_t n);
 
 	void storeRegister(Variable value, byte index);
 	Variable getRegister(byte index);
@@ -128,7 +128,7 @@ public:
 	/** Start the timer. */
 	void startTime();
 	/** Get the current running AVM time. */
-	uint32 getTime();
+	uint32_t getTime();
 
 	void setReturnValue(Variable returnValue = Variable());
 	Variable getReturnValue();
@@ -151,7 +151,7 @@ private:
 	std::map<Common::UString, Variable> _variables;
 	std::map<Common::UString, StaticFunction> _functions;
 
-	uint32 _startTime { 0 }; ///< The elapsed since the start of the avm and the call to startTime()
+	uint32_t _startTime { 0 }; ///< The elapsed since the start of the avm and the call to startTime()
 	bool _stopFlag { false };
 	Variable _returnValue;
 	Stage *_stage { 0 };

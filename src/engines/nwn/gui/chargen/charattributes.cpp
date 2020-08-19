@@ -69,7 +69,7 @@ void CharAttributes::reset() {
 	_attrAdjust.assign(6, 0);
 	_pointLeft = 30;
 
-	getButton("PointsEdit", true)->setText(Common::composeString<uint32>(_pointLeft));
+	getButton("PointsEdit", true)->setText(Common::composeString<uint32_t>(_pointLeft));
 	getButton("CostEdit", true)->setText("");
 
 	getButton("OkButton", true)->setDisabled(true);
@@ -215,16 +215,16 @@ void CharAttributes::hide() {
 
 void CharAttributes::genTextAttributes(size_t attribute) {
 	// Compute modifier.
-	uint8 realValue = _attributes[attribute] + _attrAdjust.at(attribute);
+	uint8_t realValue = _attributes[attribute] + _attrAdjust.at(attribute);
 	realValue -= 6;
-	int8 modifier = (realValue - realValue % 2) / 2;
+	int8_t modifier = (realValue - realValue % 2) / 2;
 	modifier -= 2;
 
 	// Transform numbers into strings.
 	Common::UString sign = (modifier < 0) ? "" : "+";
-	Common::UString attr = Common::composeString<uint8>(_attributes[attribute]
+	Common::UString attr = Common::composeString<uint8_t>(_attributes[attribute]
 	                                                     + _attrAdjust.at(attribute));
-	Common::UString modifStr = Common::composeString<int8>(modifier);
+	Common::UString modifStr = Common::composeString<int8_t>(modifier);
 
 	Common::UString output = attr + " (" + sign + modifStr + ")";
 
@@ -232,22 +232,22 @@ void CharAttributes::genTextAttributes(size_t attribute) {
 	_labelAttributes[attribute]->setText(output);
 }
 
-uint8 CharAttributes::pointCost(uint8 attrValue) {
+uint8_t CharAttributes::pointCost(uint8_t attrValue) {
 	if (attrValue < 15) {
 		getButton("CostEdit", true)->setText("1");
 		return 1;
 	}
 
 	attrValue -= 15;
-	uint8 cost = ((attrValue - attrValue % 2) / 2) + 2;
+	uint8_t cost = ((attrValue - attrValue % 2) / 2) + 2;
 
-	getButton("CostEdit", true)->setText(Common::composeString<uint8>(cost));
+	getButton("CostEdit", true)->setText(Common::composeString<uint8_t>(cost));
 
 	return cost;
 }
 
-void CharAttributes::updateText(uint8 attribute) {
-	getButton("PointsEdit", true)->setText(Common::composeString<uint8>(_pointLeft));
+void CharAttributes::updateText(uint8_t attribute) {
+	getButton("PointsEdit", true)->setText(Common::composeString<uint8_t>(_pointLeft));
 	pointCost(_attributes[attribute] + 1);
 }
 

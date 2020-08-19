@@ -60,7 +60,7 @@ public:
 	IngameGUI(Module &module, ::Engines::Console *console = 0);
 	~IngameGUI();
 
-	uint32 showMain(); ///< Show the ingame main menu.
+	uint32_t showMain(); ///< Show the ingame main menu.
 	void  abortMain(); ///< Abort the ingame main menu.
 
 	void show(); ///< Show the ingame GUI elements.
@@ -96,9 +96,9 @@ private:
 	std::unique_ptr<Dialog> _dialog; ///< The current dialog.
 
 	/** The time the compass was changed last. */
-	uint32 _lastCompassChange;
+	uint32_t _lastCompassChange;
 	/** The time that party member was changed last. */
-	std::vector<uint32> _lastPartyMemberChange;
+	std::vector<uint32_t> _lastPartyMemberChange;
 
 	Common::PtrVector<CharacterInfo> _party; ///< The party member character panels.
 
@@ -110,7 +110,7 @@ private:
 	void setName(size_t partyMember, const Common::UString &name);
 
 	/** Set the party member's health. */
-	void setHealth(size_t partyMember, uint32 current, uint32 max);
+	void setHealth(size_t partyMember, uint32_t current, uint32_t max);
 
 	/** Set party member to "healthy" (red health bar). */
 	void setHealthy (size_t partyMember);

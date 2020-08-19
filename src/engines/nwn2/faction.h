@@ -41,18 +41,18 @@ public:
 
 	void clear();
 
-	bool getPersonalRep(Object *source, uint8 *reputation);
-	void setPersonalRep(Object *source, uint8 amount, bool decays = false, uint16 duration = 180);
+	bool getPersonalRep(Object *source, uint8_t *reputation);
+	void setPersonalRep(Object *source, uint8_t amount, bool decays = false, uint16_t duration = 180);
 	void clearPersonalRep(Object *source);
 
 private:
 	struct PersonalRep {
-		uint8 amount;    ///< Revised reputation.
-		uint32 day;      ///< Game day when this reputation was created.
-		uint32 time;     ///< Game time when this reputation was created.
-		bool decays;     ///< True if reputation adjustment decays at a set time.
-		uint16 duration; ///< Duration in seconds of the reputation adjustment.
-		uint32 objectId; ///< Object ID of the other creature for which rep applies.
+		uint8_t amount;    ///< Revised reputation.
+		uint32_t day;      ///< Game day when this reputation was created.
+		uint32_t time;     ///< Game time when this reputation was created.
+		bool decays;       ///< True if reputation adjustment decays at a set time.
+		uint16_t duration; ///< Duration in seconds of the reputation adjustment.
+		uint32_t objectId; ///< Object ID of the other creature for which rep applies.
 	};
 
 	std::vector<PersonalRep> _reputation;
@@ -67,9 +67,9 @@ public:
 	~Factions();
 
 	/** Get source's reputation with faction */
-	uint8 getReputation(Object *source, uint32 faction);
+	uint8_t getReputation(Object *source, uint32_t faction);
 	/** Get the faction name */
-	Common::UString getFactionName(uint32 faction);
+	Common::UString getFactionName(uint32_t faction);
 
 protected: // Allow testing access
 	struct Faction {
@@ -77,9 +77,9 @@ protected: // Allow testing access
 		bool global;          ///< Global effect flag.
 	};
 	struct Reputation {
-		uint32 factionId1;    ///< Index into _factionList.
-		uint32 factionId2;    ///< Index into _factionList.
-		uint32 factionRep;    ///< How faction Id1 perceives faction Id2.
+		uint32_t factionId1;    ///< Index into _factionList.
+		uint32_t factionId2;    ///< Index into _factionList.
+		uint32_t factionRep;    ///< How faction Id1 perceives faction Id2.
 	};
 
 	size_t                  _count;       ///< Number of factions.

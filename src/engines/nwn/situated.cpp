@@ -212,7 +212,7 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 }
 
 void Situated::loadPortrait(const Aurora::GFF3Struct &gff) {
-	uint32 portraitID = gff.getUint("PortraitId");
+	uint32_t portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 

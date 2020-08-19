@@ -46,9 +46,9 @@ namespace NWN {
 
 class NewGameFog : public Graphics::Aurora::Model_NWN {
 private:
-	uint32 _startTime;
-	uint32 _lastTime;
-	uint32 _timeRotate;
+	uint32_t _startTime;
+	uint32_t _lastTime;
+	uint32_t _timeRotate;
 
 	float _curZoom;
 
@@ -82,9 +82,9 @@ public:
 		if (pass == Graphics::kRenderPassTransparent)
 			return;
 
-		uint32 curTime = EventMan.getTimestamp();
+		uint32_t curTime = EventMan.getTimestamp();
 
-		uint32 diffRotate = curTime - _timeRotate;
+		uint32_t diffRotate = curTime - _timeRotate;
 		glRotatef(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
 
 		glScalef(_curZoom, _curZoom, 1.0f);
@@ -109,9 +109,9 @@ public:
 	}
 
 	void renderImmediate(const glm::mat4 &parentTransform) {
-		uint32 curTime = EventMan.getTimestamp();
+		uint32_t curTime = EventMan.getTimestamp();
 
-		uint32 diffRotate = curTime - _timeRotate;
+		uint32_t diffRotate = curTime - _timeRotate;
 		glm::mat4 transform = glm::mat4();
 		transform = glm::rotate(transform, Common::deg2rad(diffRotate / _rotateSpeed), glm::vec3(0.0f, 0.0f, -1.0f));
 		transform = glm::scale(transform, glm::vec3(_curZoom * 10.0f, _curZoom * 10.0f, 1.0f));

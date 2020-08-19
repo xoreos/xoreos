@@ -49,8 +49,9 @@
 
 #include <cassert>
 #include <cstring>
-#include <queue>
+#include <cstddef>
 
+#include <queue>
 #include <memory>
 
 #include <vorbis/vorbisfile.h>
@@ -122,23 +123,23 @@ protected:
 
 	OggVorbis_File _ovFile;
 
-	int16 _buffer[4096];
-	const int16 *_bufferEnd;
-	const int16 *_pos;
+	int16_t _buffer[4096];
+	const int16_t *_bufferEnd;
+	const int16_t *_pos;
 
-	uint64 _length;
+	uint64_t _length;
 
 public:
 	// startTime / duration are in milliseconds
 	VorbisStream(Common::SeekableReadStream *inStream, bool dispose);
 	~VorbisStream();
 
-	size_t readBuffer(int16 *buffer, const size_t numSamples);
+	size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 	bool endOfData() const { return _pos >= _bufferEnd; }
 	int getChannels() const { return _isStereo ? 2 : 1; }
 	int getRate() const { return _rate; }
-	uint64 getLength() const { return _length; }
+	uint64_t getLength() const { return _length; }
 
 	bool rewind();
 
@@ -160,7 +161,7 @@ VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
 
 	ogg_int64_t total = ov_pcm_total(&_ovFile, -1);
 	if (total >= 0)
-		_length = (uint64) total;
+		_length = (uint64_t) total;
 
 	// Read in initial data
 	if (!refill())
@@ -175,7 +176,7 @@ VorbisStream::~VorbisStream() {
 	ov_clear(&_ovFile);
 }
 
-size_t VorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t VorbisStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	size_t samples = 0;
 	while (samples < numSamples && _pos < _bufferEnd) {
 		const size_t len = MIN<size_t>(numSamples - samples, _bufferEnd - _pos);
@@ -250,7 +251,7 @@ bool VorbisStream::refill() {
 	}
 
 	_pos = _buffer;
-	_bufferEnd = reinterpret_cast<int16 *>(read_pos);
+	_bufferEnd = reinterpret_cast<int16_t *>(read_pos);
 
 	return true;
 }
@@ -266,7 +267,7 @@ public:
 	// AudioStream API
 	int getChannels() const { return _vorbisInfo.channels; }
 	int getRate() const { return _vorbisInfo.rate; }
-	size_t readBuffer(int16 *buffer, const size_t numSamples);
+	size_t readBuffer(int16_t *buffer, const size_t numSamples);
 	bool endOfData() const;
 	bool endOfStream() const;
 
@@ -341,7 +342,7 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 		}
 	} else if (initialBytes[0] == 2 && stream.size() < 0x7FFFFE00) {
 		stream.seek(1);
-		uint32 offset = 1;
+		uint32_t offset = 1;
 
 		for (int i = 0; i < 2; i++) {
 			headerSizes[i] = 0;
@@ -355,7 +356,7 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 					break;
 			}
 
-			if (offset >= (uint32)stream.size()) {
+			if (offset >= (uint32_t)stream.size()) {
 				warning("Vorbis header sizes damaged");
 				return false;
 			}
@@ -429,7 +430,7 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &packet1,
 	return true;
 }
 
-size_t PacketizedVorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t PacketizedVorbisStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	assert(_init);
 
 	size_t samples = 0;
@@ -475,7 +476,7 @@ size_t PacketizedVorbisStream::readBuffer(int16 *buffer, const size_t numSamples
 #ifdef USE_TREMOR
 		for (int i = 0; i < decSamples; i++)
 			for (int j = 0; j < getChannels(); j++)
-				buffer[samples++] = (int16)(pcm[j][i] / 32768);
+				buffer[samples++] = (int16_t)(pcm[j][i] / 32768);
 #else
 		for (int i = 0; i < decSamples; i++)
 			for (int j = 0; j < getChannels(); j++)

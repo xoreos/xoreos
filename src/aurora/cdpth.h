@@ -34,7 +34,7 @@ namespace Common {
 namespace Aurora {
 
 /** Loader for CDPTH, BioWare's Compressed DePTH, into a linear array
- *  of uint16 values.
+ *  of uint16_t values.
  *
  *  CDPTH are found in Sonic, where they are used to indicate the
  *  depth information of each pixel of the area background images
@@ -54,9 +54,9 @@ namespace Aurora {
 class CDPTH {
 public:
 	/** Read a CDPTH out of this stream. */
-	static const uint16 *load(Common::SeekableReadStream &cdpth, uint32 width, uint32 height);
+	static const uint16_t *load(Common::SeekableReadStream &cdpth, uint32_t width, uint32_t height);
 	/** Read a CDPTH out of this stream and delete it afterwards. */
-	static const uint16 *load(Common::SeekableReadStream *cdpth, uint32 width, uint32 height);
+	static const uint16_t *load(Common::SeekableReadStream *cdpth, uint32_t width, uint32_t height);
 };
 
 } // End of namespace Aurora

@@ -60,31 +60,31 @@ struct WMV2ACCoefficientTable {
 	/** Huffman decoder for the AC coefficients. */
 	const Common::HuffmanTable &huffman;
 	/** Escape code that signifies a special run level encoding. */
-	uint32 escapeCode;
+	uint32_t escapeCode;
 
 	/** Index of the last run/level pair. */
-	uint32 lastRunIndex;
+	uint32_t lastRunIndex;
 
 	// Run tables
-	const uint8 *runTable;          ///< Table for run values.
-	const uint8 *runDeltaTable;     ///< Table for run delta values.
-	const uint8 *runDeltaTableLast; ///< Table for run delta values, last run.
+	const uint8_t *runTable;          ///< Table for run values.
+	const uint8_t *runDeltaTable;     ///< Table for run delta values.
+	const uint8_t *runDeltaTableLast; ///< Table for run delta values, last run.
 
 	// Level tables
-	const uint8 *levelTable;          ///< Table for level values.
-	const uint8 *levelDeltaTable;     ///< Table for level delta values.
-	const uint8 *levelDeltaTableLast; ///< Table for level delta values, last level.
+	const uint8_t *levelTable;          ///< Table for level values.
+	const uint8_t *levelDeltaTable;     ///< Table for level delta values.
+	const uint8_t *levelDeltaTableLast; ///< Table for level delta values, last level.
 };
 
 /** Parameters for decoding the motion vectors. */
 struct WMV2MVTable {
-	uint32 count; ///< Number of motion vectors.
+	uint32_t count; ///< Number of motion vectors.
 
 	/** Huffman decoder for the motion vectors. */
 	const Common::HuffmanTable &huffman;
 
-	const uint8 *diffX; ///< X difference.
-	const uint8 *diffY; ///< Y difference.
+	const uint8_t *diffX; ///< X difference.
+	const uint8_t *diffY; ///< Y difference.
 };
 
 
@@ -105,18 +105,18 @@ extern const WMV2MVTable wmv2MV[2];
 
 
 /** I-Frame coefficient zig-zag scantable, horizontal. */
-extern const uint8 wmv2ZigZagHorizontal[64];
+extern const uint8_t wmv2ZigZagHorizontal[64];
 /** I-Frame coefficient zig-zag scantable, vertical. */
-extern const uint8 wmv2ZigZagVertical[64];
+extern const uint8_t wmv2ZigZagVertical[64];
 /** I-Frame coefficient zig-zag scantable, normal. */
-extern const uint8 wmv2ZigZagNormal[64];
+extern const uint8_t wmv2ZigZagNormal[64];
 
 /** P-Frame coefficient zig-zag scantable, 8x8. */
-extern const uint8 wmv2ZigZag8x8[64];
+extern const uint8_t wmv2ZigZag8x8[64];
 /** P-Frame coefficient zig-zag scantable, 8x4. */
-extern const uint8 wmv2ZigZag8x4[32];
+extern const uint8_t wmv2ZigZag8x4[32];
 /** P-Frame coefficient zig-zag scantable, 4x8. */
-extern const uint8 wmv2ZigZag4x8[32];
+extern const uint8_t wmv2ZigZag4x8[32];
 
 } // End of namespace Video
 

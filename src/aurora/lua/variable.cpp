@@ -43,7 +43,7 @@ Variable::Variable(bool value) : _type(kTypeNone) {
 	*this = value;
 }
 
-Variable::Variable(int32 value) : _type(kTypeNone) {
+Variable::Variable(int32_t value) : _type(kTypeNone) {
 	setType(kTypeNumber);
 	*this = value;
 }
@@ -184,7 +184,7 @@ Variable &Variable::operator=(bool value) {
 	return *this;
 }
 
-Variable &Variable::operator=(int32 value) {
+Variable &Variable::operator=(int32_t value) {
 	if (_type != kTypeNumber) {
 		throw Common::Exception("Can't assign an int value to a non-number variable");
 	}
@@ -297,7 +297,7 @@ bool Variable::getBool() const {
 	return _value._bool;
 }
 
-int32 Variable::getInt() const {
+int32_t Variable::getInt() const {
 	if (_type != kTypeNumber) {
 		throw Common::Exception("Can't get an int value from a non-number variable");
 	}

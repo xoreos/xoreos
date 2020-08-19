@@ -139,7 +139,7 @@ void WidgetCheckBox::leave() {
 	updateModel(false);
 }
 
-void WidgetCheckBox::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
+void WidgetCheckBox::mouseDown(uint8_t state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -152,7 +152,7 @@ void WidgetCheckBox::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	playSound("gui_check", Sound::kSoundTypeSFX);
 }
 
-void WidgetCheckBox::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetCheckBox::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

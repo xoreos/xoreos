@@ -51,6 +51,7 @@
 #define COMMON_MEMREADSTREAM_H
 
 #include <cstring>
+#include <cstddef>
 
 #include <boost/noncopyable.hpp>
 
@@ -126,27 +127,27 @@ public:
 	                       bool disposeMemory = false);
 	~MemoryReadStreamEndian();
 
-	uint16 readUint16() {
+	uint16_t readUint16() {
 		return _bigEndian ? readUint16BE() : readUint16LE();
 	}
 
-	uint32 readUint32() {
+	uint32_t readUint32() {
 		return _bigEndian ? readUint32BE() : readUint32LE();
 	}
 
-	uint64 readUint64() {
+	uint64_t readUint64() {
 		return _bigEndian ? readUint64BE() : readUint64LE();
 	}
 
-	uint16 readSint16() {
+	uint16_t readSint16() {
 		return _bigEndian ? readSint16BE() : readSint16LE();
 	}
 
-	uint32 readSint32() {
+	uint32_t readSint32() {
 		return _bigEndian ? readSint32BE() : readSint32LE();
 	}
 
-	uint64 readSint64() {
+	uint64_t readSint64() {
 		return _bigEndian ? readSint64BE() : readSint64LE();
 	}
 

@@ -51,7 +51,7 @@ static const char * const kButtonModels[] = {
 	"pb_but_inv", "pb_but_char", "pb_but_spell", "pb_but_pvp"
 };
 
-static const uint32 kButtonTooltips[] = {
+static const uint32_t kButtonTooltips[] = {
 	7036, 7037, 8105, 7040, 7035, 7039, 7038, 8106
 };
 
@@ -139,7 +139,7 @@ void PartyLeader::setHealthColor(float r, float g, float b, float a) {
 	_health->setColor(r, g, b, a);
 }
 
-void PartyLeader::setHealth(int32 current, int32 max) {
+void PartyLeader::setHealth(int32_t current, int32_t max) {
 	_currentHP = current;
 	_maxHP     = max;
 

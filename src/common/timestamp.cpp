@@ -56,33 +56,33 @@
 
 namespace Common {
 
-Timestamp::Timestamp(uint64 ms, uint64 fr) {
+Timestamp::Timestamp(uint64_t ms, uint64_t fr) {
 	if (fr == 0)
 		throw Exception("Invalid frame rate 0");
 
 	_secs = ms / 1000;
-	_framerateFactor = 1000 / gcd<uint64>(1000, fr);
+	_framerateFactor = 1000 / gcd<uint64_t>(1000, fr);
 	_framerate = fr * _framerateFactor;
 
 	// Note that _framerate is always divisible by 1000.
 	_numFrames = (ms % 1000) * (_framerate / 1000);
 }
 
-Timestamp::Timestamp(uint64 s, uint64 frames, uint64 fr) {
+Timestamp::Timestamp(uint64_t s, uint64_t frames, uint64_t fr) {
 	if (fr == 0)
 		throw Exception("Invalid frame rate 0");
 
 	_secs = s + (frames / fr);
-	_framerateFactor = 1000 / gcd<uint64>(1000, fr);
+	_framerateFactor = 1000 / gcd<uint64_t>(1000, fr);
 	_framerate = fr * _framerateFactor;
 	_numFrames = (frames % fr) * _framerateFactor;
 }
 
-Timestamp::Timestamp(uint64 s, uint64 frames, const Rational &newFramerate) {
+Timestamp::Timestamp(uint64_t s, uint64_t frames, const Rational &newFramerate) {
 	if (newFramerate <= 0)
 		throw Exception("Invalid frame rate %d/%d", newFramerate.getNumerator(), newFramerate.getDenominator());
 
-	uint64 fr;
+	uint64_t fr;
 	if (newFramerate.getDenominator() == 1) {
 		fr = newFramerate.getNumerator();
 	} else {
@@ -92,24 +92,24 @@ Timestamp::Timestamp(uint64 s, uint64 frames, const Rational &newFramerate) {
 	}
 
 	_secs = s + (frames / fr);
-	_framerateFactor = 1000 / gcd<uint64>(1000, fr);
+	_framerateFactor = 1000 / gcd<uint64_t>(1000, fr);
 	_framerate = fr * _framerateFactor;
 	_numFrames = (frames % fr) * _framerateFactor;
 }
 
-Timestamp Timestamp::convertToFramerate(uint64 newFramerate) const {
+Timestamp Timestamp::convertToFramerate(uint64_t newFramerate) const {
 	assert(_framerate != 0);
 	assert(newFramerate != 0);
 
 	Timestamp ts(*this);
 
 	if (ts.framerate() != newFramerate) {
-		ts._framerateFactor = 1000 / gcd<uint64>(1000, newFramerate);
+		ts._framerateFactor = 1000 / gcd<uint64_t>(1000, newFramerate);
 		ts._framerate = newFramerate * ts._framerateFactor;
 
-		const uint64 g = gcd(_framerate, ts._framerate);
-		const uint64 p = _framerate / g;
-		const uint64 q = ts._framerate / g;
+		const uint64_t g = gcd(_framerate, ts._framerate);
+		const uint64_t p = _framerate / g;
+		const uint64_t q = ts._framerate / g;
 
 		// Convert the frame offset to the new framerate.
 		// We round to the nearest (as opposed to always
@@ -126,7 +126,7 @@ Timestamp Timestamp::convertToFramerate(uint64 newFramerate) const {
 void Timestamp::normalize() {
 	// Convert negative _numFrames values to positive ones by adjusting _secs
 	if (_numFrames < 0) {
-		int64 secsub = 1 + (-_numFrames / _framerate);
+		int64_t secsub = 1 + (-_numFrames / _framerate);
 
 		_numFrames += _framerate * secsub;
 		_secs -= secsub;
@@ -161,15 +161,15 @@ bool Timestamp::operator>=(const Timestamp &ts) const {
 	return cmp(ts) >= 0;
 }
 
-int64 Timestamp::cmp(const Timestamp &ts) const {
+int64_t Timestamp::cmp(const Timestamp &ts) const {
 	assert(_framerate != 0);
 	assert(ts._framerate != 0);
 
-	int64 delta = _secs - ts._secs;
+	int64_t delta = _secs - ts._secs;
 	if (!delta) {
-		const uint64 g = gcd(_framerate, ts._framerate);
-		const uint64 p = _framerate / g;
-		const uint64 q = ts._framerate / g;
+		const uint64_t g = gcd(_framerate, ts._framerate);
+		const uint64_t p = _framerate / g;
+		const uint64_t q = ts._framerate / g;
 
 		delta = (_numFrames * q - ts._numFrames * p);
 	}
@@ -178,7 +178,7 @@ int64 Timestamp::cmp(const Timestamp &ts) const {
 }
 
 
-Timestamp Timestamp::addFrames(int64 frames) const {
+Timestamp Timestamp::addFrames(int64_t frames) const {
 	Timestamp ts(*this);
 
 	// The frames are given in the original framerate, so we have to
@@ -189,7 +189,7 @@ Timestamp Timestamp::addFrames(int64 frames) const {
 	return ts;
 }
 
-Timestamp Timestamp::addMsecs(int64 ms) const {
+Timestamp Timestamp::addMsecs(int64_t ms) const {
 	Timestamp ts(*this);
 	ts._secs += ms / 1000;
 	// Add the remaining frames. Note that _framerate is always divisible by 1000.
@@ -230,11 +230,11 @@ Timestamp Timestamp::operator-(const Timestamp &ts) const {
 	return result;
 }
 
-int64 Timestamp::frameDiff(const Timestamp &ts) const {
+int64_t Timestamp::frameDiff(const Timestamp &ts) const {
 	assert(_framerate != 0);
 	assert(ts._framerate != 0);
 
-	int64 delta = 0;
+	int64_t delta = 0;
 	if (_secs != ts._secs)
 		delta = (_secs - ts._secs) * _framerate;
 
@@ -246,21 +246,21 @@ int64 Timestamp::frameDiff(const Timestamp &ts) const {
 		// We need to multiply by the quotient of the two framerates.
 		// We cancel the GCD in this fraction to reduce the risk of
 		// overflows.
-		const uint64 g = gcd(_framerate, ts._framerate);
-		const uint64 p = _framerate / g;
-		const uint64 q = ts._framerate / g;
+		const uint64_t g = gcd(_framerate, ts._framerate);
+		const uint64_t p = _framerate / g;
+		const uint64_t q = ts._framerate / g;
 
 		delta -= ((long)ts._numFrames * p + q/2) / (long)q;
 	}
 
-	return delta / (int64)_framerateFactor;
+	return delta / (int64_t)_framerateFactor;
 }
 
-int64 Timestamp::msecsDiff(const Timestamp &ts) const {
+int64_t Timestamp::msecsDiff(const Timestamp &ts) const {
 	return msecs() - ts.msecs();
 }
 
-int64 Timestamp::msecs() const {
+int64_t Timestamp::msecs() const {
 	// Note that _framerate is always divisible by 1000.
 	return _secs * 1000 + _numFrames / (_framerate / 1000);
 }

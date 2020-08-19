@@ -89,7 +89,7 @@ void WidgetListBox::setHideScrollbar(bool hideScrollbar) {
 	_hideScrollbar = hideScrollbar;
 }
 
-void WidgetListBox::setPadding(uint32 padding) {
+void WidgetListBox::setPadding(uint32_t padding) {
 	_padding = padding;
 }
 
@@ -122,11 +122,11 @@ void WidgetListBox::removeAllItems() {
 	_items.clear();
 }
 
-void WidgetListBox::createItemWidgets(uint32 count) {
+void WidgetListBox::createItemWidgets(uint32_t count) {
 	if ((!_protoItem) || (!_itemWidgets.empty()))
 		return;
 
-	for (uint32 i = 0; i < count; ++i) {
+	for (uint32_t i = 0; i < count; ++i) {
 		Common::UString tag = Common::UString::format("%s_ITEM_%u", _tag.c_str(), i);
 		WidgetProtoItem *item = createItemWidget(tag);
 		item->load(*_protoItem);
@@ -386,7 +386,7 @@ void WidgetListBox::applyChangesToItemWidgets() {
 	}
 }
 
-void WidgetListBox::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int y) {
+void WidgetListBox::mouseWheel(uint8_t UNUSED(state), int UNUSED(x), int y) {
 	if ((y == 0) || !_adjustHeight)
 		return;
 

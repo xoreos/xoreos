@@ -22,6 +22,8 @@
  *  Compress (deflate) and decompress (inflate) using zlib's DEFLATE algorithm.
  */
 
+#include <cstddef>
+
 #include <memory>
 
 #include <zlib.h>

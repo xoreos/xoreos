@@ -47,7 +47,7 @@ private:
 	SonicEngine *_engine;
 
 	// Caches
-	std::set<int32> _areas; ///< All known areas.
+	std::set<int32_t> _areas; ///< All known areas.
 
 
 	// Updating the caches

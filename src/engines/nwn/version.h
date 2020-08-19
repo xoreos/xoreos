@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_VERSION_H
 #define ENGINES_NWN_VERSION_H
 
+#include <cstddef>
+
 #include "src/common/types.h"
 
 #include "src/aurora/types.h"
@@ -52,34 +54,34 @@ public:
 
 	Common::UString getPlatformName() const;
 
-	uint64 getVersion() const;      ///< Return the combined version.
-	uint16 getVersionMajor() const; ///< Return the major version.
-	uint16 getVersionMinor() const; ///< Return the minor version.
-	uint16 getVersionBuild() const; ///< Return the build number.
+	uint64_t getVersion() const;      ///< Return the combined version.
+	uint16_t getVersionMajor() const; ///< Return the major version.
+	uint16_t getVersionMinor() const; ///< Return the minor version.
+	uint16_t getVersionBuild() const; ///< Return the build number.
 
 	Common::UString getVersionString() const;
 
 	bool isTooOld() const; ///< Is this version older than the optimum?
 	bool isTooNew() const; ///< Is this version newer than the optimum?
 
-	static uint64 getOptimumVersion();      ///< Return the optimum combined version.
-	static uint16 getOptimumVersionMajor(); ///< Return the optimum major version.
-	static uint16 getOptimumVersionMinor(); ///< Return the optimum minor version.
-	static uint16 getOptimumVersionBuild(); ///< Return the optimum build number.
+	static uint64_t getOptimumVersion();      ///< Return the optimum combined version.
+	static uint16_t getOptimumVersionMajor(); ///< Return the optimum major version.
+	static uint16_t getOptimumVersionMinor(); ///< Return the optimum minor version.
+	static uint16_t getOptimumVersionBuild(); ///< Return the optimum build number.
 
 	static Common::UString getOptimumVersionString();
 
 private:
-	static const uint16 kOptimumVersionMajor =    1;
-	static const uint16 kOptimumVersionMinor =   69;
-	static const uint16 kOptimumVersionBuild = 8109;
+	static const uint16_t kOptimumVersionMajor =    1;
+	static const uint16_t kOptimumVersionMinor =   69;
+	static const uint16_t kOptimumVersionBuild = 8109;
 
 	Aurora::Platform _platform;
 
-	uint16 _versionMajor; ///< v1.69.8109 ->    1
-	uint16 _versionMinor; ///< v1.69.8109 ->   69
-	uint16 _versionBuild; ///< v1.69.8109 -> 8109
-	uint64 _version;      ///< The combined version number.
+	uint16_t _versionMajor; ///< v1.69.8109 ->    1
+	uint16_t _versionMinor; ///< v1.69.8109 ->   69
+	uint16_t _versionBuild; ///< v1.69.8109 -> 8109
+	uint64_t _version;      ///< The combined version number.
 
 	bool detectWindows(const Common::UString &directory);
 	bool detectMacOSX (const Common::UString &directory);

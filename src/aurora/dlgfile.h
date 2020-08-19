@@ -57,11 +57,11 @@ namespace NWScript {
 
 class DLGFile : boost::noncopyable {
 public:
-	static const uint32 kEndLine     = 0xFFFFFFFE;
-	static const uint32 kInvalidLine = 0xFFFFFFFF;
+	static const uint32_t kEndLine     = 0xFFFFFFFE;
+	static const uint32_t kInvalidLine = 0xFFFFFFFF;
 
 	struct Line {
-		uint32 id; ///< ID of this line (entry-local).
+		uint32_t id; ///< ID of this line (entry-local).
 
 		Common::UString speaker; ///< Tag of the speaker, empty if default.
 		LocString       text;    ///< The actual text of the entry.
@@ -69,10 +69,10 @@ public:
 		Common::UString sound; ///< ResRef of the sound to play while speaking this entry.
 		Common::UString voice; ///< ResRef of the voice over for KotOR games.
 
-		uint32 animation; ///< Animation to play while speaking this entry.
+		uint32_t animation; ///< Animation to play while speaking this entry.
 
 		Common::UString quest;      ///< Quest name to modify when speaking this entry.
-		uint32          questEntry; ///< Entry ID to set the quest to.
+		uint32_t        questEntry; ///< Entry ID to set the quest to.
 
 		bool isEnd; ///< Are there no replies to this line?
 	};
@@ -88,16 +88,16 @@ public:
 	bool getNoZoomIn() const;
 
 	/** Return the number of seconds to wait before showing each entry. */
-	uint32 getDelayEntry() const;
+	uint32_t getDelayEntry() const;
 	/** Return the number of seconds to wait before showing each reply. */
-	uint32 getDelayReply() const;
+	uint32_t getDelayReply() const;
 
 	bool hasEnded() const;
 
 	void startConversation();
 	void abortConversation();
 
-	void pickReply(uint32 id);
+	void pickReply(uint32_t id);
 
 	const Line *getCurrentEntry() const;
 	const std::vector<const Line *> &getCurrentReplies() const;
@@ -109,14 +109,14 @@ private:
 	/** A script used by an entry or a link. */
 	struct Script {
 		Common::UString name;            ///< Name of the script.
-		std::vector<int> parameters;         ///< Parameter to call the script with.
+		std::vector<int> parameters;     ///< Parameter to call the script with.
 		Common::UString parameterString; ///< String parameter to call the script with.
 		bool negate;                     ///< Negation of the scripts result.
 	};
 
 	/** A link to a reply. */
 	struct Link {
-		uint32 index;            ///< Index into the entries/replies.
+		uint32_t index;          ///< Index into the entries/replies.
 		Script active1, active2; ///< Scripts that determine if this link is active.
 	};
 
@@ -134,8 +134,8 @@ private:
 
 	NWScript::Object *_owner;
 
-	uint32 _delayEntry; ///< Number of seconds to wait before showing each entry.
-	uint32 _delayReply; ///< Number of seconds to wait before showing each reply.
+	uint32_t _delayEntry; ///< Number of seconds to wait before showing each entry.
+	uint32_t _delayReply; ///< Number of seconds to wait before showing each reply.
 
 	Script _convAbort; ///< Script to run when the conversation was aborted.
 	Script _convEnd;   ///< Script to run when the conversation ended normally.

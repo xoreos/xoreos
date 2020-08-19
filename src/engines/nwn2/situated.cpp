@@ -139,11 +139,11 @@ bool Situated::isKeyRequired() const {
 	return _keyRequired;
 }
 
-uint8 Situated::getLockLockDC() const {
+uint8_t Situated::getLockLockDC() const {
 	return _openLockDC;
 }
 
-uint8 Situated::getLockUnlockDC() const {
+uint8_t Situated::getLockUnlockDC() const {
 	return _closeLockDC;
 }
 
@@ -167,13 +167,13 @@ void Situated::setKeyRequired(bool keyRequired) {
 	_keyRequired = keyRequired;
 }
 
-void Situated::setLockLockDC(uint8 lockDC) {
+void Situated::setLockLockDC(uint8_t lockDC) {
 	// lockDC must be between 0 and 250
 	if (lockDC <= 250)
 		_openLockDC = lockDC;
 }
 
-void Situated::setLockUnlockDC(uint8 unlockDC) {
+void Situated::setLockUnlockDC(uint8_t unlockDC) {
 	// unlockDC must be between 0 and 250
 	if (unlockDC <= 250)
 		_closeLockDC = unlockDC;
@@ -187,11 +187,11 @@ void Situated::setKeyRequiredFeedbackMessage(const Common::UString &feedback) {
 	_keyFeedback = feedback;
 }
 
-int32 Situated::getCurrentHP() const {
+int32_t Situated::getCurrentHP() const {
 	return _currentHP;
 }
 
-int32 Situated::getMaxHP() const {
+int32_t Situated::getMaxHP() const {
 	return _baseHP;
 }
 

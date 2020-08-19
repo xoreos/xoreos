@@ -59,7 +59,7 @@ void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 	if (script.empty())
 		throw Common::Exception("Functions::assignCommand(): Script needed");
 
-	uint32 delay = ctx.getParams()[0].getFloat() * 1000;
+	uint32_t delay = ctx.getParams()[0].getFloat() * 1000;
 
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
 
@@ -146,8 +146,8 @@ void Functions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) 
 		conversation = source->getConversation();
 
 	/* TODO
-	const int32 range = ctx.getParams()[2].getInt();
-	const int32 delay = ctx.getParams()[3].getInt();
+	const int32_t range = ctx.getParams()[2].getInt();
+	const int32_t delay = ctx.getParams()[3].getInt();
 	const bool ignoreLOS = ctx.getParams()[4].getInt() != 0;
 	*/
 	const bool noWidescreen = ctx.getParams()[5].getInt() != 0;
@@ -188,8 +188,8 @@ void Functions::actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: runType
-	// int32 runType = ctx.getParams()[1].getInt();
-	// int32 moveAnim = ctx.getParams()[2].getInt();
+	// int32_t runType = ctx.getParams()[1].getInt();
+	// int32_t moveAnim = ctx.getParams()[2].getInt();
 
 	Jade::Object   *object = Jade::ObjectContainer::toObject(ctx.getCaller());
 	Jade::Location *moveTo = Jade::ObjectContainer::toLocation(ctx.getParams()[0].getEngineType());
@@ -223,9 +223,9 @@ void Functions::actionJumpToObject(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: runType and range
-	// int32 runType = ctx.getParams()[1].getInt();
-	// int32 range = ctx.getParams()[2].getInt();
-	// int32 moveAnim = ctx.getParams()[3].getInt();
+	// int32_t runType = ctx.getParams()[1].getInt();
+	// int32_t range = ctx.getParams()[2].getInt();
+	// int32_t moveAnim = ctx.getParams()[3].getInt();
 
 	Jade::Object *object = Jade::ObjectContainer::toObject(ctx.getCaller());
 	Jade::Object *moveTo = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));

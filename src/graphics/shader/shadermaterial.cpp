@@ -36,9 +36,9 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 		_name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
 	fragShader->usageCount++;
 
-	uint32 varCount = fragShader->variablesCombined.size();
+	uint32_t varCount = fragShader->variablesCombined.size();
 	_variableData.resize(varCount);
-	for (uint32 i = 0; i < varCount; ++i) {
+	for (uint32_t i = 0; i < varCount; ++i) {
 		_variableData[i].flags = 0;
 		genMaterialVar(i);
 
@@ -50,7 +50,7 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 }
 
 ShaderMaterial::~ShaderMaterial() {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		delMaterialVar(i);
 	}
 }
@@ -59,11 +59,11 @@ const Common::UString &ShaderMaterial::getName() const {
 	return _name;
 }
 
-uint32 ShaderMaterial::getFlags() const {
+uint32_t ShaderMaterial::getFlags() const {
 	return _flags;
 }
 
-void ShaderMaterial::setFlags(uint32 flags) {
+void ShaderMaterial::setFlags(uint32_t flags) {
 	_flags = flags;
 }
 
@@ -95,23 +95,23 @@ Shader::ShaderObject *ShaderMaterial::getFragmentShader() const {
 	return _fragShader;
 }
 
-uint32 ShaderMaterial::getVariableCount() const {
+uint32_t ShaderMaterial::getVariableCount() const {
 	return _fragShader->variablesCombined.size();
 	// return _variableData.size(); // Should be equal to the frag shader variable count.
 }
 
-Shader::ShaderVariableType ShaderMaterial::getVariableType(uint32 index) const {
+Shader::ShaderVariableType ShaderMaterial::getVariableType(uint32_t index) const {
 	return _fragShader->variablesCombined[index].type;
 }
 
-void *ShaderMaterial::getVariableData(uint32 index) const {
+void *ShaderMaterial::getVariableData(uint32_t index) const {
 	return _variableData[index].data;
 }
 
 void *ShaderMaterial::getVariableData(const Common::UString &name) const {
 	void *rval = 0;
 
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_fragShader->variablesCombined[i].name == name) {
 			rval = _variableData[i].data;
 			break;
@@ -121,15 +121,15 @@ void *ShaderMaterial::getVariableData(const Common::UString &name) const {
 	return rval;
 }
 
-const Common::UString &ShaderMaterial::getVariableName(uint32 index) const {
+const Common::UString &ShaderMaterial::getVariableName(uint32_t index) const {
 	return _fragShader->variablesCombined[index].name;
 }
 
-uint32 ShaderMaterial::getVariableFlags(uint32 index) const {
+uint32_t ShaderMaterial::getVariableFlags(uint32_t index) const {
 	return _variableData[index].flags;
 }
 
-void ShaderMaterial::setVariableExternal(uint32 index, void *loc, bool textureUnitRecalc) {
+void ShaderMaterial::setVariableExternal(uint32_t index, void *loc, bool textureUnitRecalc) {
 	delMaterialVar(index);
 	_variableData[index].data = loc;
 	if (textureUnitRecalc) {
@@ -138,7 +138,7 @@ void ShaderMaterial::setVariableExternal(uint32 index, void *loc, bool textureUn
 }
 
 void ShaderMaterial::setVariableExternal(const Common::UString &name, void *loc, bool textureUnitRecalc) {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_fragShader->variablesCombined[i].name == name) {
 			delMaterialVar(i);
 			_variableData[i].data = loc;
@@ -151,7 +151,7 @@ void ShaderMaterial::setVariableExternal(const Common::UString &name, void *loc,
 	}
 }
 
-void ShaderMaterial::setVariableInternal(uint32 index, bool textureUnitRecalc) {
+void ShaderMaterial::setVariableInternal(uint32_t index, bool textureUnitRecalc) {
 	genMaterialVar(index);
 
 	if (textureUnitRecalc) {
@@ -160,7 +160,7 @@ void ShaderMaterial::setVariableInternal(uint32 index, bool textureUnitRecalc) {
 }
 
 void ShaderMaterial::setVariableInternal(const Common::UString &name, bool textureUnitRecalc) {
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_fragShader->variablesCombined[i].name == name) {
 			genMaterialVar(i);
 			break;
@@ -173,10 +173,10 @@ void ShaderMaterial::setVariableInternal(const Common::UString &name, bool textu
 }
 
 void ShaderMaterial::recalcTextureUnits() {
-	uint32 unit = 0;
+	uint32_t unit = 0;
 
 	// First iterate through and find all external variables - they have master control over texture unit assignment.
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		switch (_fragShader->variablesCombined[i].type) {
 			case SHADER_SAMPLER1D:
 			case SHADER_SAMPLER2D:
@@ -191,15 +191,15 @@ void ShaderMaterial::recalcTextureUnits() {
 	}
 
 	// Now fill in the gaps.
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		switch (_fragShader->variablesCombined[i].type) {
 			case SHADER_SAMPLER1D:
 			case SHADER_SAMPLER2D:
 			case SHADER_SAMPLER3D:
 			case SHADER_SAMPLERCUBE:
 				if (_variableData[i].flags & SHADER_MATERIAL_VARIABLE_OWNED) {
-					uint32 textureUnit = 0;
-					for (uint32 j = 1; j < 0x80000000; j<<=1, ++textureUnit)
+					uint32_t textureUnit = 0;
+					for (uint32_t j = 1; j < 0x80000000; j<<=1, ++textureUnit)
 					{
 						if (!(unit & j)) {
 							unit |= j;
@@ -214,13 +214,13 @@ void ShaderMaterial::recalcTextureUnits() {
 	}
 }
 
-bool ShaderMaterial::isVariableOwned(uint32 index) const {
+bool ShaderMaterial::isVariableOwned(uint32_t index) const {
 	return (_variableData[index].flags & SHADER_MATERIAL_VARIABLE_OWNED) ? true : false;
 }
 
 bool ShaderMaterial::isVariableOwned(const Common::UString &name) const {
 	bool rval = false;
-	for (uint32 i = 0; i < _variableData.size(); ++i) {
+	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_fragShader->variablesCombined[i].name == name) {
 			rval = (_variableData[i].flags & SHADER_MATERIAL_VARIABLE_OWNED) ? true : false;
 			break;
@@ -231,13 +231,13 @@ bool ShaderMaterial::isVariableOwned(const Common::UString &name) const {
 }
 
 void ShaderMaterial::bindProgram(Shader::ShaderProgram *program) {
-	for (uint32 i = 0; i < _variableData.size(); i++) {
+	for (uint32_t i = 0; i < _variableData.size(); i++) {
 		ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], _variableData[i].data);
 	}
 }
 
 void ShaderMaterial::bindProgramNoFade(Shader::ShaderProgram *program) {
-	for (uint32 i = 0; i < _variableData.size(); i++) {
+	for (uint32_t i = 0; i < _variableData.size(); i++) {
 		if (_alphaIndex != i) {
 			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], _variableData[i].data);
 		}
@@ -245,7 +245,7 @@ void ShaderMaterial::bindProgramNoFade(Shader::ShaderProgram *program) {
 }
 
 void ShaderMaterial::bindProgram(Shader::ShaderProgram *program, float alpha) {
-	for (uint32 i = 0; i < _variableData.size(); i++) {
+	for (uint32_t i = 0; i < _variableData.size(); i++) {
 		if (_alphaIndex == i) {
 			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], &alpha);
 		} else {
@@ -281,12 +281,12 @@ void ShaderMaterial::restoreGLState() {
 	glDepthMask(GL_TRUE);
 }
 
-void *ShaderMaterial::genMaterialVar(uint32 index) {
+void *ShaderMaterial::genMaterialVar(uint32_t index) {
 	if (_variableData[index].flags & SHADER_MATERIAL_VARIABLE_OWNED)
 		return 0;
 
 	void *rval = 0;
-	uint32 count = _fragShader->variablesCombined[index].count;
+	uint32_t count = _fragShader->variablesCombined[index].count;
 
 	switch (_fragShader->variablesCombined[index].type) {
 		case SHADER_FLOAT: rval = new float[count];     break;
@@ -341,7 +341,7 @@ void *ShaderMaterial::genMaterialVar(uint32 index) {
 	return rval;
 }
 
-void ShaderMaterial::delMaterialVar(uint32 index)
+void ShaderMaterial::delMaterialVar(uint32_t index)
 {
 	if (!(_variableData[index].flags & SHADER_MATERIAL_VARIABLE_OWNED))
 		return;
@@ -414,7 +414,7 @@ void ShaderMaterial::useDecrement() {
 	}
 }
 
-uint32 ShaderMaterial::useCount() const {
+uint32_t ShaderMaterial::useCount() const {
 	return _usageCount;
 }
 

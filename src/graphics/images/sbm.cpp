@@ -66,7 +66,7 @@ void SBM::readData(Common::SeekableReadStream &sbm, bool deswizzle) {
 	_mipMaps.push_back(new MipMap(this));
 
 	_mipMaps[0]->width  = 4 * 32;
-	_mipMaps[0]->height = NEXTPOWER2((uint32) rowCount * 32);
+	_mipMaps[0]->height = NEXTPOWER2((uint32_t) rowCount * 32);
 	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 
 	_mipMaps[0]->data = std::make_unique<byte[]>(_mipMaps[0]->size);
@@ -89,7 +89,7 @@ void SBM::readData(Common::SeekableReadStream &sbm, bool deswizzle) {
 		for (int y = 0; y < 32; y++) {
 			for (int plane = 0; plane < 4; plane++) {
 				for (int x = 0; x < 32; x++) {
-					const uint32 offset = deswizzle ? deSwizzleOffset(x, y, 32, rowCount) : (y * 32 + x);
+					const uint32_t offset = deswizzle ? deSwizzleOffset(x, y, 32, rowCount) : (y * 32 + x);
 
 					const byte a = ((buffer[offset] & masks[plane]) >> shifts[plane]) * 0x55;
 

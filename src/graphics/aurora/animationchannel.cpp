@@ -66,7 +66,7 @@ void AnimationChannel::playAnimation(const Common::UString &anim, bool restart, 
 	_manageMutex.unlock();
 }
 
-void AnimationChannel::playAnimationCount(const Common::UString &anim, bool restart, int32 loopCount) {
+void AnimationChannel::playAnimationCount(const Common::UString &anim, bool restart, int32_t loopCount) {
 	Animation *animation = _model->getAnimation(anim);
 	if (!animation)
 		return;
@@ -84,7 +84,7 @@ void AnimationChannel::clearDefaultAnimations() {
 	_manageMutex.unlock();
 }
 
-void AnimationChannel::addDefaultAnimation(const Common::UString &anim, uint8 probability) {
+void AnimationChannel::addDefaultAnimation(const Common::UString &anim, uint8_t probability) {
 	Animation *animation = _model->getAnimation(anim);
 	if (!animation)
 		return;
@@ -194,7 +194,7 @@ void AnimationChannel::playDefaultAnimationInternal() {
 }
 
 Animation *AnimationChannel::selectDefaultAnimation() {
-	uint8 pick = RNG.getNext(0, 100);
+	uint8_t pick = RNG.getNext(0, 100);
 	for (DefaultAnimations::const_iterator a = _defaultAnimations.begin();
 			a != _defaultAnimations.end(); ++a) {
 		if (pick < a->probability)

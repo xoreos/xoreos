@@ -90,7 +90,7 @@ Common::SeekableReadStream *XMLFixer::fixXMLStream(Common::SeekableReadStream &i
 Common::UString XMLFixer::fixXMLElement(const Common::UString &element) {
 	// Split on the equals sign
 	std::vector<Common::UString> segments;
-	Common::UString::split(element, static_cast<uint32>('='), segments);
+	Common::UString::split(element, static_cast<uint32_t>('='), segments);
 
 	// Cycle through the segments
 	Common::UString line;
@@ -296,7 +296,7 @@ Common::UString XMLFixer::fixParams(Common::UString params) {
 
 	// Split on the commas
 	std::vector<Common::UString> args;
-	params.split(params, static_cast<uint32>(','), args);
+	params.split(params, static_cast<uint32_t>(','), args);
 
 	// If there is only one segment, just return it
 	if (args.size() < 2)
@@ -473,7 +473,7 @@ bool XMLFixer::endsWithTagCloser(const Common::UString &line) {
 		return false;
 
 	// Search backwards for an equals, quote, or comma
-	auto it = std::find_if(--line.end(), closer, [](uint32 c) {
+	auto it = std::find_if(--line.end(), closer, [](uint32_t c) {
 		return c == '\"' || c == '=' || c == ',';
 	});
 

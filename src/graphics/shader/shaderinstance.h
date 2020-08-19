@@ -43,8 +43,8 @@ public:
 	void bind();
 	void unbind();
 
-	void rebindVertexVariable(uint32 index);
-	void rebindFragmentVariable(uint32 index);
+	void rebindVertexVariable(uint32_t index);
+	void rebindFragmentVariable(uint32_t index);
 
 private:
 	std::vector<const void *> _vertexVariableData;

@@ -39,14 +39,14 @@ public:
 	~Journal() = default;
 
 	/** Get the XP awarded for completing the quest with the matching tag. */
-	uint32 getJournalQuestExperience(const Common::UString &plotID) const;
+	uint32_t getJournalQuestExperience(const Common::UString &plotID) const;
 
 private:
 
 	struct Entry {
 		Common::UString text;
 		Common::UString comment;
-		uint32 id;
+		uint32_t id;
 		bool end;
 	};
 
@@ -54,8 +54,8 @@ private:
 		Common::UString identifier;
 		Common::UString name;
 		Common::UString comment;
-		uint32 priority;
-		uint32 XP;
+		uint32_t priority;
+		uint32_t XP;
 		std::vector<Entry> entries;
 	};
 

@@ -64,11 +64,11 @@ AreaBackground::~AreaBackground() {
 	hide();
 }
 
-uint32 AreaBackground::getImageWidth() const {
+uint32_t AreaBackground::getImageWidth() const {
 	return _texture.getTexture().getWidth();
 }
 
-uint32 AreaBackground::getImageHeight() const {
+uint32_t AreaBackground::getImageHeight() const {
 	return _texture.getTexture().getHeight();
 }
 

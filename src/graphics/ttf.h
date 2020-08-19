@@ -50,13 +50,13 @@ public:
 	int getMaxWidth() const;
 
 	/** Does the font have the specified character? */
-	bool hasChar(uint32 ch) const;
+	bool hasChar(uint32_t ch) const;
 
 	/** Return the width of a specific character in pixels. */
-	int getCharWidth(uint32 ch) const;
+	int getCharWidth(uint32_t ch) const;
 
 	/** Draw a specific character onto a BGRA surface. */
-	void drawCharacter(uint32 ch, Surface &surface, int x, int y);
+	void drawCharacter(uint32_t ch, Surface &surface, int x, int y);
 
 private:
 	FT_Library _library;

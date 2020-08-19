@@ -93,7 +93,7 @@ Common::UString Creature::getBodyTextureString(KotORBase::Gender gender, KotORBa
 	return body;
 }
 
-Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId) {
+Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32_t faceId) {
 	Common::UString head("p");
 
 	switch (gender) {
@@ -126,7 +126,7 @@ Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase:
 			throw Common::Exception("Invalid skin");
 	}
 
-	uint32 transformedFaceId = transformFaceId(gender, skin, faceId);
+	uint32_t transformedFaceId = transformFaceId(gender, skin, faceId);
 
 	if (transformedFaceId >= 10)
 		head += Common::composeString(transformedFaceId);
@@ -136,7 +136,7 @@ Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase:
 	return head;
 }
 
-void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
+void Creature::getPartModelsPC(PartModels &parts, uint32_t state, uint8_t textureVariation) {
 	KotORBase::Class charClass = getClassByPosition(0);
 	parts.body = getBodyMeshString(_gender, charClass, state);
 	parts.bodyTexture = getBodyTextureString(_gender, _skin, charClass, state);
@@ -149,7 +149,7 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 	loadMovementRate("PLAYER");
 }
 
-uint32 Creature::transformFaceId(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId) {
+uint32_t Creature::transformFaceId(KotORBase::Gender gender, KotORBase::Skin skin, uint32_t faceId) {
 	switch (skin) {
 		case KotORBase::kSkinA:
 			switch (faceId) {

@@ -29,7 +29,7 @@
 
 namespace Aurora {
 
-const char *findGDAHeader(uint32 hash);
+const char *findGDAHeader(uint32_t hash);
 
 } // End of namespace Aurora
 

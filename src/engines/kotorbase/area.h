@@ -98,13 +98,13 @@ public:
 
 	// Music/Sound
 
-	uint32 getMusicDayTrack   () const; ///< Return the music track ID playing by day.
-	uint32 getMusicNightTrack () const; ///< Return the music track ID playing by night.
-	uint32 getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
+	uint32_t getMusicDayTrack   () const; ///< Return the music track ID playing by day.
+	uint32_t getMusicNightTrack () const; ///< Return the music track ID playing by night.
+	uint32_t getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
 
-	void setMusicDayTrack   (uint32 track); ///< Set the music track ID playing by day.
-	void setMusicNightTrack (uint32 track); ///< Set the music track ID playing by night.
-	void setMusicBattleTrack(uint32 track); ///< Set the music track ID playing in battle.
+	void setMusicDayTrack   (uint32_t track); ///< Set the music track ID playing by day.
+	void setMusicNightTrack (uint32_t track); ///< Set the music track ID playing by night.
+	void setMusicBattleTrack(uint32_t track); ///< Set the music track ID playing in battle.
 
 	void stopSound();        ///< Stop all sounds.
 	void stopAmbientMusic(); ///< Stop the ambient music.
@@ -185,7 +185,7 @@ private:
 	typedef Common::PtrList<Room> RoomList;
 
 	typedef Common::PtrList<Object> ObjectList;
-	typedef std::map<uint32, Object *> ObjectMap;
+	typedef std::map<uint32_t, Object *> ObjectMap;
 
 	std::unique_ptr<Aurora::GFF3File> _are;
 
@@ -197,9 +197,9 @@ private:
 	Common::UString _ambientDay;   ///< Ambient sound that plays by day.
 	Common::UString _ambientNight; ///< Ambient sound that plays by night.
 
-	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
-	uint32 _musicNightTrack;  ///< Music track ID that plays by night.
-	uint32 _musicBattleTrack; ///< Music track ID that plays in battle.
+	uint32_t _musicDayTrack;    ///< Music track ID that plays by day.
+	uint32_t _musicNightTrack;  ///< Music track ID that plays by night.
+	uint32_t _musicBattleTrack; ///< Music track ID that plays in battle.
 
 	Common::UString _musicDay;    ///< Music that plays by day.
 	Common::UString _musicNight;  ///< Music that plays by night.
@@ -262,7 +262,7 @@ private:
 	void loadARE(const Aurora::GFF3Struct &are);
 	void loadGIT(const Aurora::GFF3Struct &git);
 
-	void loadCameraStyle(uint32 id);
+	void loadCameraStyle(uint32_t id);
 
 	void loadRooms();
 

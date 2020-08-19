@@ -44,7 +44,7 @@ public:
 	LocalAStar(LocalPathfinding *localPathfinding);
 	~LocalAStar();
 
-	float getGValue(Node &previousNode, uint32 face, float &x, float &y) const;
+	float getGValue(Node &previousNode, uint32_t face, float &x, float &y) const;
 };
 
 class LocalPathfinding : public Pathfinding {
@@ -61,39 +61,39 @@ public:
 	void addStaticObjects(ObjectWalkmesh *objectWalkmesh);
 
 protected:
-	uint32 findFace(float x, float y, bool onlyWalkable);
+	uint32_t findFace(float x, float y, bool onlyWalkable);
 	/** Get the 6 walkable adjacent faces. */
-	void getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint32> &adjFaces,
+	void getAdjacentFaces(uint32_t face, uint32_t parent, std::vector<uint32_t> &adjFaces,
 	                      bool onlyWalkable = true) const;
-	void getFacePosition(uint32 face, float &x, float &y) const;
+	void getFacePosition(uint32_t face, float &x, float &y) const;
 	void rasterizeTriangle(std::vector<glm::vec3> &vertices, float halfWidth = 0.f);
-	void addObjects(const std::vector<float> &vertices, const std::vector<uint32> &faces,
+	void addObjects(const std::vector<float> &vertices, const std::vector<uint32_t> &faces,
 	                float halfWidth = 0.f);
 	/** Get the vertices along a path of faces. */
-	virtual void getVerticesTunnel(std::vector<uint32> &facePath, std::vector<glm::vec3> &tunnel,
+	virtual void getVerticesTunnel(std::vector<uint32_t> &facePath, std::vector<glm::vec3> &tunnel,
 	                               std::vector<bool> &tunnelLeftRight);
 
 private:
-	bool getSharedVertices(uint32 face1, uint32 face2, std::vector<glm::vec3> &verts,
+	bool getSharedVertices(uint32_t face1, uint32_t face2, std::vector<glm::vec3> &verts,
 	                       std::vector<bool> &leftRight) const;
 	glm::vec3 toVirtualPlan(const glm::vec3 &vector) const;
 	glm::vec2 toVirtualPlan(const glm::vec2 &vector) const;
 	glm::vec3 fromVirtualPlan(const glm::vec3 &vector) const;
 	glm::vec2 fromVirtualPlan(const glm::vec2 &vector) const;
 
-	uint32 closestWalkableFace(uint32 face, uint32 &second) const;
-	uint32 getDiagonalFace(uint32 face, uint32 direction) const;
-	uint32 orthogonalJump(uint32 startFace, uint32 jumpDir) const;
-	uint32 diagonalJump(uint32 startFace, uint32 jumpDir) const;
+	uint32_t closestWalkableFace(uint32_t face, uint32_t &second) const;
+	uint32_t getDiagonalFace(uint32_t face, uint32_t direction) const;
+	uint32_t orthogonalJump(uint32_t startFace, uint32_t jumpDir) const;
+	uint32_t diagonalJump(uint32_t startFace, uint32_t jumpDir) const;
 	Pathfinding *_globalPathfinding;
 
 	Common::PtrList<ObjectWalkmesh> _staticObjects;
 
 	glm::vec3 _trueMin;
 	glm::vec3 _trueMax;
-	uint32 _gridWidth;
-	uint32 _gridHeight;
-	uint32 _endFace;
+	uint32_t _gridWidth;
+	uint32_t _gridHeight;
+	uint32_t _endFace;
 	float  _cellSize;
 	float  _xCenter;
 	float  _yCenter;

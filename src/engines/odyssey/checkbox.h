@@ -68,7 +68,7 @@ public:
 
 	void enter();
 	void leave();
-	void mouseUp(uint8 state, float x, float y);
+	void mouseUp(uint8_t state, float x, float y);
 
 private:
 	Common::UString _selected;

@@ -38,11 +38,11 @@ ShaderInstance::ShaderInstance(Shader::ShaderObject *fragShader, Shader::ShaderO
 	if (program) {
 		_sourceProgram = program;
 		_sourceProgram->usageCount++;
-		for (uint32 i = 0; i < program->vertexObject->variablesCombined.size(); ++i)
+		for (uint32_t i = 0; i < program->vertexObject->variablesCombined.size(); ++i)
 			_vertexVariableData.push_back(0);
 		_vertexVariableData.resize(_vertexVariableData.size());
 
-		for (uint32 i = 0; i < program->fragmentObject->variablesCombined.size(); ++i)
+		for (uint32_t i = 0; i < program->fragmentObject->variablesCombined.size(); ++i)
 			_fragmentVariableData.push_back(0);
 		_fragmentVariableData.resize(_fragmentVariableData.size());
 	}
@@ -60,12 +60,12 @@ ShaderInstance::ShaderInstance(const std::string &vertName, const std::string &f
 	if (program) {
 		_sourceProgram = program;
 		_sourceProgram->usageCount++;
-		for (uint32 i = 0; i < program->vertexObject->variablesCombined.size(); ++i) {
+		for (uint32_t i = 0; i < program->vertexObject->variablesCombined.size(); ++i) {
 			_vertexVariableData.push_back(0);
 		}
 		_vertexVariableData.resize(_vertexVariableData.size());
 
-		for (uint32 i = 0; i < program->fragmentObject->variablesCombined.size(); ++i) {
+		for (uint32_t i = 0; i < program->fragmentObject->variablesCombined.size(); ++i) {
 			_fragmentVariableData.push_back(0);
 		}
 		_fragmentVariableData.resize(_fragmentVariableData.size());
@@ -77,7 +77,7 @@ ShaderInstance::~ShaderInstance() {
 }
 
 void ShaderInstance::setVertexVariable(const std::string &name, const void *location) {
-	for (uint32 i = 0; i < _sourceProgram->vertexObject->variablesCombined.size(); ++i) {
+	for (uint32_t i = 0; i < _sourceProgram->vertexObject->variablesCombined.size(); ++i) {
 		if (_sourceProgram->vertexObject->variablesCombined[i].name == name) {
 			_vertexVariableData[i] = location;
 			break;
@@ -86,7 +86,7 @@ void ShaderInstance::setVertexVariable(const std::string &name, const void *loca
 }
 
 void ShaderInstance::setFragmentVariable(const std::string &name, const void *location) {
-	for (uint32 i = 0; i < _sourceProgram->fragmentObject->variablesCombined.size(); ++i) {
+	for (uint32_t i = 0; i < _sourceProgram->fragmentObject->variablesCombined.size(); ++i) {
 		if (_sourceProgram->fragmentObject->variablesCombined[i].name == name) {
 			_fragmentVariableData[i] = location;
 			break;
@@ -102,11 +102,11 @@ void ShaderInstance::unbind() {
 	glUseProgram(0);
 }
 
-void ShaderInstance::rebindVertexVariable(uint32 index) {
+void ShaderInstance::rebindVertexVariable(uint32_t index) {
 	ShaderMan.bindShaderVariable(_sourceProgram->vertexObject->variablesCombined[index], _sourceProgram->vertexVariableLocations[index], _vertexVariableData[index]);
 }
 
-void ShaderInstance::rebindFragmentVariable(uint32 index) {
+void ShaderInstance::rebindFragmentVariable(uint32_t index) {
 	ShaderMan.bindShaderVariable(_sourceProgram->fragmentObject->variablesCombined[index], _sourceProgram->fragmentVariableLocations[index], _fragmentVariableData[index]);
 }
 

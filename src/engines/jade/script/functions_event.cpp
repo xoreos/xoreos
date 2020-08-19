@@ -41,7 +41,7 @@ namespace Engines {
 namespace Jade {
 
 void Functions::eventUserDefined(Aurora::NWScript::FunctionContext &ctx) {
-	int32 eventNumber = ctx.getParams()[0].getInt();
+	int32_t eventNumber = ctx.getParams()[0].getInt();
 
 	ctx.getReturn() = Event(kScriptOnUserdefined, eventNumber);
 }
@@ -60,7 +60,7 @@ void Functions::signalEvent(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) 0;
+	ctx.getReturn() = (int32_t) 0;
 
 	Object *object = Jade::ObjectContainer::toObject(ctx.getCaller());
 
@@ -79,7 +79,7 @@ void Functions::setUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx
 		return;
 
 	Object *object = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));
-	int32 eventNumber = ctx.getParams()[1].getInt();
+	int32_t eventNumber = ctx.getParams()[1].getInt();
 
 	env->setVariable("EVENT_USER_DEFINED_" + object->getTag(), eventNumber);
 }

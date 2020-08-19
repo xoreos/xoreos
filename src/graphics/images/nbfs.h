@@ -36,14 +36,14 @@ namespace Graphics {
 class NBFS : public ImageDecoder {
 public:
 	/** NBFS are raw paletted images and need a palette, width and height. */
-	NBFS(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nbfp, uint32 width, uint32 height);
+	NBFS(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nbfp, uint32_t width, uint32_t height);
 	~NBFS();
 
 private:
-	void load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nbfp, uint32 width, uint32 height);
+	void load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nbfp, uint32_t width, uint32_t height);
 
 	const byte *readPalette(Common::SeekableReadStream &nbfp);
-	void readImage(Common::SeekableReadStream &nbfs, const byte *palette, uint32 width, uint32 height);
+	void readImage(Common::SeekableReadStream &nbfs, const byte *palette, uint32_t width, uint32_t height);
 };
 
 } // End of namespace Graphics

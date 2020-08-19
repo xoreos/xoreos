@@ -51,9 +51,9 @@ public:
 	Menu(KotORBase::Module &module, ::Engines::Console *console = 0);
 
 	/** Set the return string ref. */
-	void setReturnStrref(uint32);
+	void setReturnStrref(uint32_t);
 	/** Set the return query string ref. */
-	void setReturnQueryStrref(uint32);
+	void setReturnQueryStrref(uint32_t);
 	/** Set the return button enabled/disabled. */
 	void setReturnEnabled(bool);
 

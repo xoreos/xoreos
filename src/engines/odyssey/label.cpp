@@ -49,7 +49,7 @@ void WidgetLabel::leave() {
 	_hovered = false;
 }
 
-void WidgetLabel::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetLabel::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	setActive(true);
 }
 

@@ -73,9 +73,9 @@ private:
 		Common::UString name; ///< Name of the wave resource.
 		Common::UString type; ///< Type of the wave resource.
 
-		uint32 samplingRate; ///< Sampling frequency in Hz.
-		uint8  channels;     ///< Number of channels.
-		uint8  bitRate;      ///< Number of bits per sample.
+		uint32_t samplingRate; ///< Sampling frequency in Hz.
+		uint8_t  channels;     ///< Number of channels.
+		uint8_t  bitRate;      ///< Number of bits per sample.
 
 		size_t size; ///< Size of the wave in bytes.
 

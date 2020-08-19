@@ -86,17 +86,17 @@ void CharGenChoices::applyChoices() {
 
 	// Set skills
 	size_t skillID = 0;
-	for (std::vector<uint8>::iterator s = _skills.begin(); s != _skills.end(); ++s, ++skillID)
+	for (std::vector<uint8_t>::iterator s = _skills.begin(); s != _skills.end(); ++s, ++skillID)
 		_creature->setSkillRank(skillID, *s);
 
 	// Set feats
-	for (std::vector<uint32>::iterator f = _classFeats.begin(); f != _classFeats.end(); ++f)
+	for (std::vector<uint32_t>::iterator f = _classFeats.begin(); f != _classFeats.end(); ++f)
 		_creature->setFeat(*f);
 
-	for (std::vector<uint32>::iterator f = _racialFeats.begin(); f != _racialFeats.end(); ++f)
+	for (std::vector<uint32_t>::iterator f = _racialFeats.begin(); f != _racialFeats.end(); ++f)
 		_creature->setFeat(*f);
 
-	for (std::vector<uint32>::iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
+	for (std::vector<uint32_t>::iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		_creature->setFeat(*f);
 
 	// Set domains if any.
@@ -166,7 +166,7 @@ void CharGenChoices::setGender(Gender gender) {
 	_creature->setGender(gender);
 }
 
-void CharGenChoices::setRace(uint32 race) {
+void CharGenChoices::setRace(uint32_t race) {
 	if (race == kRaceInvalid) {
 		warning("Setting invalid race: %d", race);
 		return;
@@ -190,7 +190,7 @@ void CharGenChoices::setPortrait(const Common::UString &portrait) {
 	_creature->setPortrait(portrait);
 }
 
-void CharGenChoices::setClass(uint32 classId) {
+void CharGenChoices::setClass(uint32_t classId) {
 	_classId = classId;
 
 	// Add granted class feats.
@@ -210,13 +210,13 @@ void CharGenChoices::setClass(uint32 classId) {
 	}
 }
 
-void CharGenChoices::setAlign(uint8 goodness, uint8 lawfulness) {
+void CharGenChoices::setAlign(uint8_t goodness, uint8_t lawfulness) {
 	_goodness   = goodness;
 	_lawfulness = lawfulness;
 }
 
-void CharGenChoices::setAbilities(std::vector<uint8> abilities,
-                                  std::vector<uint8> racialAbilities) {
+void CharGenChoices::setAbilities(std::vector<uint8_t> abilities,
+                                  std::vector<uint8_t> racialAbilities) {
 
 	_abilities = abilities;
 	_racialAbilities = racialAbilities;
@@ -226,7 +226,7 @@ void CharGenChoices::setAbilities(std::vector<uint8> abilities,
 	_abilities[3] = abilities[4];
 }
 
-void CharGenChoices::setPackage(uint8 package) {
+void CharGenChoices::setPackage(uint8_t package) {
 	_package = package;
 
 	if (_package == UINT8_MAX)
@@ -240,13 +240,13 @@ void CharGenChoices::setPackage(uint8 package) {
 		getPrefSkills(_skills);
 
 		// Set Feats
-		std::vector<uint32> packFeats;
+		std::vector<uint32_t> packFeats;
 		getPrefFeats(packFeats);
 		std::list<FeatItem> availFeats;
-		uint8 normalFeats, bonusFeats;
+		uint8_t normalFeats, bonusFeats;
 		getFeatItems(availFeats, normalFeats, bonusFeats);
 		while (normalFeats + bonusFeats != 0) {
-			for (std::vector<uint32>::iterator pF = packFeats.begin(); pF != packFeats.end(); ++pF) {
+			for (std::vector<uint32_t>::iterator pF = packFeats.begin(); pF != packFeats.end(); ++pF) {
 				if (normalFeats + bonusFeats == 0)
 					break;
 				for (std::list<FeatItem>::iterator aF = availFeats.begin(); aF != availFeats.end(); ++aF) {
@@ -295,35 +295,35 @@ void CharGenChoices::setPackage(uint8 package) {
 	}
 }
 
-void CharGenChoices::setSkill(size_t skillIndex, uint8 rank) {
+void CharGenChoices::setSkill(size_t skillIndex, uint8_t rank) {
 	_skills[skillIndex] = rank;
 }
 
-void CharGenChoices::setNotUsedSkills(uint8 notUsedSkills) {
+void CharGenChoices::setNotUsedSkills(uint8_t notUsedSkills) {
 	_notUsedSkills = notUsedSkills;
 }
 
-void CharGenChoices::setFeat(uint32 feat) {
+void CharGenChoices::setFeat(uint32_t feat) {
 	_normalFeats.push_back(feat);
 }
 
-void CharGenChoices::setSpellSchool(uint8 spellSchool) {
+void CharGenChoices::setSpellSchool(uint8_t spellSchool) {
 	_spellSchool = spellSchool;
 }
 
-void CharGenChoices::setDomains(uint8 domain1, uint8 domain2) {
+void CharGenChoices::setDomains(uint8_t domain1, uint8_t domain2) {
 	_domain1 = domain1;
 	_domain2 = domain2;
 }
 
-void CharGenChoices::setSpell(size_t spellLevel, uint16 spell) {
+void CharGenChoices::setSpell(size_t spellLevel, uint16_t spell) {
 	if (_spells.size() < spellLevel + 1)
 		_spells.resize(spellLevel + 1);
 
 	_spells[spellLevel].push_back(spell);
 }
 
-void CharGenChoices::setSoundSet(uint32 soundSetID) {
+void CharGenChoices::setSoundSet(uint32_t soundSetID) {
 	_soundSet = soundSetID;
 }
 
@@ -332,23 +332,23 @@ void CharGenChoices::useCharacter(Module *module) {
 	_characterUsed = true;
 }
 
-bool CharGenChoices::hasFeat(uint32 featId) const {
-	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
+bool CharGenChoices::hasFeat(uint32_t featId) const {
+	for (std::vector<uint32_t>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		if (*f == featId)
 			return true;
 
-	for (std::vector<uint32>::const_iterator f = _racialFeats.begin(); f != _racialFeats.end(); ++f)
+	for (std::vector<uint32_t>::const_iterator f = _racialFeats.begin(); f != _racialFeats.end(); ++f)
 		if (*f == featId)
 			return true;
 
-	for (std::vector<uint32>::const_iterator f = _classFeats.begin(); f != _classFeats.end(); ++f)
+	for (std::vector<uint32_t>::const_iterator f = _classFeats.begin(); f != _classFeats.end(); ++f)
 		if (*f == featId)
 			return true;
 
 	return _creature->hasFeat(featId);
 }
 
-bool CharGenChoices::hasPrereqFeat(uint32 featId, bool isClassFeat) {
+bool CharGenChoices::hasPrereqFeat(uint32_t featId, bool isClassFeat) {
 	const Aurora::TwoDAFile &twodaFeats = TwoDAReg.get2DA("feat");
 	const Aurora::TwoDARow  &row        = twodaFeats.getRow(featId);
 
@@ -360,17 +360,17 @@ bool CharGenChoices::hasPrereqFeat(uint32 featId, bool isClassFeat) {
 		return false;
 
 	// Check abilities.
-	if ((uint32) row.getInt("MINSTR") > getAbility(kAbilityStrength))
+	if ((uint32_t) row.getInt("MINSTR") > getAbility(kAbilityStrength))
 		return false;
-	if ((uint32) row.getInt("MINDEX") > getAbility(kAbilityDexterity))
+	if ((uint32_t) row.getInt("MINDEX") > getAbility(kAbilityDexterity))
 		return false;
-	if ((uint32) row.getInt("MININT") > getAbility(kAbilityIntelligence))
+	if ((uint32_t) row.getInt("MININT") > getAbility(kAbilityIntelligence))
 		return false;
-	if ((uint32) row.getInt("MINWIS") > getAbility(kAbilityWisdom))
+	if ((uint32_t) row.getInt("MINWIS") > getAbility(kAbilityWisdom))
 		return false;
-	if ((uint32) row.getInt("MINCHA") > getAbility(kAbilityCharisma))
+	if ((uint32_t) row.getInt("MINCHA") > getAbility(kAbilityCharisma))
 		return false;
-	if ((uint32) row.getInt("MINCON") > getAbility(kAbilityConstitution))
+	if ((uint32_t) row.getInt("MINCON") > getAbility(kAbilityConstitution))
 		return false;
 
 	// Check if the character has the prerequisite feats.
@@ -434,15 +434,15 @@ bool CharGenChoices::hasPrereqFeat(uint32 featId, bool isClassFeat) {
 	return true;
 }
 
-uint32 CharGenChoices::getClass() const {
+uint32_t CharGenChoices::getClass() const {
 	return _classId;
 }
 
-uint32 CharGenChoices::getRace() const {
+uint32_t CharGenChoices::getRace() const {
 	return _creature->getRace();
 }
 
-bool CharGenChoices::getAlign(uint8 &goodness, uint8 &lawfulness) const {
+bool CharGenChoices::getAlign(uint8_t &goodness, uint8_t &lawfulness) const {
 	// Check if alignment has been previously set.
 	if (_goodness > 100)
 		return false;
@@ -452,45 +452,45 @@ bool CharGenChoices::getAlign(uint8 &goodness, uint8 &lawfulness) const {
 	return true;
 }
 
-uint8 CharGenChoices::getAbility(Ability ability) const {
+uint8_t CharGenChoices::getAbility(Ability ability) const {
 	return _abilities[ability];
 }
 
-uint8 CharGenChoices::getTotalAbility(Ability ability) const {
+uint8_t CharGenChoices::getTotalAbility(Ability ability) const {
 	return _abilities[ability] + _racialAbilities[ability];
 }
 
-int8 CharGenChoices::getAbilityModifier(Ability ability) {
-	uint8 totalAbility = getTotalAbility(ability);
-	int8 modifier = (totalAbility - totalAbility % 2) / 2;
+int8_t CharGenChoices::getAbilityModifier(Ability ability) {
+	uint8_t totalAbility = getTotalAbility(ability);
+	int8_t modifier = (totalAbility - totalAbility % 2) / 2;
 	modifier -= 5;
 	return modifier;
 }
 
-uint8 CharGenChoices::getPackage() const {
+uint8_t CharGenChoices::getPackage() const {
 	return _package;
 }
 
-uint8 CharGenChoices::getSpellSchool() const {
+uint8_t CharGenChoices::getSpellSchool() const {
 	return _spellSchool;
 }
 
-void CharGenChoices::getFeats(std::vector<uint32> &feats) {
+void CharGenChoices::getFeats(std::vector<uint32_t> &feats) {
 	feats = _racialFeats;
 	feats.insert(feats.end(), _classFeats.begin(), _classFeats.end());
 }
 
-uint8 CharGenChoices::getPrefSpellSchool() {
+uint8_t CharGenChoices::getPrefSpellSchool() {
 	const Aurora::TwoDAFile &twodaPackage = TwoDAReg.get2DA("packages");
 	const Aurora::TwoDARow  &row          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
 
 	if (row.empty("School"))
 		return UINT8_MAX;
 
-	return static_cast<uint8>(row.getInt("School"));
+	return static_cast<uint8_t>(row.getInt("School"));
 }
 
-void CharGenChoices::getPrefFeats(std::vector<uint32> &feats) {
+void CharGenChoices::getPrefFeats(std::vector<uint32_t> &feats) {
 	const Aurora::TwoDAFile &twodaPackage    = TwoDAReg.get2DA("packages");
 	const Aurora::TwoDARow  &rowPck          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
 	const Aurora::TwoDAFile &twodaPckFeats   = TwoDAReg.get2DA(rowPck.getString("FeatPref2DA"));
@@ -500,7 +500,7 @@ void CharGenChoices::getPrefFeats(std::vector<uint32> &feats) {
 	while (rowIdx < twodaPckFeats.getRowCount()) {
 		const Aurora::TwoDARow  &rowFeat = twodaPckFeats.getRow(rowIdx);
 		++rowIdx;
-		uint32 featID = rowFeat.getInt("FEATINDEX");
+		uint32_t featID = rowFeat.getInt("FEATINDEX");
 		if (hasFeat(featID))
 			continue;
 
@@ -511,31 +511,31 @@ void CharGenChoices::getPrefFeats(std::vector<uint32> &feats) {
 	}
 }
 
-void CharGenChoices::getPrefSkills(std::vector<uint8> &skills) {
+void CharGenChoices::getPrefSkills(std::vector<uint8_t> &skills) {
 	const Aurora::TwoDAFile &twodaPackage   = TwoDAReg.get2DA("packages");
 	const Aurora::TwoDARow  &rowPck         = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
 	const Aurora::TwoDAFile &twodaPckSkills = TwoDAReg.get2DA(rowPck.getString("SkillPref2DA"));
 
 	skills.clear();
 	for (size_t r = 0; r < twodaPckSkills.getRowCount(); ++r)
-		skills.push_back((uint8) twodaPckSkills.getRow(r).getInt("SKILLINDEX"));
+		skills.push_back((uint8_t) twodaPckSkills.getRow(r).getInt("SKILLINDEX"));
 }
 
-void CharGenChoices::getPrefDomains(uint8 &domain1, uint8 &domain2) {
+void CharGenChoices::getPrefDomains(uint8_t &domain1, uint8_t &domain2) {
 	const Aurora::TwoDAFile &twodaPackage    = TwoDAReg.get2DA("packages");
 	const Aurora::TwoDARow  &rowPck          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
 
-	domain1 = (uint8) rowPck.getInt("Domain1");
-	domain2 = (uint8) rowPck.getInt("Domain2");
+	domain1 = (uint8_t) rowPck.getInt("Domain1");
+	domain2 = (uint8_t) rowPck.getInt("Domain2");
 }
 
-void CharGenChoices::getPrefSpells(std::vector<std::vector<uint16> > &spells) {
+void CharGenChoices::getPrefSpells(std::vector<std::vector<uint16_t> > &spells) {
 	const Aurora::TwoDAFile &twodaSpells     = TwoDAReg.get2DA("spells");
 	const Aurora::TwoDAFile &twodaPackage    = TwoDAReg.get2DA("packages");
 	const Aurora::TwoDARow  &rowPck          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
 	const Aurora::TwoDAFile &twodaPckSpells  = TwoDAReg.get2DA(rowPck.getString("SpellPref2DA"));
 
-	std::map<uint32, Common::UString> spellCasterClass;
+	std::map<uint32_t, Common::UString> spellCasterClass;
 	spellCasterClass[1]  =     "Bard";
 	spellCasterClass[2]  =   "Cleric";
 	spellCasterClass[3]  =    "Druid";
@@ -546,7 +546,7 @@ void CharGenChoices::getPrefSpells(std::vector<std::vector<uint16> > &spells) {
 
 	spells.clear();
 	for (size_t r = 0; r < twodaPckSpells.getRowCount(); ++r) {
-		uint16 spellIndex = twodaPckSpells.getRow(r).getInt("SpellIndex");
+		uint16_t spellIndex = twodaPckSpells.getRow(r).getInt("SpellIndex");
 		const Aurora::TwoDARow  &rowSpell = twodaSpells.getRow(spellIndex);
 
 		size_t spellLevel = rowSpell.getInt(spellCasterClass[_classId]);
@@ -557,14 +557,14 @@ void CharGenChoices::getPrefSpells(std::vector<std::vector<uint16> > &spells) {
 	}
 }
 
-uint8 CharGenChoices::computeAvailSkillRank() {
-	int8 availRank = getAbilityModifier(kAbilityIntelligence);
+uint8_t CharGenChoices::computeAvailSkillRank() {
+	int8_t availRank = getAbilityModifier(kAbilityIntelligence);
 	if (availRank < 0)
 		availRank = 0;
 
 	const Aurora::TwoDAFile &twodaPackage = TwoDAReg.get2DA("classes");
 	const Aurora::TwoDARow  &rowClass       = twodaPackage.getRow(_classId);
-	availRank += (int8) rowClass.getInt("SkillPointBase");
+	availRank += (int8_t) rowClass.getInt("SkillPointBase");
 
 	// If human (have Quick to master feat), add an extra point.
 	if (hasFeat(258))
@@ -573,7 +573,7 @@ uint8 CharGenChoices::computeAvailSkillRank() {
 	if (_creature->getHitDice() == 0)
 		availRank *= 4;
 
-	return (uint8) availRank;
+	return (uint8_t) availRank;
 }
 
 void CharGenChoices::getSkillItems(std::vector<SkillItem> &skills) {
@@ -596,7 +596,7 @@ void CharGenChoices::getSkillItems(std::vector<SkillItem> &skills) {
 
 		bool classSkill = skillsClassRow.getInt("ClassSkill") != 0;
 
-		uint8 maxRank = 4 + _creature->getHitDice();
+		uint8_t maxRank = 4 + _creature->getHitDice();
 
 		if (classSkill) {
 			// Add information about wether it is a skill class.
@@ -619,8 +619,8 @@ void CharGenChoices::getSkillItems(std::vector<SkillItem> &skills) {
 	}
 }
 
-void CharGenChoices::getFeatItems(std::list<FeatItem> &feats, uint8 &normalFeats, uint8 &bonusFeats) {
-	uint8 level = _creature->getHitDice();
+void CharGenChoices::getFeatItems(std::list<FeatItem> &feats, uint8_t &normalFeats, uint8_t &bonusFeats) {
+	uint8_t level = _creature->getHitDice();
 	normalFeats = 0;
 	bonusFeats  = 0;
 
@@ -673,7 +673,7 @@ void CharGenChoices::getFeatItems(std::list<FeatItem> &feats, uint8 &normalFeats
 	for (size_t it = 0; it < twodaClsFeat.getRowCount(); ++it) {
 		const Aurora::TwoDARow &clsFeatRow = twodaClsFeat.getRow(it);
 
-		int32 list = clsFeatRow.getInt("List");
+		int32_t list = clsFeatRow.getInt("List");
 		// Check if it is automatically granted.
 		if (list == 3)
 			continue;
@@ -682,7 +682,7 @@ void CharGenChoices::getFeatItems(std::list<FeatItem> &feats, uint8 &normalFeats
 			continue;
 
 		// When list=1, the feat can be both in the general and bonus feat list.
-		uint32 id = clsFeatRow.getInt("FeatIndex");
+		uint32_t id = clsFeatRow.getInt("FeatIndex");
 		if (list == 1) {
 			for (std::list<FeatItem>::iterator f = feats.begin(); f != feats.end(); ++f) {
 				if (id != (*f).featId)

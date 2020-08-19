@@ -76,7 +76,7 @@ template<typename T> inline T CLIP (T v, T amin, T amax)
 template<typename T> inline bool ISPOWER2(T x) { return x && !(x & (x - 1)); }
 
 /** Round up to the next power of 2. */
-static inline uint32 NEXTPOWER2(uint32 x) {
+static inline uint32_t NEXTPOWER2(uint32_t x) {
 	if (x == 0)
 		return 1;
 
@@ -88,7 +88,7 @@ static inline uint32 NEXTPOWER2(uint32 x) {
 }
 
 /** Round up to the next power of 2. */
-static inline uint64 NEXTPOWER2(uint64 x) {
+static inline uint64_t NEXTPOWER2(uint64_t x) {
 	if (x == 0)
 		return 1;
 
@@ -163,35 +163,35 @@ void info(const char *s, ...) GCC_PRINTF(1, 2);
  */
 [[noreturn]] void error(const char *s, ...) GCC_PRINTF(1, 2);
 
-/** Convert a uint32 holding the bit pattern of a 32-bit IEEE 754 single
+/** Convert a uint32_t holding the bit pattern of a 32-bit IEEE 754 single
  *  precision floating point value into a real, native float.
  *
  *  NOTE: Currently, this function assumes native floats are 32-bit IEEE
  *  754 single precision floating point values!
  */
-float convertIEEEFloat(uint32 data);
-/** Convert a uint64 holding the bit pattern of a 64-bit IEEE 754 double
+float convertIEEEFloat(uint32_t data);
+/** Convert a uint64_t holding the bit pattern of a 64-bit IEEE 754 double
  *  precision floating point value into a real, native double.
  *
  *  NOTE: Currently, this function assumes native doubles are 64-bit IEEE
  *  754 double precision floating point values!
  */
-double convertIEEEDouble(uint64 data);
+double convertIEEEDouble(uint64_t data);
 
-/** Convert a native float into a uint32 holding the bit pattern a 32-bit
+/** Convert a native float into a uint32_t holding the bit pattern a 32-bit
  *  IEEE 754 single precision floating point value.
  *
  *  NOTE: Currently, this function assumes native floats are 32-bit IEEE
  *  754 single precision floating point values!
  */
-uint32 convertIEEEFloat(float value);
-/** Convert a native double into a uint64 holding the bit pattern a 64-bit
+uint32_t convertIEEEFloat(float value);
+/** Convert a native double into a uint64_t holding the bit pattern a 64-bit
  *  IEEE 754 double precision floating point value.
  *
  *  NOTE: Currently, this function assumes native doubles are 64-bit IEEE
  *  754 double precision floating point values!
  */
-uint64 convertIEEEDouble(double value);
+uint64_t convertIEEEDouble(double value);
 
 /** Read a fixed-point value, in a format used by the Nintendo DS.
  *
@@ -201,9 +201,9 @@ uint64 convertIEEEDouble(double value);
  *  @param  fBits Number of bits in the fractional part.
  *  @return A floating-point representation of the fixed-point value.
  */
-double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits);
+double readNintendoFixedPoint(uint32_t value, bool sign, uint8_t iBits, uint8_t fBits);
 
 /** Read a half-precision 16-bit IEEE float, converting it into a 32-bit iEEE float. */
-float readIEEEFloat16(uint16 value);
+float readIEEEFloat16(uint16_t value);
 
 #endif // COMMON_UTIL_H

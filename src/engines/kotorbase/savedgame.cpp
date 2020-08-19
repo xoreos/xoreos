@@ -131,7 +131,7 @@ const Common::UString &SavedGame::getModuleName() const {
 	return _moduleName;
 }
 
-uint32 SavedGame::getTimePlayed() const {
+uint32_t SavedGame::getTimePlayed() const {
 	return _timePlayed;
 }
 

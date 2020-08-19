@@ -29,7 +29,7 @@
 
 namespace Aurora {
 
-static const uint32 kRGMHID = MKTAG('R', 'G', 'M', 'H');
+static const uint32_t kRGMHID = MKTAG('R', 'G', 'M', 'H');
 
 TheWitcherSaveWriter::TheWitcherSaveWriter(const Common::UString &areaName, Common::SeekableWriteStream &stream) :
 		_stream(stream), _finished(false) {

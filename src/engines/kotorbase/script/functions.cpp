@@ -72,11 +72,11 @@ void Functions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 	target->runScript(script, target, ctx.getCaller());
 }
 
-int32 Functions::getRandom(int min, int max, int32 n) {
+int32_t Functions::getRandom(int min, int max, int32_t n) {
 	if (n < 1)
 		n = 1;
 
-	int32 r = 0;
+	int32_t r = 0;
 
 	while (n-- > 0)
 		r += RNG.getNext(min, max + 1);

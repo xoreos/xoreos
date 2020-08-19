@@ -44,18 +44,18 @@ public:
 	~Store();
 
 	/** Get the charge for identifying an item. */
-	int32 getStoreIdentifyCost() const;
+	int32_t getStoreIdentifyCost() const;
 	/** Get the amount of gold the store has. */
-	int32 getStoreGold() const;
+	int32_t getStoreGold() const;
 	/** Get the maximum amount the store will pay for an item. */
-	int32 getStoreMaximumBuyPrice() const;
+	int32_t getStoreMaximumBuyPrice() const;
 
 	/** Set the charge for identifying an item. */
-	void setStoreIdentifyCost(int32 identify);
+	void setStoreIdentifyCost(int32_t identify);
 	/** Set the amount of gold the store has. */
-	void setStoreGold(int32 gold);
+	void setStoreGold(int32_t gold);
 	/** Set the maximum amount the store will pay for an item. */
-	void setStoreMaximumBuyPrice(int32 max);
+	void setStoreMaximumBuyPrice(int32_t max);
 
 	/** Get first item in inventory array. */
 	Item *getFirstItemInInventory();
@@ -63,9 +63,9 @@ public:
 	Item *getNextItemInInventory();
 
 private:
-	typedef std::vector<uint8> BaseItemTypes;
+	typedef std::vector<uint8_t> BaseItemTypes;
 
-	typedef uint32 InventoryType;
+	typedef uint32_t InventoryType;
 
 	static const InventoryType kInventoryTypes = 5; ///< Number of store tabs.
 
@@ -78,13 +78,13 @@ private:
 	BaseItemTypes _willNotBuy;  ///< Base item types the store will not buy.
 	BaseItemTypes _willOnlyBuy; ///< Base item types the store will only buy.
 
-	int32  _identifyPrice; ///< Charge for identifying items.
-	int32  _storeGold;     ///< How many gp the store has available.
-	int32  _maxBuyPrice;   ///< The maximum amount this store will pay for an item.
-	uint16 _markUp;        ///< Percentage markup on items for sale from store.
-	uint16 _markDown;      ///< Percentage markdown on store purchases of items.
-	uint16 _bmMarkDown;    ///< Percentage markdown on store purchases of stolen items.
-	bool   _blackMarket;   ///< Whether store will purchase stolen goods.
+	int32_t  _identifyPrice; ///< Charge for identifying items.
+	int32_t  _storeGold;     ///< How many gp the store has available.
+	int32_t  _maxBuyPrice;   ///< The maximum amount this store will pay for an item.
+	uint16_t _markUp;        ///< Percentage markup on items for sale from store.
+	uint16_t _markDown;      ///< Percentage markdown on store purchases of items.
+	uint16_t _bmMarkDown;    ///< Percentage markdown on store purchases of stolen items.
+	bool   _blackMarket;     ///< Whether store will purchase stolen goods.
 
 	/** Load from a store instance. */
 	void load(const Aurora::GFF3Struct &store);

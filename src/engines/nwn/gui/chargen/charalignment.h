@@ -54,8 +54,8 @@ protected:
 private:
 	std::unique_ptr<ButtonsGroup> _buttons;
 
-	uint8 _goodness;
-	uint8 _lawfulness;
+	uint8_t _goodness;
+	uint8_t _lawfulness;
 };
 
 } // End of namespace NWN

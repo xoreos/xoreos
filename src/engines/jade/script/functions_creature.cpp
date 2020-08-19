@@ -39,7 +39,7 @@ namespace Jade {
 void Functions::getAutoBalance(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = Jade::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) creature->getAutoBalance() : 0;
+	ctx.getReturn() = creature ? (int32_t) creature->getAutoBalance() : 0;
 }
 
 } // End of namespace Jade

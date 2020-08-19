@@ -76,7 +76,7 @@ private:
 
 	bool _firstTime;
 
-	uint32 _lastRotateTime;
+	uint32_t _lastRotateTime;
 	float  _rotation;
 
 	ListID _list;

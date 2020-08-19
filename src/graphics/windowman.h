@@ -122,8 +122,8 @@ private:
 	std::recursive_mutex _cursorMutex;    ///< A mutex locked for the cursor.
 	CursorState _cursorState;      ///< What to do with the cursor.
 
-	uint32 windowFlags();
-	void initWindow(uint32 flags);
+	uint32_t windowFlags();
+	void initWindow(uint32_t flags);
 	void deinitWindow();
 
 	void probeFSAA();

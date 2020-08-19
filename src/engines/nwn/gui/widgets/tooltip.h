@@ -80,12 +80,12 @@ public:
 	 *                 will not be automatically hidden at all. To hide it,
 	 *                 hide() has to be called.
 	 */
-	void show(uint32 delay, uint32 timeOut = 0);
+	void show(uint32_t delay, uint32_t timeOut = 0);
 	/** Hide the tooltip again. */
 	void hide();
 
 	/** Returns the configured default delay, in ms, before a tooltip appears. */
-	static uint32 getDefaultDelay();
+	static uint32_t getDefaultDelay();
 
 
 protected:
@@ -152,8 +152,8 @@ private:
 	bool createTexts(float width, size_t maxLines = 0);
 	void deleteTexts();
 
-	uint32 doShow(uint32 oldInterval);
-	uint32 doHide(uint32 oldInterval);
+	uint32_t doShow(uint32_t oldInterval);
+	uint32_t doHide(uint32_t oldInterval);
 
 	void doShow();
 	void doHide();
@@ -163,7 +163,7 @@ private:
 	bool getParentPosition(float &x, float &y, float &z) const;
 
 	static Common::UString getFontName();
-	static Common::UString getBubbleModel(uint32 lines, float width);
+	static Common::UString getBubbleModel(uint32_t lines, float width);
 };
 
 } // End of namespace NWN

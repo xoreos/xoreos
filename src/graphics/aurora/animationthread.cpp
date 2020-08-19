@@ -121,7 +121,7 @@ void AnimationThread::threadMethod() {
 
 			handleFlush();
 
-			uint32 now = EventMan.getTimestamp();
+			uint32_t now = EventMan.getTimestamp();
 			float dt = 0;
 			if (m.second.lastChanged > 0) {
 				dt = (now - m.second.lastChanged) / 1000.0f;
@@ -156,7 +156,7 @@ void AnimationThread::unregisterModelInternal(Model *model) {
 	_models.erase(model->getID());
 }
 
-uint8 AnimationThread::getNumIterationsToSkip(Model *model) const {
+uint8_t AnimationThread::getNumIterationsToSkip(Model *model) const {
 	const float *campos = CameraMan.getPosition();
 
 	float x, y, z;

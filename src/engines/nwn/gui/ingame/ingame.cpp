@@ -60,9 +60,9 @@ IngameGUI::~IngameGUI() {
 	hide();
 }
 
-uint32 IngameGUI::showMain() {
+uint32_t IngameGUI::showMain() {
 	_main->show();
-	uint32 code = _main->run();
+	uint32_t code = _main->run();
 	_main->hide();
 
 	return code;
@@ -132,7 +132,7 @@ void IngameGUI::setPortrait(size_t partyMember, const Common::UString &portrait)
 	_party[partyMember]->setPortrait(portrait);
 }
 
-void IngameGUI::setHealth(size_t partyMember, uint32 current, uint32 max) {
+void IngameGUI::setHealth(size_t partyMember, uint32_t current, uint32_t max) {
 	_party[partyMember]->setHealth(current, max);
 }
 
@@ -160,7 +160,7 @@ void IngameGUI::setPoisoned(size_t partyMember) {
 void IngameGUI::updatePartyMember(size_t partyMember, const Creature &creature, bool force) {
 	assert(partyMember < _party.size());
 
-	uint32 lastPartyMemberChange = creature.lastChangedGUIDisplay();
+	uint32_t lastPartyMemberChange = creature.lastChangedGUIDisplay();
 	if (!force && (lastPartyMemberChange <= _lastPartyMemberChange[partyMember]))
 		return;
 

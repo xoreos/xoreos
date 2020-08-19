@@ -154,9 +154,9 @@ void CodebookLibrary::rebuild(size_t i, Common::BitStreamWriter &bos) {
 }
 
 void CodebookLibrary::rebuild(Common::BitStream &bis, size_t size, Common::BitStreamWriter &bos) {
-	const uint32 id = 0x564342;
-	const uint16 dimensions = bis.getBits(4);
-	const uint32 entries = bis.getBits(14);
+	const uint32_t id = 0x564342;
+	const uint16_t dimensions = bis.getBits(4);
+	const uint32_t entries = bis.getBits(14);
 
 	bos.putBits(id, 24);
 	bos.putBits(dimensions, 16);
@@ -166,13 +166,13 @@ void CodebookLibrary::rebuild(Common::BitStream &bis, size_t size, Common::BitSt
 	bos.putBit(ordered);
 
 	if (ordered) {
-		const uint8 initialLength = bis.getBits(5);
+		const uint8_t initialLength = bis.getBits(5);
 		bos.putBits(initialLength, 5);
 
-		uint32 currentEntry = 0;
+		uint32_t currentEntry = 0;
 		while (currentEntry < entries) {
 			const size_t bitCount = Common::intLog2(entries - currentEntry) + 1;
-			const uint32 number = bis.getBits(bitCount);
+			const uint32_t number = bis.getBits(bitCount);
 			bos.putBits(number, bitCount);
 
 			currentEntry += number;
@@ -183,7 +183,7 @@ void CodebookLibrary::rebuild(Common::BitStream &bis, size_t size, Common::BitSt
 
 	} else {
 
-		const uint8 codewordLengthLength = bis.getBits(3);
+		const uint8_t codewordLengthLength = bis.getBits(3);
 		const bool sparse = bis.getBit();
 
 		if ((codewordLengthLength == 0) || (codewordLengthLength > 5))
@@ -205,17 +205,17 @@ void CodebookLibrary::rebuild(Common::BitStream &bis, size_t size, Common::BitSt
 
 	}
 
-	const uint8 lookupType = bis.getBits(1);
+	const uint8_t lookupType = bis.getBits(1);
 	bos.putBits(lookupType, 4);
 
 	if        (lookupType == 0) {
 	} else if (lookupType == 1) {
 
-		const uint32 min = bis.getBits(32);
-		const uint32 max = bis.getBits(32);
+		const uint32_t min = bis.getBits(32);
+		const uint32_t max = bis.getBits(32);
 
-		const uint8 valueLength = bis.getBits(4) + 1;
-		const bool sequenceFlag = bis.getBit();
+		const uint8_t valueLength = bis.getBits(4) + 1;
+		const bool   sequenceFlag = bis.getBit();
 
 		bos.putBits(min, 32);
 		bos.putBits(max, 32);
@@ -235,9 +235,9 @@ void CodebookLibrary::rebuild(Common::BitStream &bis, size_t size, Common::BitSt
 }
 
 void CodebookLibrary::copy(Common::BitStream &bis, Common::BitStreamWriter &bos) {
-	const uint32 id = bis.getBits(24);
-	const uint16 dimensions = bis.getBits(16);
-	const uint32 entries = bis.getBits(24);
+	const uint32_t id = bis.getBits(24);
+	const uint16_t dimensions = bis.getBits(16);
+	const uint32_t entries = bis.getBits(24);
 
 	if (id != 0x564342)
 		throw Common::Exception("CodebookLibrary::copy(): Invalid codebook identifier");
@@ -251,13 +251,13 @@ void CodebookLibrary::copy(Common::BitStream &bis, Common::BitStreamWriter &bos)
 
 	if (ordered) {
 
-		const uint8 initialLength = bis.getBits(5);
+		const uint8_t initialLength = bis.getBits(5);
 		bos.putBits(initialLength, 5);
 
-		uint32 currentEntry = 0;
+		uint32_t currentEntry = 0;
 		while (currentEntry < entries) {
 			const size_t bitCount = Common::intLog2(entries - currentEntry) + 1;
-			const uint32 number = bis.getBits(bitCount);
+			const uint32_t number = bis.getBits(bitCount);
 			bos.putBits(number, bitCount);
 
 			currentEntry += number;
@@ -285,17 +285,17 @@ void CodebookLibrary::copy(Common::BitStream &bis, Common::BitStreamWriter &bos)
 
 	}
 
-	const uint8 lookupType = bis.getBits(4);
+	const uint8_t lookupType = bis.getBits(4);
 	bos.putBits(lookupType, 4);
 
 	if        (lookupType == 0) {
 	} else if (lookupType == 1) {
 
-		const uint32 min = bis.getBits(32);
-		const uint32 max = bis.getBits(32);
+		const uint32_t min = bis.getBits(32);
+		const uint32_t max = bis.getBits(32);
 
-		const uint8 valueLength = bis.getBits(4) + 1;
-		const bool sequenceFlag = bis.getBit();
+		const uint8_t valueLength = bis.getBits(4) + 1;
+		const bool   sequenceFlag = bis.getBit();
 
 		bos.putBits(min, 32);
 		bos.putBits(max, 32);
@@ -317,7 +317,7 @@ public:
 	                   Common::SeekableReadStream *codebooks, bool disposeCodebooks,
 	                   bool fullSetup);
 
-	size_t readBuffer(int16 *buffer, const size_t numSamples);
+	size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 	int getChannels() const;
 	int getRate() const;
@@ -325,7 +325,7 @@ public:
 	bool endOfData() const;
 
 	bool rewind();
-	uint64 getLength() const;
+	uint64_t getLength() const;
 
 private:
 	std::unique_ptr<Sound::PacketizedAudioStream> _vorbis;
@@ -346,19 +346,19 @@ private:
 	size_t _setupPacketOffset;
 	size_t _firstAudioPacketOffset;
 
-	uint16 _channels;
-	uint32 _sampleRate;
-	uint32 _averageBytesPerSecond;
+	uint16_t _channels;
+	uint32_t _sampleRate;
+	uint32_t _averageBytesPerSecond;
 
-	uint64 _sampleCount;
+	uint64_t _sampleCount;
 
-	uint32 _uid;
-	uint8 _blocksize0Pow;
-	uint8 _blocksize1Pow;
+	uint32_t _uid;
+	uint8_t _blocksize0Pow;
+	uint8_t _blocksize1Pow;
 
-	uint32 _loopCount;
-	uint32 _loopStart;
-	uint32 _loopEnd;
+	uint32_t _loopCount;
+	uint32_t _loopStart;
+	uint32_t _loopEnd;
 
 	std::unique_ptr<bool[]> _modeBlockFlags;
 	size_t _modeBits;
@@ -395,12 +395,12 @@ public:
 	size_t offset() { return _offset + headerSize(); }
 	size_t nextOffset() { return _offset + headerSize() + _size; }
 
-	uint32 granule() { return _absoluteGranule; }
+	uint32_t granule() { return _absoluteGranule; }
 
 private:
 	size_t _offset;
 	size_t _size;
-	uint32 _absoluteGranule;
+	uint32_t _absoluteGranule;
 	bool _noGranule;
 };
 
@@ -462,11 +462,11 @@ bool WwRIFFVorbisStream::rewind() {
 	return true;
 }
 
-uint64 WwRIFFVorbisStream::getLength() const {
+uint64_t WwRIFFVorbisStream::getLength() const {
 	return _sampleCount;
 }
 
-size_t WwRIFFVorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t WwRIFFVorbisStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	size_t samples = 0;
 	while (samples < numSamples) {
 		const size_t needSamples = numSamples - samples;
@@ -595,7 +595,7 @@ void WwRIFFVorbisStream::init() {
 			_noGranule = true;
 
 			_inStream->seek(offsetVORB + 0x4);
-			const uint32 modSignal = _inStream->readUint32LE();
+			const uint32_t modSignal = _inStream->readUint32LE();
 
 			/* set
 			 * D9     11011001
@@ -675,7 +675,7 @@ static void putVorbisString(Common::BitStreamWriter &stream) {
 	stream.putBits('s', 8);
 }
 
-static void putVorbisHeader(Common::BitStreamWriter &stream, uint8 type) {
+static void putVorbisHeader(Common::BitStreamWriter &stream, uint8_t type) {
 	stream.putBits(type, 8);
 	putVorbisString(stream);
 }
@@ -759,7 +759,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 		CodebookLibrary cbl(*_codebooks);
 
 		for (size_t i = 0; i < codebookCount; i++) {
-			const uint16 codebookID = in.getBits(10);
+			const uint16_t codebookID = in.getBits(10);
 
 			cbl.rebuild(codebookID, bits);
 		}
@@ -783,8 +783,8 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 			const size_t floor1Partitions = in.getBits(5);
 			bits.putBits(floor1Partitions, 5);
 
-			std::unique_ptr<uint8[]> floor1PartitionClassList = std::make_unique<uint8[]>(floor1Partitions);
-			uint8 maxClass = 0;
+			std::unique_ptr<uint8_t[]> floor1PartitionClassList = std::make_unique<uint8_t[]>(floor1Partitions);
+			uint8_t maxClass = 0;
 
 			for (size_t j = 0; j < floor1Partitions; j++) {
 				floor1PartitionClassList[j] = in.getBits(4);
@@ -793,16 +793,16 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 				maxClass = MAX(maxClass, floor1PartitionClassList[j]);
 			}
 
-			std::unique_ptr<uint8[]> floor1ClassDimensionsList = std::make_unique<uint8[]>(maxClass + 1);
+			std::unique_ptr<uint8_t[]> floor1ClassDimensionsList = std::make_unique<uint8_t[]>(maxClass + 1);
 			for (size_t j = 0; j <= maxClass; j++) {
 				floor1ClassDimensionsList[j] = in.getBits(3) + 1;
 				bits.putBits(floor1ClassDimensionsList[j] - 1, 3);
 
-				const uint8 subClasses = in.getBits(2);
+				const uint8_t subClasses = in.getBits(2);
 				bits.putBits(subClasses, 2);
 
 				if (subClasses != 0) {
-					const uint8 masterbook = in.getBits(8);
+					const uint8_t masterbook = in.getBits(8);
 					bits.putBits(masterbook, 8);
 
 					if (masterbook >= codebookCount)
@@ -811,8 +811,8 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 				}
 
 				for (size_t k = 0; k < (1U << subClasses); k++) {
-					const int16 subClassBook = static_cast<int16>(in.getBits(8)) - 1;
-					bits.putBits(static_cast<uint16>(subClassBook + 1), 8);
+					const int16_t subClassBook = static_cast<int16_t>(in.getBits(8)) - 1;
+					bits.putBits(static_cast<uint16_t>(subClassBook + 1), 8);
 
 					if (subClassBook >= 0 && (static_cast<size_t>(subClassBook) >= codebookCount))
 						throw Common::Exception("WwRIFFVorbisStream::generateHeaderSetup(): "
@@ -820,14 +820,14 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 				}
 			}
 
-			const uint8 floor1Multiplier = in.getBits(2) + 1;
+			const uint8_t floor1Multiplier = in.getBits(2) + 1;
 			bits.putBits(floor1Multiplier - 1, 2);
 
-			const uint8 rangeBits = in.getBits(4);
+			const uint8_t rangeBits = in.getBits(4);
 			bits.putBits(rangeBits, 4);
 
 			for (size_t j = 0; j < floor1Partitions; j++) {
-				const uint8 currentClassNumber = floor1PartitionClassList[j];
+				const uint8_t currentClassNumber = floor1PartitionClassList[j];
 
 				for (size_t k = 0; k < floor1ClassDimensionsList[currentClassNumber]; k++)
 					bits.putBits(in.getBits(rangeBits), rangeBits);
@@ -839,7 +839,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 		bits.putBits(residueCount - 1, 6);
 
 		for (size_t i = 0; i < residueCount; i++) {
-			const uint8 residueType = in.getBits(2);
+			const uint8_t residueType = in.getBits(2);
 			bits.putBits(residueType, 16);
 
 			if (residueType > 2)
@@ -854,22 +854,22 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 			const size_t residueClassifications = in.getBits(6) + 1;
 			bits.putBits(residueClassifications - 1, 6);
 
-			const uint8 residueClassbook = in.getBits(8);
+			const uint8_t residueClassbook = in.getBits(8);
 			bits.putBits(residueClassbook, 8);
 
 			if (residueClassbook >= codebookCount)
 				throw Common::Exception("WwRIFFVorbisStream::generateHeaderSetup(): "
 				                        "Invalid residue classbook");
 
-			std::unique_ptr<uint16[]> residueCascade = std::make_unique<uint16[]>(residueClassifications);
+			std::unique_ptr<uint16_t[]> residueCascade = std::make_unique<uint16_t[]>(residueClassifications);
 			for (size_t j = 0; j < residueClassifications; j++) {
-				const uint8 lowBits = in.getBits(3);
+				const uint8_t lowBits = in.getBits(3);
 				bits.putBits(lowBits, 3);
 
-				const uint8 bitFlag = in.getBit();
+				const uint8_t bitFlag = in.getBit();
 				bits.putBit(bitFlag);
 
-				uint8 highBits = 0;
+				uint8_t highBits = 0;
 				if (bitFlag) {
 					highBits = in.getBits(5);
 					bits.putBits(highBits, 5);
@@ -879,7 +879,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 			}
 
 			for (size_t j = 0; j < residueClassifications; j++) {
-				for (uint8 k = 0; k < 8; k++) {
+				for (uint8_t k = 0; k < 8; k++) {
 					if (residueCascade[j] & (1 << k)) {
 						const size_t residueBook = in.getBits(8);
 						bits.putBits(residueBook, 8);
@@ -898,16 +898,16 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 		for (size_t i = 0; i < mappingCount; i++) {
 			bits.putBits(0, 16); // Mapping type
 
-			const uint8 subMapsFlag = in.getBit();
+			const uint8_t subMapsFlag = in.getBit();
 			bits.putBit(subMapsFlag);
 
-			uint8 subMaps = 1;
+			uint8_t subMaps = 1;
 			if (subMapsFlag) {
 				subMaps = in.getBits(4) + 1;
 				bits.putBits(subMaps - 1, 4);
 			}
 
-			const uint8 squarePolarFlag = in.getBit();
+			const uint8_t squarePolarFlag = in.getBit();
 			bits.putBit(squarePolarFlag);
 
 			if (squarePolarFlag) {
@@ -917,8 +917,8 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 				for (size_t j = 0; j < couplingSteps; j++) {
 					const size_t bitCount = Common::intLog2(_channels - 1) + 1;
 
-					const uint32 magnitude = in.getBits(bitCount);
-					const uint32 angle = in.getBits(bitCount);
+					const uint32_t magnitude = in.getBits(bitCount);
+					const uint32_t angle = in.getBits(bitCount);
 
 					bits.putBits(magnitude, bitCount);
 					bits.putBits(angle, bitCount);
@@ -929,7 +929,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 				}
 			}
 
-			const uint8 mappingReserved = in.getBits(2);
+			const uint8_t mappingReserved = in.getBits(2);
 			bits.putBits(mappingReserved, 2);
 
 			if (mappingReserved != 0)
@@ -938,7 +938,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 
 			if (subMaps > 1) {
 				for (size_t j = 0; j < _channels; j++) {
-					const uint8 MappingMux = in.getBits(4);
+					const uint8_t MappingMux = in.getBits(4);
 					bits.putBits(MappingMux, 4);
 
 					if (MappingMux >= subMaps)
@@ -948,9 +948,9 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 			}
 
 			for (size_t j = 0; j < subMaps; j++) {
-				const uint8 timeConfig    = in.getBits(8);
-				const uint8 floorNumber   = in.getBits(8);
-				const uint8 residueNumber = in.getBits(8);
+				const uint8_t timeConfig    = in.getBits(8);
+				const uint8_t floorNumber   = in.getBits(8);
+				const uint8_t residueNumber = in.getBits(8);
 
 				bits.putBits(timeConfig   , 8);
 				bits.putBits(floorNumber  , 8);
@@ -978,7 +978,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 			bits.putBits(0, 16); // Window type
 			bits.putBits(0, 16); // Transform type
 
-			const uint8 mapping = in.getBits(8);
+			const uint8_t mapping = in.getBits(8);
 			bits.putBits(mapping, 8);
 
 			if (mapping >= mappingCount)

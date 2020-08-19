@@ -56,7 +56,7 @@ public:
 	 *  @param compression The compression which has to be applied to every file.
 	 *  @param description The LocString, that should be used for the description.
 	 */
-	ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream,
+	ERFWriter(uint32_t id, uint32_t fileCount, Common::SeekableWriteStream &stream,
 	          Version version = kERFVersion10, Compression compression = kCompressionNone,
 	          LocString description = LocString());
 	~ERFWriter() = default;
@@ -65,7 +65,7 @@ public:
 	void add(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream);
 
 private:
-	void initV10(uint32 id, LocString description);
+	void initV10(uint32_t id, LocString description);
 	void initV20();
 	void initV22(Compression compression);
 
@@ -78,11 +78,11 @@ private:
 	const Version _version;
 	const Compression _compression;
 
-	uint32 _currentFileCount { 0 };
-	uint32 _fileCount { 0 };
-	uint32 _offsetToResourceData { 0 };
-	uint32 _keyTableOffset { 0 };
-	uint32 _resourceTableOffset { 0 };
+	uint32_t _currentFileCount { 0 };
+	uint32_t _fileCount { 0 };
+	uint32_t _offsetToResourceData { 0 };
+	uint32_t _keyTableOffset { 0 };
+	uint32_t _resourceTableOffset { 0 };
 };
 
 } // End of namespace Aurora

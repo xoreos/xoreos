@@ -254,7 +254,7 @@ glm::mat4 ModelNode::getAbsolutePosition() const {
 	return absolutePosition;
 }
 
-uint16 ModelNode::getNodeNumber() const {
+uint16_t ModelNode::getNodeNumber() const {
 	return _nodeNumber;
 }
 
@@ -526,7 +526,7 @@ void ModelNode::createBound() {
 			if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
 				continue;
 
-			const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
+			const uint32_t stride = MAX<uint32_t>(vA->size, vA->stride / sizeof(float));
 
 			const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
 
@@ -534,7 +534,7 @@ void ModelNode::createBound() {
 			const float *vY = vertexData + 1;
 			const float *vZ = vertexData + 2;
 
-			for (uint32 v = 0; v < vertexBuffer->getCount(); v++)
+			for (uint32_t v = 0; v < vertexBuffer->getCount(); v++)
 				_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
 		}
 	}
@@ -1135,7 +1135,7 @@ ModelNode::Mesh *ModelNode::getMesh() const {
 	return NULL; // No mesh found in the root state.
 }
 
-TextureHandle *ModelNode::getTextures(uint32 &count) {
+TextureHandle *ModelNode::getTextures(uint32_t &count) {
 	TextureHandle *rval = NULL;
 	count = 0;
 	if (_mesh && _mesh->data) {
@@ -1229,7 +1229,7 @@ void ModelNode::buildMaterial() {
 		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
-	for (uint32 i = 0; (i < 4) && (i < config.textureCount); ++i)
+	for (uint32_t i = 0; (i < 4) && (i < config.textureCount); ++i)
 		setupShaderTexture(config, i, cripter);
 
 	if (config.penvmap && (config.envmapmode == kModeEnvironmentBlendedOver))

@@ -41,7 +41,7 @@
 #include "src/engines/sonic/area.h"
 
 /** Map a placeable type ID onto an appearance ID. */
-static const uint32 kTypeAppearances[] = {
+static const uint32_t kTypeAppearances[] = {
 	        84,         81,         82, 0xFFFFFFFF,         89, 0xFFFFFFFF,         92, 0xFFFFFFFF,
 	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,        101,
 	       136, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,

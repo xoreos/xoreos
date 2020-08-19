@@ -37,7 +37,7 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-const Aurora::GDAFile &getMGDA(uint32 id);
+const Aurora::GDAFile &getMGDA(uint32_t id);
 
 } // End of namespace DragonAge2
 

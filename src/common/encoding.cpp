@@ -212,7 +212,7 @@ bool hasSupportEncoding(Encoding encoding) {
 	       ConvMan.hasSupportTranscode(encoding             , Common::kEncodingUTF8);
 }
 
-static uint32 readFakeChar(SeekableReadStream &stream, Encoding encoding) {
+static uint32_t readFakeChar(SeekableReadStream &stream, Encoding encoding) {
 	byte data[2];
 
 	switch (encoding) {
@@ -250,7 +250,7 @@ static uint32 readFakeChar(SeekableReadStream &stream, Encoding encoding) {
 	return 0;
 }
 
-static void writeFakeChar(std::vector<byte> &output, uint32 c, Encoding encoding) {
+static void writeFakeChar(std::vector<byte> &output, uint32_t c, Encoding encoding) {
 	byte data[2];
 
 	switch (encoding) {
@@ -304,7 +304,7 @@ static UString createString(std::vector<byte> &output, Encoding encoding) {
 UString readString(SeekableReadStream &stream, Encoding encoding) {
 	std::vector<byte> output;
 
-	uint32 c;
+	uint32_t c;
 	while (((c = readFakeChar(stream, encoding)) != '\0') && !stream.eos())
 		writeFakeChar(output, c, encoding);
 
@@ -327,7 +327,7 @@ UString readStringFixed(SeekableReadStream &stream, Encoding encoding, size_t le
 UString readStringLine(SeekableReadStream &stream, Encoding encoding) {
 	std::vector<byte> output;
 
-	uint32 c;
+	uint32_t c;
 	while (((c = readFakeChar(stream, encoding)) != '\0') && !stream.eos()) {
 		if (c == '\n')
 			break;
@@ -407,7 +407,7 @@ size_t getBytesPerCodepoint(Encoding encoding) {
 	throw Exception("getBytesPerCodepoint(): Invalid encoding (%d)", (int)encoding);
 }
 
-bool isValidCodepoint(Encoding encoding, uint32 cp) {
+bool isValidCodepoint(Encoding encoding, uint32_t cp) {
 	switch (encoding) {
 		case kEncodingInvalid:
 			return false;

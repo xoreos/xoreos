@@ -34,7 +34,7 @@ namespace NWScript {
 void ObjectManager::registerObject(Object *object) {
 	std::lock_guard<std::recursive_mutex> lock(_objMutex);
 
-	uint32 id = object->getID();
+	uint32_t id = object->getID();
 	if (_objects.find(id) == _objects.end())
 		_objects.insert(std::make_pair(id, object));
 }
@@ -45,10 +45,10 @@ void ObjectManager::unregisterObject(Object *object) {
 	_objects.erase(object->getID());
 }
 
-Object *ObjectManager::findObject(uint32 id) {
+Object *ObjectManager::findObject(uint32_t id) {
 	std::lock_guard<std::recursive_mutex> lock(_objMutex);
 
-	std::map<uint32, Object *>::iterator it = _objects.find(id);
+	std::map<uint32_t, Object *>::iterator it = _objects.find(id);
 	if (it == _objects.end())
 		return 0;
 

@@ -203,15 +203,15 @@ private:
 	struct Info {
 		Common::UString name;
 
-		uint32 offset;
-		uint8  count;
+		uint32_t offset;
+		uint8_t  count;
 	};
 	typedef std::vector<Info> Infos;
 
 	struct BoneCommand {
 		BoneCommandID command;
 
-		std::vector<uint8> parameters;
+		std::vector<uint8_t> parameters;
 
 		BoneCommand(BoneCommandID cmd = kBoneNOP) : command(cmd) { }
 	};
@@ -220,7 +220,7 @@ private:
 	struct PolygonCommand {
 		PolygonCommandID command;
 
-		std::vector<uint32> parameters;
+		std::vector<uint32_t> parameters;
 
 		PolygonCommand(PolygonCommandID cmd = kPolygonNOP) : command(cmd) { }
 	};
@@ -232,11 +232,11 @@ private:
 		/** Complete local transformation this bone specifies. */
 		glm::mat4 transform;
 
-		uint16 nodeID;   ///< ID of this bone.
-		uint16 parentID; ///< ID of parent bone.
+		uint16_t nodeID;   ///< ID of this bone.
+		uint16_t parentID; ///< ID of parent bone.
 
-		uint16 nodeStack;   ///< Matrix stack position this bone uses.
-		uint16 parentStack; ///< Matrix stack position the parent uses.
+		uint16_t nodeStack;   ///< Matrix stack position this bone uses.
+		uint16_t parentStack; ///< Matrix stack position the parent uses.
 
 		Bone *parent;               ///< Pointer to the parent bones.
 		std::list<Bone *> children; ///< Pointers to the child bones.
@@ -254,27 +254,27 @@ private:
 		Common::UString texture; ///< Name of texture within NSBTX.
 		Common::UString palette; ///< Name of palette within NSBTX.
 
-		uint16 width;
-		uint16 height;
+		uint16_t width;
+		uint16_t height;
 
 		bool wrapX; ///< true: wrap, false: clamp.
 		bool wrapY; ///< true: wrap, false: clamp.
 		bool flipX; ///< true: flip on every 2nd texture wrap.
 		bool flipY; ///< true: flip on every 2nd texture wrap.
 
-		uint8 scaleX; ///< Scale (1 or 2) the texture in X direction.
-		uint8 scaleY; ///< Scale (1 or 2) the texture in Y direction.
+		uint8_t scaleX; ///< Scale (1 or 2) the texture in X direction.
+		uint8_t scaleY; ///< Scale (1 or 2) the texture in Y direction.
 	};
 	typedef std::vector<Material> Materials;
 
 	struct Polygon {
 		Common::UString name;
 
-		uint16 defaultStack;
+		uint16_t defaultStack;
 		const Material *material;
 
-		uint32 primitiveCount; ///< Number of primitive this polygon produces.
-		uint32 primitiveSize;  ///< Maximum length of a primitive from this polygon.
+		uint32_t primitiveCount; ///< Number of primitive this polygon produces.
+		uint32_t primitiveSize;  ///< Maximum length of a primitive from this polygon.
 
 		PolygonCommands commands;
 
@@ -285,37 +285,37 @@ private:
 	/** Structure we use to represent the parameters of a LoadStack bone command.
 	  * Basically says "Mix these matrices together, using these ratios. */
 	struct StackMix {
-		uint16 nodeID;
-		uint16 nodeStack;
+		uint16_t nodeID;
+		uint16_t nodeStack;
 		float  ratio;
 
 		ModelNode_Sonic *node;
 
-		StackMix(uint16 i = 0xFFFF, uint16 s = 0xFFFF, float r = 0.0f) :
+		StackMix(uint16_t i = 0xFFFF, uint16_t s = 0xFFFF, float r = 0.0f) :
 			nodeID(i), nodeStack(s), ratio(r), node(0) { }
 	};
 	typedef std::vector<StackMix> StackMixes;
-	typedef std::map<uint32, StackMixes> StackMixMap;
+	typedef std::map<uint32_t, StackMixes> StackMixMap;
 
 	typedef std::list<Bone *> BoneList;
-	typedef std::map<uint8, Bone *> StackBoneMap;
-	typedef std::map<uint8, bool> BoneInvisible;
+	typedef std::map<uint8_t, Bone *> StackBoneMap;
+	typedef std::map<uint8_t, bool> BoneInvisible;
 
 
 	struct ParserContext {
 		Common::SeekableSubReadStreamEndian *nsbmd;
 
 		// .--- Offsets to different parts of the NSBMD file
-		uint32 offsetMDL0;
-		uint32 offsetModel;
+		uint32_t offsetMDL0;
+		uint32_t offsetModel;
 
-		uint32 offsetBones;
-		uint32 offsetBoneCommands;
-		uint32 offsetMaterials;
-		uint32 offsetPolygons;
+		uint32_t offsetBones;
+		uint32_t offsetBoneCommands;
+		uint32_t offsetMaterials;
+		uint32_t offsetPolygons;
 
-		uint32 offsetTextures;
-		uint32 offsetPalettes;
+		uint32_t offsetTextures;
+		uint32_t offsetPalettes;
 		// '---
 
 		// .--- The various model parts
@@ -372,7 +372,7 @@ private:
 
 	void readPolygons(ParserContext &ctx);
 	void readPolygon(ParserContext &ctx, Polygon &polygon, Info &info);
-	void readPolygonCommands(ParserContext &ctx, Polygon &polygon, uint32 listSize);
+	void readPolygonCommands(ParserContext &ctx, Polygon &polygon, uint32_t listSize);
 
 	void parseBoneCommands(ParserContext &ctx);
 	void findRootBones(ParserContext &ctx);
@@ -393,21 +393,21 @@ private:
 
 	void createBound();
 
-	uint8 readInfoOffset(ParserContext &ctx, Infos &infos, uint32 offset);
-	uint8 readInfoOffsetCount(ParserContext &ctx, Infos &infos, uint32 offset);
+	uint8_t readInfoOffset(ParserContext &ctx, Infos &infos, uint32_t offset);
+	uint8_t readInfoOffsetCount(ParserContext &ctx, Infos &infos, uint32_t offset);
 	// '---
 
 	// .--- Utility methods
 	/** Convert the Nintendo DS fixed-point values into floating point doubles. */
-	static double getFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits);
+	static double getFixedPoint(uint32_t value, bool sign, uint8_t iBits, uint8_t fBits);
 
 	/** Return the number of parameters required for this geometry command. */
-	static uint8 getPolygonParameterCount(PolygonCommandID cmd);
+	static uint8_t getPolygonParameterCount(PolygonCommandID cmd);
 	/** Return the number of parameters required for this bone command. */
-	static uint8 getBoneParameterCount(BoneCommandID cmd, uint8 count);
+	static uint8_t getBoneParameterCount(BoneCommandID cmd, uint8_t count);
 
 	/** Create a specific pivot matrix. */
-	static glm::mat4 createPivot(double a, double b, uint8 select, uint8 negate);
+	static glm::mat4 createPivot(double a, double b, uint8_t select, uint8_t negate);
 	// '---
 
 	// === Run-time ===
@@ -444,7 +444,7 @@ private:
 		color(1.0f, 1.0f, 1.0f, 1.0f), texCoord(0.0f, 0.0f, 0.0f) { }
 	};
 	typedef std::vector<PrimitiveVertex> PrimitiveVertices;
-	typedef std::vector<uint16> PrimitiveIndices;
+	typedef std::vector<uint16_t> PrimitiveIndices;
 
 	struct Primitive {
 		PrimitiveType type;

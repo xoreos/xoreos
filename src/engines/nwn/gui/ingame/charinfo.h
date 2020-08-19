@@ -52,7 +52,7 @@ public:
 	/** Set the health bar color. */
 	virtual void setHealthColor(float r, float g, float b, float a) = 0;
 	/** Set the character health. */
-	virtual void setHealth(int32 current, int32 max) = 0;
+	virtual void setHealth(int32_t current, int32_t max) = 0;
 };
 
 } // End of namespace NWN

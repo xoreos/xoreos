@@ -56,7 +56,7 @@ public:
 	~PLTFile();
 
 	/** Set the color of one layer within this layer texture. */
-	void setLayerColor(Layer layer, uint8 color);
+	void setLayerColor(Layer layer, uint8_t color);
 	/** Rebuild the combined texture image. */
 	void rebuild();
 
@@ -69,10 +69,10 @@ private:
 
 	Surface *_surface;
 
-	std::unique_ptr<uint8[]> _dataImage;
-	std::unique_ptr<uint8[]> _dataLayers;
+	std::unique_ptr<uint8_t[]> _dataImage;
+	std::unique_ptr<uint8_t[]> _dataLayers;
 
-	uint8 _colors[kLayerMAX];
+	uint8_t _colors[kLayerMAX];
 
 
 	PLTFile(const Common::UString &name, Common::SeekableReadStream &plt);
@@ -80,8 +80,8 @@ private:
 	void load(Common::SeekableReadStream &plt);
 	void build();
 
-	static ImageDecoder *getLayerPalette(uint32 layer, uint8 row);
-	static void getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kLayerMAX]);
+	static ImageDecoder *getLayerPalette(uint32_t layer, uint8_t row);
+	static void getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8_t colors[kLayerMAX]);
 
 	friend class Texture;
 };

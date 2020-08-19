@@ -52,7 +52,7 @@ void FPS::render(RenderPass pass) {
 	if (pass == kRenderPassOpaque)
 		return;
 
-	uint32 fps = GfxMan.getFPS();
+	uint32_t fps = GfxMan.getFPS();
 
 	if (fps != _fps) {
 		_fps = fps;
@@ -64,7 +64,7 @@ void FPS::render(RenderPass pass) {
 }
 
 void FPS::renderImmediate(const glm::mat4 &parentTransform) {
-	uint32 fps = GfxMan.getFPS();
+	uint32_t fps = GfxMan.getFPS();
 
 	if (fps != _fps) {
 		_fps = fps;

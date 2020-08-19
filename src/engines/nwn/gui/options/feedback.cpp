@@ -74,14 +74,14 @@ OptionsFeedbackMenu::~OptionsFeedbackMenu() {
 }
 
 void OptionsFeedbackMenu::show() {
-	uint32 tooltipDelay = (CLIP(ConfigMan.getInt("tooltipdelay", 100), 100, 2700) / 100) - 1;
+	uint32_t tooltipDelay = (CLIP(ConfigMan.getInt("tooltipdelay", 100), 100, 2700) / 100) - 1;
 
 	getSlider("TooltipSlider", true)->setState(tooltipDelay);
 	updateTooltipDelay(tooltipDelay);
 
 	getCheckBox("MouseoverBox", true)->setState(ConfigMan.getBool("mouseoverfeedback"));
 
-	uint32 feedbackMode = CLIP(ConfigMan.getInt("feedbackmode", 2), 0, 2);
+	uint32_t feedbackMode = CLIP(ConfigMan.getInt("feedbackmode", 2), 0, 2);
 	if      (feedbackMode == 0)
 		getCheckBox("BubblesOff", true)->setState(true);
 	else if (feedbackMode == 1)
@@ -121,7 +121,7 @@ void OptionsFeedbackMenu::callbackActive(Widget &widget) {
 	}
 }
 
-void OptionsFeedbackMenu::updateTooltipDelay(uint32 UNUSED(tooltipDelay)) {
+void OptionsFeedbackMenu::updateTooltipDelay(uint32_t UNUSED(tooltipDelay)) {
 	WidgetLabel  &ttDelayLabel  = *getLabel ("ToolTipValue" , true);
 	WidgetSlider &ttDelaySlider = *getSlider("TooltipSlider", true);
 
@@ -135,13 +135,13 @@ void OptionsFeedbackMenu::updateTooltipDelay(uint32 UNUSED(tooltipDelay)) {
 }
 
 void OptionsFeedbackMenu::adoptChanges() {
-	uint32 tooltipDelay = (getSlider("TooltipSlider", true)->getState() + 1) * 100;
+	uint32_t tooltipDelay = (getSlider("TooltipSlider", true)->getState() + 1) * 100;
 	ConfigMan.setInt("tooltipdelay", tooltipDelay, true);
 
 	bool mouseoverFeedback = getCheckBox("MouseoverBox", true)->getState();
 	ConfigMan.setBool("mouseoverfeedback", mouseoverFeedback, true);
 
-	uint32 feedbackMode = 2;
+	uint32_t feedbackMode = 2;
 	if      (getCheckBox("BubblesOff", true)->getState())
 		feedbackMode = 0;
 	else if (getCheckBox("BubblesTextOnly", true)->getState())

@@ -39,7 +39,7 @@ class CharHelp;
 class PortraitWidget;
 
 struct Spell {
-	uint16 spellID;
+	uint16_t spellID;
 	Common::UString name;
 	Common::UString icon;
 	Common::UString desc;
@@ -87,7 +87,7 @@ private:
 	std::vector<std::vector<Spell> > _availSpells;
 	std::vector<std::vector<Spell> > _knownSpells;
 
-	std::vector<uint8> _remainingSpells;
+	std::vector<uint8_t> _remainingSpells;
 
 	size_t _currentSpellLevel;
 	size_t _maxLevel;

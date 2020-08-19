@@ -45,7 +45,7 @@ public:
 	 *  @param key A KEYFile with information about this data file.
 	 *  @param dataFileIndex The index this data file has within the KEY file.
 	 */
-	virtual void mergeKEY(const KEYFile &key, uint32 dataFileIndex) = 0;
+	virtual void mergeKEY(const KEYFile &key, uint32_t dataFileIndex) = 0;
 };
 
 } // End of namespace Aurora

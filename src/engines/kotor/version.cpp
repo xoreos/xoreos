@@ -64,15 +64,15 @@ Common::UString Version::getPlatformName() const {
 	return Aurora::getPlatformDescription(_platform);
 }
 
-uint16 Version::getVersionMajor() const {
+uint16_t Version::getVersionMajor() const {
 	return _versionMajor;
 }
 
-uint16 Version::getVersionMinor() const {
+uint16_t Version::getVersionMinor() const {
 	return _versionMinor;
 }
 
-uint32 Version::getVersionBuild() const {
+uint32_t Version::getVersionBuild() const {
 	return _versionBuild;
 }
 
@@ -80,7 +80,7 @@ Common::UString Version::getVersionString() const {
 	return Common::UString::format("%u.%02u.%u", _versionMajor, _versionMinor, _versionBuild);
 }
 
-uint16 Version::getOptimumVersionMajor() const {
+uint16_t Version::getOptimumVersionMajor() const {
 	switch (_platform) {
 		case Aurora::kPlatformWindows:
 		case Aurora::kPlatformMacOSX:
@@ -94,7 +94,7 @@ uint16 Version::getOptimumVersionMajor() const {
 	return 0;
 }
 
-uint16 Version::getOptimumVersionMinor() const {
+uint16_t Version::getOptimumVersionMinor() const {
 	switch (_platform) {
 		case Aurora::kPlatformWindows:
 		case Aurora::kPlatformMacOSX:
@@ -115,7 +115,7 @@ Common::UString Version::getOptimumVersionString() {
 			getOptimumVersionMajor(), getOptimumVersionMinor());
 }
 
-static uint32 makeCombinedVersion(uint32 major, uint32 minor) {
+static uint32_t makeCombinedVersion(uint32_t major, uint32_t minor) {
 	return (major << 16) + minor;
 }
 

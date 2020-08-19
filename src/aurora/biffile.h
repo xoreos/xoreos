@@ -78,10 +78,10 @@ public:
 	const ResourceList &getResources() const;
 
 	/** Return the size of a resource. */
-	uint32 getResourceSize(uint32 index) const;
+	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
+	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
 
 	/** Merge information from the KEY into the data file.
 	 *
@@ -91,15 +91,15 @@ public:
 	 *  @param key A KEYFile with information about this data file.
 	 *  @param dataFileIndex The index this data file has within the KEY file.
 	 */
-	void mergeKEY(const KEYFile &key, uint32 dataFileIndex);
+	void mergeKEY(const KEYFile &key, uint32_t dataFileIndex);
 
 private:
 	/** Internal resource information. */
 	struct IResource {
 		FileType type; ///< The resource's type.
 
-		uint32 offset; ///< The offset of the resource within the BIF.
-		uint32 size;   ///< The resource's size.
+		uint32_t offset; ///< The offset of the resource within the BIF.
+		uint32_t size;   ///< The resource's size.
 	};
 
 	typedef std::vector<IResource> IResourceList;
@@ -113,9 +113,9 @@ private:
 	IResourceList _iResources;
 
 	void load(Common::SeekableReadStream &bif);
-	void readVarResTable(Common::SeekableReadStream &bif, uint32 offset);
+	void readVarResTable(Common::SeekableReadStream &bif, uint32_t offset);
 
-	const IResource &getIResource(uint32 index) const;
+	const IResource &getIResource(uint32_t index) const;
 };
 
 } // End of namespace Aurora

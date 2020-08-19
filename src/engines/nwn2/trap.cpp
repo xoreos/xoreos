@@ -39,7 +39,7 @@ Trap::Trap(const Aurora::GFF3Struct &trap) {
 	load(trap);
 }
 
-Trap::Trap(const uint8 type, const Creature *creator) {
+Trap::Trap(const uint8_t type, const Creature *creator) {
 	init();
 	load(type, creator);
 }
@@ -132,17 +132,17 @@ bool Trap::getTrapRecoverable() const {
 }
 
 /** Return the base type of the trap */
-uint8 Trap::getTrapBaseType() const {
+uint8_t Trap::getTrapBaseType() const {
 	return _trapType;
 }
 
 /** Return the trap detect DC */
-uint8 Trap::getTrapDetectDC() const {
+uint8_t Trap::getTrapDetectDC() const {
 	return _detectDC;
 }
 
 /** Return the trap disarm DC */
-uint8 Trap::getTrapDisarmDC() const {
+uint8_t Trap::getTrapDisarmDC() const {
 	return _disarmDC;
 }
 
@@ -152,7 +152,7 @@ Common::UString Trap::getTrapKeyTag() const {
 }
 
 /** Get the trap creator */
-Uint32 Trap::getTrapCreator() const {
+uint32_t Trap::getTrapCreator() const {
 	return _createdBy;
 }
 
@@ -198,12 +198,12 @@ void Trap::setTrapRecoverable(bool recoverable) {
 }
 
 /** Set the trap detect DC value */
-void Trap::setTrapDetectDC(uint8 detectDC) {
+void Trap::setTrapDetectDC(uint8_t detectDC) {
 	_detectDC = detectDC;
 }
 
 /** Set the trap disarm DC value */
-void Trap::setTrapDisarmDC(uint8 disarmDC) {
+void Trap::setTrapDisarmDC(uint8_t disarmDC) {
 	_disarmDC = disarmDC;
 }
 
@@ -213,7 +213,7 @@ void Trap::setTrapKeyTag(const Common::UString &keyTag) {
 }
 
 /** Create a new trap type using the 'trapType' row data in 'traps.2da' */
-void Trap::createTrapBaseType(uint8 trapType) {
+void Trap::createTrapBaseType(uint8_t trapType) {
 	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("traps");
 	const size_t count = twoDA.getRowCount();
 	if (trapType >= count)
@@ -233,7 +233,7 @@ void Trap::createTrapBaseType(uint8 trapType) {
 	_createdBy = 0;
 }
 
-void Trap::createTrap(uint8 trapType, uint32 UNUSED(faction),
+void Trap::createTrap(uint8_t trapType, uint32_t UNUSED(faction),
                       const Common::UString &UNUSED(disarm),
                       const Common::UString &UNUSED(triggered)) {
 	createTrapBaseType(trapType);
@@ -288,7 +288,7 @@ bool Trap::disarmTrap(Creature *agent, Disarm option) {
 	// TODO: Check party inventory for _keyTag item
 
 	// Must have at least one rank in disable device
-	uint8 ranks = agent->getSkillRank(kSkillDisableDevice);
+	uint8_t ranks = agent->getSkillRank(kSkillDisableDevice);
 	if (ranks < 1)
 		return false;
 
@@ -379,7 +379,7 @@ void Trap::load(const Aurora::GFF3Struct &gff) {
 }
 
 /** Load the trap information from a 'traps.2da' row */
-void Trap::load(const uint8 type, const Creature *creator) {
+void Trap::load(const uint8_t type, const Creature *creator) {
 	createTrapBaseType(type);
 	_createdBy = creator->getID();
 }

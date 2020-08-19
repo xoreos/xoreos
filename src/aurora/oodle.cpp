@@ -42,47 +42,47 @@ namespace Aurora {
 struct Parameters;
 
 struct Decoder {
-	uint32 numer;
-	uint32 denom;
-	uint32 nextDenom;
-	uint8 *stream;
+	uint32_t numer;
+	uint32_t denom;
+	uint32_t nextDenom;
+	uint8_t *stream;
 
-	Decoder(uint8 *stream);
+	Decoder(uint8_t *stream);
 
-	uint16 decode(uint16 max);
-	uint16 commit(uint16 max, uint16 val, uint16 err);
-	uint16 decodeAndCommit(uint16 max);
+	uint16_t decode(uint16_t max);
+	uint16_t commit(uint16_t max, uint16_t val, uint16_t err);
+	uint16_t decodeAndCommit(uint16_t max);
 };
 
 struct WeighWindow {
-	uint16 countCap;
+	uint16_t countCap;
 
-	std::vector<uint16> ranges;
-	std::vector<uint16> values;
-	std::vector<uint16> weights;
-	uint16 weightTotal;
+	std::vector<uint16_t> ranges;
+	std::vector<uint16_t> values;
+	std::vector<uint16_t> weights;
+	uint16_t weightTotal;
 
-	uint16 threshIncrease;
-	uint16 threshIncreaseCap;
-	uint16 threshRangeRebuild;
-	uint16 threshWeightRebuild;
+	uint16_t threshIncrease;
+	uint16_t threshIncreaseCap;
+	uint16_t threshRangeRebuild;
+	uint16_t threshWeightRebuild;
 
-	WeighWindow(uint32 maxValue, uint16 count);
+	WeighWindow(uint32_t maxValue, uint16_t count);
 
 	void rebuildWeights();
 	void rebuildRanges();
-	std::pair<uint16 *, uint16> tryDecode(Decoder &dec);
+	std::pair<uint16_t *, uint16_t> tryDecode(Decoder &dec);
 };
 
 struct Dictionary {
-	uint32 decodedSize;
-	uint32 backrefSize;
+	uint32_t decodedSize;
+	uint32_t backrefSize;
 
-	uint32 decodedValueMax;
-	uint32 backrefValueMax;
-	uint32 lowbitValueMax;
-	uint32 midbitValueMax;
-	uint32 highbitValueMax;
+	uint32_t decodedValueMax;
+	uint32_t backrefValueMax;
+	uint32_t lowbitValueMax;
+	uint32_t midbitValueMax;
+	uint32_t highbitValueMax;
 
 	WeighWindow              lowbitWindow;
 	WeighWindow              highbitWindow;
@@ -93,7 +93,7 @@ struct Dictionary {
 
 	Dictionary(Parameters &params);
 
-	uint32 decompressBlock(Decoder &dec, uint8 *dbuf);
+	uint32_t decompressBlock(Decoder &dec, uint8_t *dbuf);
 };
 
 struct Parameters {
@@ -101,16 +101,16 @@ struct Parameters {
 	unsigned int backrefValueMax;
 	unsigned int decodedCount;
 	unsigned int highbitCount;
-	uint8 sizesCount[4];
+	uint8_t sizesCount[4];
 };
 
-Decoder::Decoder(uint8 *s) {
+Decoder::Decoder(uint8_t *s) {
 	numer  = s[0] >> 1;
 	denom  = 0x80;
 	stream = s;
 }
 
-uint16 Decoder::decode(uint16 max) {
+uint16_t Decoder::decode(uint16_t max) {
 	for (; denom <= 0x800000; denom <<= 8) {
 		numer <<= 8;
 		numer  |= (stream[0] << 7) & 0x80;
@@ -122,7 +122,7 @@ uint16 Decoder::decode(uint16 max) {
 	return std::min(numer / nextDenom, max - 1u);
 }
 
-uint16 Decoder::commit(uint16 max, uint16 val, uint16 err) {
+uint16_t Decoder::commit(uint16_t max, uint16_t val, uint16_t err) {
 	numer -= nextDenom * val;
 
 	if (val + err < max)
@@ -133,11 +133,11 @@ uint16 Decoder::commit(uint16 max, uint16 val, uint16 err) {
 	return val;
 }
 
-uint16 Decoder::decodeAndCommit(uint16 max) {
+uint16_t Decoder::decodeAndCommit(uint16_t max) {
 	return commit(max, decode(max), 1);
 }
 
-WeighWindow::WeighWindow(uint32 maxValue, uint16 count) {
+WeighWindow::WeighWindow(uint32_t maxValue, uint16_t count) {
 	weightTotal = 4;
 	countCap    = count + 1;
 
@@ -177,13 +177,13 @@ void WeighWindow::rebuildRanges() {
 }
 
 void WeighWindow::rebuildWeights() {
-	std::transform(std::begin(weights), std::end(weights), std::begin(weights), [](uint16 &w) {
+	std::transform(std::begin(weights), std::end(weights), std::begin(weights), [](uint16_t &w) {
 		return w / 2;
 	});
 
 	weightTotal = std::accumulate(std::begin(weights), std::end(weights), 0);
 
-	for (uint32 i = 1; i < weights.size(); i++) {
+	for (uint32_t i = 1; i < weights.size(); i++) {
 		while (i < weights.size() && weights[i] == 0) {
 			std::swap(weights[i], weights.back());
 			std::swap(values[i], values.back());
@@ -206,7 +206,7 @@ void WeighWindow::rebuildWeights() {
 	}
 }
 
-std::pair<uint16 *, uint16> WeighWindow::tryDecode(Decoder &dec) {
+std::pair<uint16_t *, uint16_t> WeighWindow::tryDecode(Decoder &dec) {
 	if (weightTotal >= threshRangeRebuild) {
 		if (threshRangeRebuild >= threshWeightRebuild)
 			rebuildWeights();
@@ -222,7 +222,7 @@ std::pair<uint16 *, uint16> WeighWindow::tryDecode(Decoder &dec) {
 	weightTotal++;
 
 	if (index1 > 0)
-		return std::make_pair((uint16 *) nullptr, values[index1]);
+		return std::make_pair((uint16_t *) nullptr, values[index1]);
 
 	if ((weights.size() >= ranges.size()) && (dec.decodeAndCommit(2) == 1)) {
 		auto index2 = ranges.size() + dec.decodeAndCommit(weights.size() - ranges.size() + 1) - 1u;
@@ -230,7 +230,7 @@ std::pair<uint16 *, uint16> WeighWindow::tryDecode(Decoder &dec) {
 		weights[index2] += 2;
 		weightTotal     += 2;
 
-		return std::make_pair((uint16 *) nullptr, values[index2]);
+		return std::make_pair((uint16_t *) nullptr, values[index2]);
 	}
 
 	values.emplace_back(0);
@@ -242,7 +242,7 @@ std::pair<uint16 *, uint16> WeighWindow::tryDecode(Decoder &dec) {
 		weights[0]   = 0;
 	}
 
-	return std::make_pair(&values.back(), (uint16) 0);
+	return std::make_pair(&values.back(), (uint16_t) 0);
 }
 
 Dictionary::Dictionary(Parameters &params) :
@@ -263,7 +263,7 @@ Dictionary::Dictionary(Parameters &params) :
 	}
 
 	for (size_t i = 0; i < 4; ++i) {
-		decodedWindows.emplace_back(decodedValueMax - 1, (uint32) params.decodedCount);
+		decodedWindows.emplace_back(decodedValueMax - 1, (uint32_t) params.decodedCount);
 	}
 
 	for (size_t i = 0; i < 4; ++i) {
@@ -274,7 +274,7 @@ Dictionary::Dictionary(Parameters &params) :
 	sizeWindows.emplace_back(64, params.sizesCount[0]);
 }
 
-uint32 Dictionary::decompressBlock(Decoder &dec, uint8 *dbuf) {
+uint32_t Dictionary::decompressBlock(Decoder &dec, uint8_t *dbuf) {
 	auto d1 = sizeWindows[backrefSize].tryDecode(dec);
 
 	if (d1.first)
@@ -282,7 +282,7 @@ uint32 Dictionary::decompressBlock(Decoder &dec, uint8 *dbuf) {
 	backrefSize = d1.second;
 
 	if (backrefSize > 0) {
-		static uint32 const sizes[] = { 128u, 192u, 256u, 512u };
+		static uint32_t const sizes[] = { 128u, 192u, 256u, 512u };
 
 		auto backref_size  = backrefSize < 61u ? backrefSize + 1 : sizes[backrefSize - 61u];
 		auto backref_range = std::min(backrefValueMax, decodedSize);
@@ -324,7 +324,7 @@ uint32 Dictionary::decompressBlock(Decoder &dec, uint8 *dbuf) {
 	}
 }
 
-void decompress(uint32 csize, uint8 *cbuf, uint32 step1, uint32 step2, uint32 dsize, uint8 *dbuf) {
+void decompress(uint32_t csize, uint8_t *cbuf, uint32_t step1, uint32_t step2, uint32_t dsize, uint8_t *dbuf) {
 	if (csize == 0)
 		return;
 
@@ -346,8 +346,8 @@ void decompress(uint32 csize, uint8 *cbuf, uint32 step1, uint32 step2, uint32 ds
 	}
 
 	Decoder  dec   = Decoder(cbuf + stream.pos());
-	uint32 steps[] = { step1, step2, dsize };
-	uint8 *dptr    = dbuf;
+	uint32_t steps[] = { step1, step2, dsize };
+	uint8_t *dptr    = dbuf;
 
 	for (size_t i = 0; i < 3; ++i) {
 		std::unique_ptr<Dictionary> dic = std::make_unique<Dictionary>(params[i]);
@@ -358,7 +358,7 @@ void decompress(uint32 csize, uint8 *cbuf, uint32 step1, uint32 step2, uint32 ds
 	}
 }
 
-Common::ReadStream *decompressOodle1(byte *data, size_t compressedSize, size_t decompressedSize, uint32 stop0, uint32 stop1) {
+Common::ReadStream *decompressOodle1(byte *data, size_t compressedSize, size_t decompressedSize, uint32_t stop0, uint32_t stop1) {
 	std::unique_ptr<byte[]> decompressedData = std::make_unique<byte[]>(decompressedSize);
 
 	std::memset(decompressedData.get(), 0, decompressedSize);

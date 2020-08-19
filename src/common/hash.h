@@ -45,12 +45,12 @@ enum HashAlgo {
 };
 
 // .--- djb2 hash function by Daniel J. Bernstein ---.
-static inline uint32 hashDJB2(uint32 hash, uint32 c) {
+static inline uint32_t hashDJB2(uint32_t hash, uint32_t c) {
 	return ((hash << 5) + hash) + c;
 }
 
-static inline uint32 hashStringDJB2(const UString &string) {
-	uint32 hash = 5381;
+static inline uint32_t hashStringDJB2(const UString &string) {
+	uint32_t hash = 5381;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
 		hash = hashDJB2(hash, *it);
@@ -58,14 +58,14 @@ static inline uint32 hashStringDJB2(const UString &string) {
 	return hash;
 }
 
-static inline uint32 hashStringDJB2(const UString &string, Encoding encoding) {
-	uint32 hash = 5381;
+static inline uint32_t hashStringDJB2(const UString &string, Encoding encoding) {
+	uint32_t hash = 5381;
 
 	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 
-	uint32 c;
+	uint32_t c;
 	while ((c = data->readChar()) != ReadStream::kEOF)
 		hash = hashDJB2(hash, c);
 
@@ -74,12 +74,12 @@ static inline uint32 hashStringDJB2(const UString &string, Encoding encoding) {
 // '--- djb2 hash function by Daniel J. Bernstein ---'
 
 // .--- 32bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
-static inline uint32 hashFNV32(uint32 hash, uint32 c) {
+static inline uint32_t hashFNV32(uint32_t hash, uint32_t c) {
 	return (hash * 16777619) ^ c;
 }
 
-static inline uint32 hashStringFNV32(const UString &string) {
-	uint32 hash = 0x811C9DC5;
+static inline uint32_t hashStringFNV32(const UString &string) {
+	uint32_t hash = 0x811C9DC5;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
 		hash = hashFNV32(hash, *it);
@@ -87,14 +87,14 @@ static inline uint32 hashStringFNV32(const UString &string) {
 	return hash;
 }
 
-static inline uint32 hashStringFNV32(const UString &string, Encoding encoding) {
-	uint32 hash = 0x811C9DC5;
+static inline uint32_t hashStringFNV32(const UString &string, Encoding encoding) {
+	uint32_t hash = 0x811C9DC5;
 
 	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 
-	uint32 c;
+	uint32_t c;
 	while ((c = data->readChar()) != ReadStream::kEOF)
 		hash = hashFNV32(hash, c);
 
@@ -103,12 +103,12 @@ static inline uint32 hashStringFNV32(const UString &string, Encoding encoding) {
 // '--- 32bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---'
 
 // .--- 64bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
-static inline uint64 hashFNV64(uint64 hash, uint32 c) {
+static inline uint64_t hashFNV64(uint64_t hash, uint32_t c) {
 	return (hash * 1099511628211LL) ^ c;
 }
 
-static inline uint64 hashStringFNV64(const UString &string) {
-	uint64 hash = 0xCBF29CE484222325LL;
+static inline uint64_t hashStringFNV64(const UString &string) {
+	uint64_t hash = 0xCBF29CE484222325LL;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
 		hash = hashFNV64(hash, *it);
@@ -116,14 +116,14 @@ static inline uint64 hashStringFNV64(const UString &string) {
 	return hash;
 }
 
-static inline uint64 hashStringFNV64(const UString &string, Encoding encoding) {
-	uint64 hash = 0xCBF29CE484222325LL;
+static inline uint64_t hashStringFNV64(const UString &string, Encoding encoding) {
+	uint64_t hash = 0xCBF29CE484222325LL;
 
 	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 
-	uint32 c;
+	uint32_t c;
 	while ((c = data->readChar()) != ReadStream::kEOF)
 		hash = hashFNV64(hash, c);
 
@@ -141,7 +141,7 @@ static inline uint64 hashStringFNV64(const UString &string, Encoding encoding) {
  */
 
 /** Table of CRC32 polynomial feedback terms. */
-static const uint32 kCRC32Tab[] = {
+static const uint32_t kCRC32Tab[] = {
 	0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
 	0xE963A535, 0x9E6495A3, 0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988,
 	0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91, 0x1DB71064, 0x6AB020F2,
@@ -187,12 +187,12 @@ static const uint32 kCRC32Tab[] = {
 	0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
 };
 
-static inline uint32 hashCRC32(uint32 hash, uint32 c) {
+static inline uint32_t hashCRC32(uint32_t hash, uint32_t c) {
 	return kCRC32Tab[(hash ^ c) & 0xFF] ^ (hash >> 8);
 }
 
-static inline uint32 hashStringCRC32(const UString &string) {
-	uint32 hash = 0xFFFFFFFF;
+static inline uint32_t hashStringCRC32(const UString &string) {
+	uint32_t hash = 0xFFFFFFFF;
 
 	for (UString::iterator it = string.begin(); it != string.end(); ++it)
 		hash = hashCRC32(hash, *it);
@@ -200,14 +200,14 @@ static inline uint32 hashStringCRC32(const UString &string) {
 	return hash ^ 0xFFFFFFFF;
 }
 
-static inline uint32 hashStringCRC32(const UString &string, Encoding encoding) {
-	uint32 hash = 0xFFFFFFFF;
+static inline uint32_t hashStringCRC32(const UString &string, Encoding encoding) {
+	uint32_t hash = 0xFFFFFFFF;
 
 	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 
-	uint32 c;
+	uint32_t c;
 	while ((c = data->readChar()) != ReadStream::kEOF)
 		hash = hashCRC32(hash, c);
 
@@ -216,7 +216,7 @@ static inline uint32 hashStringCRC32(const UString &string, Encoding encoding) {
 // '--- CRC32, based on the implementation by Gary S. Brown ---'
 
 /** Hash the string with the given algorithm, as a series of UTF-8 characters. */
-static inline uint64 hashString(const UString &string, HashAlgo algo) {
+static inline uint64_t hashString(const UString &string, HashAlgo algo) {
 	switch (algo) {
 		case kHashDJB2:
 			return hashStringDJB2(string);
@@ -238,7 +238,7 @@ static inline uint64 hashString(const UString &string, HashAlgo algo) {
 }
 
 /** Hash the string with the given algorithm, as a series of bytes in the given encoding. */
-static inline uint64 hashString(const UString &string, HashAlgo algo, Encoding encoding) {
+static inline uint64_t hashString(const UString &string, HashAlgo algo, Encoding encoding) {
 	switch (algo) {
 		case kHashDJB2:
 			return hashStringDJB2(string, encoding);
@@ -259,7 +259,7 @@ static inline uint64 hashString(const UString &string, HashAlgo algo, Encoding e
 	return 0;
 }
 
-static inline UString formatHash(uint64 hash) {
+static inline UString formatHash(uint64_t hash) {
 	return UString::format("0x%04X%04X%04X%04X",
 			(uint) ((hash >> 48) & 0xFFFF),
 			(uint) ((hash >> 32) & 0xFFFF),

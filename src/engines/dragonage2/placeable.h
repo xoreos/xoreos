@@ -71,7 +71,7 @@ public:
 
 private:
 	/** The placeable's appearance; index into the Placeables MGDA. */
-	uint32 _appearanceID;
+	uint32_t _appearanceID;
 
 	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The placeable's model.
 

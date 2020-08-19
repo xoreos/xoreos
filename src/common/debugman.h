@@ -107,7 +107,7 @@ enum DebugGLType {
  */
 class DebugManager : public Singleton<DebugManager> {
 public:
-	static const uint32 kMaxVerbosityLevel = 9;
+	static const uint32_t kMaxVerbosityLevel = 9;
 
 	DebugManager();
 	~DebugManager();
@@ -116,19 +116,19 @@ public:
 	void getDebugChannels(std::vector<UString> &names, std::vector<UString> &descriptions) const;
 
 	/** Set the verbosity level of this channel (by ID). */
-	void setVerbosityLevel(DebugChannel channel, uint32 level);
+	void setVerbosityLevel(DebugChannel channel, uint32_t level);
 	/** Set the verbosity level of this channel (by name). */
-	void setVerbosityLevel(const UString &channel, uint32 level);
+	void setVerbosityLevel(const UString &channel, uint32_t level);
 
 	/** Return the verbosity level of this channel (by ID). */
-	uint32 getVerbosityLevel(DebugChannel channel) const;
+	uint32_t getVerbosityLevel(DebugChannel channel) const;
 	/** Return the verbosity level of this channel (by name). */
-	uint32 getVerbosityLevel(const UString &channel) const;
+	uint32_t getVerbosityLevel(const UString &channel) const;
 
 	/** Is this channel ID enabled for this verbosity level? */
-	bool isEnabled(DebugChannel channel, uint32 level) const;
+	bool isEnabled(DebugChannel channel, uint32_t level) const;
 	/** Is this channel name enabled for this verbosity level? */
-	bool isEnabled(const UString &channel, uint32 level) const;
+	bool isEnabled(const UString &channel, uint32_t level) const;
 
 	/** Sync verbosity levels from the ConfigManager.
 	 *
@@ -146,7 +146,7 @@ public:
 	void setConfigToVerbosityLevels();
 
 	/** Log (and print) an OpenGL debug message. */
-	void logDebugGL(DebugChannel channel, uint32 level, DebugGLType type, uint32 id, const char *msg);
+	void logDebugGL(DebugChannel channel, uint32_t level, DebugGLType type, uint32_t id, const char *msg);
 
 	/** Open a log file where all debug output will be written to.
 	 *
@@ -172,10 +172,10 @@ private:
 		UString name;        ///< The channel's name.
 		UString description; ///< The channel's description.
 
-		uint32 level; ///< The current level at which this debug channel is enabled.
+		uint32_t level; ///< The current level at which this debug channel is enabled.
 
 		/** Information about the last OpenGL message ID for this channel's types. */
-		uint32 glTypeIDs[kDebugGLTypeMAX];
+		uint32_t glTypeIDs[kDebugGLTypeMAX];
 	};
 
 	typedef std::map<UString, DebugChannel, UString::iless> ChannelMap;

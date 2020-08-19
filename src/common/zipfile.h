@@ -45,7 +45,7 @@ public:
 	/** A file. */
 	struct File {
 		UString name; ///< The file's name.
-		uint32 index; ///< The file's local index within the ZIP.
+		uint32_t index; ///< The file's local index within the ZIP.
 	};
 
 	typedef std::list<File> FileList;
@@ -57,16 +57,16 @@ public:
 	const FileList &getFiles() const;
 
 	/** Return the size of a file. */
-	size_t getFileSize(uint32 index) const;
+	size_t getFileSize(uint32_t index) const;
 
 	/** Return a stream of the file's contents. */
-	SeekableReadStream *getFile(uint32 index, bool tryNoCopy = false) const;
+	SeekableReadStream *getFile(uint32_t index, bool tryNoCopy = false) const;
 
 private:
 	/** Internal file information. */
 	struct IFile {
-		uint32 offset; ///< The offset of the file within the ZIP.
-		uint32 size;   ///< The file's size.
+		uint32_t offset; ///< The offset of the file within the ZIP.
+		uint32_t size;   ///< The file's size.
 	};
 
 	typedef std::vector<IFile> IFileList;
@@ -81,12 +81,12 @@ private:
 
 	void load(SeekableReadStream &zip);
 
-	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32 method,
-			uint32 compSize, uint32 realSize);
+	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32_t method,
+			uint32_t compSize, uint32_t realSize);
 
-	const IFile &getIFile(uint32 index) const;
+	const IFile &getIFile(uint32_t index) const;
 	void getFileProperties(SeekableReadStream &zip, const IFile &file,
-			uint16 &compMethod, uint32 &compSize, uint32 &realSize) const;
+			uint16_t &compMethod, uint32_t &compSize, uint32_t &realSize) const;
 };
 
 } // End of namespace Common

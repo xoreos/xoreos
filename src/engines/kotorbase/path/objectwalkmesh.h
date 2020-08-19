@@ -42,7 +42,7 @@ public:
 	ObjectWalkmesh(Situated *situated, Aurora::FileType fileType = Aurora::kFileTypePWK);
 
 	const std::vector<float> &getVertices() const;
-	const std::vector<uint32> &getFaces() const;
+	const std::vector<uint32_t> &getFaces() const;
 
 	bool in(const glm::vec2 &minBox, const glm::vec2 &maxBox) const;
 	bool in(const glm::vec2 &point) const;
@@ -65,7 +65,7 @@ private:
 	glm::vec3 _max;
 
 	std::vector<float>  _vertices;
-	std::vector<uint32> _faces;
+	std::vector<uint32_t> _faces;
 };
 
 } // End of namespace KotORBase

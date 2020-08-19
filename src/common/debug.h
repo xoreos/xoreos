@@ -40,7 +40,7 @@
  *  (if a global log file has been opened). See Common::DebugManager for
  *  details.
  */
-void debugC(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
+void debugC(Common::DebugChannel channel, uint32_t level, const char *s, ...) GCC_PRINTF(3, 4);
 
 /** Print a debug message, but only if the current debug level is at least
  *  the specified level for the specified channel.
@@ -51,6 +51,6 @@ void debugC(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_
  *  (if a global log file has been opened). See Common::DebugManager for
  *  details.
  */
-void debugCN(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
+void debugCN(Common::DebugChannel channel, uint32_t level, const char *s, ...) GCC_PRINTF(3, 4);
 
 #endif // COMMON_DEBUG_H

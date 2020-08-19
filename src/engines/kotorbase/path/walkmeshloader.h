@@ -54,46 +54,46 @@ public:
 	          const Common::UString &resRef,
 	          const glm::mat4 &transform,
 	          std::vector<float> &vertices,
-	          std::vector<uint32> &faces,
-	          std::vector<uint32> &faceTypes,
-	          std::vector<uint32> &adjFaces,
-	          std::map<uint32, uint32> &adjRooms,
+	          std::vector<uint32_t> &faces,
+	          std::vector<uint32_t> &faceTypes,
+	          std::vector<uint32_t> &adjFaces,
+	          std::map<uint32_t, uint32_t> &adjRooms,
 	          Pathfinding *pathfinding = 0);
 
 private:
 	void multiply(const float *v, const glm::mat4 &m, float *rv) const;
 
 	void appendFaceTypes(Common::SeekableReadStream &stream,
-	                     std::vector<uint32> &faceTypes,
-	                     uint32 faceCount,
-	                     uint32 faceTypeOffset);
+	                     std::vector<uint32_t> &faceTypes,
+	                     uint32_t faceCount,
+	                     uint32_t faceTypeOffset);
 
 	void appendFaces(Common::SeekableReadStream &stream,
-	                 std::vector<uint32> &faces, size_t prevVertexCount,
-	                 uint32 faceCount,
-	                 uint32 faceOffset);
+	                 std::vector<uint32_t> &faces, size_t prevVertexCount,
+	                 uint32_t faceCount,
+	                 uint32_t faceOffset);
 
 	void appendVertices(Common::SeekableReadStream &stream,
 	                    std::vector<float> &vertices,
-	                    uint32 vertexCount,
-	                    uint32 vertexOffset,
+	                    uint32_t vertexCount,
+	                    uint32_t vertexOffset,
 	                    const glm::mat4 &transform);
 
 	void appendAdjFaces(Common::SeekableReadStream &stream,
-	                    std::vector<uint32> &adjFaces, size_t prevFaceCount,
-	                    uint32 faceAdjCount,
-	                    uint32 faceAdjOffset);
+	                    std::vector<uint32_t> &adjFaces, size_t prevFaceCount,
+	                    uint32_t faceAdjCount,
+	                    uint32_t faceAdjOffset);
 
 	void appendPerimEdges(Common::SeekableReadStream &stream,
-	                      std::map<uint32, uint32> &adjRooms,
-	                      uint32 perimEdgeCount,
-	                      uint32 perimEdgeOffset);
+	                      std::map<uint32_t, uint32_t> &adjRooms,
+	                      uint32_t perimEdgeCount,
+	                      uint32_t perimEdgeOffset);
 
 	Common::AABBNode *getAABB(Common::SeekableReadStream &stream,
-	                          uint32 nodeOffset, uint32 AABBsOffset,
+	                          uint32_t nodeOffset, uint32_t AABBsOffset,
 	                          size_t prevFaceCount);
 
-	std::vector<uint32> _walkableFaces;
+	std::vector<uint32_t> _walkableFaces;
 	Common::AABBNode *_node;
 	Pathfinding *_pathfinding;
 };

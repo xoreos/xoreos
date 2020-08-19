@@ -41,16 +41,16 @@
 #include "src/aurora/erffile.h"
 #include "src/aurora/util.h"
 
-static const uint32 kERFID     = MKTAG('E', 'R', 'F', ' ');
-static const uint32 kMODID     = MKTAG('M', 'O', 'D', ' ');
-static const uint32 kHAKID     = MKTAG('H', 'A', 'K', ' ');
-static const uint32 kSAVID     = MKTAG('S', 'A', 'V', ' ');
-static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
-static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
-static const uint32 kVersion20 = MKTAG('V', '2', '.', '0');
-static const uint32 kVersion21 = MKTAG('V', '2', '.', '1');
-static const uint32 kVersion22 = MKTAG('V', '2', '.', '2');
-static const uint32 kVersion30 = MKTAG('V', '3', '.', '0');
+static const uint32_t kERFID     = MKTAG('E', 'R', 'F', ' ');
+static const uint32_t kMODID     = MKTAG('M', 'O', 'D', ' ');
+static const uint32_t kHAKID     = MKTAG('H', 'A', 'K', ' ');
+static const uint32_t kSAVID     = MKTAG('S', 'A', 'V', ' ');
+static const uint32_t kVersion10 = MKTAG('V', '1', '.', '0');
+static const uint32_t kVersion11 = MKTAG('V', '1', '.', '1');
+static const uint32_t kVersion20 = MKTAG('V', '2', '.', '0');
+static const uint32_t kVersion21 = MKTAG('V', '2', '.', '1');
+static const uint32_t kVersion22 = MKTAG('V', '2', '.', '2');
+static const uint32_t kVersion30 = MKTAG('V', '3', '.', '0');
 
 namespace Aurora {
 
@@ -158,7 +158,7 @@ ERFFile::ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &passw
 ERFFile::~ERFFile() {
 }
 
-void ERFFile::verifyVersion(uint32 id, uint32 version, bool utf16le) {
+void ERFFile::verifyVersion(uint32_t id, uint32_t version, bool utf16le) {
 	if ((id != kERFID) && (id != kMODID) && (id != kHAKID) && (id != kSAVID))
 		throw Common::Exception("Not an ERF file (%s)", Common::debugTag(id).c_str());
 
@@ -190,7 +190,7 @@ void ERFFile::verifyPasswordDigest() {
 
 		Common::UString passwordString(reinterpret_cast<const char *>(&_password[0]), _password.size());
 
-		uint64 passwordNumber = 0;
+		uint64_t passwordNumber = 0;
 		Common::parseString(passwordString, passwordNumber);
 
 		_password.resize(8);
@@ -342,7 +342,7 @@ void ERFFile::readV11Header(Common::SeekableReadStream &erf, ERFHeader &header) 
 
 	erf.skip(116); // Reserved
 
-	const uint32 keyListSize = header.offResList - header.offKeyList;
+	const uint32_t keyListSize = header.offResList - header.offKeyList;
 
 	/* Check whether the "true" V1.1 extended filenames would fit into the key
 	 * list. If so, this is probably a true V1.1 ERF, as found in Neverwinter
@@ -384,7 +384,7 @@ void ERFFile::readV21Header(Common::SeekableReadStream &erf, ERFHeader &header) 
 	header.compression = kCompressionStandardZlib;
 }
 
-void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags) {
+void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32_t &flags) {
 	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
 	header.buildYear = erf.readUint32LE() + 1900;
@@ -406,7 +406,7 @@ void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 	header.compression = (Compression) ((flags >> 29) & 0x00000007);
 }
 
-void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags) {
+void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32_t &flags) {
 	header.stringTableSize = erf.readUint32LE(); // Number of bytes in the string table
 	header.resCount        = erf.readUint32LE(); // Number of resources in the ERF
 
@@ -431,7 +431,7 @@ void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 	header.compression = (Compression) ((flags >> 29) & 0x00000007);
 }
 
-void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version,
+void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32_t version,
                             std::vector<byte> &password) {
 
 	header.clear();
@@ -483,7 +483,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		/* Version 2.2:
 		 * Encrypted data in Dragon Age: Origins. */
 
-		uint32 flags = 0;
+		uint32_t flags = 0;
 		readV22Header(erf, header, flags);
 
 	} else if (version == kVersion30) {
@@ -491,7 +491,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		/* Version 3.0:
 		 * Dragon Age II. */
 
-		uint32 flags = 0;
+		uint32_t flags = 0;
 		readV30Header(erf, header, flags);
 	}
 }
@@ -556,7 +556,7 @@ void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &he
 void ERFFile::readV10KeyList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offKeyList);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++index, ++res) {
 		res->name = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
 		erf.skip(4); // Resource ID
@@ -569,7 +569,7 @@ void ERFFile::readV10KeyList(Common::SeekableReadStream &erf, const ERFHeader &h
 void ERFFile::readV11KeyList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offKeyList);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	for (ResourceList::iterator res = _resources.begin(); res != _resources.end(); ++index, ++res) {
 		res->name = Common::readStringFixed(erf, Common::kEncodingASCII, 32);
 		erf.skip(4); // Resource ID
@@ -591,7 +591,7 @@ void ERFFile::readV10ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 void ERFFile::readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offResList);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
@@ -610,7 +610,7 @@ void ERFFile::readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 void ERFFile::readV21ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offResList);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
@@ -630,7 +630,7 @@ void ERFFile::readV21ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 void ERFFile::readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offResList);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
@@ -650,14 +650,14 @@ void ERFFile::readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 void ERFFile::readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offResList);
 
-	uint32 index = 0;
+	uint32_t index = 0;
 	ResourceList::iterator   res = _resources.begin();
 	IResourceList::iterator iRes = _iResources.begin();
 	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
-		int32 nameOffset = erf.readSint32LE();
+		int32_t nameOffset = erf.readSint32LE();
 
 		if (nameOffset >= 0) {
-			if ((uint32)nameOffset >= header.stringTableSize)
+			if ((uint32_t)nameOffset >= header.stringTableSize)
 				throw Common::Exception("Invalid ERF string table offset");
 
 			Common::UString name = header.stringTable.get() + nameOffset;
@@ -668,7 +668,7 @@ void ERFFile::readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 		res->index = index;
 		res->hash  = erf.readUint64LE();
 
-		uint32 typeHash = erf.readUint32LE();
+		uint32_t typeHash = erf.readUint32LE();
 
 		// Look up the file type by its hash
 		FileType type = TypeMan.getFileType(Common::kHashFNV32, typeHash);
@@ -682,11 +682,11 @@ void ERFFile::readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 
 }
 
-uint32 ERFFile::getBuildYear() const {
+uint32_t ERFFile::getBuildYear() const {
 	return _header.buildYear;
 }
 
-uint32 ERFFile::getBuildDay() const {
+uint32_t ERFFile::getBuildDay() const {
 	return _header.buildDay;
 }
 
@@ -698,18 +698,18 @@ const Archive::ResourceList &ERFFile::getResources() const {
 	return _resources;
 }
 
-const ERFFile::IResource &ERFFile::getIResource(uint32 index) const {
+const ERFFile::IResource &ERFFile::getIResource(uint32_t index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }
 
-uint32 ERFFile::getResourceSize(uint32 index) const {
+uint32_t ERFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).unpackedSize;
 }
 
-Common::SeekableReadStream *ERFFile::getResource(uint32 index, bool tryNoCopy) const {
+Common::SeekableReadStream *ERFFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy && (_header.encryption == kEncryptionNone) && (_header.compression == kCompressionNone))
@@ -764,7 +764,7 @@ Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, si
 }
 
 Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
-                                                uint32 unpackedSize) const {
+                                                uint32_t unpackedSize) const {
 
 	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
@@ -792,7 +792,7 @@ Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packed
 }
 
 Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStream *packedStream,
-                                                           uint32 unpackedSize) const {
+                                                           uint32_t unpackedSize) const {
 
 	/* Decompress using raw inflate. An extra one byte header specifies the window size. */
 
@@ -801,13 +801,13 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStr
 	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
 	const byte * const compressedData = stream->getData();
-	const uint32 packedSize = stream->size();
+	const uint32_t packedSize = stream->size();
 
 	return decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
 }
 
 Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
-                                                              uint32 unpackedSize) const {
+                                                              uint32_t unpackedSize) const {
 
 	/* Decompress using raw inflate. Use the default maximum window size (15). */
 
@@ -816,13 +816,13 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryRead
 	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
 	const byte * const compressedData = stream->getData();
-	const uint32 packedSize = stream->size();
+	const uint32_t packedSize = stream->size();
 
 	return decompressZlib(compressedData, packedSize, unpackedSize, Common::kWindowBitsMax);
 }
 
 Common::SeekableReadStream *ERFFile::decompressStandardZlib(Common::MemoryReadStream *packedStream,
-                                                            uint32 unpackedSize) const {
+                                                            uint32_t unpackedSize) const {
 
 	/* Decompress using raw inflate. Use the default maximum window size (15), and with zlib header. */
 
@@ -831,13 +831,13 @@ Common::SeekableReadStream *ERFFile::decompressStandardZlib(Common::MemoryReadSt
 	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
 	const byte * const compressedData = stream->getData();
-	const uint32 packedSize = stream->size();
+	const uint32_t packedSize = stream->size();
 
 	return decompressZlib(compressedData, packedSize, unpackedSize, -Common::kWindowBitsMax);
 }
 
-Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, uint32 packedSize,
-                                                    uint32 unpackedSize, int windowBits) const {
+Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, uint32_t packedSize,
+                                                    uint32_t unpackedSize, int windowBits) const {
 
 	// Decompress. Negative window size to signal not to look for a gzip header.
 	const byte *data = Common::decompressDeflate(compressedData, packedSize, unpackedSize, -windowBits);
@@ -851,7 +851,7 @@ Common::HashAlgo ERFFile::getNameHashAlgo() const {
 }
 
 LocString ERFFile::getDescription(Common::SeekableReadStream &erf) {
-	uint32 id, version;
+	uint32_t id, version;
 	bool ut16le;
 
 	readHeader(erf, id, version, ut16le);

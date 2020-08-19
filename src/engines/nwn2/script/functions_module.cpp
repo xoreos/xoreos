@@ -92,7 +92,7 @@ void Functions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::getJournalQuestExperience(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &plotID = ctx.getParams()[0].getString();
-	ctx.getReturn() = static_cast<int32>(_game->getModule().getJournal().getJournalQuestExperience(plotID));
+	ctx.getReturn() = static_cast<int32_t>(_game->getModule().getJournal().getJournalQuestExperience(plotID));
 }
 
 } // End of namespace NWN2

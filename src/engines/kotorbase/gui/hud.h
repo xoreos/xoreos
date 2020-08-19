@@ -54,8 +54,8 @@ public:
 
 	// Return to hideout
 
-	virtual void setReturnStrref(uint32 id);
-	virtual void setReturnQueryStrref(uint32 id);
+	virtual void setReturnStrref(uint32_t id);
+	virtual void setReturnQueryStrref(uint32_t id);
 	virtual void setReturnEnabled(bool);
 
 	// Container

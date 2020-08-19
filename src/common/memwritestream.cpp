@@ -49,6 +49,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <cstddef>
 
 #include "src/common/types.h"
 #include "src/common/memwritestream.h"

@@ -71,13 +71,13 @@ private:
 
 	struct PoolModel {
 		Model *model;
-		uint32 lastChanged { 0 };
-		uint8 skippedCount { 0 }; ///< Number of skipped loop iterations.
+		uint32_t lastChanged { 0 };
+		uint8_t skippedCount { 0 }; ///< Number of skipped loop iterations.
 
 		PoolModel(Model *m);
 	};
 
-	typedef std::map<uint32, PoolModel> ModelMap;
+	typedef std::map<uint32_t, PoolModel> ModelMap;
 	typedef std::queue<Model *> ModelQueue;
 
 	ModelMap _models;
@@ -97,7 +97,7 @@ private:
 
 
 	void threadMethod();
-	uint8 getNumIterationsToSkip(Model *model) const;
+	uint8_t getNumIterationsToSkip(Model *model) const;
 	bool handlePause();
 	void handleFlush();
 };

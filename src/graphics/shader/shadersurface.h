@@ -46,33 +46,33 @@ public:
 
 	Shader::ShaderObject *getVertexShader() const;
 
-	uint32 getFlags() const;
-	void setFlags(uint32 flags);
+	uint32_t getFlags() const;
+	void setFlags(uint32_t flags);
 
-	uint32 getVariableCount() const;
+	uint32_t getVariableCount() const;
 
-	Shader::ShaderVariableType getVariableType(uint32 index) const;
+	Shader::ShaderVariableType getVariableType(uint32_t index) const;
 
-	void *getVariableData(uint32 index) const;
+	void *getVariableData(uint32_t index) const;
 	void *getVariableData(const Common::UString &name) const;
 
-	const Common::UString &getVariableName(uint32 index) const;
+	const Common::UString &getVariableName(uint32_t index) const;
 
-	uint32 getVariableFlags(uint32 index) const;
+	uint32_t getVariableFlags(uint32_t index) const;
 
 	// Do not use this function to set sampler data. Instead, get the the variable data and modify
 	// it directly; the texture unit associated with the texture id might be incorrect otherwise.
 	// (Note: at the time of writing, vertex shader samplers are not supported).
-	void setVariableExternal(uint32 index, void *loc);
+	void setVariableExternal(uint32_t index, void *loc);
 	void setVariableExternal(const Common::UString &name, void *loc);
-	void setVariableInternal(uint32 index);
+	void setVariableInternal(uint32_t index);
 	void setVariableInternal(const Common::UString &name);
 
-	bool isVariableOwned(uint32 index) const;
+	bool isVariableOwned(uint32_t index) const;
 	bool isVariableOwned(const Common::UString &name) const;
 
 	// UBOs (Uniform Buffer Objects) are only for >= GL3.x.
-	void addUBO(uint32 index, GLuint glid);
+	void addUBO(uint32_t index, GLuint glid);
 
 	void bindProgram(Shader::ShaderProgram *program);
 	void bindProgram(Shader::ShaderProgram *program, const glm::mat4 *t);
@@ -87,29 +87,29 @@ public:
 
 	void useIncrement();
 	void useDecrement();
-	uint32 useCount() const;
+	uint32_t useCount() const;
 
 private:
 	struct ShaderSurfaceVariable {
 		void *data;
-		uint32 flags;  // Full flags may or may not be required here.
+		uint32_t flags;  // Full flags may or may not be required here.
 	};
 
 	std::vector<ShaderSurfaceVariable> _variableData;
 	std::vector<Shader::ShaderUBO> _uboArray;
 	Shader::ShaderObject *_vertShader;
-	uint32 _flags;
+	uint32_t _flags;
 
 	Common::UString _name;
-	uint32 _usageCount;
+	uint32_t _usageCount;
 
-	uint32 _objectModelviewIndex;
-	uint32 _textureViewIndex;
-	uint32 _bindPoseIndex;
-	uint32 _boneTransformsIndex;
+	uint32_t _objectModelviewIndex;
+	uint32_t _textureViewIndex;
+	uint32_t _bindPoseIndex;
+	uint32_t _boneTransformsIndex;
 
-	void *genSurfaceVar(uint32 index);
-	void delSurfaceVar(uint32 index);
+	void *genSurfaceVar(uint32_t index);
+	void delSurfaceVar(uint32_t index);
 };
 
 } // End of namespace Shader

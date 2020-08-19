@@ -73,18 +73,18 @@ public:
 	/** Return the sound file to play for this sound. */
 	const Common::UString &getSoundFile(size_t index) const;
 	/** Return the string reference of the text to display for this sound. */
-	uint32 getStrRef(size_t index) const;
+	uint32_t getStrRef(size_t index) const;
 	/** Return both the sound file and the string reference for this sound. */
-	void getSound(size_t index, Common::UString &soundFile, uint32 &strRef) const;
+	void getSound(size_t index, Common::UString &soundFile, uint32_t &strRef) const;
 	// '---
 
 	// .--- Writing sounds to the sound set
 	/** Set the sound file to play for this sound. */
 	void setSoundFile(size_t index, const Common::UString &soundFile);
 	/** Set the string reference of the text to display for this sound. */
-	void setStrRef(size_t index, uint32 strRef);
+	void setStrRef(size_t index, uint32_t strRef);
 	/** Set both the sound file and the string reference for this sound. */
-	void setSound(size_t index, const Common::UString &soundFile, uint32 strRef);
+	void setSound(size_t index, const Common::UString &soundFile, uint32_t strRef);
 	// '---
 
 	// .--- Writing SSF files
@@ -101,9 +101,9 @@ private:
 	/** A sound in the sound set. */
 	struct Sound {
 		Common::UString soundFile; ///< The name of the sound file to play.
-		uint32          strRef;    ///< StrRef of the text to display.
+		uint32_t        strRef;    ///< StrRef of the text to display.
 
-		Sound(const Common::UString &f = "", uint32 s = kStrRefInvalid);
+		Sound(const Common::UString &f = "", uint32_t s = kStrRefInvalid);
 	};
 
 	typedef std::vector<Sound> SoundSet;

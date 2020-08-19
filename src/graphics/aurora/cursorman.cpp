@@ -160,7 +160,7 @@ void CursorManager::set(const Common::UString &group, const Common::UString &sta
 	update();
 }
 
-uint8 CursorManager::getPosition(int &x, int &y) const {
+uint8_t CursorManager::getPosition(int &x, int &y) const {
 	return SDL_GetMouseState(&x, &y);
 }
 

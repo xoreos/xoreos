@@ -98,11 +98,11 @@ void Door::loadAppearance() {
 		loadAppearance(TwoDAReg.get2DA("doortypes"), _appearanceID);
 }
 
-void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
+void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32_t id) {
 	if (_appearanceID == Aurora::kFieldIDInvalid)
 		return;
 
-	uint32 column = twoda.headerToColumn("ModelName");
+	uint32_t column = twoda.headerToColumn("ModelName");
 	if (column == Aurora::kFieldIDInvalid)
 		column = twoda.headerToColumn("Model");
 

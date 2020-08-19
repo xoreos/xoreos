@@ -93,7 +93,7 @@ void XboxMediaVideo::processNextFrame(PacketVideo &videoPacket) {
 
 	// Read the frame header
 
-	uint32 frameHeader = _xmv->readUint32LE();
+	uint32_t frameHeader = _xmv->readUint32LE();
 
 	videoPacket.currentFrameSize      = (frameHeader & 0x1FFFF) * 4 + 4;
 	videoPacket.currentFrameTimestamp = (frameHeader >> 17) + videoPacket.lastFrameTime;
@@ -127,21 +127,21 @@ void XboxMediaVideo::load() {
 
 	_xmv->skip(4); // Next packet size
 
-	uint32 thisPacketSize = _xmv->readUint32LE();
+	uint32_t thisPacketSize = _xmv->readUint32LE();
 
 	_xmv->skip(4); // Max packet size
 
-	uint32 tag = _xmv->readUint32LE();
+	uint32_t tag = _xmv->readUint32LE();
 	if (tag != MKTAG('X', 'b', 'o', 'x'))
 		throw Common::Exception("XboxMediaVideo::load(): No 'Xbox' tag (%s)", Common::debugTag(tag).c_str());
 
-	uint32 version = _xmv->readUint32LE();
+	uint32_t version = _xmv->readUint32LE();
 
 	if ((version == 0) || (version > 4))
 		throw Common::Exception("XboxMediaVideo::load(): Unsupported version %d", version);
 
-	uint32 width    = _xmv->readUint32LE();
-	uint32 height   = _xmv->readUint32LE();
+	uint32_t width    = _xmv->readUint32LE();
+	uint32_t height   = _xmv->readUint32LE();
 
 	_xmv->skip(4); // Duration in ms
 
@@ -152,7 +152,7 @@ void XboxMediaVideo::load() {
 	_xmv->skip(2); // Unknown
 
 	// Audio track info
-	for (uint32 i = 0; i < _audioTrackCount; i++) {
+	for (uint32_t i = 0; i < _audioTrackCount; i++) {
 		audioTrackInfo[i].compression   = _xmv->readUint16LE();
 		audioTrackInfo[i].channels      = _xmv->readUint16LE();
 		audioTrackInfo[i].rate          = _xmv->readUint32LE();
@@ -163,7 +163,7 @@ void XboxMediaVideo::load() {
 	// Initialize the audio tracks
 	Common::PtrVector<XMVAudioTrack> audioTracks;
 	audioTracks.resize(_audioTrackCount);
-	for (uint16 i = 0; i < _audioTrackCount; i++) {
+	for (uint16_t i = 0; i < _audioTrackCount; i++) {
 		XMVAudioTrack *track;
 
 		// Try creating the track; if we can't, move on.
@@ -190,12 +190,12 @@ void XboxMediaVideo::load() {
 	_curPacket.video.currentFrameTimestamp = 0;
 
 	_curPacket.audio.resize(_audioTrackCount);
-	for (uint32 i = 0; i < _audioTrackCount; i++)
+	for (uint32_t i = 0; i < _audioTrackCount; i++)
 		_curPacket.audio[i].track = 0;
 
 
 	// We can only use the first audio track. Try to create it.
-	for (uint32 i = 0; i < _audioTrackCount; i++) {
+	for (uint32_t i = 0; i < _audioTrackCount; i++) {
 		if (!audioTracks[i])
 			continue;
 
@@ -330,7 +330,7 @@ void XboxMediaVideo::decodeNextTrackFrame(VideoTrack &track) {
 	if (_curPacket.video.frameCount == 0) {
 		static_cast<XMVVideoTrack &>(track).finish();
 
-		for (uint32 i = 0; i < _audioTrackCount; i++)
+		for (uint32_t i = 0; i < _audioTrackCount; i++)
 			if (_curPacket.audio[i].track)
 				_curPacket.audio[i].track->finish();
 
@@ -349,7 +349,7 @@ void XboxMediaVideo::decodeNextTrackFrame(VideoTrack &track) {
 	}
 }
 
-XboxMediaVideo::XMVVideoTrack::XMVVideoTrack(uint32 width, uint32 height, uint32 &timestamp) : _width(width), _height(height), _timestamp(timestamp), _curFrame(-1), _finished(false) {
+XboxMediaVideo::XMVVideoTrack::XMVVideoTrack(uint32_t width, uint32_t height, uint32_t &timestamp) : _width(width), _height(height), _timestamp(timestamp), _curFrame(-1), _finished(false) {
 }
 
 bool XboxMediaVideo::XMVVideoTrack::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &frameData) {

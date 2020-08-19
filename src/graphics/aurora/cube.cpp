@@ -141,8 +141,8 @@ void Cube::newFrame() {
 	if (_lastRotateTime == 0)
 		_lastRotateTime = EventMan.getTimestamp();
 
-	uint32 curTime  = EventMan.getTimestamp();
-	uint32 diffTime = curTime - _lastRotateTime;
+	uint32_t curTime  = EventMan.getTimestamp();
+	uint32_t diffTime = curTime - _lastRotateTime;
 
 	_rotation = diffTime * 0.1f;
 	if (_rotation >= 360)

@@ -70,7 +70,7 @@ WindowManager::~WindowManager() {
 void WindowManager::init() {
 	Common::enforceMainThread();
 
-	const uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
+	const uint32_t sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
@@ -92,7 +92,7 @@ void WindowManager::deinit() {
 }
 
 bool WindowManager::initRender(RenderType type, bool useDebug, int fsaa) {
-	uint32 flags = windowFlags();
+	uint32_t flags = windowFlags();
 
 	deinitWindow();
 
@@ -273,17 +273,17 @@ int WindowManager::getMaxFSAA() const {
 	return _fsaaMax;
 }
 
-uint32 WindowManager::windowFlags() {
+uint32_t WindowManager::windowFlags() {
 	if (_window)
 		return SDL_GetWindowFlags(_window);
 
-	uint32 flags = SDL_WINDOW_OPENGL;
+	uint32_t flags = SDL_WINDOW_OPENGL;
 	if (_fullScreen)
 		flags |= SDL_WINDOW_FULLSCREEN;
 	return flags;
 }
 
-void WindowManager::initWindow(uint32 flags) {
+void WindowManager::initWindow(uint32_t flags) {
 	int x = ConfigMan.getInt("x", SDL_WINDOWPOS_UNDEFINED);
 	int y = ConfigMan.getInt("y", SDL_WINDOWPOS_UNDEFINED);
 
@@ -359,7 +359,7 @@ void WindowManager::setGamma(float gamma) {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	uint16 gammaRamp[256];
+	uint16_t gammaRamp[256];
 	SDL_CalculateGammaRamp(gamma, gammaRamp);
 
 	int result = SDL_SetWindowGammaRamp(_window, gammaRamp, gammaRamp, gammaRamp);

@@ -54,7 +54,7 @@
 namespace Video {
 
 // I-Frame macroblock block pattern, codes
-static const uint32 wmv2HuffmanIMBCodes[64] = {
+static const uint32_t wmv2HuffmanIMBCodes[64] = {
 	0x0001, 0x0017, 0x0009, 0x0005, 0x0006, 0x0047, 0x0020, 0x0010,
 	0x0002, 0x007C, 0x003A, 0x001D, 0x0002, 0x00EC, 0x0077, 0x0000,
 	0x0003, 0x00B7, 0x002C, 0x0013, 0x0001, 0x0168, 0x0046, 0x003F,
@@ -66,7 +66,7 @@ static const uint32 wmv2HuffmanIMBCodes[64] = {
 };
 
 // I-Frame macroblock block pattern, lengths
-static const uint8 wmv2HuffmanIMBLengths[64] = {
+static const uint8_t wmv2HuffmanIMBLengths[64] = {
 	 1,  6,  5,  5,  5,  9,  7,  7,
 	 5,  9,  7,  7,  6,  9,  8,  8,
 	 5,  9,  7,  7,  6, 10,  8,  8,
@@ -79,7 +79,7 @@ static const uint8 wmv2HuffmanIMBLengths[64] = {
 
 
 // DCT DC coefficients, code 0 (low motion), luma, codes
-static const uint32 wmv2HuffmanDC0LumaCodes[120] = {
+static const uint32_t wmv2HuffmanDC0LumaCodes[120] = {
 	0x00001, 0x00001, 0x00001, 0x00001, 0x00005, 0x00007, 0x00008, 0x0000C,
 	0x00000, 0x00002, 0x00012, 0x0001A, 0x00003, 0x00007, 0x00027, 0x00037,
 	0x00005, 0x0004C, 0x0006C, 0x0006D, 0x00008, 0x00019, 0x0009B, 0x0001B,
@@ -98,7 +98,7 @@ static const uint32 wmv2HuffmanDC0LumaCodes[120] = {
 };
 
 // DCT DC coefficients, code 0 (low motion), luma, lengths
-static const uint8 wmv2HuffmanDC0LumaLengths[120] = {
+static const uint8_t wmv2HuffmanDC0LumaLengths[120] = {
 	 1,  2,  4,  5,  5,  5,  6,  6,
 	 7,  7,  7,  7,  8,  8,  8,  8,
 	 9,  9,  9,  9, 10, 10, 10, 10,
@@ -117,7 +117,7 @@ static const uint8 wmv2HuffmanDC0LumaLengths[120] = {
 };
 
 // DCT DC coefficients, code 0 (low motion), chroma, codes
-static const uint32 wmv2HuffmanDC0ChromaCodes[120] = {
+static const uint32_t wmv2HuffmanDC0ChromaCodes[120] = {
 	0x000000, 0x000001, 0x000005, 0x000009, 0x00000D, 0x000011, 0x00001D, 0x00001F,
 	0x000021, 0x000031, 0x000038, 0x000033, 0x000039, 0x00003D, 0x000061, 0x000079,
 	0x000080, 0x0000C8, 0x0000CA, 0x0000F0, 0x000081, 0x0000C0, 0x0000C9, 0x000107,
@@ -136,7 +136,7 @@ static const uint32 wmv2HuffmanDC0ChromaCodes[120] = {
 };
 
 // DCT DC coefficients, code 0 (low motion), chroma, lengths
-static const uint8 wmv2HuffmanDC0ChromaLengths[120] = {
+static const uint8_t wmv2HuffmanDC0ChromaLengths[120] = {
 	 2,  2,  3,  4,  4,  5,  5,  5,
 	 6,  6,  6,  6,  6,  6,  7,  7,
 	 8,  8,  8,  8,  8,  8,  8,  9,
@@ -155,7 +155,7 @@ static const uint8 wmv2HuffmanDC0ChromaLengths[120] = {
 };
 
 // DCT DC coefficients, code 1 (high motion), luma, codes
-static const uint32 wmv2HuffmanDC1LumaCodes[120] = {
+static const uint32_t wmv2HuffmanDC1LumaCodes[120] = {
 	0x000002, 0x000003, 0x000003, 0x000002, 0x000005, 0x000001, 0x000003, 0x000008,
 	0x000000, 0x000005, 0x00000D, 0x00000F, 0x000013, 0x000008, 0x000018, 0x00001C,
 	0x000024, 0x000004, 0x000006, 0x000012, 0x000032, 0x00003B, 0x00004A, 0x00004B,
@@ -174,7 +174,7 @@ static const uint32 wmv2HuffmanDC1LumaCodes[120] = {
 };
 
 // DCT DC coefficients, code 1 (high motion), luma, lengths
-static const uint8 wmv2HuffmanDC1LumaLengths[120] = {
+static const uint8_t wmv2HuffmanDC1LumaLengths[120] = {
 	 2,  2,  3,  4,  4,  5,  5,  5,
 	 6,  6,  6,  6,  6,  7,  7,  7,
 	 7,  8,  8,  8,  8,  8,  8,  8,
@@ -193,7 +193,7 @@ static const uint8 wmv2HuffmanDC1LumaLengths[120] = {
 };
 
 // DCT DC coefficients, code 1 (high motion), chroma, codes
-static const uint32 wmv2HuffmanDC1ChromaCodes[120] = {
+static const uint32_t wmv2HuffmanDC1ChromaCodes[120] = {
 	0x0000000, 0x0000001, 0x0000004, 0x0000007, 0x000000B, 0x000000D, 0x0000015, 0x0000028,
 	0x0000030, 0x0000032, 0x0000052, 0x0000062, 0x0000066, 0x00000A6, 0x00000C6, 0x00000CF,
 	0x000014F, 0x000018E, 0x000019C, 0x000029D, 0x000033A, 0x0000538, 0x000063C, 0x000063E,
@@ -212,7 +212,7 @@ static const uint32 wmv2HuffmanDC1ChromaCodes[120] = {
 };
 
 // DCT DC coefficients, code 1 (high motion), chroma, lengths
-static const uint8 wmv2HuffmanDC1ChromaLengths[120] = {
+static const uint8_t wmv2HuffmanDC1ChromaLengths[120] = {
 	 2,  2,  3,  3,  4,  4,  5,  6,
 	 6,  6,  7,  7,  7,  8,  8,  8,
 	 9,  9,  9, 10, 10, 11, 11, 11,
@@ -232,7 +232,7 @@ static const uint8 wmv2HuffmanDC1ChromaLengths[120] = {
 
 
 // Motion vector code 0 (low motion), codes
-static const uint32 wmv2HuffmanMV0Codes[1100] = {
+static const uint32_t wmv2HuffmanMV0Codes[1100] = {
 	0x0001, 0x0003, 0x0005, 0x0007, 0x0003, 0x0008, 0x000C, 0x0001,
 	0x0002, 0x001B, 0x0006, 0x000B, 0x0015, 0x0002, 0x000E, 0x000F,
 	0x0014, 0x0020, 0x0022, 0x0025, 0x0027, 0x0029, 0x002D, 0x004B,
@@ -374,7 +374,7 @@ static const uint32 wmv2HuffmanMV0Codes[1100] = {
 };
 
 // Motion vector code 0 (low motion), lengths
-static const uint8 wmv2HuffmanMV0Lengths[1100] = {
+static const uint8_t wmv2HuffmanMV0Lengths[1100] = {
 	 1,  4,  4,  4,  5,  5,  5,  6,
 	 6,  6,  7,  7,  7,  8,  8,  8,
 	 8,  8,  8,  8,  8,  8,  8,  8,
@@ -516,7 +516,7 @@ static const uint8 wmv2HuffmanMV0Lengths[1100] = {
 };
 
 // Motion vector code 0 (low motion), x difference
-static const uint8 wmv2MV0DiffX[1099] = {
+static const uint8_t wmv2MV0DiffX[1099] = {
 	32, 32, 31, 32, 33, 31, 33, 31,
 	33, 32, 34, 32, 30, 32, 31, 34,
 	35, 32, 34, 33, 29, 33, 30, 30,
@@ -658,7 +658,7 @@ static const uint8 wmv2MV0DiffX[1099] = {
 };
 
 // Motion vector code 0 (low motion), y difference
-static const uint8 wmv2MV0DiffY[1099] = {
+static const uint8_t wmv2MV0DiffY[1099] = {
 	32, 31, 32, 33, 32, 31, 31, 33,
 	33, 34, 32, 30, 32, 35, 34, 31,
 	32, 29, 33, 30, 32, 34, 33, 31,
@@ -800,7 +800,7 @@ static const uint8 wmv2MV0DiffY[1099] = {
 };
 
 // Motion vector code 1 (high motion), codes
-static const uint32 wmv2HuffmanMV1Codes[1100] = {
+static const uint32_t wmv2HuffmanMV1Codes[1100] = {
 	0x0000, 0x0007, 0x0009, 0x000F, 0x000A, 0x0011, 0x001A, 0x001C,
 	0x0011, 0x0031, 0x0025, 0x002D, 0x002F, 0x006F, 0x0075, 0x0041,
 	0x004C, 0x004E, 0x005C, 0x0060, 0x0062, 0x0066, 0x0068, 0x0069,
@@ -942,7 +942,7 @@ static const uint32 wmv2HuffmanMV1Codes[1100] = {
 };
 
 // Motion vector code 1 (high motion), lengths
-static const uint8 wmv2HuffmanMV1Lengths[1100] = {
+static const uint8_t wmv2HuffmanMV1Lengths[1100] = {
 	 2,  4,  4,  4,  5,  5,  5,  5,
 	 6,  6,  7,  7,  7,  7,  7,  8,
 	 8,  8,  8,  8,  8,  8,  8,  8,
@@ -1084,7 +1084,7 @@ static const uint8 wmv2HuffmanMV1Lengths[1100] = {
 };
 
 // Motion vector code 1 (high motion), x difference
-static const uint8 wmv2MV1DiffX[1099] = {
+static const uint8_t wmv2MV1DiffX[1099] = {
 	32, 31, 32, 31, 33, 32, 33, 33,
 	31, 34, 30, 32, 32, 34, 35, 32,
 	34, 33, 29, 30, 30, 32, 31, 31,
@@ -1226,7 +1226,7 @@ static const uint8 wmv2MV1DiffX[1099] = {
 };
 
 // Motion vector code 1 (high motion), y difference
-static const uint8 wmv2MV1DiffY[1099] = {
+static const uint8_t wmv2MV1DiffY[1099] = {
 	32, 32, 31, 31, 32, 33, 31, 33,
 	33, 32, 32, 30, 34, 31, 32, 29,
 	33, 30, 32, 33, 31, 35, 34, 30,
@@ -1368,7 +1368,7 @@ static const uint8 wmv2MV1DiffY[1099] = {
 };
 
 // P-Frame macroblock block pattern, code 0 (high rate), codes
-static const uint32 wmv2HuffmanPMB0Codes[128] = {
+static const uint32_t wmv2HuffmanPMB0Codes[128] = {
 	0x000A7, 0x1B2B8, 0x1B28E, 0x36575, 0x06CAC, 0x00A69, 0x02934, 0x0526B,
 	0x06CA1, 0x1B2B9, 0x029AD, 0x29353, 0x06CA7, 0x06CAB, 0x1B2BB, 0x0029B,
 	0x0D944, 0x00A6A, 0x149A8, 0x3651F, 0x06CAF, 0x00A4C, 0x3651E, 0x00A48,
@@ -1388,7 +1388,7 @@ static const uint32 wmv2HuffmanPMB0Codes[128] = {
 };
 
 // P-Frame macroblock block pattern, code 0 (high rate), lengths
-static const uint8 wmv2HuffmanPMB0Lengths[128] = {
+static const uint8_t wmv2HuffmanPMB0Lengths[128] = {
 	14, 18, 18, 19, 16, 18, 20, 21,
 	16, 18, 20, 24, 16, 16, 18, 16,
 	17, 18, 23, 19, 16, 18, 19, 18,
@@ -1408,7 +1408,7 @@ static const uint8 wmv2HuffmanPMB0Lengths[128] = {
 };
 
 // P-Frame macroblock block pattern, code 1 (mid rate), codes
-static const uint32 wmv2HuffmanPMB1Codes[128] = {
+static const uint32_t wmv2HuffmanPMB1Codes[128] = {
 	0x002A1, 0x05740, 0x1A0BF, 0x15D19, 0x01514, 0x0461E, 0x15176, 0x15177,
 	0x011AD, 0x0682E, 0x682F9, 0x3417D, 0x01A36, 0x02A2D, 0x0D05E, 0x06824,
 	0x01515, 0x0545C, 0x230E9, 0x11AFA, 0x015D7, 0x05747, 0x08D79, 0x06825,
@@ -1428,7 +1428,7 @@ static const uint32 wmv2HuffmanPMB1Codes[128] = {
 };
 
 // P-Frame macroblock block pattern, code 1 (mid rate), lengths
-static const uint8 wmv2HuffmanPMB1Lengths[128] = {
+static const uint8_t wmv2HuffmanPMB1Lengths[128] = {
 	10, 15, 18, 17, 13, 15, 17, 17,
 	13, 16, 20, 19, 14, 14, 17, 16,
 	13, 15, 18, 17, 13, 15, 16, 16,
@@ -1448,7 +1448,7 @@ static const uint8 wmv2HuffmanPMB1Lengths[128] = {
 };
 
 // P-Frame macroblock block pattern, code 2 (low rate), codes
-static const uint32 wmv2HuffmanPMB2Codes[128] = {
+static const uint32_t wmv2HuffmanPMB2Codes[128] = {
 	0x000D4, 0x021C5, 0x0F18A, 0x0D5BC, 0x00879, 0x0354D, 0x10E3F, 0x10F54,
 	0x00866, 0x0356E, 0x10F55, 0x10E3E, 0x010CE, 0x03C84, 0x0D5BD, 0x0F18B,
 	0x00868, 0x0438C, 0x087AB, 0x0790B, 0x00F10, 0x0433D, 0x06AD3, 0x0790A,
@@ -1468,7 +1468,7 @@ static const uint32 wmv2HuffmanPMB2Codes[128] = {
 };
 
 // P-Frame macroblock block pattern, code 2 (low rate), lengths
-static const uint8 wmv2HuffmanPMB2Lengths[128] = {
+static const uint8_t wmv2HuffmanPMB2Lengths[128] = {
 	 8, 14, 16, 16, 12, 14, 17, 17,
 	12, 14, 17, 17, 13, 14, 16, 16,
 	12, 15, 16, 15, 12, 15, 15, 15,
@@ -1489,7 +1489,7 @@ static const uint8 wmv2HuffmanPMB2Lengths[128] = {
 
 
 // DCT AC coefficients, code 0 (low motion), luma, codes
-static const uint32 wmv2HuffmanAC0LumaCodes[133] = {
+static const uint32_t wmv2HuffmanAC0LumaCodes[133] = {
 	0x0001, 0x0006, 0x000F, 0x0016, 0x0020, 0x0018, 0x0008, 0x009A,
 	0x0056, 0x013E, 0x00F0, 0x03A5, 0x0077, 0x01EF, 0x009A, 0x005D,
 	0x0001, 0x0011, 0x0002, 0x000B, 0x0012, 0x01D6, 0x027E, 0x0191,
@@ -1510,7 +1510,7 @@ static const uint32 wmv2HuffmanAC0LumaCodes[133] = {
 };
 
 // DCT AC coefficients, code 0 (low motion), luma, lengths
-static const uint8 wmv2HuffmanAC0LumaLengths[133] = {
+static const uint8_t wmv2HuffmanAC0LumaLengths[133] = {
 	 2,  3,  4,  5,  6,  7,  8,  8,
 	 9,  9, 10, 10, 11, 11, 12, 13,
 	 4,  5,  7,  8,  9,  9, 10, 11,
@@ -1531,7 +1531,7 @@ static const uint8 wmv2HuffmanAC0LumaLengths[133] = {
 };
 
 // DCT AC coefficients, code 1 (high motion), luma, codes
-static const uint32 wmv2HuffmanAC1LumaCodes[186] = {
+static const uint32_t wmv2HuffmanAC1LumaCodes[186] = {
 	0x0001, 0x0005, 0x000D, 0x0012, 0x000E, 0x0015, 0x0013, 0x003F,
 	0x004B, 0x011F, 0x00B8, 0x03E3, 0x0172, 0x024D, 0x03DA, 0x02DD,
 	0x1F55, 0x05B9, 0x3EAE, 0x0000, 0x0010, 0x0008, 0x0020, 0x0029,
@@ -1559,7 +1559,7 @@ static const uint32 wmv2HuffmanAC1LumaCodes[186] = {
 };
 
 // DCT AC coefficients, code 1 (high motion), luma, lengths
-static const uint8 wmv2HuffmanAC1LumaLengths[186] = {
+static const uint8_t wmv2HuffmanAC1LumaLengths[186] = {
 	 2,  3,  4,  5,  6,  7,  8,  8,
 	 9,  9, 10, 10, 11, 12, 12, 13,
 	13, 14, 14,  4,  5,  7,  8,  9,
@@ -1587,7 +1587,7 @@ static const uint8 wmv2HuffmanAC1LumaLengths[186] = {
 };
 
 // DCT AC coefficients, code 2 (standard MPEG4), luma, codes
-static const uint32 wmv2HuffmanAC2LumaCodes[103] = {
+static const uint32_t wmv2HuffmanAC2LumaCodes[103] = {
 	0x0002, 0x0006, 0x000F, 0x000D, 0x000C, 0x0015, 0x0013, 0x0012,
 	0x0017, 0x001F, 0x001E, 0x001D, 0x0025, 0x0024, 0x0023, 0x0021,
 	0x0021, 0x0020, 0x000F, 0x000E, 0x0007, 0x0006, 0x0020, 0x0021,
@@ -1604,7 +1604,7 @@ static const uint32 wmv2HuffmanAC2LumaCodes[103] = {
 };
 
 // DCT AC coefficients, code 2 (standard MPEG4), luma, lengths
-static const uint8 wmv2HuffmanAC2LumaLengths[103] = {
+static const uint8_t wmv2HuffmanAC2LumaLengths[103] = {
 	 2,  3,  4,  5,  5,  6,  6,  6,
 	 7,  8,  8,  8,  9,  9,  9,  9,
 	10, 10, 10, 10, 11, 11, 11, 11,
@@ -1621,7 +1621,7 @@ static const uint8 wmv2HuffmanAC2LumaLengths[103] = {
 };
 
 // DCT AC coefficients, code 0 (low motion), chroma, codes
-static const uint32 wmv2HuffmanAC0ChromaCodes[149] = {
+static const uint32_t wmv2HuffmanAC0ChromaCodes[149] = {
 	0x0004, 0x0014, 0x0017, 0x007F, 0x0154, 0x01F2, 0x00BF, 0x0065,
 	0x0AAA, 0x0630, 0x1597, 0x03B7, 0x2B22, 0x0BE6, 0x000B, 0x0037,
 	0x0062, 0x0007, 0x0166, 0x00CE, 0x1590, 0x05F6, 0x0BE7, 0x0007,
@@ -1644,7 +1644,7 @@ static const uint32 wmv2HuffmanAC0ChromaCodes[149] = {
 };
 
 // DCT AC coefficients, code 0 (low motion), chroma, lengths
-static const uint8 wmv2HuffmanAC0ChromaLengths[149] = {
+static const uint8_t wmv2HuffmanAC0ChromaLengths[149] = {
 	 3,  5,  7,  8,  9, 10, 11, 12,
 	12, 13, 13, 14, 14, 15,  4,  7,
 	 9, 11, 12, 13, 13, 14, 15,  5,
@@ -1667,7 +1667,7 @@ static const uint8 wmv2HuffmanAC0ChromaLengths[149] = {
 };
 
 // DCT AC coefficients, code 1 (high motion), chroma, codes
-static const uint32 wmv2HuffmanAC1ChromaCodes[169] = {
+static const uint32_t wmv2HuffmanAC1ChromaCodes[169] = {
 	0x0000, 0x0003, 0x000B, 0x0014, 0x003F, 0x005D, 0x00A2, 0x00AC,
 	0x016E, 0x020A, 0x02E2, 0x0432, 0x05C9, 0x0827, 0x0B54, 0x04E6,
 	0x105F, 0x172A, 0x20B2, 0x2D4E, 0x39F0, 0x4175, 0x5A9E, 0x0004,
@@ -1693,7 +1693,7 @@ static const uint32 wmv2HuffmanAC1ChromaCodes[169] = {
 };
 
 // DCT AC coefficients, code 1 (high motion), chroma, lengths
-static const uint8 wmv2HuffmanAC1ChromaLengths[169] = {
+static const uint8_t wmv2HuffmanAC1ChromaLengths[169] = {
 	 3,  4,  5,  6,  6,  7,  8,  9,
 	 9, 10, 10, 11, 11, 12, 12, 13,
 	13, 13, 14, 14, 14, 15, 15,  4,
@@ -1719,7 +1719,7 @@ static const uint8 wmv2HuffmanAC1ChromaLengths[169] = {
 };
 
 // DCT AC coefficients, code 2 (standard MPEG4), chroma, codes
-static const uint32 wmv2HuffmanAC2ChromaCodes[103] = {
+static const uint32_t wmv2HuffmanAC2ChromaCodes[103] = {
 	0x0002, 0x000F, 0x0015, 0x0017, 0x001F, 0x0025, 0x0024, 0x0021,
 	0x0020, 0x0007, 0x0006, 0x0020, 0x0006, 0x0014, 0x001E, 0x000F,
 	0x0021, 0x0050, 0x000E, 0x001D, 0x000E, 0x0051, 0x000D, 0x0023,
@@ -1736,7 +1736,7 @@ static const uint32 wmv2HuffmanAC2ChromaCodes[103] = {
 };
 
 // DCT AC coefficients, code 2 (standard MPEG4), chroma, lengths
-static const uint8 wmv2HuffmanAC2ChromaLengths[103] = {
+static const uint8_t wmv2HuffmanAC2ChromaLengths[103] = {
 	 2,  4,  6,  7,  8,  9,  9, 10,
 	10, 11, 11, 11,  3,  6,  8, 10,
 	11, 12,  4,  8, 10, 12,  5,  9,
@@ -1754,7 +1754,7 @@ static const uint8 wmv2HuffmanAC2ChromaLengths[103] = {
 
 
 // DCT AC coefficients run table, code 0 (low motion), luma
-static const uint8 wmv2RunTable0Luma[132] = {
+static const uint8_t wmv2RunTable0Luma[132] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  2,  2,  2,
@@ -1772,17 +1772,17 @@ static const uint8 wmv2RunTable0Luma[132] = {
 };
 
 // DCT AC coefficients run delta table, code 0 (low motion), luma
-static const uint8 wmv2RunDeltaTable0Luma[17] = {
+static const uint8_t wmv2RunDeltaTable0Luma[17] = {
 	255, 20, 15, 13, 6, 4, 3, 3, 2, 1, 1, 1, 0, 0, 0, 0, 0
 };
 
 // DCT AC coefficients run delta table, last run, code 0 (low motion), luma
-static const uint8 wmv2RunDeltaTableLast0Luma[5] = {
+static const uint8_t wmv2RunDeltaTableLast0Luma[5] = {
 	255, 26, 13, 3, 1
 };
 
 // DCT AC coefficients level table, code 0 (low motion), luma
-static const uint8 wmv2LevelTable0Luma[132] = {
+static const uint8_t wmv2LevelTable0Luma[132] = {
 	 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
 	11, 12, 13, 14, 15, 16,  1,  2,  3,  4,
 	 5,  6,  7,  8,  9, 10, 11,  1,  2,  3,
@@ -1800,20 +1800,20 @@ static const uint8 wmv2LevelTable0Luma[132] = {
 };
 
 // DCT AC coefficients level delta table, code 0 (low motion), luma
-static const uint8 wmv2LevelDeltaTable0Luma[21] = {
+static const uint8_t wmv2LevelDeltaTable0Luma[21] = {
 	16, 11,  8,  7,  5,  4,  4,  3,  3,  3,
    3,  3,  3,  3,  2,  2,  1,  1,  1,  1,  1
 };
 
 // DCT AC coefficients level delta table, last run, code 0 (low motion), luma
-static const uint8 wmv2LevelDeltaTableLast0Luma[27] = {
+static const uint8_t wmv2LevelDeltaTableLast0Luma[27] = {
 	4,  4,  3,  3,  2,  2,  2,  2,  2,  2,
 	2,  2,  2,  2,  1,  1,  1,  1,  1,  1,
 	1,  1,  1,  1,  1,  1
 };
 
 // DCT AC coefficients run table, code 1 (high motion), luma
-static const uint8 wmv2RunTable1Luma[185] = {
+static const uint8_t wmv2RunTable1Luma[185] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -1836,18 +1836,18 @@ static const uint8 wmv2RunTable1Luma[185] = {
 };
 
 // DCT AC coefficients run delta table, code 1 (high motion), luma
-static const uint8 wmv2RunDeltaTable1Luma[20] = {
+static const uint8_t wmv2RunDeltaTable1Luma[20] = {
 	255, 30, 17, 15,  9,  5,  4,  3,  3,  3,
 	  3,  3,  2,  1,  1,  1,  0,  0,  0,  0
 };
 
 // DCT AC coefficients run delta table, last run, code 1 (high motion), luma
-static const uint8 wmv2RunDeltaTableLast1Luma[7] = {
+static const uint8_t wmv2RunDeltaTableLast1Luma[7] = {
 	255, 37, 15,  4,  3,  1, 0
 };
 
 // DCT AC coefficients level table, code 1 (high motion), luma
-static const uint8 wmv2LevelTable1Luma[185] = {
+static const uint8_t wmv2LevelTable1Luma[185] = {
 	 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
 	11, 12, 13, 14, 15, 16, 17, 18, 19,  1,
 	 2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
@@ -1870,7 +1870,7 @@ static const uint8 wmv2LevelTable1Luma[185] = {
 };
 
 // DCT AC coefficients level delta table, code 1 (high motion), luma
-static const uint8 wmv2LevelDeltaTable1Luma[31] = {
+static const uint8_t wmv2LevelDeltaTable1Luma[31] = {
 	19, 15, 12, 11,  6,  5,  4,  4,  4,  4,
 	 3,  3,  3,  3,  3,  3,  2,  2,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -1878,7 +1878,7 @@ static const uint8 wmv2LevelDeltaTable1Luma[31] = {
 };
 
 // DCT AC coefficients level delta table, last run, code 1 (high motion), luma
-static const uint8 wmv2LevelDeltaTableLast1Luma[38] = {
+static const uint8_t wmv2LevelDeltaTableLast1Luma[38] = {
 	 6,  5,  4,  4,  3,  2,  2,  2,  2,  2,  2,
 	 2,  2,  2,  2,  2,  1,  1,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -1886,7 +1886,7 @@ static const uint8 wmv2LevelDeltaTableLast1Luma[38] = {
 };
 
 // DCT AC coefficients run table, code 2 (standard MPEG), luma
-static const uint8 wmv2RunTable2Luma[102] = {
+static const uint8_t wmv2RunTable2Luma[102] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  1,  1,  1,
@@ -1901,19 +1901,19 @@ static const uint8 wmv2RunTable2Luma[102] = {
 };
 
 // DCT AC coefficients run delta table, code 2 (standard MPEG), luma
-static const uint8 wmv2RunDeltaTable2Luma[28] = {
+static const uint8_t wmv2RunDeltaTable2Luma[28] = {
 	255, 14,  9,  7,  3,  2,  1,  1,  1,  1,
 	  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0
 };
 
 // DCT AC coefficients run delta table, last run, code 2 (standard MPEG), luma
-static const uint8 wmv2RunDeltaTableLast2Luma[9] = {
+static const uint8_t wmv2RunDeltaTableLast2Luma[9] = {
 	255, 20, 6, 1, 0, 0, 0, 0, 0
 };
 
 // DCT AC coefficients level table, code 2 (standard MPEG), luma
-static const uint8 wmv2LevelTable2Luma[102] = {
+static const uint8_t wmv2LevelTable2Luma[102] = {
 	 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
 	11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 	21, 22, 23, 24, 25, 26, 27,  1,  2,  3,
@@ -1928,19 +1928,19 @@ static const uint8 wmv2LevelTable2Luma[102] = {
 };
 
 // DCT AC coefficients level delta table, code 2 (standard MPEG), luma
-static const uint8 wmv2LevelDeltaTable2Luma[15] = {
+static const uint8_t wmv2LevelDeltaTable2Luma[15] = {
 	27, 10,  5,  4,  3,  3,  3,  3,  2,  2,
 	 1,  1,  1,  1,  1
 };
 
 // DCT AC coefficients level delta table, last run, code 2 (standard MPEG), luma
-static const uint8 wmv2LevelDeltaTableLast2Luma[21] = {
+static const uint8_t wmv2LevelDeltaTableLast2Luma[21] = {
 	 8,  3,  2,  2,  2,  2,  2,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1
 };
 
 // DCT AC coefficients run table, code 0 (low motion), chroma
-static const uint8 wmv2RunTable0Chroma[148] = {
+static const uint8_t wmv2RunTable0Chroma[148] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  1,  1,  1,  1,  1,  1,
 	 1,  1,  1,  2,  2,  2,  2,  2,  3,  3,
@@ -1959,18 +1959,18 @@ static const uint8 wmv2RunTable0Chroma[148] = {
 };
 
 // DCT AC coefficients run delta table, code 0 (low motion), chroma
-static const uint8 wmv2RunDeltaTable0Chroma[15] = {
+static const uint8_t wmv2RunDeltaTable0Chroma[15] = {
 	255, 29, 15, 12,  5,  2,  1,  1,  1,  1,
 	  0,  0,  0,  0,  0
 };
 
 // DCT AC coefficients run delta table, last run, code 0 (low motion), chroma
-static const uint8 wmv2RunDeltaTableLast0Chroma[6] = {
+static const uint8_t wmv2RunDeltaTableLast0Chroma[6] = {
 	255, 43, 15,  3,  1,  0
 };
 
 // DCT AC coefficients level table, code 0 (low motion), chroma
-static const uint8 wmv2LevelTable0Chroma[148] = {
+static const uint8_t wmv2LevelTable0Chroma[148] = {
 	 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
 	11, 12, 13, 14,  1,  2,  3,  4,  5,  6,
 	 7,  8,  9,  1,  2,  3,  4,  5,  1,  2,
@@ -1989,14 +1989,14 @@ static const uint8 wmv2LevelTable0Chroma[148] = {
 };
 
 // DCT AC coefficients level delta table, code 0 (low motion), chroma
-static const uint8 wmv2LevelDeltaTable0Chroma[30] = {
+static const uint8_t wmv2LevelDeltaTable0Chroma[30] = {
 	14,  9,  5,  4,  4,  4,  3,  3,  3,  3,
 	 3,  3,  3,  2,  2,  2,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1
 };
 
 // DCT AC coefficients level delta table, last run, code 0 (low motion), chroma
-static const uint8 wmv2LevelDeltaTableLast0Chroma[44] = {
+static const uint8_t wmv2LevelDeltaTableLast0Chroma[44] = {
 	 5,  4,  3,  3,  2,  2,  2,  2,  2,  2,
 	 2,  2,  2,  2,  2,  2,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -2005,7 +2005,7 @@ static const uint8 wmv2LevelDeltaTableLast0Chroma[44] = {
 };
 
 // DCT AC coefficients run table, code 1 (high motion), chroma
-static const uint8 wmv2RunTable1Chroma[168] = {
+static const uint8_t wmv2RunTable1Chroma[168] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  1,  1,  1,  1,  1,  1,  1,
@@ -2026,19 +2026,19 @@ static const uint8 wmv2RunTable1Chroma[168] = {
 };
 
 // DCT AC coefficients run delta table, code 1 (high motion), chroma
-static const uint8 wmv2RunDeltaTable1Chroma[24] = {
+static const uint8_t wmv2RunDeltaTable1Chroma[24] = {
 	255, 26, 16, 11,  7,  5,  3,  3,  2,  1,
 	  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0
 };
 
 // DCT AC coefficients run delta table, last run, code 1 (high motion), chroma
-static const uint8 wmv2RunDeltaTableLast1Chroma[10] = {
+static const uint8_t wmv2RunDeltaTableLast1Chroma[10] = {
 	255, 36, 14,  6,  3,  1,  0,  0,  0,  0
 };
 
 // DCT AC coefficients level table, code 1 (high motion), chroma
-static const uint8 wmv2LevelTable1Chroma[168] = {
+static const uint8_t wmv2LevelTable1Chroma[168] = {
 	 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
 	11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 	21, 22, 23,  1,  2,  3,  4,  5,  6,  7,
@@ -2059,14 +2059,14 @@ static const uint8 wmv2LevelTable1Chroma[168] = {
 };
 
 // DCT AC coefficients level delta table, code 1 (high motion), chroma
-static const uint8 wmv2LevelDeltaTable1Chroma[27] = {
+static const uint8_t wmv2LevelDeltaTable1Chroma[27] = {
 	23, 11,  8,  7,  5,  5,  4,  4,  3,  3,
 	 3,  3,  2,  2,  2,  2,  2,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1
 };
 
 // DCT AC coefficients level delta table, last run, code 1 (high motion), chroma
-static const uint8 wmv2LevelDeltaTableLast1Chroma[37] = {
+static const uint8_t wmv2LevelDeltaTableLast1Chroma[37] = {
 	 9,  5,  4,  4,  3,  3,  3,  2,  2,  2,
 	 2,  2,  2,  2,  2,  1,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -2074,7 +2074,7 @@ static const uint8 wmv2LevelDeltaTableLast1Chroma[37] = {
 };
 
 // DCT AC coefficients run table, code 2 (standard MPEG), chroma
-static const uint8 wmv2RunTable2Chroma[102] = {
+static const uint8_t wmv2RunTable2Chroma[102] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  1,  1,  1,  1,  1,  1,  2,  2,
 	 2,  2,  3,  3,  3,  4,  4,  4,  5,  5,
@@ -2089,18 +2089,18 @@ static const uint8 wmv2RunTable2Chroma[102] = {
 };
 
 // DCT AC coefficients run delta table, code 2 (standard MPEG), chroma
-static const uint8 wmv2RunDeltaTable2Chroma[13] = {
+static const uint8_t wmv2RunDeltaTable2Chroma[13] = {
 	255, 26, 10,  6,  2,  1,  1,  0,  0,  0,
 	  0,  0,  0
 };
 
 // DCT AC coefficients run delta table, last run, code 2 (standard MPEG), chroma
-static const uint8 wmv2RunDeltaTableLast2Chroma[4] = {
+static const uint8_t wmv2RunDeltaTableLast2Chroma[4] = {
 	255, 40,  1,  0
 };
 
 // DCT AC coefficients level table, code 2 (standard MPEG), chroma
-static const uint8 wmv2LevelTable2Chroma[102] = {
+static const uint8_t wmv2LevelTable2Chroma[102] = {
 	 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,
 	11, 12,  1,  2,  3,  4,  5,  6,  1,  2,
 	 3,  4,  1,  2,  3,  1,  2,  3,  1,  2,
@@ -2115,14 +2115,14 @@ static const uint8 wmv2LevelTable2Chroma[102] = {
 };
 
 // DCT AC coefficients level delta table, code 2 (standard MPEG), chroma
-static const uint8 wmv2LevelDeltaTable2Chroma[27] = {
+static const uint8_t wmv2LevelDeltaTable2Chroma[27] = {
 	12,  6,  4,  3,  3,  3,  3,  2,  2,  2,
 	 2,  1,  1,  1,  1,  1,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1
 };
 
 // DCT AC coefficients level delta table, last run, code 2 (standard MPEG), chroma
-static const uint8 wmv2LevelDeltaTableLast2Chroma[41] = {
+static const uint8_t wmv2LevelDeltaTableLast2Chroma[41] = {
 	 3,  2,  1,  1,  1,  1,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
 	 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -2132,7 +2132,7 @@ static const uint8 wmv2LevelDeltaTableLast2Chroma[41] = {
 
 
 // I-Frame coefficient zig-zag scantable, horizontal
-const uint8 wmv2ZigZagHorizontal[64] = {
+const uint8_t wmv2ZigZagHorizontal[64] = {
 	0x00, 0x01, 0x08, 0x02, 0x03, 0x09, 0x10, 0x18,
 	0x11, 0x0A, 0x04, 0x05, 0x0B, 0x12, 0x19, 0x20,
 	0x28, 0x30, 0x21, 0x1A, 0x13, 0x0C, 0x06, 0x07,
@@ -2144,7 +2144,7 @@ const uint8 wmv2ZigZagHorizontal[64] = {
 };
 
 // I-Frame coefficient zig-zag scantable, vertical
-const uint8 wmv2ZigZagVertical[64] = {
+const uint8_t wmv2ZigZagVertical[64] = {
 	0x00, 0x08, 0x10, 0x01, 0x18, 0x20, 0x28, 0x09,
 	0x02, 0x03, 0x0A, 0x11, 0x19, 0x30, 0x38, 0x29,
 	0x21, 0x1A, 0x12, 0x0B, 0x04, 0x05, 0x0C, 0x13,
@@ -2156,7 +2156,7 @@ const uint8 wmv2ZigZagVertical[64] = {
 };
 
 // I-Frame coefficient zig-zag scantable, normal
-const uint8 wmv2ZigZagNormal[64] = {
+const uint8_t wmv2ZigZagNormal[64] = {
 	0x00, 0x08, 0x01, 0x02, 0x09, 0x10, 0x18, 0x11,
 	0x0A, 0x03, 0x04, 0x0B, 0x12, 0x19, 0x20, 0x28,
 	0x21, 0x30, 0x1A, 0x13, 0x0C, 0x05, 0x06, 0x0D,
@@ -2168,7 +2168,7 @@ const uint8 wmv2ZigZagNormal[64] = {
 };
 
 // P-Frame coefficient zig-zag scantable, 8x8
-const uint8 wmv2ZigZag8x8[64] = {
+const uint8_t wmv2ZigZag8x8[64] = {
 	 0,  1,  8, 16,  9,  2,  3, 10,
 	17, 24, 32, 25, 18, 11,  4,  5,
 	 6,  7, 13, 12, 19, 26, 33, 40,
@@ -2180,7 +2180,7 @@ const uint8 wmv2ZigZag8x8[64] = {
 };
 
 // P-Frame coefficient zig-zag scantable, 8x4
-const uint8 wmv2ZigZag8x4[32] = {
+const uint8_t wmv2ZigZag8x4[32] = {
 	 0,  1,  2,  8,  3,  9, 10, 16,
 	 4, 11, 17, 24, 18, 12,  5, 19,
 	25, 13, 20, 26, 27,  6, 21, 28,
@@ -2188,7 +2188,7 @@ const uint8 wmv2ZigZag8x4[32] = {
 };
 
 // P-Frame coefficient zig-zag scantable, 4x8
-const uint8 wmv2ZigZag4x8[32] = {
+const uint8_t wmv2ZigZag4x8[32] = {
 	 0,  4,  1,  8,  5, 12,  9,  2,
 	16,  6, 13, 20, 10, 24, 17, 14,
 	28, 21, 18,  3, 25, 29,  7, 22,

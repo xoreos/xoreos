@@ -41,7 +41,7 @@ Variable::Variable(Type type) : _type(kTypeVoid) {
 	setType(type);
 }
 
-Variable::Variable(int32 value) : _type(kTypeVoid) {
+Variable::Variable(int32_t value) : _type(kTypeVoid) {
 	setType(kTypeInt);
 
 	*this = value;
@@ -185,7 +185,7 @@ Variable &Variable::operator=(const Variable &var) {
 	return *this;
 }
 
-Variable &Variable::operator=(int32 value) {
+Variable &Variable::operator=(int32_t value) {
 	if (_type != kTypeInt)
 		throw Common::Exception("Can't assign an int value to a non-int variable");
 
@@ -295,7 +295,7 @@ Type Variable::getType() const {
 	return _type;
 }
 
-int32 Variable::getInt() const {
+int32_t Variable::getInt() const {
 	if (_type != kTypeInt)
 		throw Common::Exception("Can't get an int value from a non-int variable");
 

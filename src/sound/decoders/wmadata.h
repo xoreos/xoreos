@@ -55,7 +55,7 @@
 
 namespace Sound {
 
-const uint16 wmaCriticalFreqs[25] = {
+const uint16_t wmaCriticalFreqs[25] = {
 	100,   200,  300, 400,   510,  630,  770,    920,
 	1080, 1270, 1480, 1720, 2000, 2320, 2700,   3150,
 	3700, 4400, 5300, 6400, 7700, 9500, 12000, 15500,
@@ -63,25 +63,25 @@ const uint16 wmaCriticalFreqs[25] = {
 };
 
 /* First value is number of bands */
-static const uint8 exponentBand22050[3][25] = {
+static const uint8_t exponentBand22050[3][25] = {
 	{ 10, 4, 8, 4, 8, 8, 12, 20, 24, 24, 16 },
 	{ 14, 4, 8, 8, 4, 12, 12, 16, 24, 16, 20, 24, 32, 40, 36 },
 	{ 23, 4, 4, 4, 8, 4, 4, 8, 8, 8, 8, 8, 12, 12, 16, 16, 24, 24, 32, 44, 48, 60, 84, 72 }
 };
 
-static const uint8 exponentBand32000[3][25] = {
+static const uint8_t exponentBand32000[3][25] = {
 	{ 11, 4, 4, 8, 4, 4, 12, 16, 24, 20, 28, 4 },
 	{ 15, 4, 8, 4, 4, 8, 8, 16, 20, 12, 20, 20, 28, 40, 56, 8 },
 	{ 16, 8, 4, 8, 8, 12, 16, 20, 24, 40, 32, 32, 44, 56, 80, 112, 16 }
 };
 
-static const uint8 exponentBand44100[3][25] = {
+static const uint8_t exponentBand44100[3][25] = {
 	{ 12,  4,   4,   4,   4,   4,   8,   8,   8,  12,  16,  20,  36 },
 	{ 15,  4,   8,   4,   8,   8,   4,   8,   8,  12,  12,  12,  24,  28,  40,  76 },
 	{ 17,  4,   8,   8,   4,  12,  12,   8,   8,  24,  16,  20,  24,  32,  40,  60,  80, 152 }
 };
 
-static const uint32 coef0Huffcodes[666] = {
+static const uint32_t coef0Huffcodes[666] = {
 	0x00258, 0x0003D, 0x00000, 0x00005, 0x00008, 0x00008, 0x0000C, 0x0001B,
 	0x0001F, 0x00015, 0x00024, 0x00032, 0x0003A, 0x00026, 0x0002C, 0x0002F,
 	0x0004A, 0x0004D, 0x00061, 0x00070, 0x00073, 0x00048, 0x00052, 0x0005A,
@@ -168,7 +168,7 @@ static const uint32 coef0Huffcodes[666] = {
 	0x0B761, 0x096C6
 };
 
-static const uint8 coef0Huffbits[666] = {
+static const uint8_t coef0Huffbits[666] = {
 	11,  6,  2,  3,  4,  5,  5,  5,
 	 5,  6,  6,  6,  6,  7,  7,  7,
 	 7,  7,  7,  7,  7,  8,  8,  8,
@@ -255,7 +255,7 @@ static const uint8 coef0Huffbits[666] = {
 	17, 17
 };
 
-static const uint32 coef1Huffcodes[555] = {
+static const uint32_t coef1Huffcodes[555] = {
 	0x00115, 0x00002, 0x00001, 0x00000, 0x0000D, 0x00007, 0x00013, 0x0001D,
 	0x00008, 0x0000C, 0x00023, 0x0002B, 0x0003F, 0x00017, 0x0001B, 0x00043,
 	0x00049, 0x00050, 0x00055, 0x00054, 0x00067, 0x00064, 0x0007B, 0x0002D,
@@ -328,7 +328,7 @@ static const uint32 coef1Huffcodes[555] = {
 	0x08076, 0x07386, 0x05148
 };
 
-static const uint8 coef1Huffbits[555] = {
+static const uint8_t coef1Huffbits[555] = {
 	 9,  5,  2,  4,  4,  5,  5,  5,
 	 6,  6,  6,  6,  6,  7,  7,  7,
 	 7,  7,  7,  7,  7,  7,  7,  8,
@@ -401,7 +401,7 @@ static const uint8 coef1Huffbits[555] = {
 	16, 15, 15
 };
 
-static const uint32 coef2Huffcodes[1336] = {
+static const uint32_t coef2Huffcodes[1336] = {
 	0x0003E6, 0x0000F6, 0x000000, 0x000002, 0x000006, 0x00000F, 0x00001B, 0x000028,
 	0x000039, 0x00003F, 0x00006B, 0x000076, 0x0000B7, 0x0000E8, 0x0000EF, 0x000169,
 	0x0001A7, 0x0001D4, 0x0001DC, 0x0002C4, 0x000349, 0x000355, 0x000391, 0x0003DC,
@@ -571,7 +571,7 @@ static const uint32 coef2Huffcodes[1336] = {
 	0x072DE4, 0x06A3C0, 0x03E5EF, 0x162E65, 0x072DE3, 0x072DFB, 0x06A35F, 0x06A3EB
 };
 
-static const uint8 coef2Huffbits[1336] = {
+static const uint8_t coef2Huffbits[1336] = {
 	11,  9,  2,  3,  4,  4,  5,  6,
 	 6,  7,  7,  8,  8,  8,  9,  9,
 	 9,  9, 10, 10, 10, 10, 11, 11,
@@ -741,7 +741,7 @@ static const uint8 coef2Huffbits[1336] = {
 	20, 19, 19, 21, 20, 20, 19, 19
 };
 
-static const uint32 coef3Huffcodes[1072] = {
+static const uint32_t coef3Huffcodes[1072] = {
 	0x001B2, 0x00069, 0x00000, 0x00004, 0x00006, 0x0000E, 0x00014, 0x00019,
 	0x00016, 0x0002B, 0x00030, 0x0003D, 0x0003C, 0x0005A, 0x0005F, 0x0006D,
 	0x0007E, 0x0005F, 0x0007F, 0x000B6, 0x000BC, 0x000D8, 0x000F2, 0x000FE,
@@ -878,7 +878,7 @@ static const uint32 coef3Huffcodes[1072] = {
 	0x0F5CE, 0x163F2, 0x0FD71, 0x1FFD2, 0x160C4, 0x1FFD4, 0x2C7D3, 0x1BB74
 };
 
-static const uint8 coef3Huffbits[1072] = {
+static const uint8_t coef3Huffbits[1072] = {
 	 9,  7,  2,  3,  4,  4,  5,  5,
 	 6,  6,  6,  6,  7,  7,  7,  7,
 	 7,  8,  8,  8,  8,  8,  8,  8,
@@ -1015,7 +1015,7 @@ static const uint8 coef3Huffbits[1072] = {
 	17, 17, 17, 17, 17, 17, 18, 17
 };
 
-static const uint32 coef4Huffcodes[476] = {
+static const uint32_t coef4Huffcodes[476] = {
 	0x00F01, 0x0001E, 0x00000, 0x00004, 0x00006, 0x0000D, 0x0000A, 0x00017,
 	0x0001D, 0x00017, 0x0002C, 0x00031, 0x00039, 0x0003E, 0x00039, 0x0005A,
 	0x00066, 0x00070, 0x0007B, 0x00070, 0x00077, 0x000AF, 0x000C9, 0x000F2,
@@ -1078,7 +1078,7 @@ static const uint32 coef4Huffcodes[476] = {
 	0x1E7AF, 0x182EB, 0x1E0D4, 0x3896E
 };
 
-static const uint8 coef4Huffbits[476] = {
+static const uint8_t coef4Huffbits[476] = {
 	12,  6,  2,  3,  4,  4,  5,  5,
 	 5,  6,  6,  6,  6,  6,  7,  7,
 	 7,  7,  7,  8,  8,  8,  8,  8,
@@ -1141,7 +1141,7 @@ static const uint8 coef4Huffbits[476] = {
 	17, 17, 17, 19
 };
 
-static const uint32 coef5Huffcodes[435] = {
+static const uint32_t coef5Huffcodes[435] = {
 	0x00347, 0x0000B, 0x00001, 0x00001, 0x0000C, 0x00004, 0x00010, 0x00015,
 	0x0001F, 0x0000B, 0x00023, 0x00026, 0x00029, 0x00035, 0x00037, 0x00001,
 	0x00015, 0x0001A, 0x0001D, 0x0001C, 0x0001E, 0x0004E, 0x00049, 0x00051,
@@ -1199,7 +1199,7 @@ static const uint32 coef5Huffcodes[435] = {
 	0x03F6E, 0x1E416, 0x0D8E7
 };
 
-static const uint8 coef5Huffbits[435] = {
+static const uint8_t coef5Huffbits[435] = {
 	10,  4,  2,  4,  4,  5,  5,  5,
 	 5,  6,  6,  6,  6,  6,  6,  7,
 	 7,  7,  7,  7,  7,  7,  7,  7,
@@ -1257,7 +1257,7 @@ static const uint8 coef5Huffbits[435] = {
 	16, 17, 16
 };
 
-static const uint16 levels0[60] = {
+static const uint16_t levels0[60] = {
 	317, 92, 62, 60, 19, 17, 10,  7,
 	  6,  5,  5,  3,  3,  3,  2,  2,
 	  2,  2,  2,  2,  2,  1,  2,  2,
@@ -1268,7 +1268,7 @@ static const uint16 levels0[60] = {
 	  1,  1,  1,  1
 };
 
-static const uint16 levels1[40] = {
+static const uint16_t levels1[40] = {
 	311, 91, 61, 28, 10,  6,  5,  2,
 	  2,  2,  2,  2,  2,  2,  2,  1,
 	  1,  1,  1,  1,  1,  1,  1,  1,
@@ -1276,7 +1276,7 @@ static const uint16 levels1[40] = {
 	  1,  1,  1,  1,  1,  1,  1,  1
 };
 
-static const uint16 levels2[340] = {
+static const uint16_t levels2[340] = {
 	181, 110, 78, 63, 61, 62, 60, 61,
 	 33,  41, 41, 19, 17, 19, 12, 11,
 	  9,  11, 10,  6,  8,  7,  6,  4,
@@ -1322,7 +1322,7 @@ static const uint16 levels2[340] = {
 	  1,   1,  1,  1
 };
 
-static const uint16 levels3[180] = {
+static const uint16_t levels3[180] = {
 	351, 122, 76, 61, 41, 42, 24, 30,
 	 22,  19, 11,  9, 10,  8,  5,  5,
 	  4,   5,  5,  3,  3,  3,  3,  3,
@@ -1348,7 +1348,7 @@ static const uint16 levels3[180] = {
 	  1,   1,  1,  1
 };
 
-static const uint16 levels4[70] = {
+static const uint16_t levels4[70] = {
 	113, 68, 49, 42, 40, 32, 27, 15,
 	 10,  5,  3,  3,  3,  3,  2,  2,
 	  2,  2,  2,  1,  1,  1,  1,  1,
@@ -1360,7 +1360,7 @@ static const uint16 levels4[70] = {
 	  1,  1,  1,  1,  1,  1
 };
 
-static const uint16 levels5[40] = {
+static const uint16_t levels5[40] = {
 	214, 72, 42, 40, 18,  4,  4,  2,
 	  2,  2,  2,  2,  1,  1,  2,  1,
 	  1,  1,  1,  1,  1,  1,  1,  1,
@@ -1374,9 +1374,9 @@ struct WMACoefHuffmanParam {
 
 	int maxLevel;
 
-	const uint32 *huffCodes; ///< Bit values.
-	const uint8  *huffBits;  ///< Bit sizes.
-	const uint16 *levels;    ///< Table to build run/level tables.
+	const uint32_t *huffCodes; ///< Bit values.
+	const uint8_t  *huffBits;  ///< Bit sizes.
+	const uint16_t *levels;    ///< Table to build run/level tables.
 };
 
 static const WMACoefHuffmanParam coefHuffmanParam[6] = {
@@ -1388,7 +1388,7 @@ static const WMACoefHuffmanParam coefHuffmanParam[6] = {
 	{ ARRAYSIZE(coef5Huffbits), ARRAYSIZE(levels5), coef5Huffcodes, coef5Huffbits, levels5 }
 };
 
-const uint32 hgainHuffCodes[37] = {
+const uint32_t hgainHuffCodes[37] = {
 	0x00003, 0x002E7, 0x00001, 0x005CD, 0x0005D, 0x005C9, 0x0005E, 0x00003,
 	0x00016, 0x0000B, 0x00001, 0x00006, 0x00001, 0x00006, 0x00004, 0x00005,
 	0x00004, 0x00007, 0x00003, 0x00007, 0x00004, 0x0000A, 0x0000A, 0x00002,
@@ -1396,7 +1396,7 @@ const uint32 hgainHuffCodes[37] = {
 	0x005C8, 0x000B8, 0x005CA, 0x005CB, 0x005CC
 };
 
-const uint8 hgainHuffBits[37] = {
+const uint8_t hgainHuffBits[37] = {
 	10, 12, 10, 13,  9, 13,  9,  8,
 	 7,  5,  5,  4,  4,  3,  3,  3,
 	 4,  3,  4,  4,  5,  5,  6,  8,
@@ -1404,7 +1404,7 @@ const uint8 hgainHuffBits[37] = {
 	13, 10, 13, 13, 13
 };
 
-const uint32 scaleHuffCodes[121] = {
+const uint32_t scaleHuffCodes[121] = {
 	0x3FFE8, 0x3FFE6, 0x3FFE7, 0x3FFE5, 0x7FFF5, 0x7FFF1, 0x7FFED, 0x7FFF6,
 	0x7FFEE, 0x7FFEF, 0x7FFF0, 0x7FFFC, 0x7FFFD, 0x7FFFF, 0x7FFFE, 0x7FFF7,
 	0x7FFF8, 0x7FFFB, 0x7FFF9, 0x3FFE4, 0x7FFFA, 0x3FFE3, 0x1FFEF, 0x1FFF0,
@@ -1423,7 +1423,7 @@ const uint32 scaleHuffCodes[121] = {
 	0x7FFF3
 };
 
-const uint8 scaleHuffBits[121] = {
+const uint8_t scaleHuffBits[121] = {
 	18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
 	19, 19, 19, 18, 19, 18, 17, 17, 16, 17, 16, 16, 16, 16, 15, 15,
 	14, 14, 14, 14, 14, 14, 13, 13, 12, 12, 12, 11, 12, 11, 10, 10,

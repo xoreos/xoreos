@@ -206,11 +206,11 @@ void HUD::init() {
 	KotORBase::HUD::init();
 }
 
-void HUD::setReturnStrref(uint32 id) {
+void HUD::setReturnStrref(uint32_t id) {
 	_menu.setReturnStrref(id);
 }
 
-void HUD::setReturnQueryStrref(uint32 id) {
+void HUD::setReturnQueryStrref(uint32_t id) {
 	_menu.setReturnQueryStrref(id);
 }
 
@@ -271,7 +271,7 @@ void HUD::showContainer(KotORBase::Inventory &inv) {
 	}
 }
 
-void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
+void HUD::setPortrait(uint8_t n, bool visible, const Common::UString &portrait) {
 	Odyssey::WidgetLabel *labelBack = getLabel(Common::UString("LBL_BACK") + Common::composeString(n));
 	if (labelBack)
 		labelBack->setInvisible(!visible);

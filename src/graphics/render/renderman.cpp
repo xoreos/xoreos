@@ -51,7 +51,7 @@ void RenderManager::setCameraReference(const glm::vec3 &reference) {
 }
 
 void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha) {
-	uint32 flags = renderable->getMaterial()->getFlags();
+	uint32_t flags = renderable->getMaterial()->getFlags();
 	if (flags & Shader::ShaderMaterial::MATERIAL_DECAL) {
 		_queueColorSolidDecal.queueItem(renderable, transform, alpha);
 	} else if (flags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {

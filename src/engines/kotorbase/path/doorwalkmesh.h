@@ -38,7 +38,7 @@ public:
 	DoorWalkmesh(Door *door);
 
 	const std::vector<float> &getVertices() const;
-	const std::vector<uint32> &getFaces() const;
+	const std::vector<uint32_t> &getFaces() const;
 
 	bool in(const glm::vec2 &minBox, const glm::vec2 &maxBox) const;
 	bool in(const glm::vec2 &point) const;
@@ -49,7 +49,7 @@ private:
 	Door *_door;
 
 	std::vector<float> _noVertices;
-	std::vector<uint32> _noFaces;
+	std::vector<uint32_t> _noFaces;
 };
 
 } // End of namespace KotORBase

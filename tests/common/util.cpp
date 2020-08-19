@@ -101,30 +101,30 @@ GTEST_TEST(Util, ISPOWER2) {
 }
 
 GTEST_TEST(Util, NEXTPOWER2) {
-	EXPECT_EQ(NEXTPOWER2((uint32)  3),  4);
-	EXPECT_EQ(NEXTPOWER2((uint32)  5),  8);
-	EXPECT_EQ(NEXTPOWER2((uint32) 10), 16);
+	EXPECT_EQ(NEXTPOWER2((uint32_t)  3),  4);
+	EXPECT_EQ(NEXTPOWER2((uint32_t)  5),  8);
+	EXPECT_EQ(NEXTPOWER2((uint32_t) 10), 16);
 
-	EXPECT_EQ(NEXTPOWER2((uint32)  0),  1);
+	EXPECT_EQ(NEXTPOWER2((uint32_t)  0),  1);
 
-	EXPECT_EQ(NEXTPOWER2((uint32)  2),  2);
-	EXPECT_EQ(NEXTPOWER2((uint32)  4),  4);
-	EXPECT_EQ(NEXTPOWER2((uint32)  8),  8);
-	EXPECT_EQ(NEXTPOWER2((uint32) 16), 16);
+	EXPECT_EQ(NEXTPOWER2((uint32_t)  2),  2);
+	EXPECT_EQ(NEXTPOWER2((uint32_t)  4),  4);
+	EXPECT_EQ(NEXTPOWER2((uint32_t)  8),  8);
+	EXPECT_EQ(NEXTPOWER2((uint32_t) 16), 16);
 }
 
 GTEST_TEST(Util, ARRAYSIZE) {
-	static const uint32 kArray[5] = { 0 };
+	static const uint32_t kArray[5] = { 0 };
 
 	EXPECT_EQ(ARRAYSIZE(kArray), 5);
 }
 
 GTEST_TEST(Util, convertIEEEFloatToFloat) {
-	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32) 0x00000000),   0.00f);
-	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32) 0x3F800000),   1.00f);
-	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32) 0xBF800000), - 1.00f);
-	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32) 0x41BC0000),  23.50f);
-	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32) 0x40A75C29),   5.23f);
+	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32_t) 0x00000000),   0.00f);
+	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32_t) 0x3F800000),   1.00f);
+	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32_t) 0xBF800000), - 1.00f);
+	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32_t) 0x41BC0000),  23.50f);
+	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32_t) 0x40A75C29),   5.23f);
 }
 
 GTEST_TEST(Util, convertIEEEDoubleToDouble) {
@@ -136,11 +136,11 @@ GTEST_TEST(Util, convertIEEEDoubleToDouble) {
 }
 
 GTEST_TEST(Util, convertIEEEFloatFromFloat) {
-	EXPECT_EQ(convertIEEEFloat(  0.00f), (uint32) 0x00000000);
-	EXPECT_EQ(convertIEEEFloat(  1.00f), (uint32) 0x3F800000);
-	EXPECT_EQ(convertIEEEFloat(- 1.00f), (uint32) 0xBF800000);
-	EXPECT_EQ(convertIEEEFloat( 23.50f), (uint32) 0x41BC0000);
-	EXPECT_EQ(convertIEEEFloat(  5.23f), (uint32) 0x40A75C29);
+	EXPECT_EQ(convertIEEEFloat(  0.00f), (uint32_t) 0x00000000);
+	EXPECT_EQ(convertIEEEFloat(  1.00f), (uint32_t) 0x3F800000);
+	EXPECT_EQ(convertIEEEFloat(- 1.00f), (uint32_t) 0xBF800000);
+	EXPECT_EQ(convertIEEEFloat( 23.50f), (uint32_t) 0x41BC0000);
+	EXPECT_EQ(convertIEEEFloat(  5.23f), (uint32_t) 0x40A75C29);
 }
 
 GTEST_TEST(Util, convertIEEEDoubleFromDouble) {

@@ -159,10 +159,10 @@ YUVToRGBLookup::YUVToRGBLookup(YUVToRGBManager::LuminanceScale scale) {
 }
 
 YUVToRGBManager::YUVToRGBManager() {
-	int16 *Cr_r_tab = &_colorTab[0 * 256];
-	int16 *Cr_g_tab = &_colorTab[1 * 256];
-	int16 *Cb_g_tab = &_colorTab[2 * 256];
-	int16 *Cb_b_tab = &_colorTab[3 * 256];
+	int16_t *Cr_r_tab = &_colorTab[0 * 256];
+	int16_t *Cr_g_tab = &_colorTab[1 * 256];
+	int16_t *Cb_g_tab = &_colorTab[2 * 256];
+	int16_t *Cb_b_tab = &_colorTab[3 * 256];
 
 	// Generate the tables for the display surface
 
@@ -170,11 +170,11 @@ YUVToRGBManager::YUVToRGBManager() {
 		// Gamma correction (luminescence table) and chroma correction
 		// would be done here. See the Berkeley mpeg_play sources.
 
-		int16 CR = (i - 128), CB = CR;
-		Cr_r_tab[i] = (int16) ( (0.419 / 0.299) * CR) + 0 * 768 + 256;
-		Cr_g_tab[i] = (int16) (-(0.299 / 0.419) * CR) + 1 * 768 + 256;
-		Cb_g_tab[i] = (int16) (-(0.114 / 0.331) * CB);
-		Cb_b_tab[i] = (int16) ( (0.587 / 0.331) * CB) + 2 * 768 + 256;
+		int16_t CR = (i - 128), CB = CR;
+		Cr_r_tab[i] = (int16_t) ( (0.419 / 0.299) * CR) + 0 * 768 + 256;
+		Cr_g_tab[i] = (int16_t) (-(0.299 / 0.419) * CR) + 1 * 768 + 256;
+		Cb_g_tab[i] = (int16_t) (-(0.114 / 0.331) * CB);
+		Cb_b_tab[i] = (int16_t) ( (0.587 / 0.331) * CB) + 2 * 768 + 256;
 	}
 }
 
@@ -209,9 +209,9 @@ void YUVToRGBManager::convert420(LuminanceScale scale, byte *dst, int dstPitch, 
 		for (int w = 0; w < halfWidth; w++) {
 			const byte *L;
 
-			int16 cr_r  = _colorTab[*vSrc + 0 * 256];
-			int16 crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
-			int16 cb_b  = _colorTab[*uSrc + 3 * 256];
+			int16_t cr_r  = _colorTab[*vSrc + 0 * 256];
+			int16_t crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
+			int16_t cb_b  = _colorTab[*uSrc + 3 * 256];
 			uSrc++;
 			vSrc++;
 
@@ -248,9 +248,9 @@ void YUVToRGBManager::convert420(LuminanceScale scale, byte *dst, int dstPitch, 
 		for (int w = 0; w < halfWidth; w++) {
 			const byte *L;
 
-			int16 cr_r  = _colorTab[*vSrc + 0 * 256];
-			int16 crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
-			int16 cb_b  = _colorTab[*uSrc + 3 * 256];
+			int16_t cr_r  = _colorTab[*vSrc + 0 * 256];
+			int16_t crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
+			int16_t cb_b  = _colorTab[*uSrc + 3 * 256];
 			uSrc++;
 			vSrc++;
 

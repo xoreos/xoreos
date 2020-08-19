@@ -84,7 +84,7 @@ private:
 
 		Common::UString displayName;
 
-		uint32 number;
+		uint32_t number;
 
 		bool operator<(const Character &c) const;
 	};

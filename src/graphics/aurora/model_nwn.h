@@ -61,14 +61,14 @@ private:
 
 		Common::UString texture;
 
-		uint32 offModelData;
-		uint32 offRawData;
+		uint32_t offModelData;
+		uint32_t offRawData;
 
 		bool hasPosition;
 		bool hasOrientation;
 
 		Common::StreamTokenizer *tokenize;
-		std::vector<uint32> anims;
+		std::vector<uint32_t> anims;
 
 		ParserContext(const Common::UString &name, const Common::UString &t);
 		~ParserContext();
@@ -83,7 +83,7 @@ private:
 	void addState(ParserContext &ctx);
 
 	void loadBinary(ParserContext &ctx);
-	void readAnimBinary(ParserContext &ctx, uint32 offset);
+	void readAnimBinary(ParserContext &ctx, uint32_t offset);
 
 	void loadASCII(ParserContext &ctx);
 	void readAnimASCII(ParserContext &ctx);
@@ -112,8 +112,8 @@ private:
 	void readMesh(Model_NWN::ParserContext &ctx);
 	void readAnim(Model_NWN::ParserContext &ctx);
 
-	void readNodeControllers(Model_NWN::ParserContext &ctx, uint32 offset,
-                           uint32 count, std::vector<float> &data);
+	void readNodeControllers(Model_NWN::ParserContext &ctx, uint32_t offset,
+                           uint32_t count, std::vector<float> &data);
 };
 
 class ModelNode_NWN_ASCII : public ModelNode {
@@ -126,28 +126,28 @@ public:
 
 private:
 	struct Mesh {
-		uint32 vCount;
-		uint32 tCount;
-		uint32 faceCount;
+		uint32_t vCount;
+		uint32_t tCount;
+		uint32_t faceCount;
 
 		std::vector<Common::UString> textures;
 
 		std::vector<float> vX, vY, vZ;
 		std::vector<float> tX, tY;
 
-		std::vector<uint32> vIA, vIB, vIC;
-		std::vector<uint32> tIA, tIB, tIC;
+		std::vector<uint32_t> vIA, vIB, vIC;
+		std::vector<uint32_t> tIA, tIB, tIC;
 
-		std::vector<uint32> smooth, mat;
+		std::vector<uint32_t> smooth, mat;
 
 		Mesh();
 	};
 
-	void readConstraints(Model_NWN::ParserContext &ctx, uint32 n);
-	void readWeights(Model_NWN::ParserContext &ctx, uint32 n);
+	void readConstraints(Model_NWN::ParserContext &ctx, uint32_t n);
+	void readWeights(Model_NWN::ParserContext &ctx, uint32_t n);
 
 	void readFloats(const std::vector<Common::UString> &strings,
-	                float *floats, uint32 n, uint32 start);
+	                float *floats, uint32_t n, uint32_t start);
 
 	void readVCoords(Model_NWN::ParserContext &ctx, Mesh &mesh);
 	void readTCoords(Model_NWN::ParserContext &ctx, Mesh &mesh);

@@ -53,7 +53,7 @@ void Object::show() {
 void Object::hide() {
 }
 
-uint32 Object::getModelID() const {
+uint32_t Object::getModelID() const {
 	return _modelID;
 }
 

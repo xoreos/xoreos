@@ -95,9 +95,9 @@ public:
 
 	// .--- General properties
 	/** Return the version of this IFO file. */
-	uint32 getVersion() const;
+	uint32_t getVersion() const;
 	/** Return the ID of the IFO file creator. */
-	uint32 getCreatorID() const;
+	uint32_t getCreatorID() const;
 
 	bool isSave() const; ///< Is the module a save file?
 
@@ -123,7 +123,7 @@ public:
 	 *  to expansion 16 is required, from LSB to MSB. If the Nth bit is
 	 *  set, the expansion N is required. Otherwise, it isn't.
 	 */
-	uint16 getExpansions() const;
+	uint16_t getExpansions() const;
 
 	/** Return the list of required HAK files.
 	 *
@@ -164,24 +164,24 @@ public:
 
 	// .--- Time management
 	/** Return the module's starting time. */
-	void getStartTime(uint8 &hour, uint8 &day, uint8 &month, uint32 &year) const;
+	void getStartTime(uint8_t &hour, uint8_t &day, uint8_t &month, uint32_t &year) const;
 
-	uint8 getDawnHour() const; ///< Return the hour dawn starts.
-	uint8 getDuskHour() const; ///< Return the hour dusk starts.
+	uint8_t getDawnHour() const; ///< Return the hour dawn starts.
+	uint8_t getDuskHour() const; ///< Return the hour dusk starts.
 
 	/** Return the number of real time minutes per game hour. */
-	uint32 getMinutesPerHour() const;
+	uint32_t getMinutesPerHour() const;
 	// '---
 
 	// .--- Weather
 	/** Return the minimum weather intensity. */
-	int32 getMinWeatherIntensity() const;
+	int32_t getMinWeatherIntensity() const;
 	/** Return the maximum weather intensity. */
-	int32 getMaxWeatherIntensity() const;
+	int32_t getMaxWeatherIntensity() const;
 	/** Return the chance that it's going to rain. */
-	int32 getRainChance() const;
+	int32_t getRainChance() const;
 	/** Return the chance that it's going to snow. */
-	int32 getSnowChance() const;
+	int32_t getSnowChance() const;
 	// '---
 
 	// .--- Combat behaviour
@@ -199,13 +199,13 @@ private:
 	LocString _name;        ///< The module's localized name.
 	LocString _description; ///< The module's localized description.
 
-	uint32 _version;   ///< Version of this IFO file.
-	uint32 _creatorID; ///< ID of the IFO file creator.
+	uint32_t _version;   ///< Version of this IFO file.
+	uint32_t _creatorID; ///< ID of the IFO file creator.
 
 	int _minVersionMajor; ///< Minimum major game version this module needs.
 	int _minVersionMinor; ///< Minimum minor game version this module needs.
 
-	uint16 _expansions; ///< Bitfield of required expansions.
+	uint16_t _expansions; ///< Bitfield of required expansions.
 
 	bool _isSave; ///< Is this module a save?
 
@@ -231,20 +231,20 @@ private:
 	std::vector<Common::UString> _storyNPCs;   ///< List of story NPCs used in the module.
 	std::vector<Common::UString> _monsterNPCs; ///< List of monster NPCs used in the module.
 
-	uint8 _hourDawn; ///< The hour dawn starts.
-	uint8 _hourDusk; ///< The hour dusk starts.
+	uint8_t _hourDawn; ///< The hour dawn starts.
+	uint8_t _hourDusk; ///< The hour dusk starts.
 
-	uint8 _minutesPerHour; ///< Number of real time minutes per game hour.
+	uint8_t _minutesPerHour; ///< Number of real time minutes per game hour.
 
-	uint8  _startHour;  ///< Hour the module starts.
-	uint8  _startDay;   ///< Day the module starts.
-	uint8  _startMonth; ///< Month the module starts.
-	uint32 _startYear;  ///< Year the module starts.
+	uint8_t  _startHour;  ///< Hour the module starts.
+	uint8_t  _startDay;   ///< Day the module starts.
+	uint8_t  _startMonth; ///< Month the module starts.
+	uint32_t _startYear;  ///< Year the module starts.
 
-	int32 _minWeatherIntensity; ///< Minimum weather intensity.
-	int32 _maxWeatherIntensity; ///< Maximum weather intensity.
-	int32 _rainChance;          ///< Chance for rain.
-	int32 _snowChance;          ///< Chance for snow.
+	int32_t _minWeatherIntensity; ///< Minimum weather intensity.
+	int32_t _maxWeatherIntensity; ///< Maximum weather intensity.
+	int32_t _rainChance;          ///< Chance for rain.
+	int32_t _snowChance;          ///< Chance for snow.
 
 	float _xpScale; ///< The number creature kill XP is multiplied by.
 

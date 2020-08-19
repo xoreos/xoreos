@@ -33,124 +33,124 @@ SerializationStream::~SerializationStream() {
 SerializationReadStream::SerializationReadStream(SeekableReadStream &stream) : _stream(stream) {
 }
 
-void SerializationReadStream::readOrWriteUint64LE(uint64 &value) {
+void SerializationReadStream::readOrWriteUint64LE(uint64_t &value) {
 	value = _stream.readUint64LE();
 }
 
-void SerializationReadStream::readOrWriteUint32LE(uint32 &value) {
+void SerializationReadStream::readOrWriteUint32LE(uint32_t &value) {
 	value = _stream.readUint32LE();
 }
 
-void SerializationReadStream::readOrWriteUint16LE(uint16 &value) {
+void SerializationReadStream::readOrWriteUint16LE(uint16_t &value) {
 	value = _stream.readUint16LE();
 }
 
-void SerializationReadStream::readOrWriteUint64BE(uint64 &value) {
+void SerializationReadStream::readOrWriteUint64BE(uint64_t &value) {
 	value = _stream.readUint64BE();
 }
 
-void SerializationReadStream::readOrWriteUint32BE(uint32 &value) {
+void SerializationReadStream::readOrWriteUint32BE(uint32_t &value) {
 	value = _stream.readUint32BE();
 }
 
-void SerializationReadStream::readOrWriteUint16BE(uint16 &value) {
+void SerializationReadStream::readOrWriteUint16BE(uint16_t &value) {
 	value = _stream.readUint16BE();
 }
 
-void SerializationReadStream::readOrWriteSint64LE(int64 &value) {
+void SerializationReadStream::readOrWriteSint64LE(int64_t &value) {
 	value = _stream.readSint64LE();
 }
 
-void SerializationReadStream::readOrWriteSint32LE(int32 &value) {
+void SerializationReadStream::readOrWriteSint32LE(int32_t &value) {
 	value = _stream.readSint32LE();
 }
 
-void SerializationReadStream::readOrWriteSint16LE(int16 &value) {
+void SerializationReadStream::readOrWriteSint16LE(int16_t &value) {
 	value = _stream.readSint16LE();
 }
 
-void SerializationReadStream::readOrWriteSint64BE(int64 &value) {
+void SerializationReadStream::readOrWriteSint64BE(int64_t &value) {
 	value = _stream.readSint64BE();
 }
 
-void SerializationReadStream::readOrWriteSint32BE(int32 &value) {
+void SerializationReadStream::readOrWriteSint32BE(int32_t &value) {
 	value = _stream.readSint32BE();
 }
 
-void SerializationReadStream::readOrWriteSint16BE(int16 &value) {
+void SerializationReadStream::readOrWriteSint16BE(int16_t &value) {
 	value = _stream.readSint16BE();
 }
 
-void SerializationReadStream::readOrWriteUint64LE(const uint64 &value) {
-	uint64 value2 = _stream.readUint64LE();
+void SerializationReadStream::readOrWriteUint64LE(const uint64_t &value) {
+	uint64_t value2 = _stream.readUint64LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
 }
 
-void SerializationReadStream::readOrWriteUint32LE(const uint32 &value) {
-	uint32 value2 = _stream.readUint32LE();
+void SerializationReadStream::readOrWriteUint32LE(const uint32_t &value) {
+	uint32_t value2 = _stream.readUint32LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint32LE(): Invalid uint32 value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint32LE(): Invalid uint32_t value %#X, should have been %#X", value2, value);
 }
 
-void SerializationReadStream::readOrWriteUint16LE(const uint16 &value) {
-	uint16 value2 = _stream.readUint16LE();
+void SerializationReadStream::readOrWriteUint16LE(const uint16_t &value) {
+	uint16_t value2 = _stream.readUint16LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint16LE(): Invalid uint16 value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint16LE(): Invalid uint16_t value %#hX, should have been %#hX", value2, value);
 }
 
-void SerializationReadStream::readOrWriteUint64BE(const uint64 &value) {
-	uint64 value2 = _stream.readUint64BE();
+void SerializationReadStream::readOrWriteUint64BE(const uint64_t &value) {
+	uint64_t value2 = _stream.readUint64BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
 }
 
-void SerializationReadStream::readOrWriteUint32BE(const uint32 &value) {
-	uint32 value2 = _stream.readUint32BE();
+void SerializationReadStream::readOrWriteUint32BE(const uint32_t &value) {
+	uint32_t value2 = _stream.readUint32BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint32LE(): Invalid uint32 value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint32LE(): Invalid uint32_t value %#X, should have been %#X", value2, value);
 }
 
-void SerializationReadStream::readOrWriteUint16BE(const uint16 &value) {
-	uint16 value2 = _stream.readUint16BE();
+void SerializationReadStream::readOrWriteUint16BE(const uint16_t &value) {
+	uint16_t value2 = _stream.readUint16BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint16BE(): Invalid uint16 value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint16BE(): Invalid uint16_t value %#hX, should have been %#hX", value2, value);
 }
 
-void SerializationReadStream::readOrWriteSint64LE(const int64 &value) {
-	int64 value2 = _stream.readSint64LE();
+void SerializationReadStream::readOrWriteSint64LE(const int64_t &value) {
+	int64_t value2 = _stream.readSint64LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
 }
 
-void SerializationReadStream::readOrWriteSint32LE(const int32 &value) {
-	int32 value2 = _stream.readSint32LE();
+void SerializationReadStream::readOrWriteSint32LE(const int32_t &value) {
+	int32_t value2 = _stream.readSint32LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#X, should have been %#X", value2, value);
 }
 
-void SerializationReadStream::readOrWriteSint16LE(const int16 &value) {
-	int16 value2 = _stream.readSint16LE();
+void SerializationReadStream::readOrWriteSint16LE(const int16_t &value) {
+	int16_t value2 = _stream.readSint16LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#hX, should have been %#hX", value2, value);
 }
 
-void SerializationReadStream::readOrWriteSint64BE(const int64 &value) {
-	int64 value2 = _stream.readSint64BE();
+void SerializationReadStream::readOrWriteSint64BE(const int64_t &value) {
+	int64_t value2 = _stream.readSint64BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
 }
 
-void SerializationReadStream::readOrWriteSint32BE(const int32 &value) {
-	int32 value2 = _stream.readSint32BE();
+void SerializationReadStream::readOrWriteSint32BE(const int32_t &value) {
+	int32_t value2 = _stream.readSint32BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#X, should have been %#X", value2, value);
 }
 
-void SerializationReadStream::readOrWriteSint16BE(const int16 &value) {
-	int16 value2 = _stream.readSint16BE();
+void SerializationReadStream::readOrWriteSint16BE(const int16_t &value) {
+	int16_t value2 = _stream.readSint16BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64 value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#hX, should have been %#hX", value2, value);
 }
 
 void SerializationReadStream::readOrWriteByte(byte &value) {
@@ -179,7 +179,7 @@ void SerializationReadStream::readOrWriteBytePrefixedASCIIString(Common::UString
 }
 
 void SerializationReadStream::readOrWriteUint32LEPrefixedASCIIString(Common::UString &value) {
-	uint32 length = _stream.readUint32LE();
+	uint32_t length = _stream.readUint32LE();
 	value = Common::readStringFixed(_stream, Common::kEncodingASCII, length);
 }
 
@@ -195,7 +195,7 @@ void SerializationReadStream::readOrWriteBytePrefixedASCIIString(const Common::U
 }
 
 void SerializationReadStream::readOrWriteUint32LEPrefixedASCIIString(const Common::UString &value) {
-	uint32 length = _stream.readUint32LE();
+	uint32_t length = _stream.readUint32LE();
 	Common::UString value2 = Common::readStringFixed(_stream, Common::kEncodingASCII, length);
 	if (value != value2)
 		throw Common::Exception(
@@ -208,99 +208,99 @@ void SerializationReadStream::readOrWriteUint32LEPrefixedASCIIString(const Commo
 SerializationWriteStream::SerializationWriteStream(WriteStream &stream) : _stream(stream) {
 }
 
-void SerializationWriteStream::readOrWriteUint64LE(uint64 &value) {
+void SerializationWriteStream::readOrWriteUint64LE(uint64_t &value) {
 	_stream.writeUint64LE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint32LE(uint32 &value) {
+void SerializationWriteStream::readOrWriteUint32LE(uint32_t &value) {
 	_stream.writeUint32LE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint16LE(uint16 &value) {
+void SerializationWriteStream::readOrWriteUint16LE(uint16_t &value) {
 	_stream.writeUint16LE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint64BE(uint64 &value) {
+void SerializationWriteStream::readOrWriteUint64BE(uint64_t &value) {
 	_stream.writeUint64BE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint32BE(uint32 &value) {
+void SerializationWriteStream::readOrWriteUint32BE(uint32_t &value) {
 	_stream.writeUint32BE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint16BE(uint16 &value) {
+void SerializationWriteStream::readOrWriteUint16BE(uint16_t &value) {
 	_stream.writeUint16BE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint64LE(int64 &value) {
+void SerializationWriteStream::readOrWriteSint64LE(int64_t &value) {
 	_stream.writeSint64LE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint32LE(int32 &value) {
+void SerializationWriteStream::readOrWriteSint32LE(int32_t &value) {
 	_stream.writeSint32LE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint16LE(int16 &value) {
+void SerializationWriteStream::readOrWriteSint16LE(int16_t &value) {
 	_stream.writeSint16LE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint64BE(int64 &value) {
+void SerializationWriteStream::readOrWriteSint64BE(int64_t &value) {
 	_stream.writeSint64BE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint32BE(int32 &value) {
+void SerializationWriteStream::readOrWriteSint32BE(int32_t &value) {
 	_stream.writeSint32BE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint16BE(int16 &value) {
+void SerializationWriteStream::readOrWriteSint16BE(int16_t &value) {
 	_stream.writeSint16BE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint64LE(const uint64 &value) {
+void SerializationWriteStream::readOrWriteUint64LE(const uint64_t &value) {
 	_stream.writeUint64LE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint32LE(const uint32 &value) {
+void SerializationWriteStream::readOrWriteUint32LE(const uint32_t &value) {
 	_stream.writeUint32LE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint16LE(const uint16 &value) {
+void SerializationWriteStream::readOrWriteUint16LE(const uint16_t &value) {
 	_stream.writeUint16LE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint64BE(const uint64 &value) {
+void SerializationWriteStream::readOrWriteUint64BE(const uint64_t &value) {
 	_stream.writeUint64BE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint32BE(const uint32 &value) {
+void SerializationWriteStream::readOrWriteUint32BE(const uint32_t &value) {
 	_stream.writeUint32BE(value);
 }
 
-void SerializationWriteStream::readOrWriteUint16BE(const uint16 &value) {
+void SerializationWriteStream::readOrWriteUint16BE(const uint16_t &value) {
 	_stream.writeUint16BE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint64LE(const int64 &value) {
+void SerializationWriteStream::readOrWriteSint64LE(const int64_t &value) {
 	_stream.writeSint64LE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint32LE(const int32 &value) {
+void SerializationWriteStream::readOrWriteSint32LE(const int32_t &value) {
 	_stream.writeSint32LE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint16LE(const int16 &value) {
+void SerializationWriteStream::readOrWriteSint16LE(const int16_t &value) {
 	_stream.writeSint16LE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint64BE(const int64 &value) {
+void SerializationWriteStream::readOrWriteSint64BE(const int64_t &value) {
 	_stream.writeSint64BE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint32BE(const int32 &value) {
+void SerializationWriteStream::readOrWriteSint32BE(const int32_t &value) {
 	_stream.writeSint32BE(value);
 }
 
-void SerializationWriteStream::readOrWriteSint16BE(const int16 &value) {
+void SerializationWriteStream::readOrWriteSint16BE(const int16_t &value) {
 	_stream.writeSint16BE(value);
 }
 

@@ -134,9 +134,9 @@ private:
 	bool _bioware;
 	bool _needsAuth;
 
-	uint32 _priority;
-	uint32 _format;
-	uint32 _state;
+	uint32_t _priority;
+	uint32_t _format;
+	uint32_t _state;
 
 	Common::UString _entryArea;
 	Common::UString _entryAreaList;

@@ -30,7 +30,7 @@
 
 namespace Sound {
 
-static const uint32 kFEVID = MKTAG('F', 'E', 'V', '1');
+static const uint32_t kFEVID = MKTAG('F', 'E', 'V', '1');
 
 FMODEventFile::FMODEventFile(const Common::UString &resRef) {
 	std::unique_ptr<Common::SeekableReadStream> fev(ResMan.getResource(resRef, Aurora::kFileTypeFEV));
@@ -58,7 +58,7 @@ const std::vector<FMODEventFile::Category> &FMODEventFile::getCategories() {
 }
 
 void FMODEventFile::load(Common::SeekableReadStream &fev) {
-	const uint32 magic = fev.readUint32BE();
+	const uint32_t magic = fev.readUint32BE();
 	if (magic != kFEVID)
 		throw Common::Exception("FMODEventFile::load(): Invalid magic number");
 
@@ -66,13 +66,13 @@ void FMODEventFile::load(Common::SeekableReadStream &fev) {
 
 	_bankName = readLengthPrefixedString(fev);
 
-	const uint32 numWaveBanks = fev.readUint32LE();
+	const uint32_t numWaveBanks = fev.readUint32LE();
 	_waveBanks.resize(numWaveBanks);
-	for (uint32 i = 0; i < numWaveBanks; ++i) {
+	for (uint32_t i = 0; i < numWaveBanks; ++i) {
 		WaveBank wb;
 
 		wb.maxStreams = fev.readUint32LE();
-		const uint32 streamingType = fev.readUint32LE();
+		const uint32_t streamingType = fev.readUint32LE();
 
 		switch (streamingType) {
 			default:
@@ -94,14 +94,14 @@ void FMODEventFile::load(Common::SeekableReadStream &fev) {
 
 	readCategory(fev);
 
-	uint32 numEventGroups = fev.readUint32LE();
-	for (uint32 i = 0; i < numEventGroups; ++i) {
+	uint32_t numEventGroups = fev.readUint32LE();
+	for (uint32_t i = 0; i < numEventGroups; ++i) {
 		readEventCategory(fev);
 	}
 
-	uint32 numSoundDefinitionTemplates = fev.readUint32LE();
+	uint32_t numSoundDefinitionTemplates = fev.readUint32LE();
 	std::vector<SoundDefinition> definitions(numSoundDefinitionTemplates);
-	for (uint32 i = 0; i < numSoundDefinitionTemplates; ++i) {
+	for (uint32_t i = 0; i < numSoundDefinitionTemplates; ++i) {
 		definitions[i].playMode = PlayMode(fev.readUint32LE());
 		definitions[i].spawnTimeMin = fev.readUint32LE();
 		definitions[i].spawnTimeMax = fev.readUint32LE();
@@ -119,12 +119,12 @@ void FMODEventFile::load(Common::SeekableReadStream &fev) {
 		definitions[i].position3DRandomization = fev.readIEEEFloatLE();
 	}
 
-	uint32 numSoundDefinitions = fev.readUint32LE();
+	uint32_t numSoundDefinitions = fev.readUint32LE();
 	_definitions.resize(numSoundDefinitions);
-	for (uint32 i = 0; i < numSoundDefinitions; ++i) {
+	for (uint32_t i = 0; i < numSoundDefinitions; ++i) {
 		Common::UString name = readLengthPrefixedString(fev);
 		fev.skip(4);
-		uint32 templateId = fev.readUint32LE();
+		uint32_t templateId = fev.readUint32LE();
 
 		SoundDefinition definition = definitions[templateId];
 
@@ -133,8 +133,8 @@ void FMODEventFile::load(Common::SeekableReadStream &fev) {
 		_definitions.push_back(definition);
 	}
 
-	const uint32 numReverbDefinitions = fev.readUint32LE();
-	for (uint32 i = 0; i < numReverbDefinitions; ++i) {
+	const uint32_t numReverbDefinitions = fev.readUint32LE();
+	for (uint32_t i = 0; i < numReverbDefinitions; ++i) {
 		ReverbDefinition reverb;
 
 		reverb.name = readLengthPrefixedString(fev);
@@ -173,8 +173,8 @@ void FMODEventFile::readCategory(Common::SeekableReadStream &fev) {
 
 	fev.skip(8); // Unknown values
 
-	const uint32 numSubCategories = fev.readUint32LE();
-	for (uint32 i = 0; i < numSubCategories; ++i) {
+	const uint32_t numSubCategories = fev.readUint32LE();
+	for (uint32_t i = 0; i < numSubCategories; ++i) {
 		readCategory(fev);
 	}
 
@@ -187,14 +187,14 @@ void FMODEventFile::readEventCategory(Common::SeekableReadStream &fev) {
 	// Read user properties
 	readProperties(fev);
 
-	const uint32 numSubEventCategories = fev.readUint32LE();
-	const uint32 numEvents = fev.readUint32LE();
+	const uint32_t numSubEventCategories = fev.readUint32LE();
+	const uint32_t numEvents = fev.readUint32LE();
 
-	for (uint32 i = 0; i < numSubEventCategories; ++i) {
+	for (uint32_t i = 0; i < numSubEventCategories; ++i) {
 		readEventCategory(fev);
 	}
 
-	for (uint32 i = 0; i < numEvents; ++i) {
+	for (uint32_t i = 0; i < numEvents; ++i) {
 		readEvent(fev);
 	}
 }
@@ -213,7 +213,7 @@ void FMODEventFile::readEvent(Common::SeekableReadStream &fev) {
 	event.priority = fev.readUint32LE();
 	event.maxPlaybacks = fev.readUint32LE();
 
-	uint32 mode = fev.readUint32BE();
+	uint32_t mode = fev.readUint32BE();
 
 	if (mode & 0x10000000)
 		event.mode = k3D;
@@ -275,9 +275,9 @@ void FMODEventFile::readEvent(Common::SeekableReadStream &fev) {
 
 	event.positionRandomization3D = fev.readUint32LE();
 
-	uint32 numLayers = fev.readUint32LE();
+	uint32_t numLayers = fev.readUint32LE();
 	event.layers.resize(numLayers);
-	for (uint32 i = 0; i < numLayers; ++i) {
+	for (uint32_t i = 0; i < numLayers; ++i) {
 		EventLayer layer;
 
 		fev.skip(2);
@@ -301,9 +301,9 @@ void FMODEventFile::readEvent(Common::SeekableReadStream &fev) {
 }
 
 std::map<Common::UString, FMODEventFile::Property> FMODEventFile::readProperties(Common::SeekableReadStream &fev) {
-	const uint32 numUserProperties = fev.readUint32LE();
+	const uint32_t numUserProperties = fev.readUint32LE();
 	std::map<Common::UString, FMODEventFile::Property> properties;
-	for (uint32 i = 0; i < numUserProperties; ++i) {
+	for (uint32_t i = 0; i < numUserProperties; ++i) {
 		Common::UString propertyName = readLengthPrefixedString(fev);
 		Property property;
 		property.type = PropertyType(fev.readUint32LE());
@@ -328,7 +328,7 @@ std::map<Common::UString, FMODEventFile::Property> FMODEventFile::readProperties
 }
 
 Common::UString FMODEventFile::readLengthPrefixedString(Common::SeekableReadStream &fev) {
-	const uint32 length = fev.readUint32LE();
+	const uint32_t length = fev.readUint32LE();
 	return Common::readStringFixed(fev, Common::kEncodingASCII, length);
 }
 

@@ -113,7 +113,7 @@ void WidgetButton::setDisabled(bool disabled) {
 		_model->setState("up");
 }
 
-void WidgetButton::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
+void WidgetButton::mouseDown(uint8_t state, float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -128,7 +128,7 @@ void WidgetButton::mouseDown(uint8 state, float UNUSED(x), float UNUSED(y)) {
 	}
 }
 
-void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetButton::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
@@ -142,7 +142,7 @@ void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)
 	}
 }
 
-void WidgetButton::mouseWheel(uint8 state, int x, int y) {
+void WidgetButton::mouseWheel(uint8_t state, int x, int y) {
 	if (_owner) {
 		_owner->mouseWheel(state, x, y);
 	}

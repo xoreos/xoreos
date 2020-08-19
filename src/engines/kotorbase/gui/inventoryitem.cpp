@@ -48,7 +48,7 @@ void WidgetInventoryItem::setContents(const Common::UString &contents) {
 	if (_icon)
 		_icon->setTexture(tokens[1]);
 
-	uint32 count;
+	uint32_t count;
 	Common::parseString(tokens[2], count);
 
 	if (count > 1) {

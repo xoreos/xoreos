@@ -34,7 +34,7 @@ Semaphore::~Semaphore() {
 	SDL_DestroySemaphore(_semaphore);
 }
 
-bool Semaphore::lock(uint32 timeout) {
+bool Semaphore::lock(uint32_t timeout) {
 	int ret;
 
 	if (timeout == 0)
@@ -53,7 +53,7 @@ void Semaphore::unlock() {
 	SDL_SemPost(_semaphore);
 }
 
-uint32 Semaphore::getValue() {
+uint32_t Semaphore::getValue() {
 	return SDL_SemValue(_semaphore);
 }
 

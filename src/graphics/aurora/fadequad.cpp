@@ -90,7 +90,7 @@ void FadeQuad::render(Graphics::RenderPass pass) {
 	if (_fadeType == kFadeNone)
 		return;
 
-	uint32 time = EventMan.getTimestamp() - _start;
+	uint32_t time = EventMan.getTimestamp() - _start;
 
 	if (time > _wait) {
 		time = time - _wait;

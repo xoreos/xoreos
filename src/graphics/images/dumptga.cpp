@@ -85,7 +85,7 @@ static void writeHeader(Common::WriteStream &stream, int width, int height) {
 static void writeMipMap(Common::WriteStream &stream, const ImageDecoder::MipMap &mipMap, PixelFormat format) {
 	const byte *data = mipMap.data.get();
 
-	uint32 count = mipMap.width * mipMap.height;
+	uint32_t count = mipMap.width * mipMap.height;
 	while (count-- > 0)
 		writePixel(stream, data, format);
 }
@@ -100,8 +100,8 @@ void dumpTGA(Common::WriteStream &stream, const ImageDecoder *image) {
 	if (!image || (image->getLayerCount() < 1) || (image->getMipMapCount() < 1))
 		throw Common::Exception("No image");
 
-	int32 width  = image->getMipMap(0, 0).width;
-	int32 height = 0;
+	int32_t width  = image->getMipMap(0, 0).width;
+	int32_t height = 0;
 
 	for (size_t i = 0; i < image->getLayerCount(); i++) {
 		const ImageDecoder::MipMap &mipMap = image->getMipMap(0, i);

@@ -53,7 +53,7 @@ public:
 	// Basic properties
 
 	/** Return the ID of the object's model. */
-	uint32 getModelID() const;
+	uint32_t getModelID() const;
 
 	// Positioning
 
@@ -78,7 +78,7 @@ public:
 protected:
 	ObjectType _type; ///< The object's type.
 
-	uint32 _modelID; ///< The ID of the object's model.
+	uint32_t _modelID; ///< The ID of the object's model.
 
 	float _position[3];    ///< The object's position.
 	float _orientation[4]; ///< The object's orientation.

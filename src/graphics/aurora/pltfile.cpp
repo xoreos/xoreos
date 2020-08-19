@@ -60,8 +60,8 @@
 
 #include "src/graphics/aurora/pltfile.h"
 
-static const uint32 kPLTID     = MKTAG('P', 'L', 'T', ' ');
-static const uint32 kVersion1  = MKTAG('V', '1', ' ', ' ');
+static const uint32_t kPLTID     = MKTAG('P', 'L', 'T', ' ');
+static const uint32_t kVersion1  = MKTAG('V', '1', ' ', ' ');
 
 namespace Graphics {
 
@@ -88,7 +88,7 @@ bool PLTFile::reload() {
 	return false;
 }
 
-void PLTFile::setLayerColor(Layer layer, uint8 color) {
+void PLTFile::setLayerColor(Layer layer, uint8_t color) {
 	assert((layer >= 0) && (layer < kLayerMAX));
 
 	_colors[layer] = color;
@@ -108,7 +108,7 @@ void PLTFile::load(Common::SeekableReadStream &plt) {
 	if (_version != kVersion1)
 		throw Common::Exception("Unsupported PLT file version %s", Common::debugTag(_version).c_str());
 
-	const uint32 layers = plt.readUint32LE();
+	const uint32_t layers = plt.readUint32LE();
 	if (layers > kLayerMAX)
 		throw Common::Exception("Too many layers (%d)", layers);
 
@@ -124,14 +124,14 @@ void PLTFile::load(Common::SeekableReadStream &plt) {
 
 	size_t size = width * height;
 
-	_dataImage  = std::make_unique<uint8[]>(size);
-	_dataLayers = std::make_unique<uint8[]>(size);
+	_dataImage  = std::make_unique<uint8_t[]>(size);
+	_dataLayers = std::make_unique<uint8_t[]>(size);
 
-	uint8 *image = _dataImage.get();
-	uint8 *layer = _dataLayers.get();
+	uint8_t *image = _dataImage.get();
+	uint8_t *layer = _dataLayers.get();
 	while (size-- > 0) {
 		*image++ = plt.readByte();
-		*layer++ = MIN<uint8>(plt.readByte(), kLayerMAX - 1);
+		*layer++ = MIN<uint8_t>(plt.readByte(), kLayerMAX - 1);
 	}
 
 	// --- Create the actual texture surface ---
@@ -152,8 +152,8 @@ void PLTFile::build() {
 	getColorRows(rows, _colors);
 
 	const size_t pixels = _width * _height;
-	const uint8 *image  = _dataImage.get();
-	const uint8 *layer  = _dataLayers.get();
+	const uint8_t *image  = _dataImage.get();
+	const uint8_t *layer  = _dataLayers.get();
 	      byte  *dst    = _surface->getData();
 
 	/* Now iterate over all pixels, each time copying the correct BGRA values
@@ -177,7 +177,7 @@ static const char * const kPalettes[PLTFile::kLayerMAX] = {
 };
 
 /** Load a specific layer palette image and perform some sanity checks. */
-ImageDecoder *PLTFile::getLayerPalette(uint32 layer, uint8 row) {
+ImageDecoder *PLTFile::getLayerPalette(uint32_t layer, uint8_t row) {
 	assert(layer < kLayerMAX);
 
 	// TODO: We may want to cache these somehow...
@@ -200,13 +200,13 @@ ImageDecoder *PLTFile::getLayerPalette(uint32 layer, uint8 row) {
 	return palette.release();
 }
 
-void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kLayerMAX]) {
+void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8_t colors[kLayerMAX]) {
 	for (size_t i = 0; i < kLayerMAX; i++, rows += 4 * 256) {
 		try {
 			std::unique_ptr<ImageDecoder> palette(getLayerPalette(i, colors[i]));
 
 			// The images have their origin at the bottom left, so we flip the color row
-			const uint8 row = palette->getMipMap(0).height - 1 - colors[i];
+			const uint8_t row = palette->getMipMap(0).height - 1 - colors[i];
 
 			// Copy the whole row into the buffer
 			memcpy(rows, palette->getMipMap(0).data.get() + (row * 4 * 256), 4 * 256);

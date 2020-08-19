@@ -61,8 +61,8 @@ void ObjectWalkmesh::load(const Common::UString &resRef, float orientation[4], f
 	transform = glm::translate(transform, glm::make_vec3(position));
 	transform = glm::rotate(transform, Common::deg2rad(orientation[3]), glm::make_vec3(orientation));
 
-	std::vector<uint32> faceProperties, adjFaces;
-	std::map<uint32, uint32> adjRooms;
+	std::vector<uint32_t> faceProperties, adjFaces;
+	std::map<uint32_t, uint32_t> adjRooms;
 	loader.load(_fileType, resRef, transform,
 	            _vertices, _faces, faceProperties, adjFaces, adjRooms);
 
@@ -96,7 +96,7 @@ bool ObjectWalkmesh::in(const glm::vec3 &start, const glm::vec3 &end) const {
 	glm::vec3 segment = end - start;
 
 	// Avoid division by zero.
-	for (uint8 i = 0; i < 3; ++i) {
+	for (uint8_t i = 0; i < 3; ++i) {
 		if (fabs(segment[i]) < 0.00001f)
 			segment[i] = 0.00001f;
 	}
@@ -167,7 +167,7 @@ const std::vector<float> &ObjectWalkmesh::getVertices() const {
 	return _vertices;
 }
 
-const std::vector<uint32> &ObjectWalkmesh::getFaces() const {
+const std::vector<uint32_t> &ObjectWalkmesh::getFaces() const {
 	return _faces;
 }
 

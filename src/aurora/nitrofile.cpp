@@ -43,7 +43,7 @@ namespace Aurora {
 static bool isBigEndian(Common::SeekableReadStream &stream) {
 	stream.skip(4); // Tag, we don't care about that one here
 
-	const uint16 bom = stream.readUint16BE();
+	const uint16_t bom = stream.readUint16BE();
 	if ((bom != 0xFFFE) && (bom != 0xFEFF))
 		throw Common::Exception("Invalid BOM: 0x%04X", (uint) bom);
 

@@ -54,8 +54,8 @@ public:
 	/** Texture features. */
 	struct Features {
 		float alphaMean { 0.0f };
-		uint8 arturoHeight { 0 };
-		uint8 arturoWidth { 0 };
+		uint8_t arturoHeight { 0 };
+		uint8_t arturoWidth { 0 };
 		float baselineHeight { 0.0f };
 		Blending blending { kBlendingDefault };
 		float bumpMapScaling { 0.0f };
@@ -63,27 +63,27 @@ public:
 		Common::UString bumpyShinyTexture;
 		bool canDownsample { true };
 		float caretIndent { 0.0f };
-		uint8 channelScale { 0 };
-		uint8 channelTranslate { 0 };
-		uint8 clamp { 0 };
-		uint32 codepage { 0 };
-		uint8 cols { 0 };
+		uint8_t channelScale { 0 };
+		uint8_t channelTranslate { 0 };
+		uint8_t clamp { 0 };
+		uint32_t codepage { 0 };
+		uint8_t cols { 0 };
 		bool compressTexture { false };
 		Common::UString controllerScript;
 		bool cube { false };
-		uint32 dbMapping { 0 };
+		uint32_t dbMapping { 0 };
 		bool decal { false };
-		uint8 defaultBPP { 0 };
-		uint16 defaultHeight { 0 };
-		uint16 defaultWidth { 0 };
+		uint8_t defaultBPP { 0 };
+		uint16_t defaultHeight { 0 };
+		uint16_t defaultWidth { 0 };
 		float distort { 0.0f };
-		uint8 distortAngle { 0 };
+		uint8_t distortAngle { 0 };
 		float distortionAmplitude { 0.0f };
-		uint8 downsampleFactor { 0 };
-		uint8 downsampleMax { 0 };
-		uint8 downsampleMin { 0 };
+		uint8_t downsampleFactor { 0 };
+		uint8_t downsampleMax { 0 };
+		uint8_t downsampleMin { 0 };
 		Common::UString envMapTexture;
-		uint8 fileRange { 0 };
+		uint8_t fileRange { 0 };
 		bool filter { true };
 		float fontHeight { 0.0f };
 		float fontWidth { 0.0f };
@@ -91,28 +91,28 @@ public:
 		bool isBumpMap { false };
 		bool isDoubleByte { false };
 		bool isLightMap { false };
-		uint8 maxSizeHQ { 0 };
-		uint8 maxSizeLQ { 0 };
-		uint8 minSizeHQ { 0 };
-		uint8 minSizeLQ { 0 };
+		uint8_t maxSizeHQ { 0 };
+		uint8_t maxSizeLQ { 0 };
+		uint8_t minSizeHQ { 0 };
+		uint8_t minSizeLQ { 0 };
 		bool mipMap { true };
-		uint16 numChars { 0 };
-		uint16 numCharsPerSheet { 0 };
-		uint8 numX { 0 };
-		uint8 numY { 0 };
+		uint16_t numChars { 0 };
+		uint16_t numCharsPerSheet { 0 };
+		uint8_t numX { 0 };
+		uint8_t numY { 0 };
 		bool onDemand { false };
 		float priority { 0.0f };
 		Common::UString procedureType;
-		uint8 rows { 0 };
+		uint8_t rows { 0 };
 		float spacingB { 0.0f };
 		float spacingR { 0.0f };
 		float speed { 0.0f };
 		bool temporary { false };
 		float textureWidth { 0.0f };
 		bool unique { false };
-		uint8 waterHeight { 0 };
-		uint8 waterWidth { 0 };
-		uint16 xBoxDownsample { 0 };
+		uint8_t waterHeight { 0 };
+		uint8_t waterWidth { 0 };
+		uint16_t xBoxDownsample { 0 };
 
 		std::vector<Coords> upperLeftCoords;
 		std::vector<Coords> lowerRightCoords;
@@ -148,7 +148,7 @@ private:
 
 	Features _features;
 
-	uint32 _curCoords { 0 };
+	uint32_t _curCoords { 0 };
 
 	Blending parseBlending(const char *str);
 };

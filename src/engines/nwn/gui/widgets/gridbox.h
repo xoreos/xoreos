@@ -43,7 +43,7 @@ public:
 	              float innerHSpace = 0.0f, float InnerVSpace = 0.0f);
 	~WidgetGridBox();
 
-	void mouseDown(uint8 state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
 	void unlock();
 	void subActive(Widget &widget);
 

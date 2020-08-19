@@ -62,17 +62,17 @@ private:
 		bool kotor2;
 		bool xbox;
 
-		uint32 offModelData;
-		uint32 offRawData;
+		uint32_t offModelData;
+		uint32_t offRawData;
 
 		std::vector<Common::UString> names;
 
-		uint32 mdxStructSize;
-		uint16 vertexCount;
-		uint16 textureCount;
-		uint32 offNodeData;
-		uint32 offVertsCoords;
-		uint16 flags;
+		uint32_t mdxStructSize;
+		uint16_t vertexCount;
+		uint16_t textureCount;
+		uint32_t offNodeData;
+		uint32_t offVertsCoords;
+		uint16_t flags;
 
 		ParserContext(const Common::UString &name, const Common::UString &t, bool k2, bool x);
 		~ParserContext();
@@ -85,12 +85,12 @@ private:
 	void addState(ParserContext &ctx);
 
 	void load(ParserContext &ctx);
-	bool readAnim(ParserContext &ctx, uint32 offset);
+	bool readAnim(ParserContext &ctx, uint32_t offset);
 
 	void loadSuperModel(ModelCache *modelCache, bool kotor2, bool xbox);
 
 	void readStrings(Common::SeekableReadStream &mdl,
-			const std::vector<uint32> &offsets, uint32 offset,
+			const std::vector<uint32_t> &offsets, uint32_t offset,
 			std::vector<Common::UString> &strings);
 
 	/** Map bone indices to model nodes for optimization. */
@@ -114,12 +114,12 @@ public:
 	void setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter);
 
 private:
-	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32 offset,
-	                         uint32 count, std::vector<float> &dataFloat, std::vector<uint32> &dataInt);
-	void readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
-	                            uint16 dataIndex, std::vector<float> &data);
-	void readOrientationController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
-	                               uint16 dataIndex, std::vector<float> &dataFloat, std::vector<uint32> &dataInt);
+	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32_t offset,
+	                         uint32_t count, std::vector<float> &dataFloat, std::vector<uint32_t> &dataInt);
+	void readPositionController(uint8_t columnCount, uint16_t rowCount, uint16_t timeIndex,
+	                            uint16_t dataIndex, std::vector<float> &data);
+	void readOrientationController(uint8_t columnCount, uint16_t rowCount, uint16_t timeIndex,
+	                               uint16_t dataIndex, std::vector<float> &dataFloat, std::vector<uint32_t> &dataInt);
 	void readMesh(Model_KotOR::ParserContext &ctx);
 	void readSkin(Model_KotOR::ParserContext &ctx);
 	void readSaber(Model_KotOR::ParserContext &ctx);

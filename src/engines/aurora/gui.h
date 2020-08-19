@@ -42,9 +42,9 @@ class Console;
 /** A GUI. */
 class GUI : boost::noncopyable {
 public:
-	static const uint32 kStartCodeNone   = 0;
-	static const uint32 kReturnCodeNone  = 0;
-	static const uint32 kReturnCodeAbort = 0xFFFFFFFF;
+	static const uint32_t kStartCodeNone   = 0;
+	static const uint32_t kReturnCodeNone  = 0;
+	static const uint32_t kReturnCodeAbort = 0xFFFFFFFF;
 
 
 	GUI(Console *console = 0);
@@ -56,14 +56,14 @@ public:
 	virtual void hide(); ///< Hide the GUI.
 
 	/** Run the GUI. */
-	uint32 run(uint32 startCode = kStartCodeNone);
+	uint32_t run(uint32_t startCode = kStartCodeNone);
 	/** Abort the currently running GUI. */
 	virtual void abort();
 
 	/** Add a single event for consideration into the GUI event queue. */
 	void addEvent(const Events::Event &event);
 	/** Process the current event queue. */
-	uint32 processEventQueue();
+	uint32_t processEventQueue();
 
 	virtual Common::UString getName() const;
 
@@ -73,8 +73,8 @@ protected:
 
 	Widget *_currentWidget; ///< The widget the mouse is currently on.
 
-	uint32 _startCode;  ///< The GUI's start code.
-	uint32 _returnCode; ///< The GUI's return code.
+	uint32_t _startCode;  ///< The GUI's start code.
+	uint32_t _returnCode; ///< The GUI's return code.
 
 	GUI *_sub; ///< The currently running sub GUI.
 
@@ -113,7 +113,7 @@ protected:
 	virtual void mouseDown();
 
 	/** Open up a sub GUI. */
-	uint32 sub(GUI &gui, uint32 startCode = kStartCodeNone, bool showSelf = true, bool hideSelf = true);
+	uint32_t sub(GUI &gui, uint32_t startCode = kStartCodeNone, bool showSelf = true, bool hideSelf = true);
 
 	/** Set the GUI's position. */
 	void setPosition(float x, float y, float z);

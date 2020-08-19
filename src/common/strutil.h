@@ -25,6 +25,8 @@
 #ifndef COMMON_STRUTIL_H
 #define COMMON_STRUTIL_H
 
+#include <cstddef>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -44,7 +46,7 @@ void printDataHex(const byte *data, size_t size);
  *  Otherwise, return
  *  "0xXXXX"
  */
-UString debugTag(uint32 tag, bool trim = false);
+UString debugTag(uint32_t tag, bool trim = false);
 
 /** Parse a string into any POD integer, float/double or bool type.
  *

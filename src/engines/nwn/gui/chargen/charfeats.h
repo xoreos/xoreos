@@ -74,10 +74,10 @@ private:
 	void callbackActive(Widget &widget);
 	void callbackRun();
 
-	void makeAvailList(uint8 list);
+	void makeAvailList(uint8_t list);
 	void makeKnownList();
 
-	void changeAvailFeats(int8 diff, bool normalFeat, bool rebuild = true);
+	void changeAvailFeats(int8_t diff, bool normalFeat, bool rebuild = true);
 
 	void setRecommendedFeats();
 
@@ -92,8 +92,8 @@ private:
 
 	std::vector<WidgetListItemFeat *> _featsTrash;
 
-	uint8 _normalFeats;
-	uint8 _bonusFeats;
+	uint8_t _normalFeats;
+	uint8_t _bonusFeats;
 	bool _hasBonusFeats;
 };
 

@@ -123,7 +123,7 @@ void CharPackage::callbackActive(Widget &widget) {
 			//TODO: Add animal companion/familiar GUI.
 		}
 
-		uint32 subReturnCode;
+		uint32_t subReturnCode;
 		for (Common::PtrVector<CharGenBase>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
 			subReturnCode = sub(**g, 0, false);
 			if (subReturnCode == 1) {
@@ -159,12 +159,12 @@ void CharPackage::createPackageList() {
 		WidgetListItemButton *packagetItem = new WidgetListItemButton(*this, "ctl_cg_btn_class", TalkMan.getString(row.getInt("Name")), "");
 		_packageListBox->add(packagetItem);
 
-		_packageID.push_back((uint8) it);
+		_packageID.push_back((uint8_t) it);
 	}
 	_packageListBox->unlock();
 
 	// Set previous choice if any.
-	uint8 package = _choices->getPackage();
+	uint8_t package = _choices->getPackage();
 	if (package == UINT8_MAX) {
 		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(483));
 		getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(487));

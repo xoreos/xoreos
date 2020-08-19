@@ -273,13 +273,13 @@ enum Gender {
 	kGenderNone   = 4
 };
 
-static const uint32 kActionInvalid = 0xFFFF;
+static const uint32_t kActionInvalid = 0xFFFF;
 
-static const uint32 kRaceInvalid  =  28;
-static const uint32 kClassInvalid = 255;
+static const uint32_t kRaceInvalid  =  28;
+static const uint32_t kClassInvalid = 255;
 
-Alignment getAlignmentLawChaos(uint8 lawChaos);
-Alignment getAlignmentGoodEvil(uint8 goodEvil);
+Alignment getAlignmentLawChaos(uint8_t lawChaos);
+Alignment getAlignmentGoodEvil(uint8_t goodEvil);
 
 /** Return the name (as found in the models) of a specific creature animation.
  *

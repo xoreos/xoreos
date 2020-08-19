@@ -40,7 +40,7 @@ AStar::~AStar() {
 AStar::Node::Node(): face(UINT32_MAX), x(0.f), y(0.f), parent(UINT32_MAX), G(0.f), H(0.f) {
 }
 
-AStar::Node::Node(uint32 faceID, float pX, float pY, uint32 parentNode):
+AStar::Node::Node(uint32_t faceID, float pX, float pY, uint32_t parentNode):
 face(faceID), x(pX), y(pY), parent(parentNode), G(0.f), H(0.f) {
 }
 
@@ -49,14 +49,14 @@ bool AStar::Node::operator<(const Node &node) const {
 }
 
 bool AStar::findPath(float startX, float startY, float endX, float endY,
-                     std::vector<uint32> &facePath, float width, uint32 maxIteration) {
+                     std::vector<uint32_t> &facePath, float width, uint32_t maxIteration) {
 
 	// Cleaning the futur path.
 	facePath.clear();
 
 	// Find faces start and end points belong.
-	uint32 startFace = _pathfinding->findFace(startX, startY, false);
-	uint32 endFace = _pathfinding->findFace(endX, endY, false);
+	uint32_t startFace = _pathfinding->findFace(startX, startY, false);
+	uint32_t endFace = _pathfinding->findFace(endX, endY, false);
 
 	// Check if start and end points are in the walkmesh.
 	if (startFace == UINT32_MAX || endFace == UINT32_MAX)
@@ -82,7 +82,7 @@ bool AStar::findPath(float startX, float startY, float endX, float endY,
 	openList.push_back(startNode);
 
 	// Searching...
-	for (uint32 it = 0; it < maxIteration; ++it) {
+	for (uint32_t it = 0; it < maxIteration; ++it) {
 		if (openList.empty())
 			break;
 
@@ -96,9 +96,9 @@ bool AStar::findPath(float startX, float startY, float endX, float endY,
 		openList.erase(openList.begin());
 		closedList.push_back(current);
 
-		std::vector<uint32> adjFaces;
+		std::vector<uint32_t> adjFaces;
 		_pathfinding->getAdjacentFaces(current.face, current.parent, adjFaces);
-		for (std::vector<uint32>::iterator a = adjFaces.begin(); a != adjFaces.end(); ++a) {
+		for (std::vector<uint32_t>::iterator a = adjFaces.begin(); a != adjFaces.end(); ++a) {
 			// Check if it has been already evaluated.
 			if (hasNode(*a, closedList))
 				continue;
@@ -140,7 +140,7 @@ bool AStar::findPath(float startX, float startY, float endX, float endY,
 	return false;
 }
 
-float AStar::getGValue(Node &previousNode, uint32 face, float &x, float &y) const {
+float AStar::getGValue(Node &previousNode, uint32_t face, float &x, float &y) const {
 	_pathfinding->getAdjacencyCenter(previousNode.face, face, x, y);
 	return getEuclideanDistance(previousNode.x,previousNode.y, x, y);
 }
@@ -150,7 +150,7 @@ float AStar::getHeuristic(Node &node, Node &endNode) const {
 	return getEuclideanDistance(node.x,node.y, endNode.x,endNode.y);
 }
 
-AStar::Node *AStar::getNode(uint32 face, std::vector<Node> &nodes) const {
+AStar::Node *AStar::getNode(uint32_t face, std::vector<Node> &nodes) const {
 	for (std::vector<Node>::iterator n = nodes.begin(); n != nodes.end(); ++n) {
 		if ((*n).face == face) {
 			return &(*n);
@@ -160,7 +160,7 @@ AStar::Node *AStar::getNode(uint32 face, std::vector<Node> &nodes) const {
 	return 0;
 }
 
-bool AStar::hasNode(uint32 face, std::vector<Node> &nodes) const {
+bool AStar::hasNode(uint32_t face, std::vector<Node> &nodes) const {
 	for (std::vector<Node>::iterator n = nodes.begin(); n != nodes.end(); ++n) {
 		if ((*n).face == face) {
 			return true;
@@ -174,7 +174,7 @@ float AStar::getEuclideanDistance(float xA, float yA, float xB, float yB) const 
 	return sqrt(pow(xA - xB, 2.f) + pow(yA - yB, 2.f));
 }
 
-void AStar::reconstructPath(Node &endNode, std::vector<Node> &closedList, std::vector<uint32> &path) {
+void AStar::reconstructPath(Node &endNode, std::vector<Node> &closedList, std::vector<uint32_t> &path) {
 	Node &cNode = endNode;
 	path.push_back(endNode.face);
 	path.push_back(endNode.parent);

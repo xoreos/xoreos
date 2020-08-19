@@ -48,7 +48,7 @@ TXB::~TXB() {
 void TXB::load(Common::SeekableReadStream &txb) {
 	try {
 
-		uint32 dataSize;
+		uint32_t dataSize;
 		byte encoding;
 
 		readHeader(txb, encoding, dataSize);
@@ -64,7 +64,7 @@ void TXB::load(Common::SeekableReadStream &txb) {
 	}
 }
 
-static uint32 getTXBDataSize(byte encoding, PixelFormatRaw format, int32 width, int32 height) {
+static uint32_t getTXBDataSize(byte encoding, PixelFormatRaw format, int32_t width, int32_t height) {
 	switch (encoding) {
 		case kEncodingBGRA:
 		case kEncodingDXT1:
@@ -78,15 +78,15 @@ static uint32 getTXBDataSize(byte encoding, PixelFormatRaw format, int32 width, 
 	return 0;
 }
 
-void TXB::readHeader(Common::SeekableReadStream &txb, byte &encoding, uint32 &dataSize) {
+void TXB::readHeader(Common::SeekableReadStream &txb, byte &encoding, uint32_t &dataSize) {
 	// Number of bytes for the pixel data in one full image
 	dataSize = txb.readUint32LE();
 
 	txb.skip(4); // Some float
 
 	// Image dimensions
-	uint32 width  = txb.readUint16LE();
-	uint32 height = txb.readUint16LE();
+	uint32_t width  = txb.readUint16LE();
+	uint32_t height = txb.readUint16LE();
 
 	if ((width >= 0x8000) || (height >= 0x8000))
 		throw Common::Exception("Unsupported image dimensions (%ux%u)", width, height);
@@ -149,7 +149,7 @@ void TXB::readHeader(Common::SeekableReadStream &txb, byte &encoding, uint32 &da
 		throw Common::Exception("Image wouldn't fit into data");
 
 	_mipMaps.reserve(mipMapCount);
-	for (uint32 i = 0; i < mipMapCount; i++) {
+	for (uint32_t i = 0; i < mipMapCount; i++) {
 		std::unique_ptr<MipMap> mipMap = std::make_unique<MipMap>(this);
 
 		mipMap->width  = width;
@@ -164,12 +164,12 @@ void TXB::readHeader(Common::SeekableReadStream &txb, byte &encoding, uint32 &da
 
 }
 
-void TXB::deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height, uint8 bpp) {
-	for (uint32 y = 0; y < height; y++) {
-		for (uint32 x = 0; x < width; x++) {
-			const uint32 offset = deSwizzleOffset(x, y, width, height) * bpp;
+void TXB::deSwizzle(byte *dst, const byte *src, uint32_t width, uint32_t height, uint8_t bpp) {
+	for (uint32_t y = 0; y < height; y++) {
+		for (uint32_t x = 0; x < width; x++) {
+			const uint32_t offset = deSwizzleOffset(x, y, width, height) * bpp;
 
-			for (uint8 p = 0; p < bpp; p++)
+			for (uint8_t p = 0; p < bpp; p++)
 				*dst++ = src[offset + p];
 		}
 	}
@@ -190,11 +190,11 @@ void TXB::readData(Common::SeekableReadStream &txb, byte encoding) {
 		if (encoding == kEncodingGray) {
 			// Convert grayscale into BGR
 
-			const uint32 oldSize = (*mipMap)->size;
-			const uint32 newSize = (*mipMap)->size * 3;
+			const uint32_t oldSize = (*mipMap)->size;
+			const uint32_t newSize = (*mipMap)->size * 3;
 
 			std::unique_ptr<byte[]> tmp1 = std::make_unique<byte[]>(newSize);
-			for (uint32 i = 0; i < oldSize; i++)
+			for (uint32_t i = 0; i < oldSize; i++)
 				tmp1[i * 3 + 0] = tmp1[i * 3 + 1] = tmp1[i * 3 + 2] = (*mipMap)->data[i];
 
 			if (swizzled) {

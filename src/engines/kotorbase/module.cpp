@@ -564,7 +564,7 @@ void Module::processEventQueue() {
 	if (!isRunning())
 		return;
 
-	uint32 now = SDL_GetTicks();
+	uint32_t now = SDL_GetTicks();
 	_frameTime = (now - _prevTimestamp) / 1000.f;
 	_prevTimestamp = now;
 
@@ -757,7 +757,7 @@ void Module::notifyCombatRoundEnded(int UNUSED(round)) {
 }
 
 void Module::handleActions() {
-	uint32 now = EventMan.getTimestamp();
+	uint32_t now = EventMan.getTimestamp();
 
 	while (!_delayedActions.empty()) {
 		ActionQueue::iterator action = _delayedActions.begin();
@@ -914,11 +914,11 @@ void Module::addAvailableNPCByTemplate(int npc, const Common::UString &templ) {
 	_partyController.addAvailableNPCByTemplate(npc, templ);
 }
 
-void Module::setReturnStrref(uint32 id) {
+void Module::setReturnStrref(uint32_t id) {
 	_ingame->setReturnStrref(id);
 }
 
-void Module::setReturnQueryStrref(uint32 id) {
+void Module::setReturnQueryStrref(uint32_t id) {
 	_ingame->setReturnQueryStrref(id);
 }
 
@@ -977,7 +977,7 @@ void Module::setRunScriptVar(int runScriptVar) {
 void Module::delayScript(const Common::UString &script,
                          const Aurora::NWScript::ScriptState &state,
                          Aurora::NWScript::Object *owner,
-                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+                         Aurora::NWScript::Object *triggerer, uint32_t delay) {
 	Action action;
 
 	action.type      = kActionScript;
@@ -1011,7 +1011,7 @@ Common::UString Module::getName(const Common::UString &module, const Common::USt
 		const Common::FileList modules(ConfigMan.getString(moduleDirOptionName));
 
 		const Aurora::RIMFile rim(new Common::ReadFile(modules.findFirst(module + ".rim", true)));
-		const uint32 ifoIndex = rim.findResource("module", Aurora::kFileTypeIFO);
+		const uint32_t ifoIndex = rim.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(rim.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
 
@@ -1019,7 +1019,7 @@ Common::UString Module::getName(const Common::UString &module, const Common::USt
 		if (areas.empty())
 			return "";
 
-		const uint32 areIndex = rim.findResource((*areas.begin())->getString("Area_Name"), Aurora::kFileTypeARE);
+		const uint32_t areIndex = rim.findResource((*areas.begin())->getString("Area_Name"), Aurora::kFileTypeARE);
 
 		const Aurora::GFF3File are(rim.getResource(areIndex), MKTAG('A', 'R', 'E', ' '));
 

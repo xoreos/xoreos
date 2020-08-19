@@ -50,6 +50,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <cstddef>
 
 #include <vector>
 #include <memory>
@@ -102,8 +103,8 @@ struct WMACoefHuffmanParam;
 
 class WMACodec : public PacketizedAudioStream {
 public:
-	WMACodec(int version, uint32 sampleRate, uint8 channels,
-	         uint32 bitRate, uint32 blockAlign, Common::SeekableReadStream *extraData = 0);
+	WMACodec(int version, uint32_t sampleRate, uint8_t channels,
+	         uint32_t bitRate, uint32_t blockAlign, Common::SeekableReadStream *extraData = 0);
 	~WMACodec();
 
 	// AudioStream API
@@ -111,7 +112,7 @@ public:
 	int getRate() const { return _sampleRate; }
 	bool endOfData() const { return _audStream->endOfData(); }
 	bool endOfStream() const { return _audStream->endOfStream(); }
-	size_t readBuffer(int16 *buffer, const size_t numSamples) { return _audStream->readBuffer(buffer, numSamples); }
+	size_t readBuffer(int16_t *buffer, const size_t numSamples) { return _audStream->readBuffer(buffer, numSamples); }
 
 	// PacketizedAudioStream API
 	void finish() { _audStream->finish(); }
@@ -143,11 +144,11 @@ private:
 
 	int _version; ///< WMA version.
 
-	uint32 _sampleRate; ///< Output sample rate.
-	uint8  _channels;   ///< Output channel count.
-	uint32 _bitRate;    ///< Input bit rate.
-	uint32 _blockAlign; ///< Input block align.
-	byte   _audioFlags; ///< Output flags.
+	uint32_t _sampleRate; ///< Output sample rate.
+	uint8_t  _channels;   ///< Output channel count.
+	uint32_t _bitRate;    ///< Input bit rate.
+	uint32_t _blockAlign; ///< Input block align.
+	byte     _audioFlags; ///< Output flags.
 
 	bool _useExpHuffman;       ///< Exponents in Huffman code? Otherwise, in LSP.
 	bool _useBitReservoir;     ///< Is each frame packet a "superframe"?
@@ -171,21 +172,21 @@ private:
 	int _byteOffsetBits;
 
 	// Coefficients
-	int    _coefsStart;                       ///< First coded coef.
-	int    _coefsEnd[kBlockNBSizes];          ///< Max number of coded coefficients.
-	int    _exponentSizes[kBlockNBSizes];
-	uint16 _exponentBands[kBlockNBSizes][25];
-	int    _highBandStart[kBlockNBSizes];     ///< Index of first coef in high band.
-	int    _exponentHighSizes[kBlockNBSizes];
-	int    _exponentHighBands[kBlockNBSizes][kHighBandSizeMax];
+	int      _coefsStart;                       ///< First coded coef.
+	int      _coefsEnd[kBlockNBSizes];          ///< Max number of coded coefficients.
+	int      _exponentSizes[kBlockNBSizes];
+	uint16_t _exponentBands[kBlockNBSizes][25];
+	int      _highBandStart[kBlockNBSizes];     ///< Index of first coef in high band.
+	int      _exponentHighSizes[kBlockNBSizes];
+	int      _exponentHighBands[kBlockNBSizes][kHighBandSizeMax];
 
 	std::unique_ptr<Common::Huffman> _coefHuffman[2]; ///< Coefficients Huffman codes.
 
 	const WMACoefHuffmanParam *_coefHuffmanParam[2]; ///< Params for coef Huffman codes.
 
-	std::unique_ptr<uint16[]> _coefHuffmanRunTable[2];   ///< Run table for the coef Huffman.
-	std::unique_ptr<float[]>  _coefHuffmanLevelTable[2]; ///< Level table for the coef Huffman.
-	std::unique_ptr<uint16[]> _coefHuffmanIntTable[2];   ///< Int table for the coef Huffman.
+	std::unique_ptr<uint16_t[]> _coefHuffmanRunTable[2];   ///< Run table for the coef Huffman.
+	std::unique_ptr<float[]>    _coefHuffmanLevelTable[2]; ///< Level table for the coef Huffman.
+	std::unique_ptr<uint16_t[]> _coefHuffmanIntTable[2];   ///< Int table for the coef Huffman.
 
 	// Noise
 	float _noiseMult;                 ///< Noise multiplier.
@@ -235,11 +236,11 @@ private:
 
 	void init(Common::SeekableReadStream *extraData);
 
-	uint16 getFlags(Common::SeekableReadStream *extraData);
-	void evalFlags(uint16 flags, Common::SeekableReadStream *extraData);
+	uint16_t getFlags(Common::SeekableReadStream *extraData);
+	void evalFlags(uint16_t flags, Common::SeekableReadStream *extraData);
 	int getFrameBitLength();
-	int getBlockSizeCount(uint16 flags);
-	uint32 getNormalizedSampleRate();
+	int getBlockSizeCount(uint16_t flags);
+	uint32_t getNormalizedSampleRate();
 	bool useNoiseCoding(float &highFreq, float &bps);
 	void evalMDCTScales(float highFreq);
 	void initNoise();
@@ -247,16 +248,16 @@ private:
 	void initMDCT();
 	void initExponents();
 
-	Common::Huffman *initCoefHuffman(std::unique_ptr<uint16[]> &runTable,
+	Common::Huffman *initCoefHuffman(std::unique_ptr<uint16_t[]> &runTable,
 	                                 std::unique_ptr<float[]>  &levelTable,
-	                                 std::unique_ptr<uint16[]> &intTable,
+	                                 std::unique_ptr<uint16_t[]> &intTable,
 	                                 const WMACoefHuffmanParam &params);
 	void initLSPToCurve();
 
 	// Decoding
 
 	Common::SeekableReadStream *decodeSuperFrame(Common::SeekableReadStream &data);
-	bool decodeFrame(Common::BitStream &bits, int16 *outputData);
+	bool decodeFrame(Common::BitStream &bits, int16_t *outputData);
 	int decodeBlock(Common::BitStream &bits);
 	AudioStream *decodeFrame(Common::SeekableReadStream &data);
 
@@ -278,7 +279,7 @@ private:
 	bool decodeExpHuffman(Common::BitStream &bits, int ch);
 	bool decodeExpLSP(Common::BitStream &bits, int ch);
 	bool decodeRunLevel(Common::BitStream &bits, const Common::Huffman &huffman,
-		const float *levelTable, const uint16 *runTable, int version, float *ptr,
+		const float *levelTable, const uint16_t *runTable, int version, float *ptr,
 		int offset, int numCoefs, int blockLen, int frameLenBits, int coefNbBits);
 
 	void lspToCurve(float *out, float *val_max_ptr, int n, float *lsp);
@@ -289,12 +290,12 @@ private:
 
 	static int readTotalGain(Common::BitStream &bits);
 	static int totalGainToBits(int totalGain);
-	static uint32 getLargeVal(Common::BitStream &bits);
+	static uint32_t getLargeVal(Common::BitStream &bits);
 };
 
 
-WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
-		uint32 bitRate, uint32 blockAlign, Common::SeekableReadStream *extraData) :
+WMACodec::WMACodec(int version, uint32_t sampleRate, uint8_t channels,
+		uint32_t bitRate, uint32_t blockAlign, Common::SeekableReadStream *extraData) :
 	_version(version), _sampleRate(sampleRate), _channels(channels),
 	_bitRate(bitRate), _blockAlign(blockAlign), _audioFlags(0),
 	_resetBlockLengths(true), _curFrame(0), _frameLen(0), _frameLenBits(0),
@@ -330,7 +331,7 @@ WMACodec::~WMACodec() {
 
 void WMACodec::init(Common::SeekableReadStream *extraData) {
 	// Flags
-	uint16 flags = getFlags(extraData);
+	uint16_t flags = getFlags(extraData);
 	evalFlags(flags, extraData);
 
 	// Frame length
@@ -368,7 +369,7 @@ void WMACodec::init(Common::SeekableReadStream *extraData) {
 	std::memset(_frameOut, 0, sizeof(_frameOut));
 }
 
-uint16 WMACodec::getFlags(Common::SeekableReadStream *extraData) {
+uint16_t WMACodec::getFlags(Common::SeekableReadStream *extraData) {
 	if ((_version == 1) && extraData && (extraData->size() >= 4)) {
 		extraData->seek(2);
 		return extraData->readUint16LE();
@@ -382,7 +383,7 @@ uint16 WMACodec::getFlags(Common::SeekableReadStream *extraData) {
 	return 0;
 }
 
-void WMACodec::evalFlags(uint16 flags, Common::SeekableReadStream *extraData) {
+void WMACodec::evalFlags(uint16_t flags, Common::SeekableReadStream *extraData) {
 	_useExpHuffman       = (flags & 0x0001) != 0;
 	_useBitReservoir     = (flags & 0x0002) != 0;
 	_useVariableBlockLen = (flags & 0x0004) != 0;
@@ -413,7 +414,7 @@ int WMACodec::getFrameBitLength() {
 	return 13;
 }
 
-int WMACodec::getBlockSizeCount(uint16 flags) {
+int WMACodec::getBlockSizeCount(uint16_t flags) {
 	if (!_useVariableBlockLen)
 		return 1;
 
@@ -427,7 +428,7 @@ int WMACodec::getBlockSizeCount(uint16 flags) {
 	return MIN(count, maxCount) + 1;
 }
 
-uint32 WMACodec::getNormalizedSampleRate() {
+uint32_t WMACodec::getNormalizedSampleRate() {
 	// Sample rates are only normalized in WMAv2
 	if (_version != 2)
 		return _sampleRate;
@@ -453,7 +454,7 @@ uint32 WMACodec::getNormalizedSampleRate() {
 bool WMACodec::useNoiseCoding(float &highFreq, float &bps) {
 	highFreq = _sampleRate * 0.5f;
 
-	uint32 rateNormalized = getNormalizedSampleRate();
+	uint32_t rateNormalized = getNormalizedSampleRate();
 
 	float bpsOrig = bps;
 	if (_channels == 2)
@@ -548,7 +549,7 @@ void WMACodec::evalMDCTScales(float highFreq) {
 
 		} else {
 			// Hardcoded tables
-			const uint8 *table = 0;
+			const uint8_t *table = 0;
 
 			int t = _frameLenBits - kBlockBitsMin - k;
 			if (t < 3) {
@@ -683,19 +684,19 @@ void WMACodec::initExponents() {
 		initLSPToCurve();
 }
 
-Common::Huffman *WMACodec::initCoefHuffman(std::unique_ptr<uint16[]> &runTable,
+Common::Huffman *WMACodec::initCoefHuffman(std::unique_ptr<uint16_t[]> &runTable,
                                            std::unique_ptr<float[]>  &levelTable,
-                                           std::unique_ptr<uint16[]> &intTable,
+                                           std::unique_ptr<uint16_t[]> &intTable,
                                            const WMACoefHuffmanParam &params) {
 
 	Common::Huffman *huffman =
 		new Common::Huffman(0, params.n, params.huffCodes, params.huffBits);
 
-	runTable   = std::make_unique<uint16[]>(params.n);
+	runTable   = std::make_unique<uint16_t[]>(params.n);
 	levelTable = std::make_unique< float[]>(params.n);
-	intTable   = std::make_unique<uint16[]>(params.n);
+	intTable   = std::make_unique<uint16_t[]>(params.n);
 
-	std::unique_ptr<uint16[]> iLevelTable = std::make_unique<uint16[]>(params.n);
+	std::unique_ptr<uint16_t[]> iLevelTable = std::make_unique<uint16_t[]>(params.n);
 
 	int i = 2;
 	int level = 1;
@@ -757,7 +758,7 @@ AudioStream *WMACodec::decodeFrame(Common::SeekableReadStream &data) {
 }
 
 Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStream &data) {
-	uint32 size = data.size();
+	uint32_t size = data.size();
 	if (size < _blockAlign) {
 		warning("WMACodec::decodeSuperFrame(): size < _blockAlign");
 		return 0;
@@ -769,7 +770,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 	Common::BitStream8MSB bits(data);
 
 	int outputDataSize = 0;
-	std::unique_ptr<int16[]> outputData;
+	std::unique_ptr<int16_t[]> outputData;
 
 	_curFrame = 0;
 
@@ -797,7 +798,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 		// PCM output data
 		outputDataSize = frameCount * _channels * _frameLen;
-		outputData = std::make_unique<int16[]>(outputDataSize);
+		outputData = std::make_unique<int16_t[]>(outputDataSize);
 
 		std::memset(outputData.get(), 0, outputDataSize * 2);
 
@@ -871,7 +872,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 		// PCM output data
 		outputDataSize = _channels * _frameLen;
-		outputData = std::make_unique<int16[]>(outputDataSize);
+		outputData = std::make_unique<int16_t[]>(outputDataSize);
 
 		std::memset(outputData.get(), 0, outputDataSize * 2);
 
@@ -889,7 +890,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 	return new Common::MemoryReadStream(reinterpret_cast<byte *>(outputData.release()), outputDataSize * 2, true);
 }
 
-bool WMACodec::decodeFrame(Common::BitStream &bits, int16 *outputData) {
+bool WMACodec::decodeFrame(Common::BitStream &bits, int16_t *outputData) {
 	_framePos = 0;
 	_curBlock = 0;
 
@@ -908,7 +909,7 @@ bool WMACodec::decodeFrame(Common::BitStream &bits, int16 *outputData) {
 	for (int i = 0; i < kChannelsMax; i++)
 		floatOut[i] = _frameOut[i];
 
-	int16 *pcmOut = outputData + _curFrame * _channels * _frameLen;
+	int16_t *pcmOut = outputData + _curFrame * _channels * _frameLen;
 
 	floatToInt16Interleave(pcmOut, floatOut, _frameLen, _channels);
 
@@ -1421,13 +1422,13 @@ static const float powTab[] = {
 };
 
 bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
-	const float  *ptab  = powTab + 60;
-	const uint32 *iptab = reinterpret_cast<const uint32 *>(ptab);
+	const float    *ptab  = powTab + 60;
+	const uint32_t *iptab = reinterpret_cast<const uint32_t *>(ptab);
 
-	const uint16 *ptr = _exponentBands[_frameLenBits - _blockLenBits];
+	const uint16_t *ptr = _exponentBands[_frameLenBits - _blockLenBits];
 
-	uint32 *q = reinterpret_cast<uint32 *>(_exponents[ch]);
-	uint32 *qEnd = q + _blockLen;
+	uint32_t *q = reinterpret_cast<uint32_t *>(_exponents[ch]);
+	uint32_t *qEnd = q + _blockLen;
 
 	float maxScale = 0;
 
@@ -1436,8 +1437,8 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 
 		lastExp = bits.getBits(5) + 10;
 
-		float   v = ptab[lastExp];
-		uint32 iv = iptab[lastExp];
+		float     v = ptab[lastExp];
+		uint32_t iv = iptab[lastExp];
 
 		maxScale = v;
 
@@ -1468,8 +1469,8 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 			return false;
 		}
 
-		float   v = ptab[lastExp];
-		uint32 iv = iptab[lastExp];
+		float     v = ptab[lastExp];
+		uint32_t iv = iptab[lastExp];
 
 		if (v > maxScale)
 			maxScale = v;
@@ -1539,7 +1540,7 @@ bool WMACodec::decodeExpLSP(Common::BitStream &bits, int ch) {
 }
 
 bool WMACodec::decodeRunLevel(Common::BitStream &bits, const Common::Huffman &huffman,
-	const float *levelTable, const uint16 *runTable, int version, float *ptr,
+	const float *levelTable, const uint16_t *runTable, int version, float *ptr,
 	int offset, int numCoefs, int blockLen, int frameLenBits, int coefNbBits) {
 
 	const unsigned int coefMask = blockLen - 1;
@@ -1698,7 +1699,7 @@ int WMACodec::totalGainToBits(int totalGain) {
 	else                     return  9;
 }
 
-uint32 WMACodec::getLargeVal(Common::BitStream &bits) {
+uint32_t WMACodec::getLargeVal(Common::BitStream &bits) {
 	// Consumes up to 34 bits
 
 	int count = 8;
@@ -1723,7 +1724,7 @@ void WMACodec::queuePacket(Common::SeekableReadStream *data) {
 		_audStream->queueAudioStream(stream);
 }
 
-PacketizedAudioStream *makeWMAStream(int version, uint32 sampleRate, uint8 channels, uint32 bitRate, uint32 blockAlign, Common::SeekableReadStream &extraData) {
+PacketizedAudioStream *makeWMAStream(int version, uint32_t sampleRate, uint8_t channels, uint32_t bitRate, uint32_t blockAlign, Common::SeekableReadStream &extraData) {
 	return new WMACodec(version, sampleRate, channels, bitRate, blockAlign, &extraData);
 }
 

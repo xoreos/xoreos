@@ -48,36 +48,36 @@ public:
 	NFTRFont(const Common::UString &name, bool invertPalette = false);
 	~NFTRFont();
 
-	float getWidth (uint32 c) const;
-	float getHeight()         const;
+	float getWidth (uint32_t c) const;
+	float getHeight()           const;
 
-	void draw(uint32 c) const;
+	void draw(uint32_t c) const;
 
 private:
 	struct Header {
-		uint8 width;
-		uint8 height;
-		uint8 encoding;
+		uint8_t width;
+		uint8_t height;
+		uint8_t encoding;
 
-		uint16 palMode;
+		uint16_t palMode;
 
-		uint32 offsetCGLP;
-		uint32 offsetCWDH;
-		uint32 offsetCMAP;
+		uint32_t offsetCGLP;
+		uint32_t offsetCWDH;
+		uint32_t offsetCMAP;
 	};
 
 	struct Glyph {
 		Common::SeekableReadStream *data;
 
-		uint16 palMode;
+		uint16_t palMode;
 
-		uint8 width;
-		uint8 height;
-		uint8 depth;
+		uint8_t width;
+		uint8_t height;
+		uint8_t depth;
 
-		uint8 advance;
+		uint8_t advance;
 
-		uint32 character;
+		uint32_t character;
 
 		Glyph();
 		~Glyph();
@@ -97,11 +97,11 @@ private:
 	Surface *_surface;
 	TextureHandle _texture;
 
-	std::map<uint32, Char> _chars;
+	std::map<uint32_t, Char> _chars;
 
 	float _missingWidth;
 
-	uint32 _height;
+	uint32_t _height;
 
 
 	void load(Common::SeekableSubReadStreamEndian &nftr);
@@ -113,11 +113,11 @@ private:
 	void readCharMaps(Common::SeekableSubReadStreamEndian &nftr, Header &header, std::vector<Glyph> &glyphs);
 
 	void drawGlyphs(const std::vector<Glyph> &glyphs);
-	void drawGlyph(const Glyph &glyph, Surface &surface, uint32 x, uint32 y);
+	void drawGlyph(const Glyph &glyph, Surface &surface, uint32_t x, uint32_t y);
 
 	void drawMissing() const;
 
-	static uint32 convertToUTF32(uint16 codePoint, uint8 encoding);
+	static uint32_t convertToUTF32(uint16_t codePoint, uint8_t encoding);
 };
 
 } // End of namespace Aurora

@@ -50,6 +50,8 @@
 #ifndef COMMON_READSTREAM_H
 #define COMMON_READSTREAM_H
 
+#include <cstddef>
+
 #include "src/common/types.h"
 #include "src/common/endianness.h"
 #include "src/common/disposableptr.h"
@@ -64,7 +66,7 @@ class MemoryReadStream;
 class ReadStream {
 public:
 	/** Return value for end-of-file. See readChar(). */
-	static const uint32 kEOF = 0xFFFFFFFF;
+	static const uint32_t kEOF = 0xFFFFFFFF;
 
 	static const size_t kSizeInvalid     = SIZE_MAX;
 	static const size_t kPositionInvalid = SIZE_MAX;
@@ -98,14 +100,14 @@ public:
 	}
 
 	/** Read a signed byte from the stream and return it.  */
-	FORCEINLINE int8 readSByte() {
-		return (int8)readByte();
+	FORCEINLINE int8_t readSByte() {
+		return (int8_t)readByte();
 	}
 
 	/** Reads the next character from stream and returns it as an unsigned char
-	 *  cast to an uint32, or kEOF on end of file or error. Similar to fgetc().
+	 *  cast to an uint32_t, or kEOF on end of file or error. Similar to fgetc().
 	 */
-	uint32 readChar() {
+	uint32_t readChar() {
 		byte b;
 		try {
 			b = readByte();
@@ -119,8 +121,8 @@ public:
 	/** Read an unsigned 16-bit word stored in little endian (LSB first) order
 	 *  from the stream and return it.
 	 */
-	uint16 readUint16LE() {
-		uint16 val;
+	uint16_t readUint16LE() {
+		uint16_t val;
 		if (read(&val, 2) != 2)
 			throw Exception(kReadError);
 
@@ -130,8 +132,8 @@ public:
 	/** Read an unsigned 32-bit word stored in little endian (LSB first) order
 	 *  from the stream and return it.
 	 */
-	uint32 readUint32LE() {
-		uint32 val;
+	uint32_t readUint32LE() {
+		uint32_t val;
 		if (read(&val, 4) != 4)
 			throw Exception(kReadError);
 
@@ -141,8 +143,8 @@ public:
 	/** Read an unsigned 64-bit word stored in little endian (LSB first) order
 	 *  from the stream and return it.
 	 */
-	uint64 readUint64LE() {
-		uint64 val;
+	uint64_t readUint64LE() {
+		uint64_t val;
 		if (read(&val, 8) != 8)
 			throw Exception(kReadError);
 
@@ -152,8 +154,8 @@ public:
 	/** Read an unsigned 16-bit word stored in big endian (MSB first) order
 	 *  from the stream and return it.
 	 */
-	uint16 readUint16BE() {
-		uint16 val;
+	uint16_t readUint16BE() {
+		uint16_t val;
 		if (read(&val, 2) != 2)
 			throw Exception(kReadError);
 
@@ -163,8 +165,8 @@ public:
 	/** Read an unsigned 32-bit word stored in big endian (MSB first) order
 	 *  from the stream and return it.
 	 */
-	uint32 readUint32BE() {
-		uint32 val;
+	uint32_t readUint32BE() {
+		uint32_t val;
 		if (read(&val, 4) != 4)
 			throw Exception(kReadError);
 
@@ -174,8 +176,8 @@ public:
 	/** Read an unsigned 64-bit word stored in big endian (MSB first) order
 	 *  from the stream and return it.
 	 */
-	uint64 readUint64BE() {
-		uint64 val;
+	uint64_t readUint64BE() {
+		uint64_t val;
 		if (read(&val, 8) != 8)
 			throw Exception(kReadError);
 
@@ -185,43 +187,43 @@ public:
 	/** Read a signed 16-bit word stored in little endian (LSB first) order
 	 *  from the stream and return it.
 	 */
-	FORCEINLINE int16 readSint16LE() {
-		return (int16)readUint16LE();
+	FORCEINLINE int16_t readSint16LE() {
+		return (int16_t)readUint16LE();
 	}
 
 	/** Read a signed 32-bit word stored in little endian (LSB first) order
 	 *  from the stream and return it.
 	 */
-	FORCEINLINE int32 readSint32LE() {
-		return (int32)readUint32LE();
+	FORCEINLINE int32_t readSint32LE() {
+		return (int32_t)readUint32LE();
 	}
 
 	/** Read a signed 64-bit word stored in little endian (LSB first) order
 	 *  from the stream and return it.
 	 */
-	FORCEINLINE int64 readSint64LE() {
-		return (int64)readUint64LE();
+	FORCEINLINE int64_t readSint64LE() {
+		return (int64_t)readUint64LE();
 	}
 
 	/** Read a signed 16-bit word stored in big endian (MSB first) order
 	 *  from the stream and return it.
 	 */
-	FORCEINLINE int16 readSint16BE() {
-		return (int16)readUint16BE();
+	FORCEINLINE int16_t readSint16BE() {
+		return (int16_t)readUint16BE();
 	}
 
 	/** Read a signed 32-bit word stored in big endian (MSB first) order
 	 *  from the stream and return it.
 	 */
-	FORCEINLINE int32 readSint32BE() {
-		return (int32)readUint32BE();
+	FORCEINLINE int32_t readSint32BE() {
+		return (int32_t)readUint32BE();
 	}
 
 	/** Read a signed 64-bit word stored in big endian (MSB first) order
 	 *  from the stream and return it.
 	 */
-	FORCEINLINE int64 readSint64BE() {
-		return (int64)readUint64BE();
+	FORCEINLINE int64_t readSint64BE() {
+		return (int64_t)readUint64BE();
 	}
 
 	/** Read a 32-bit IEEE float stored in little endian (LSB first) order
@@ -389,27 +391,27 @@ public:
 	                            bool bigEndian = false, bool disposeParentStream = false);
 	~SeekableSubReadStreamEndian();
 
-	uint16 readUint16() {
+	uint16_t readUint16() {
 		return _bigEndian ? readUint16BE() : readUint16LE();
 	}
 
-	uint32 readUint32() {
+	uint32_t readUint32() {
 		return _bigEndian ? readUint32BE() : readUint32LE();
 	}
 
-	uint64 readUint64() {
+	uint64_t readUint64() {
 		return _bigEndian ? readUint64BE() : readUint64LE();
 	}
 
-	int16 readSint16() {
+	int16_t readSint16() {
 		return _bigEndian ? readSint16BE() : readSint16LE();
 	}
 
-	int32 readSint32() {
+	int32_t readSint32() {
 		return _bigEndian ? readSint32BE() : readSint32LE();
 	}
 
-	int64 readSint64() {
+	int64_t readSint64() {
 		return _bigEndian ? readSint64BE() : readSint64LE();
 	}
 

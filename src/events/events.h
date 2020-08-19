@@ -84,9 +84,9 @@ public:
 	// Timing
 
 	/** Sleep that number of milliseconds. */
-	void delay(uint32 ms);
+	void delay(uint32_t ms);
 	/** Return the number of milliseconds the application is running. */
-	uint32 getTimestamp() const;
+	uint32_t getTimestamp() const;
 
 
 	// Events

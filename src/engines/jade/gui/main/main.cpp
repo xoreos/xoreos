@@ -112,7 +112,7 @@ void MainMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "ListBoxButtons_ITEM_0") {
 		CharacterGeneration characterSelection(_module);
-		uint32 returnCode = sub(characterSelection);
+		uint32_t returnCode = sub(characterSelection);
 		if (returnCode == 2)
 			_returnCode = returnCode;
 		return;

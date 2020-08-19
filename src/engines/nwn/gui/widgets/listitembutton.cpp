@@ -75,7 +75,7 @@ void WidgetListItemBaseButton::setPosition(float x, float y, float z) {
 	_button->setPosition(x, y, z);
 }
 
-void WidgetListItemBaseButton::mouseDown(uint8 state, float x, float y) {
+void WidgetListItemBaseButton::mouseDown(uint8_t state, float x, float y) {
 	Engines::Widget::mouseDown(state, x, y);
 
 	if (SoundMan.isValidChannel(_channelHandle))
@@ -124,7 +124,7 @@ bool WidgetListItemBaseButton::deactivate() {
 
 WidgetListItemButton::WidgetListItemButton(::Engines::GUI &gui, const Common::UString &button,
                                            const Common::UString &text, const Common::UString &icon,
-                                           uint32 otherButtons, const Common::UString &soundClick) :
+                                           uint32_t otherButtons, const Common::UString &soundClick) :
 	WidgetListItemBaseButton(gui, button, 1.0f, soundClick),
 	_isRight(true), _isMovable(false), _moveButtonRight(0), _moveButtonLeft(0) {
 
@@ -224,7 +224,7 @@ void WidgetListItemButton::setPosition(float x, float y, float z) {
 	_icon->setPosition(x + pX - _icon->getWidth() / 2, y + pY - _icon->getHeight() / 2, z - 100.f);
 }
 
-void WidgetListItemButton::mouseDown(uint8 state, float x, float y) {
+void WidgetListItemButton::mouseDown(uint8_t state, float x, float y) {
 	Engines::NWN::WidgetListItemBaseButton::mouseDown(state, x, y);
 
 	if (_helpButton) {
@@ -234,7 +234,7 @@ void WidgetListItemButton::mouseDown(uint8 state, float x, float y) {
 	}
 }
 
-void WidgetListItemButton::mouseUp(uint8 state, float x, float y) {
+void WidgetListItemButton::mouseUp(uint8_t state, float x, float y) {
 	Engines::NWN::WidgetListItemBaseButton::mouseUp(state, x, y);
 
 	if (_helpButton) {

@@ -50,8 +50,8 @@ class Texture : public Graphics::Texture {
 public:
 	virtual ~Texture();
 
-	uint32 getWidth()  const;
-	uint32 getHeight() const;
+	uint32_t getWidth()  const;
+	uint32_t getHeight() const;
 
 	bool hasAlpha() const;
 
@@ -90,8 +90,8 @@ protected:
 	std::unique_ptr<ImageDecoder> _image; ///< The actual image.
 	std::unique_ptr<TXI> _txi;            ///< The TXI.
 
-	uint32 _width;
-	uint32 _height;
+	uint32_t _width;
+	uint32_t _height;
 
 	bool _deswizzle;
 

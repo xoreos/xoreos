@@ -61,7 +61,7 @@ public:
 	 *  The ConsecutiveSeparatorRule value signals how consecutive separator
 	 *  characters are handled.
 	 */
-	void addSeparator(uint32 c);
+	void addSeparator(uint32_t c);
 
 	/** Add a character marking the end of a chunk.
 	 *
@@ -69,7 +69,7 @@ public:
 	 *  will stop at chunk end characters and will not move past them. Only a
 	 *  call to nextChunk() will move past a chunk end character.
 	 */
-	void addChunkEnd (uint32 c);
+	void addChunkEnd (uint32_t c);
 
 	/** Add a character able to enclose (quote) separators and chunk ends.
 	 *
@@ -81,7 +81,7 @@ public:
 	 *  quote characters '\'' and '\"', the string "foo\',\"bar,foo" will
 	 *  also yield the two tokens "foo,bar" and "bar.
 	 */
-	void addQuote    (uint32 c);
+	void addQuote    (uint32_t c);
 
 	/** Add a character to ignore.
 	 *
@@ -90,7 +90,7 @@ public:
 	 *  character ',', the string "fo#o,#bar" will be splut into two
 	 *  tokens: "foo" and "bar".
 	 */
-	void addIgnore   (uint32 c);
+	void addIgnore   (uint32_t c);
 
 	/** Parse a token out of the stream.
 	 *
@@ -155,12 +155,12 @@ public:
 private:
 	ConsecutiveSeparatorRule _conSepRule;
 
-	std::list<uint32> _separators;
-	std::list<uint32> _quotes;
-	std::list<uint32> _chunkEnds;
-	std::list<uint32> _ignores;
+	std::list<uint32_t> _separators;
+	std::list<uint32_t> _quotes;
+	std::list<uint32_t> _chunkEnds;
+	std::list<uint32_t> _ignores;
 
-	static bool isIn(uint32 c, const std::list<uint32> &list);
+	static bool isIn(uint32_t c, const std::list<uint32_t> &list);
 
 	bool isChunkEnd(SeekableReadStream &stream);
 };

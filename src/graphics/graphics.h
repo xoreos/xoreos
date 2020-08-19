@@ -92,7 +92,7 @@ public:
 	int getCurrentFSAA() const;
 
 	/** How many frames per second to we render at the moments? */
-	uint32 getFPS() const;
+	uint32_t getFPS() const;
 
 	/** Enable/Disable face culling. */
 	void setCullFace(bool enabled, GLenum mode = GL_BACK);
@@ -148,12 +148,12 @@ public:
 	void unlockFrame();
 
 	/** Create a new unique renderable ID. */
-	uint32 createRenderableID();
+	uint32_t createRenderableID();
 
 	/** Abandon these textures. */
-	void abandon(TextureID *ids, uint32 count);
+	void abandon(TextureID *ids, uint32_t count);
 	/** Abandon these lists. */
-	void abandon(ListID ids, uint32 count);
+	void abandon(ListID ids, uint32_t count);
 
 
 	/** Render one complete frame of the scene. */
@@ -218,7 +218,7 @@ private:
 
 	std::unique_ptr<FPSCounter> _fpsCounter; ///< Counts the current frames per seconds value.
 
-	uint32 _lastSampled; ///< Timestamp used to advance animations.
+	uint32_t _lastSampled; ///< Timestamp used to advance animations.
 
 	glm::mat4 _perspective;    ///< 3D perspective projection matrix.
 	glm::mat4 _perspectiveInv; ///< The inverse of our perspective matrix.
@@ -229,14 +229,14 @@ private:
 	glm::mat4 _modelview;      ///< Our base modelview matrix (i.e camera view).
 	glm::mat4 _modelviewInv;   ///< The inverse of our modelview matrix.
 
-	std::atomic<uint32> _frameLock;
+	std::atomic<uint32_t> _frameLock;
 	std::atomic<bool>   _frameEndSignal;
 
 	Cursor     *_cursor;       ///< The current cursor.
 
 	bool _takeScreenshot; ///< Should screenshot be taken?
 
-	uint32 _renderableID;             ///< The last ID given to a renderable.
+	uint32_t _renderableID;             ///< The last ID given to a renderable.
 	std::recursive_mutex _renderableIDMutex; ///< The mutex to govern renderable ID creation.
 
 	bool _hasAbandoned; ///< Do we have abandoned textures/lists?

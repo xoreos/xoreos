@@ -42,7 +42,7 @@ public:
 	Walkmesh(Engines::Pathfinding *pathfinding);
 	~Walkmesh();
 
-	void setFaces(std::vector<uint32> &faces);
+	void setFaces(std::vector<uint32_t> &faces);
 
 	void show();
 	void hide();
@@ -57,7 +57,7 @@ public:
 
 private:
 	Engines::Pathfinding *_pathfinding;
-	std::vector<uint32> _highlightedFaces;
+	std::vector<uint32_t> _highlightedFaces;
 
 	float _heightAdjust;
 	float _unwalkableFaceColor[4];

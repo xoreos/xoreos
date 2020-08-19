@@ -51,11 +51,11 @@ class SaveLoadMenu : public KotORBase::GUI {
 public:
 	SaveLoadMenu(KotORBase::Module &module,
 	             ::Engines::Console *console,
-	             uint8 type = kSaveLoadMenuTypeLoad,
+	             uint8_t type = kSaveLoadMenuTypeLoad,
 	             bool frontBackground = false);
 private:
 	KotORBase::Module *_module;
-	uint8 _type;
+	uint8_t _type;
 	std::vector<Common::UString> _saveDirs;
 
 	void callbackActive(Widget &widget);

@@ -54,14 +54,14 @@ private:
 
 	/** The specific pixel format of the included image data. */
 	struct DDSPixelFormat {
-		uint32 size;     ///< The size of the image data in bytes.
-		uint32 flags;    ///< Features of the image data.
-		uint32 fourCC;   ///< The FourCC to detect the format by.
-		uint32 bitCount; ///< Number of bits per pixel.
-		uint32 rBitMask; ///< Bit mask for the red color component.
-		uint32 gBitMask; ///< Bit mask for the green color component.
-		uint32 bBitMask; ///< Bit mask for the blue color component.
-		uint32 aBitMask; ///< Bit mask for the alpha component.
+		uint32_t size;     ///< The size of the image data in bytes.
+		uint32_t flags;    ///< Features of the image data.
+		uint32_t fourCC;   ///< The FourCC to detect the format by.
+		uint32_t bitCount; ///< Number of bits per pixel.
+		uint32_t rBitMask; ///< Bit mask for the red color component.
+		uint32_t gBitMask; ///< Bit mask for the green color component.
+		uint32_t bBitMask; ///< Bit mask for the blue color component.
+		uint32_t aBitMask; ///< Bit mask for the alpha component.
 	};
 
 	// Loading helpers

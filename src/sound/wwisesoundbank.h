@@ -47,7 +47,7 @@ class WwiseSoundBank {
 public:
 	WwiseSoundBank(Common::SeekableReadStream *bnk);
 	WwiseSoundBank(const Common::UString &name);
-	WwiseSoundBank(uint64 hash);
+	WwiseSoundBank(uint64_t hash);
 	~WwiseSoundBank() = default;
 
 	/** Return the number of embedded files. */
@@ -56,17 +56,17 @@ public:
 	size_t getSoundCount() const;
 
 	/** Return the ID of an embedded file. */
-	uint32 getFileID(size_t index) const;
+	uint32_t getFileID(size_t index) const;
 	/** Return the ID of a referenced sound. */
-	uint32 getSoundID(size_t index) const;
+	uint32_t getSoundID(size_t index) const;
 
 	/** Return the ID of a file used by a referenced sound. */
-	uint32 getSoundFileID(size_t index) const;
+	uint32_t getSoundFileID(size_t index) const;
 
 	/** Return the index of a file from its ID, or SIZE_MAX if not found. */
-	size_t findFileByID(uint32 id) const;
+	size_t findFileByID(uint32_t id) const;
 	/** Return the index of a sound from its ID, or SIZE_MAX if not found. */
-	size_t findSoundByID(uint32 id) const;
+	size_t findSoundByID(uint32_t id) const;
 
 	RewindableAudioStream *getFile(size_t index) const;
 	RewindableAudioStream *getSound(size_t index) const;
@@ -74,7 +74,7 @@ public:
 private:
 	/** An embedded sound file within the SoundBank. */
 	struct File {
-		uint32 id;
+		uint32_t id;
 
 		size_t offset; ///< Offset of the file from the beginning of the data section.
 		size_t size;   ///< Size of the file in bytes.
@@ -87,15 +87,15 @@ private:
 	};
 
 	struct Sound {
-		uint32 id;
+		uint32_t id;
 
 		SoundType type;
 
 		bool isEmbedded;
 		bool zeroLatency;
 
-		uint32 fileID;
-		uint32 fileSource;
+		uint32_t fileID;
+		uint32_t fileSource;
 
 		size_t fileOffset;
 		size_t fileSize;
@@ -103,16 +103,16 @@ private:
 
 	std::unique_ptr<Common::SeekableReadStream> _bnk;
 
-	uint32 _bankID;
+	uint32_t _bankID;
 	size_t _dataOffset;
 
 	std::vector<File> _files;
 	std::vector<Sound> _sounds;
 
-	std::map<uint32, Common::UString> _banks;
+	std::map<uint32_t, Common::UString> _banks;
 
-	std::map<uint32, size_t> _fileIDs;
-	std::map<uint32, size_t> _soundIDs;
+	std::map<uint32_t, size_t> _fileIDs;
+	std::map<uint32_t, size_t> _soundIDs;
 
 
 	void load(Common::SeekableReadStream &bnk);

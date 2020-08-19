@@ -98,7 +98,7 @@ void DebugManager::getDebugChannels(std::vector<UString> &names, std::vector<USt
 	}
 }
 
-void DebugManager::setVerbosityLevel(DebugChannel channel, uint32 level) {
+void DebugManager::setVerbosityLevel(DebugChannel channel, uint32_t level) {
 	if (channel == kDebugChannelAll) {
 		for (size_t i = 0; i < kDebugChannelCount; i++)
 			setVerbosityLevel((DebugChannel) i, level);
@@ -109,7 +109,7 @@ void DebugManager::setVerbosityLevel(DebugChannel channel, uint32 level) {
 	if (channel >= kDebugChannelCount)
 		return;
 
-	_channels[channel].level = MIN<uint32>(level, kMaxVerbosityLevel);
+	_channels[channel].level = MIN<uint32_t>(level, kMaxVerbosityLevel);
 
 	for (size_t i = 0; i < kDebugGLTypeMAX; i++)
 		_channels[channel].glTypeIDs[i] = 0;
@@ -117,7 +117,7 @@ void DebugManager::setVerbosityLevel(DebugChannel channel, uint32 level) {
 	_changedConfig = true;
 }
 
-void DebugManager::setVerbosityLevel(const UString &channel, uint32 level) {
+void DebugManager::setVerbosityLevel(const UString &channel, uint32_t level) {
 	ChannelMap::iterator c = _channelMap.find(channel);
 	if (c == _channelMap.end())
 		return;
@@ -125,14 +125,14 @@ void DebugManager::setVerbosityLevel(const UString &channel, uint32 level) {
 	setVerbosityLevel(c->second, level);
 }
 
-uint32 DebugManager::getVerbosityLevel(DebugChannel channel) const {
+uint32_t DebugManager::getVerbosityLevel(DebugChannel channel) const {
 	if (channel >= kDebugChannelCount)
 		return 0;
 
 	return _channels[channel].level;
 }
 
-uint32 DebugManager::getVerbosityLevel(const UString &channel) const {
+uint32_t DebugManager::getVerbosityLevel(const UString &channel) const {
 	ChannelMap::const_iterator c = _channelMap.find(channel);
 	if (c == _channelMap.end())
 		return 0;
@@ -140,12 +140,12 @@ uint32 DebugManager::getVerbosityLevel(const UString &channel) const {
 	return getVerbosityLevel(c->second);
 }
 
-bool DebugManager::isEnabled(DebugChannel channel, uint32 level) const {
-	return getVerbosityLevel(channel) >= MIN<uint32>(level, kMaxVerbosityLevel);
+bool DebugManager::isEnabled(DebugChannel channel, uint32_t level) const {
+	return getVerbosityLevel(channel) >= MIN<uint32_t>(level, kMaxVerbosityLevel);
 }
 
-bool DebugManager::isEnabled(const UString &channel, uint32 level) const {
-	return getVerbosityLevel(channel) >= MIN<uint32>(level, kMaxVerbosityLevel);
+bool DebugManager::isEnabled(const UString &channel, uint32_t level) const {
+	return getVerbosityLevel(channel) >= MIN<uint32_t>(level, kMaxVerbosityLevel);
 }
 
 void DebugManager::setVerbosityLevelsFromConfig() {
@@ -164,7 +164,7 @@ void DebugManager::setVerbosityLevelsFromConfig() {
 		config[0].trim();
 		config[1].trim();
 
-		uint32 level = 0;
+		uint32_t level = 0;
 		try {
 			parseString(config[1], level);
 		} catch (...) {
@@ -199,13 +199,13 @@ static bool isOpenGLDebugChannel(DebugChannel channel) {
 	return (channel >= kDebugGLAPI) && (channel <= kDebugGLOther);
 }
 
-void DebugManager::logDebugGL(DebugChannel channel, uint32 level, DebugGLType type, uint32 id,
+void DebugManager::logDebugGL(DebugChannel channel, uint32_t level, DebugGLType type, uint32_t id,
                               const char *msg) {
 
 	if (!isOpenGLDebugChannel(channel) || !isEnabled(channel, level))
 		return;
 
-	if (((uint32) type) >= kDebugGLTypeMAX)
+	if (((uint32_t) type) >= kDebugGLTypeMAX)
 		type = kDebugGLTypeOther;
 
 	// Suppress duplicates

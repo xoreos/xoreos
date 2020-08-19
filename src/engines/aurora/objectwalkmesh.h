@@ -45,7 +45,7 @@ public:
 	virtual bool findIntersection(const glm::vec3 &start, const glm::vec3 &end,
 	                              glm::vec3 &intersect) const = 0;
 	virtual const std::vector<float> &getVertices() const = 0;
-	virtual const std::vector<uint32> &getFaces() const = 0;
+	virtual const std::vector<uint32_t> &getFaces() const = 0;
 };
 
 } // End of namespace Engines

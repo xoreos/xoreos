@@ -60,10 +60,10 @@ public:
 	const ResourceList &getResources() const;
 
 	/** Return the size of a resource. */
-	uint32 getResourceSize(uint32 index) const;
+	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
+	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
 
 	/** Return with which algorithm the name is hashed. */
 	Common::HashAlgo getNameHashAlgo() const;
@@ -71,8 +71,8 @@ public:
 private:
 	/** Internal resource information. */
 	struct IResource {
-		uint32 offset;   ///< The offset of the resource within the HERF.
-		uint32 size;     ///< The resource's size.
+		uint32_t offset;   ///< The offset of the resource within the HERF.
+		uint32_t size;     ///< The resource's size.
 	};
 
 	typedef std::vector<IResource> IResourceList;
@@ -85,17 +85,17 @@ private:
 	/** Internal list of resource offsets and sizes. */
 	IResourceList _iResources;
 
-	uint32 _dictOffset; ///< The offset of the dict file (if available).
-	uint32 _dictSize;   ///< The size of the dict file (if available).
+	uint32_t _dictOffset; ///< The offset of the dict file (if available).
+	uint32_t _dictSize;   ///< The size of the dict file (if available).
 
 	void load(Common::SeekableReadStream &herf);
-	void searchDictionary(Common::SeekableReadStream &herf, uint32 resCount);
-	void readDictionary(Common::SeekableReadStream &herf, std::map<uint32, Common::UString> &dict);
+	void searchDictionary(Common::SeekableReadStream &herf, uint32_t resCount);
+	void readDictionary(Common::SeekableReadStream &herf, std::map<uint32_t, Common::UString> &dict);
 	void readResList(Common::SeekableReadStream &herf);
 
 	void readNames();
 
-	const IResource &getIResource(uint32 index) const;
+	const IResource &getIResource(uint32_t index) const;
 };
 
 } // End of namespace Aurora

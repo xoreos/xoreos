@@ -387,7 +387,7 @@ Common::UString FileTypeManager::setFileType(const Common::UString &path, FileTy
 	return Common::FilePath::changeExtension(path, ext);
 }
 
-FileType FileTypeManager::getFileType(Common::HashAlgo algo, uint64 hashedExtension) {
+FileType FileTypeManager::getFileType(Common::HashAlgo algo, uint64_t hashedExtension) {
 	if ((algo < 0) || (algo >= Common::kHashMAX))
 		return kFileTypeNone;
 

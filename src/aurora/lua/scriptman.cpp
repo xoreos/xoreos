@@ -134,7 +134,7 @@ Variables ScriptManager::callFunction(const Common::UString &name, const Variabl
 	}
 
 	TableRef table = getGlobalTable(parts[0]);
-	for (uint32 i = 1; i < parts.size(); ++i) {
+	for (uint32_t i = 1; i < parts.size(); ++i) {
 		table = table.getTableAt(parts[i]);
 	}
 	return table.getFunctionAt(funcName).call(params);

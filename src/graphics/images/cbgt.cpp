@@ -79,14 +79,14 @@ void CBGT::readPalettes(ReadContext &ctx) {
 		ctx.palettes.reserve((size + 1) / 512);
 
 		while (size > 0) {
-			const uint32 paletteSize = MIN<size_t>(512, size);
+			const uint32_t paletteSize = MIN<size_t>(512, size);
 
 			ctx.palettes.push_back(new byte[768]);
 			byte *palette = ctx.palettes.back();
 
-			const uint32 colorCount = (paletteSize / 2) * 3;
-			for (uint32 i = 0; i < colorCount; i += 3) {
-				const uint16 color = ctx.pal->readUint16LE();
+			const uint32_t colorCount = (paletteSize / 2) * 3;
+			for (uint32_t i = 0; i < colorCount; i += 3) {
+				const uint16_t color = ctx.pal->readUint16LE();
 
 				palette[i + 0] = ((color >> 10) & 0x1F) << 3;
 				palette[i + 1] = ((color >>  5) & 0x1F) << 3;
@@ -137,10 +137,10 @@ void CBGT::readPaletteIndices(ReadContext &ctx) {
 		ctx.maxPaletteIndex = 0;
 
 		ctx.paletteIndices.reserve(twoDA.getColumnCount() * twoDA.getRowCount());
-		for (uint32 i = 0; i < twoDA.getRowCount(); i++) {
+		for (uint32_t i = 0; i < twoDA.getRowCount(); i++) {
 			const Aurora::TwoDARow &row = twoDA.getRow(i);
 
-			for (uint32 j = 0; j < twoDA.getColumnCount(); j++) {
+			for (uint32_t j = 0; j < twoDA.getColumnCount(); j++) {
 				const Common::UString &palette = row.getString(j);
 
 				int index = -1;
@@ -171,8 +171,8 @@ void CBGT::readCells(ReadContext &ctx) {
 	try {
 		// Read the cell offset and sizes
 		for (size_t i = 0; i < 4096; i++) {
-			const uint32 size   = ctx.cbgt->readUint16LE();
-			const uint32 offset = ctx.cbgt->readUint16LE() * 512;
+			const uint32_t size   = ctx.cbgt->readUint16LE();
+			const uint32_t offset = ctx.cbgt->readUint16LE() * 512;
 
 			if (offset < 0x4000)
 				break;
@@ -211,7 +211,7 @@ void CBGT::checkConsistency(ReadContext &ctx) {
 		                        (uint)ctx.maxPaletteIndex, (uint)ctx.palettes.size());
 }
 
-void CBGT::createImage(uint32 width, uint32 height) {
+void CBGT::createImage(uint32_t width, uint32_t height) {
 	_format    = kPixelFormatBGRA;
 	_formatRaw = kPixelFormatRGBA8;
 	_dataType  = kPixelDataType8;
@@ -245,14 +245,14 @@ void CBGT::drawImage(ReadContext &ctx) {
 	createImage(ctx.width, ctx.height);
 
 
-	const uint32 cellWidth  = 64;
-	const uint32 cellHeight = 64;
-	const uint32 cellsX     = ctx.width  / cellWidth;
+	const uint32_t cellWidth  = 64;
+	const uint32_t cellHeight = 64;
+	const uint32_t cellsX     = ctx.width  / cellWidth;
 
-	const uint32 tileWidth  = 8;
-	const uint32 tileHeight = 8;
-	const uint32 tilesX     = cellWidth  / tileWidth;
-	const uint32 tilesY     = cellHeight / tileHeight;
+	const uint32_t tileWidth  = 8;
+	const uint32_t tileHeight = 8;
+	const uint32_t tilesX     = cellWidth  / tileWidth;
+	const uint32_t tilesY     = cellHeight / tileHeight;
 
 	byte *data = _mipMaps.back()->data.get();
 	for (size_t i = 0; i < ctx.cells.size(); i++) {
@@ -260,29 +260,29 @@ void CBGT::drawImage(ReadContext &ctx) {
 		if (!cell)
 			continue;
 
-		const uint32 xC = i % cellsX;
-		const uint32 yC = i / cellsX;
+		const uint32_t xC = i % cellsX;
+		const uint32_t yC = i / cellsX;
 
 		const byte *palette = ctx.palettes[ctx.paletteIndices[i]];
 		const bool is0Transp = (palette[0] == 0xF8) && (palette[1] == 0x00) && (palette[2] == 0xF8);
 
 		// Pixel position of this cell within the big image
-		const uint32 imagePos = yC * cellHeight * ctx.width + xC * cellWidth;
+		const uint32_t imagePos = yC * cellHeight * ctx.width + xC * cellWidth;
 
 		// Go over all tiles
-		for (uint32 yT = 0; yT < tilesY; yT++) {
-			for (uint32 xT = 0; xT < tilesX; xT++) {
+		for (uint32_t yT = 0; yT < tilesY; yT++) {
+			for (uint32_t xT = 0; xT < tilesX; xT++) {
 
 				// Position of the tile within the cell
-				const uint32 tilePos = xT * tileWidth + yT * tileHeight * ctx.width;
+				const uint32_t tilePos = xT * tileWidth + yT * tileHeight * ctx.width;
 
 				// Go over all pixels in the tile
-				for (uint32 y = 0; y < tileHeight; y++) {
-					for (uint32 x = 0; x < tileWidth; x++) {
+				for (uint32_t y = 0; y < tileHeight; y++) {
+					for (uint32_t x = 0; x < tileWidth; x++) {
 
 						// Position of the pixel within the tile
-						const uint32 pos   = imagePos + tilePos + x + y * ctx.width;
-						const uint8  pixel = cell->readByte();
+						const uint32_t pos   = imagePos + tilePos + x + y * ctx.width;
+						const uint8_t  pixel = cell->readByte();
 
 						if (pos > (ctx.width * ctx.height))
 							continue;

@@ -70,26 +70,26 @@ private:
 	struct Sample {
 		Common::UString name; ///< Name of the sample.
 
-		uint32 length; ///< Length of the sample, in audio samples.
+		uint32_t length; ///< Length of the sample, in audio samples.
 
-		uint32 loopStart;
-		uint32 loopEnd;
+		uint32_t loopStart;
+		uint32_t loopEnd;
 
-		uint32 flags;
+		uint32_t flags;
 
-		int32  defFreq;
-		uint16 defVol;
-		int16  defPan;
-		uint16 defPri;
+		int32_t  defFreq;
+		uint16_t defVol;
+		int16_t  defPan;
+		uint16_t defPri;
 
-		uint16 channels;
+		uint16_t channels;
 
 		float minDistance;
 		float maxDistance;
 
-		int32  varFreq;
-		uint16 varVol;
-		int16  varPan;
+		int32_t  varFreq;
+		uint16_t varVol;
+		int16_t  varPan;
 
 		size_t offset; ///< Offset to the sample within the FSB.
 		size_t size;   ///< Size of the sample in bytes.

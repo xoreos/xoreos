@@ -185,19 +185,19 @@ void Widget::enter() {
 void Widget::leave() {
 }
 
-void Widget::mouseMove(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void Widget::mouseMove(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
-void Widget::mouseDown(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void Widget::mouseDown(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
-void Widget::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void Widget::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
-void Widget::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int UNUSED(y)) {
+void Widget::mouseWheel(uint8_t UNUSED(state), int UNUSED(x), int UNUSED(y)) {
 }
 
-void Widget::mouseDblClick(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void Widget::mouseDblClick(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 }
 
 void Widget::subActive(Widget &UNUSED(widget)) {

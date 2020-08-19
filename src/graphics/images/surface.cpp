@@ -75,7 +75,7 @@ void Surface::fill(byte r, byte g, byte b, byte a) {
 	}
 
 	byte  *data = _mipMaps[0]->data.get();
-	uint32 size = _mipMaps[0]->size / 4;
+	uint32_t size = _mipMaps[0]->size / 4;
 	while (size-- > 0) {
 		*data++ = b;
 		*data++ = g;

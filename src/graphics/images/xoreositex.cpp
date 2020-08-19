@@ -30,8 +30,8 @@
 
 #include "src/graphics/images/xoreositex.h"
 
-static const uint32 kXEOSID = MKTAG('X', 'E', 'O', 'S');
-static const uint32 kITEXID = MKTAG('I', 'T', 'E', 'X');
+static const uint32_t kXEOSID = MKTAG('X', 'E', 'O', 'S');
+static const uint32_t kITEXID = MKTAG('I', 'T', 'E', 'X');
 
 namespace Graphics {
 
@@ -55,17 +55,17 @@ void XEOSITEX::load(Common::SeekableReadStream &xeositex) {
 }
 
 void XEOSITEX::readHeader(Common::SeekableReadStream &xeositex) {
-	const uint32 magic1 = xeositex.readUint32BE();
-	const uint32 magic2 = xeositex.readUint32BE();
+	const uint32_t magic1 = xeositex.readUint32BE();
+	const uint32_t magic2 = xeositex.readUint32BE();
 	if ((magic1 != kXEOSID) || (magic2 != kITEXID))
 		throw Common::Exception("Not a valid XEOSITEX (%s, %s)",
 				Common::debugTag(magic1).c_str(), Common::debugTag(magic2).c_str());
 
-	const uint32 version = xeositex.readUint32LE();
+	const uint32_t version = xeositex.readUint32LE();
 	if (version != 0)
 		throw Common::Exception("Invalid XEOSITEX version %u", version);
 
-	const uint32 pixelFormat = xeositex.readUint32LE();
+	const uint32_t pixelFormat = xeositex.readUint32LE();
 	if ((pixelFormat != 3) && (pixelFormat != 4))
 		throw Common::Exception("Invalid XEOSITEX pixel format %u", pixelFormat);
 
@@ -90,7 +90,7 @@ void XEOSITEX::readHeader(Common::SeekableReadStream &xeositex) {
 
 	_txi.getFeatures().filter = xeositex.readByte() != 0;
 
-	const uint32 mipMaps = xeositex.readUint32LE();
+	const uint32_t mipMaps = xeositex.readUint32LE();
 	_mipMaps.resize(mipMaps, 0);
 }
 

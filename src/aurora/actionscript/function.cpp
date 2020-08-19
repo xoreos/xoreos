@@ -28,7 +28,7 @@ namespace Aurora {
 
 namespace ActionScript {
 
-Function::Function(std::vector<uint8> parameterIds, uint8 numRegisters,
+Function::Function(std::vector<uint8_t> parameterIds, uint8_t numRegisters,
 		bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag) :
 	_parameterIds(parameterIds), _numRegisters(numRegisters), _preloadThisFlag(preloadThisFlag),
 	_preloadSuperFlag(preloadSuperFlag), _preloadRootFlag(preloadRootFlag), _preloadGlobalFlag(preloadGlobalFlag) {
@@ -38,11 +38,11 @@ bool Function::hasRegisterIds() {
 	return !_parameterIds.empty();
 }
 
-uint8 Function::getRegisterId(size_t n) {
+uint8_t Function::getRegisterId(size_t n) {
 	return _parameterIds[n];
 }
 
-uint8 Function::getNumRegisters() {
+uint8_t Function::getNumRegisters() {
 	return _numRegisters;
 }
 
@@ -63,7 +63,7 @@ bool Function::getPreloadGlobalFlag() {
 }
 
 ScriptedFunction::ScriptedFunction(Common::SeekableReadStream *as, std::vector<Common::UString> constants,
-                                   std::vector<uint8> parameterIds, uint8 numRegisters,
+                                   std::vector<uint8_t> parameterIds, uint8_t numRegisters,
                                    bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag,
                                    bool preloadGlobalFlag) :
 	Function(parameterIds, numRegisters, preloadThisFlag, preloadSuperFlag, preloadRootFlag, preloadGlobalFlag),
@@ -81,14 +81,14 @@ Variable ScriptedFunction::operator()(AVM &avm) {
 }
 
 NativeFunction::NativeFunction(std::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag)
-	: Function(std::vector<uint8>(), 255, preloadThisFlag, preloadSuperFlag, preloadRootFlag, preloadGlobalFlag), _function(function) {
+	: Function(std::vector<uint8_t>(), 255, preloadThisFlag, preloadSuperFlag, preloadRootFlag, preloadGlobalFlag), _function(function) {
 }
 
 Variable NativeFunction::operator()(AVM &avm) {
 	return _function(avm);
 }
 
-DummyFunction::DummyFunction() : Function(std::vector<uint8>(), 0, false, false, false, false) {
+DummyFunction::DummyFunction() : Function(std::vector<uint8_t>(), 0, false, false, false, false) {
 
 }
 

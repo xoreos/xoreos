@@ -43,19 +43,19 @@ class PEResourceID {
 public:
 	PEResourceID();
 	PEResourceID(UString x);
-	PEResourceID(uint32 x);
+	PEResourceID(uint32_t x);
 
 	PEResourceID &operator=(UString string);
-	PEResourceID &operator=(uint32 x);
+	PEResourceID &operator=(uint32_t x);
 
 	bool operator==(const UString &x) const;
-	bool operator==(const uint32 &x) const;
+	bool operator==(const uint32_t &x) const;
 	bool operator==(const PEResourceID &x) const;
 
 	bool operator<(const PEResourceID &x) const;
 
 	UString getString() const;
-	uint32 getID() const;
+	uint32_t getID() const;
 	UString toString() const;
 
 private:
@@ -67,7 +67,7 @@ private:
 	} _idType;
 
 	UString _name;        ///< The resource's string ID.
-	uint32 _id;           ///< The resource's numerical ID.
+	uint32_t _id;         ///< The resource's numerical ID.
 };
 
 /** The default Windows PE resources. */
@@ -122,14 +122,14 @@ public:
 
 private:
 	struct Section {
-		uint32 virtualAddress;
-		uint32 size;
-		uint32 offset;
+		uint32_t virtualAddress;
+		uint32_t size;
+		uint32_t offset;
 	};
 
 	struct Resource {
-		uint32 offset;
-		uint32 size;
+		uint32_t offset;
+		uint32_t size;
 	};
 
 	typedef std::map<PEResourceID, Resource> LangMap;
@@ -150,7 +150,7 @@ private:
 
 	bool loadFromEXE(SeekableReadStream &exe);
 
-	void parseResourceLevel(SeekableReadStream &exe, Section &section, uint32 offset, int level);
+	void parseResourceLevel(SeekableReadStream &exe, Section &section, uint32_t offset, int level);
 };
 
 } // End of namespace Common

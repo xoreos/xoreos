@@ -25,6 +25,8 @@
 #ifndef SOUND_TYPES_H
 #define SOUND_TYPES_H
 
+#include <cstddef>
+
 #include "src/common/types.h"
 
 namespace Sound {
@@ -34,7 +36,7 @@ static const size_t kChannelInvalid = SIZE_MAX;
 /** A handle to a sound channel. */
 struct ChannelHandle {
 	size_t channel;
-	uint32 id;
+	uint32_t id;
 
 	ChannelHandle() : channel(kChannelInvalid), id(0) { }
 };

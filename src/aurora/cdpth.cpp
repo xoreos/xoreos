@@ -44,12 +44,12 @@ struct ReadContext {
 
 	Cells cells;
 
-	uint32 width;
-	uint32 height;
+	uint32_t width;
+	uint32_t height;
 
-	std::unique_ptr<uint16[]> depth;
+	std::unique_ptr<uint16_t[]> depth;
 
-	ReadContext(Common::SeekableReadStream &c, uint32 w, uint32 h) :
+	ReadContext(Common::SeekableReadStream &c, uint32_t w, uint32_t h) :
 		cdpth(&c), width(w), height(h) {
 	}
 };
@@ -59,7 +59,7 @@ static void readCells(ReadContext &ctx);
 static void checkConsistency(ReadContext &ctx);
 static void createDepth(ReadContext &ctx);
 
-const uint16 *CDPTH::load(Common::SeekableReadStream &cdpth, uint32 width, uint32 height) {
+const uint16_t *CDPTH::load(Common::SeekableReadStream &cdpth, uint32_t width, uint32_t height) {
 	ReadContext ctx(cdpth, width, height);
 
 	try {
@@ -78,7 +78,7 @@ const uint16 *CDPTH::load(Common::SeekableReadStream &cdpth, uint32 width, uint3
 	return ctx.depth.release();
 }
 
-const uint16 *CDPTH::load(Common::SeekableReadStream *cdpth, uint32 width, uint32 height) {
+const uint16_t *CDPTH::load(Common::SeekableReadStream *cdpth, uint32_t width, uint32_t height) {
 	std::unique_ptr<Common::SeekableReadStream> stream(cdpth);
 
 	assert(stream);
@@ -101,8 +101,8 @@ static void readCells(ReadContext &ctx) {
 	try {
 		// Read the cell offset and sizes
 		for (size_t i = 0; i < 4096; i++) {
-			const uint32 size   = ctx.cdpth->readUint16LE();
-			const uint32 offset = ctx.cdpth->readUint16LE() * 512;
+			const uint32_t size   = ctx.cdpth->readUint16LE();
+			const uint32_t offset = ctx.cdpth->readUint16LE() * 512;
 
 			if (offset < 0x4000)
 				break;
@@ -139,29 +139,29 @@ static void checkConsistency(ReadContext &ctx) {
 static void createDepth(ReadContext &ctx) {
 	/* Create the actual depth data, which is made up of 64x64 pixel cells. */
 
-	ctx.depth = std::make_unique<uint16[]>(ctx.width * ctx.height);
-	std::memset(ctx.depth.get(), 0xFF, ctx.width * ctx.height * sizeof(uint16));
+	ctx.depth = std::make_unique<uint16_t[]>(ctx.width * ctx.height);
+	std::memset(ctx.depth.get(), 0xFF, ctx.width * ctx.height * sizeof(uint16_t));
 
-	const uint32 cellWidth  = 64;
-	const uint32 cellHeight = 64;
-	const uint32 cellsX     = ctx.width  / cellWidth;
+	const uint32_t cellWidth  = 64;
+	const uint32_t cellHeight = 64;
+	const uint32_t cellsX     = ctx.width  / cellWidth;
 
-	uint16 *data = ctx.depth.get();
+	uint16_t *data = ctx.depth.get();
 	for (size_t i = 0; i < ctx.cells.size(); i++) {
 		Common::SeekableReadStream *cell = ctx.cells[i];
 		if (!cell)
 			continue;
 
-		const uint32 xC = i % cellsX;
-		const uint32 yC = i / cellsX;
+		const uint32_t xC = i % cellsX;
+		const uint32_t yC = i / cellsX;
 
 		// Pixel position of this cell within the big image
-		const uint32 imagePos = yC * cellHeight * ctx.width + xC * cellWidth;
+		const uint32_t imagePos = yC * cellHeight * ctx.width + xC * cellWidth;
 
-		for (uint32 y = 0; y < cellHeight; y++) {
-			for (uint32 x = 0; x < cellWidth; x++) {
-				const uint32 pos   = imagePos + y * ctx.width + x;
-				const uint16 pixel = cell->readUint16LE();
+		for (uint32_t y = 0; y < cellHeight; y++) {
+			for (uint32_t x = 0; x < cellWidth; x++) {
+				const uint32_t pos   = imagePos + y * ctx.width + x;
+				const uint16_t pixel = cell->readUint16LE();
 
 				if (pos > (ctx.width * ctx.height))
 					continue;

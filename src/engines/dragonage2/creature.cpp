@@ -46,11 +46,11 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-static const uint32 kMORPID    = MKTAG('M', 'O', 'R', 'P');
-static const uint32 kVersion01 = MKTAG('V', '0', '.', '1');
+static const uint32_t kMORPID    = MKTAG('M', 'O', 'R', 'P');
+static const uint32_t kVersion01 = MKTAG('V', '0', '.', '1');
 
-static const uint32 kUTCID     = MKTAG('U', 'T', 'C', ' ');
-static const uint32 kUTIID     = MKTAG('U', 'T', 'I', ' ');
+static const uint32_t kUTCID     = MKTAG('U', 'T', 'C', ' ');
+static const uint32_t kUTIID     = MKTAG('U', 'T', 'I', ' ');
 
 using ::Aurora::GFF3File;
 using ::Aurora::GFF3Struct;
@@ -187,8 +187,8 @@ Common::UString Creature::createModelPart(const Aurora::GDAFile &gda, size_t row
 	return modelPath + "\\" + prefix + "\\" + model;
 }
 
-Common::UString Creature::getItemModel(uint32 variation, const Common::UString &prefix,
-                                       uint8 *armorType) const {
+Common::UString Creature::getItemModel(uint32_t variation, const Common::UString &prefix,
+                                       uint8_t *armorType) const {
 
 	if (armorType)
 		*armorType = 0;
@@ -303,17 +303,17 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 
 	const Common::UString prefix = createModelPrefix(gda, row);
 
-	const uint32 chestModel  = gda.getInt(row, "ChestModelVariation");
-	const uint32 glovesModel = gda.getInt(row, "GlovesModelVariation");
-	const uint32 bootsModel  = gda.getInt(row, "BootsModelVariation");
-	const uint32 helmModel   = gda.getInt(row, "HelmModelVariation");
+	const uint32_t chestModel  = gda.getInt(row, "ChestModelVariation");
+	const uint32_t glovesModel = gda.getInt(row, "GlovesModelVariation");
+	const uint32_t bootsModel  = gda.getInt(row, "BootsModelVariation");
+	const uint32_t helmModel   = gda.getInt(row, "HelmModelVariation");
 
-	static const uint32 kNakedTorso  = 10;
-	static const uint32 kNakedGloves = 11;
-	static const uint32 kNakedBoots  = 12;
+	static const uint32_t kNakedTorso  = 10;
+	static const uint32_t kNakedGloves = 11;
+	static const uint32_t kNakedBoots  = 12;
 
-	uint8  armorType = 0;
-	Model *model     = 0;
+	uint8_t armorType = 0;
+	Model  *model     = 0;
 
 	// Torso: creature model -> appearance override -> equipped chest item -> naked
 
@@ -375,7 +375,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 }
 
 Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UString &prefix,
-                                         uint8 *armorType) const {
+                                         uint8_t *armorType) const {
 	if (armorType)
 		*armorType = 0;
 
@@ -389,8 +389,8 @@ Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UStri
 			GFF3File uti(item->resRef, Aurora::kFileTypeUTI, kUTIID);
 			const GFF3Struct &utiTop = uti.getTopLevel();
 
-			const uint32 baseItem  = (uint32) ((int32) utiTop.getSint("BaseItem", -1));
-			const uint32 variation = utiTop.getUint("ModelVariation", 0xFFFFFFFF);
+			const uint32_t baseItem  = (uint32_t) ((int32_t) utiTop.getSint("BaseItem", -1));
+			const uint32_t variation = utiTop.getUint("ModelVariation", 0xFFFFFFFF);
 
 			const size_t itemRow = baseItems.findRow(baseItem);
 			if (itemRow == Aurora::GDAFile::kInvalidRow)
@@ -462,7 +462,7 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 	if (gff.hasField("Appearance Data")) {
 		const GFF3Struct &app = gff.getStruct("Appearance Data");
 
-		_appearanceID = (uint32) ((int32) app.getSint("Appearance_Type", (int32) _appearanceID));
+		_appearanceID = (uint32_t) ((int32_t) app.getSint("Appearance_Type", (int32_t) _appearanceID));
 
 		_headMorph = app.getString("HeadMorph", _headMorph);
 

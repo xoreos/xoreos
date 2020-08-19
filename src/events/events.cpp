@@ -142,12 +142,12 @@ bool EventsManager::isQueueFull() const {
 	return _fullQueue;
 }
 
-void EventsManager::delay(uint32 ms) {
+void EventsManager::delay(uint32_t ms) {
 	if (!_quitRequested)
-		std::this_thread::sleep_for(std::chrono::duration<uint32, std::milli>(ms));
+		std::this_thread::sleep_for(std::chrono::duration<uint32_t, std::milli>(ms));
 }
 
-uint32 EventsManager::getTimestamp() const {
+uint32_t EventsManager::getTimestamp() const {
 	return SDL_GetTicks();
 }
 
@@ -321,7 +321,7 @@ Common::UString EventsManager::getTextInput(const Event &event) {
 		return event.text.text;
 
 	if (event.type == kEventKeyDown) {
-		uint32 sym = event.key.keysym.sym;
+		uint32_t sym = event.key.keysym.sym;
 
 		// Mask out control characters
 		if ((sym & SDLK_SCANCODE_MASK) || Common::UString::isCntrl(sym))

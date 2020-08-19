@@ -50,7 +50,7 @@ Walkmesh::Walkmesh(Engines::Pathfinding *pathfinding)
 Walkmesh::~Walkmesh() {
 }
 
-void Walkmesh::setFaces(std::vector<uint32> &faces) {
+void Walkmesh::setFaces(std::vector<uint32_t> &faces) {
 	_highlightedFaces = faces;
 }
 
@@ -88,7 +88,7 @@ void Walkmesh::render(Graphics::RenderPass pass) {
 		return;
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	for (uint32 f = 0; f < _pathfinding->_facesCount; ++f) {
+	for (uint32_t f = 0; f < _pathfinding->_facesCount; ++f) {
 		glBegin(GL_POLYGON);
 		if (_pathfinding->faceWalkable(f)) {
 			glColor4f(1.f, 1.f, 1.f, 0.5);
@@ -105,7 +105,7 @@ void Walkmesh::render(Graphics::RenderPass pass) {
 	}
 
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	for (uint32 f = 0; f < _pathfinding->_facesCount; ++f) {
+	for (uint32_t f = 0; f < _pathfinding->_facesCount; ++f) {
 		glBegin(GL_POLYGON);
 		if (_pathfinding->faceWalkable(f)) {
 			glColor4f(_walkableFaceColor[0], _walkableFaceColor[1], _walkableFaceColor[2], _walkableFaceColor[3]);
@@ -122,7 +122,7 @@ void Walkmesh::render(Graphics::RenderPass pass) {
 	}
 
 	for (size_t hF = 0; hF < _highlightedFaces.size(); ++hF) {
-		uint32 f = _highlightedFaces[hF];
+		uint32_t f = _highlightedFaces[hF];
 		glBegin(GL_POLYGON);
 		if (_pathfinding->faceWalkable(f)) {
 			glColor4f(MIN<float>(_walkableFaceColor[0] + 0.2, 1.f),

@@ -192,7 +192,7 @@ UString ConfigManager::createGameID(const UString &path) {
 
 	UString target;
 	for (UString::iterator s = canonicalStem.begin(); s != canonicalStem.end(); ++s) {
-		uint32 c = *s;
+		uint32_t c = *s;
 
 		if (UString::isAlNum(c))
 			target += c;
@@ -204,7 +204,7 @@ UString ConfigManager::createGameID(const UString &path) {
 	if (!_config->hasDomain(target))
 		return target;
 
-	for (uint32 i = 0; i < 65536; i++) {
+	for (uint32_t i = 0; i < 65536; i++) {
 		UString targetNumbered = UString::format("%s_%d", target.c_str(), i);
 
 		if (!_config->hasDomain(targetNumbered))

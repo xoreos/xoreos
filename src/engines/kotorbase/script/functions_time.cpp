@@ -32,19 +32,19 @@ namespace Engines {
 namespace KotORBase {
 
 void Functions::getTimeHour(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = static_cast<int32>(((EventMan.getTimestamp() / 1000) / 60) / 60);
+	ctx.getReturn() = static_cast<int32_t>(((EventMan.getTimestamp() / 1000) / 60) / 60);
 }
 
 void Functions::getTimeMinute(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = static_cast<int32>((EventMan.getTimestamp() / 1000) / 60);
+	ctx.getReturn() = static_cast<int32_t>((EventMan.getTimestamp() / 1000) / 60);
 }
 
 void Functions::getTimeSecond(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = static_cast<int32>(EventMan.getTimestamp() / 1000);
+	ctx.getReturn() = static_cast<int32_t>(EventMan.getTimestamp() / 1000);
 }
 
 void Functions::getTimeMillisecond(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = static_cast<int32>(EventMan.getTimestamp());
+	ctx.getReturn() = static_cast<int32_t>(EventMan.getTimestamp());
 }
 
 } // End of namespace KotORBase

@@ -67,10 +67,10 @@ namespace Common {
  * compile-time configuration.
  */
 struct MD5Context {
-	uint32 lo, hi;
-	uint32 a, b, c, d;
+	uint32_t lo, hi;
+	uint32_t a, b, c, d;
 	byte buffer[64];
-	uint32 block[16];
+	uint32_t block[16];
 
 	MD5Context() : lo(0), hi(0), a(0x67452301), b(0xEFCDAB89), c(0x98BADCFE), d(0x10325476) {
 	}
@@ -115,16 +115,16 @@ struct MD5Context {
  */
 #if defined(__i386__) || defined(__x86_64__) || defined(__vax__)
 #define SET(n) \
-	(*const_cast<uint32 *>(reinterpret_cast<const uint32 *>(&ptr[(n) * 4])))
+	(*const_cast<uint32_t *>(reinterpret_cast<const uint32_t *>(&ptr[(n) * 4])))
 #define GET(n) \
 	SET(n)
 #else
 #define SET(n) \
 	(ctx.block[(n)] = \
-	(uint32)ptr[(n) * 4] | \
-	((uint32)ptr[(n) * 4 + 1] << 8) | \
-	((uint32)ptr[(n) * 4 + 2] << 16) | \
-	((uint32)ptr[(n) * 4 + 3] << 24))
+	(uint32_t)ptr[(n) * 4] | \
+	((uint32_t)ptr[(n) * 4 + 1] << 8) | \
+	((uint32_t)ptr[(n) * 4 + 2] << 16) | \
+	((uint32_t)ptr[(n) * 4 + 3] << 24))
 #define GET(n) \
 	(ctx.block[(n)])
 #endif
@@ -134,18 +134,18 @@ struct MD5Context {
  * the bit counters.  There are no alignment requirements.
  */
 static const byte *md5Body(MD5Context &ctx, const byte *data, size_t size) {
-	uint32 a = ctx.a;
-	uint32 b = ctx.b;
-	uint32 c = ctx.c;
-	uint32 d = ctx.d;
+	uint32_t a = ctx.a;
+	uint32_t b = ctx.b;
+	uint32_t c = ctx.c;
+	uint32_t d = ctx.d;
 
 	const byte *ptr = data;
 
 	do {
-		uint32 saved_a = a;
-		uint32 saved_b = b;
-		uint32 saved_c = c;
-		uint32 saved_d = d;
+		uint32_t saved_a = a;
+		uint32_t saved_b = b;
+		uint32_t saved_c = c;
+		uint32_t saved_d = d;
 
 /* Round 1 */
 		STEP(F, a, b, c, d, SET(0), 0xD76AA478, 7)
@@ -236,7 +236,7 @@ static const byte *md5Body(MD5Context &ctx, const byte *data, size_t size) {
 }
 
 static void md5Update(MD5Context &ctx, const byte *data, size_t size) {
-	uint32 saved_lo = ctx.lo;
+	uint32_t saved_lo = ctx.lo;
 	if ((ctx.lo = (saved_lo + size) & 0x1FFFFFFF) < saved_lo)
 		ctx.hi++;
 	ctx.hi += size >> 29;

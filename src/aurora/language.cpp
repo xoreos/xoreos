@@ -54,7 +54,7 @@ void LanguageManager::clear() {
 	_currentGender = kLanguageGenderMale;
 }
 
-void LanguageManager::addLanguage(Language language, uint32 id, Common::Encoding encoding) {
+void LanguageManager::addLanguage(Language language, uint32_t id, Common::Encoding encoding) {
 	Declaration declaration;
 
 	declaration.language = language;
@@ -66,7 +66,7 @@ void LanguageManager::addLanguage(Language language, uint32 id, Common::Encoding
 	addLanguage(declaration);
 }
 
-void LanguageManager::addLanguage(Language language, uint32 id, Common::Encoding encoding,
+void LanguageManager::addLanguage(Language language, uint32_t id, Common::Encoding encoding,
                                   Common::Encoding encodingLocString) {
 	Declaration declaration;
 
@@ -109,7 +109,7 @@ const LanguageManager::Declaration *LanguageManager::find(Language language) con
 	return 0;
 }
 
-const LanguageManager::Declaration *LanguageManager::find(uint32 id) const {
+const LanguageManager::Declaration *LanguageManager::find(uint32_t id) const {
 	LanguageByID::const_iterator l = _langByID.find(id);
 	if (l != _langByID.end())
 		return &l->second;
@@ -117,7 +117,7 @@ const LanguageManager::Declaration *LanguageManager::find(uint32 id) const {
 	return 0;
 }
 
-uint32 LanguageManager::getLanguageID(Language language) const {
+uint32_t LanguageManager::getLanguageID(Language language) const {
 	const Declaration *l = find(language);
 	if (!l)
 		return kLanguageInvalid;
@@ -125,7 +125,7 @@ uint32 LanguageManager::getLanguageID(Language language) const {
 	return l->id;
 }
 
-uint32 LanguageManager::getLanguageID(Language language, LanguageGender gender) const {
+uint32_t LanguageManager::getLanguageID(Language language, LanguageGender gender) const {
 	const Declaration *l = find(language);
 	if (!l)
 		return kLanguageInvalid;
@@ -136,7 +136,7 @@ uint32 LanguageManager::getLanguageID(Language language, LanguageGender gender) 
 	return convertLanguageIDToGendered(l->id, gender);
 }
 
-Language LanguageManager::getLanguage(uint32 languageID) const {
+Language LanguageManager::getLanguage(uint32_t languageID) const {
 	const Declaration *l = find(languageID);
 	if (!l)
 		return kLanguageInvalid;
@@ -144,7 +144,7 @@ Language LanguageManager::getLanguage(uint32 languageID) const {
 	return l->language;
 }
 
-Language LanguageManager::getLanguage(uint32 languageID, LanguageGender &gender) const {
+Language LanguageManager::getLanguage(uint32_t languageID, LanguageGender &gender) const {
 	gender = getLanguageGender(languageID);
 
 	const Declaration *l = find(convertLanguageIDToUngendered(languageID));
@@ -154,7 +154,7 @@ Language LanguageManager::getLanguage(uint32 languageID, LanguageGender &gender)
 	return l->language;
 }
 
-Language LanguageManager::getLanguageGendered(uint32 languageID) const {
+Language LanguageManager::getLanguageGendered(uint32_t languageID) const {
 	LanguageGender gender;
 	return getLanguage(languageID, gender);
 }
@@ -217,7 +217,7 @@ Common::Encoding LanguageManager::getCurrentEncodingLocString() const {
 	return getEncodingLocString(getCurrentLanguageText());
 }
 
-uint32 LanguageManager::convertLanguageIDToGendered(uint32 languageID, LanguageGender gender) {
+uint32_t LanguageManager::convertLanguageIDToGendered(uint32_t languageID, LanguageGender gender) {
 	assert(((size_t) gender) < kLanguageGenderMAX);
 
 	if (languageID == kLanguageInvalid)
@@ -230,21 +230,21 @@ uint32 LanguageManager::convertLanguageIDToGendered(uint32 languageID, LanguageG
 	return languageID * 2 + ((size_t) gender);
 }
 
-uint32 LanguageManager::convertLanguageIDToUngendered(uint32 languageID) {
+uint32_t LanguageManager::convertLanguageIDToUngendered(uint32_t languageID) {
 	if (languageID == kLanguageInvalid)
 		return kLanguageInvalid;
 
 	return languageID / 2;
 }
 
-LanguageGender LanguageManager::getLanguageGender(uint32 languageID) {
+LanguageGender LanguageManager::getLanguageGender(uint32_t languageID) {
 	if (languageID == kLanguageInvalid)
 		return kLanguageGenderMale;
 
 	return (LanguageGender) (languageID % 2);
 }
 
-uint32 LanguageManager::swapLanguageGender(uint32 languageID) {
+uint32_t LanguageManager::swapLanguageGender(uint32_t languageID) {
 	if (languageID == kLanguageInvalid)
 		return kLanguageInvalid;
 
@@ -255,7 +255,7 @@ Common::UString LanguageManager::getLanguageName(Language language) {
 	if (language == kLanguageChinese)
 		return "Chinese";
 
-	if (((uint32) language >= kLanguageMAX))
+	if (((uint32_t) language >= kLanguageMAX))
 		return "Invalid";
 
 	return kLanguageNames[language];
@@ -329,7 +329,7 @@ Common::MemoryReadStream *LanguageManager::preParseColorCodes(Common::SeekableRe
 		if (state == 5) {
 			if (b == '>') {
 				Common::UString c = Common::UString::format("<c%02X%02X%02X%02X>",
-				                    (uint8) color[0], (uint8) color[1], (uint8) color[2], (uint8) 0xFF);
+				                    (uint8_t) color[0], (uint8_t) color[1], (uint8_t) color[2], (uint8_t) 0xFF);
 
 				output.writeString(c);
 				collect.clear();

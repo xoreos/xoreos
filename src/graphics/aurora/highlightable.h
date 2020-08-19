@@ -79,7 +79,7 @@ private:
 	float _lowerBoundB;
 	float _lowerBoundA;
 
-	uint32 _prevIncTime;
+	uint32_t _prevIncTime;
 };
 
 } // End of namespace Aurora

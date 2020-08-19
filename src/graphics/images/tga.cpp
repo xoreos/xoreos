@@ -90,7 +90,7 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 	tga.seek(0);
 
 	// TGAs have an optional "id" string in the header
-	uint32 idLength = tga.readByte();
+	uint32_t idLength = tga.readByte();
 
 	// Number of colors in the color map / palette
 	if (tga.readByte() != 0)
@@ -117,8 +117,8 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 	// Color map specifications + X + Y
 	tga.skip(5 + 2 + 2);
 
-	int32 width  = tga.readUint16LE();
-	int32 height = tga.readUint16LE();
+	int32_t width  = tga.readUint16LE();
+	int32_t height = tga.readUint16LE();
 
 	if ((width >= 0x8000) || (height >= 0x8000))
 		throw Common::Exception("Unsupported image dimensions (%dx%d)", width, height);
@@ -193,11 +193,11 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 					// 16bpp TGA is usually ARGB1555, but Sonic's are AGBR1555.
 					// Hopefully Sonic is the only game that needs 16bpp TGAs.
 
-					uint16 count = _mipMaps[i]->width * _mipMaps[i]->height;
+					uint16_t count = _mipMaps[i]->width * _mipMaps[i]->height;
 					byte *dst = _mipMaps[i]->data.get();
 
 					while (count--) {
-						uint16 pixel = tga.readUint16LE();
+						uint16_t pixel = tga.readUint16LE();
 
 						*dst++ = (pixel & 0x7C00) >> 7;
 						*dst++ = (pixel & 0x03E0) >> 2;
@@ -216,7 +216,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 			_mipMaps[i]->data = std::make_unique<byte[]>(_mipMaps[i]->size);
 
 			byte  *data  = _mipMaps[i]->data.get();
-			uint32 count = _mipMaps[i]->width * _mipMaps[i]->height;
+			uint32_t count = _mipMaps[i]->width * _mipMaps[i]->height;
 
 			while (count-- > 0) {
 				byte g = tga.readByte();
@@ -240,17 +240,17 @@ void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth, size_t layer
 		throw Common::Exception("Unhandled RLE depth %d", pixelDepth);
 
 	byte  *data  = _mipMaps[layer]->data.get();
-	uint32 count = _mipMaps[layer]->width * _mipMaps[layer]->height;
+	uint32_t count = _mipMaps[layer]->width * _mipMaps[layer]->height;
 
 	while (count > 0) {
 		byte code = tga.readByte();
-		byte length = MIN<uint32>((code & 0x7F) + 1, count);
+		byte length = MIN<uint32_t>((code & 0x7F) + 1, count);
 
 		count -= length;
 
 		if (code & 0x80) {
 			if (pixelDepth == 32) {
-				uint32 color = tga.readUint32BE();
+				uint32_t color = tga.readUint32BE();
 
 				while (length--) {
 					WRITE_BE_UINT32(data, color);

@@ -41,7 +41,7 @@ namespace Graphics {
 
 /** Return the number of bytes necessary to hold an image of these dimensions
   * and in this format. */
-static inline uint32 getDataSize(PixelFormatRaw format, int32 width, int32 height) {
+static inline uint32_t getDataSize(PixelFormatRaw format, int32_t width, int32_t height) {
 	if ((width < 0) || (width >= 0x8000) || (height < 0) || (height >= 0x8000))
 		throw Common::Exception("Invalid dimensions %dx%d", width, height);
 
@@ -57,11 +57,11 @@ static inline uint32 getDataSize(PixelFormatRaw format, int32 width, int32 heigh
 			return width * height * 2;
 
 		case kPixelFormatDXT1:
-			return MAX<uint32>( 8, ((width + 3) / 4) * ((height + 3) / 4) *  8);
+			return MAX<uint32_t>( 8, ((width + 3) / 4) * ((height + 3) / 4) *  8);
 
 		case kPixelFormatDXT3:
 		case kPixelFormatDXT5:
-			return MAX<uint32>(16, ((width + 3) / 4) * ((height + 3) / 4) * 16);
+			return MAX<uint32_t>(16, ((width + 3) / 4) * ((height + 3) / 4) * 16);
 
 		default:
 			break;
@@ -71,7 +71,7 @@ static inline uint32 getDataSize(PixelFormatRaw format, int32 width, int32 heigh
 }
 
 /** Are these image dimensions valid for this format? */
-static inline bool hasValidDimensions(PixelFormatRaw format, int32 width, int32 height) {
+static inline bool hasValidDimensions(PixelFormatRaw format, int32_t width, int32_t height) {
 	if ((width < 0) || (width >= 0x8000) || (height < 0) || (height >= 0x8000))
 		return false;
 
@@ -177,12 +177,12 @@ static inline void rotate90(byte *data, int width, int height, int bpp, int step
 }
 
 /** De-"swizzle" a texture pixel offset. */
-static inline uint32 deSwizzleOffset(uint32 x, uint32 y, uint32 width, uint32 height) {
+static inline uint32_t deSwizzleOffset(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
 	width  = Common::intLog2(width);
 	height = Common::intLog2(height);
 
-	uint32 offset     = 0;
-	uint32 shiftCount = 0;
+	uint32_t offset     = 0;
+	uint32_t shiftCount = 0;
 
 	while (width | height) {
 		if (width) {

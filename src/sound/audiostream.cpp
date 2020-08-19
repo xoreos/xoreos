@@ -63,7 +63,7 @@ LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, size_t loo
 LoopingAudioStream::~LoopingAudioStream() {
 }
 
-size_t LoopingAudioStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t LoopingAudioStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	if ((_loops && _completeIterations == _loops) || !numSamples || (_parent->getLength() == 0))
 		return 0;
 
@@ -113,33 +113,33 @@ bool LoopingAudioStream::rewind() {
 	return true;
 }
 
-uint64 LoopingAudioStream::getLength() const {
+uint64_t LoopingAudioStream::getLength() const {
 	if (!_loops)
 		return RewindableAudioStream::kInvalidLength;
 
-	uint64 length = _parent->getLength();
+	uint64_t length = _parent->getLength();
 	if (length == RewindableAudioStream::kInvalidLength)
 		return RewindableAudioStream::kInvalidLength;
 
 	return _loops * length;
 }
 
-uint64 LoopingAudioStream::getDuration() const {
+uint64_t LoopingAudioStream::getDuration() const {
 	if (!_loops)
 		return RewindableAudioStream::kInvalidLength;
 
-	uint64 duration = _parent->getDuration();
+	uint64_t duration = _parent->getDuration();
 	if (duration == RewindableAudioStream::kInvalidLength)
 		return RewindableAudioStream::kInvalidLength;
 
 	return _loops * duration;
 }
 
-uint64 LoopingAudioStream::getLengthOnce() const {
+uint64_t LoopingAudioStream::getLengthOnce() const {
 	return _parent->getLength();
 }
 
-uint64 LoopingAudioStream::getDurationOnce() const {
+uint64_t LoopingAudioStream::getDurationOnce() const {
 	return _parent->getDuration();
 }
 
@@ -192,7 +192,7 @@ public:
 	~QueuingAudioStreamImpl();
 
 	// Implement the AudioStream API
-	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
+	virtual size_t readBuffer(int16_t *buffer, const size_t numSamples);
 	virtual int getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
 	virtual bool endOfData() const {
@@ -243,7 +243,7 @@ void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, bool disposeA
 	_queue.push(StreamHolder(stream, disposeAfterUse));
 }
 
-size_t QueuingAudioStreamImpl::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t QueuingAudioStreamImpl::readBuffer(int16_t *buffer, const size_t numSamples) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	size_t samplesDecoded = 0;
 

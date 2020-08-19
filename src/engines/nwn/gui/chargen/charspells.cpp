@@ -85,8 +85,8 @@ CharSpells::CharSpells(CharGenChoices &choices, Console *console) : CharGenBase(
 	_knownListBox = getListBox("KnownBox", true);
 	_knownListBox->setMode(WidgetListBox::kModeSelectable);
 
-	for (uint32 lvl = 0; lvl < 10; ++lvl) {
-		WidgetButton *spellLvlButton = getButton("SpellLevel" + Common::composeString<uint32>(lvl), true);
+	for (uint32_t lvl = 0; lvl < 10; ++lvl) {
+		WidgetButton *spellLvlButton = getButton("SpellLevel" + Common::composeString<uint32_t>(lvl), true);
 		spellLvlButton->setTooltip(TalkMan.getString(68674 + lvl));
 		spellLvlButton->setTooltipPosition(20.f, -40.f, -100.f);
 
@@ -248,8 +248,8 @@ void CharSpells::callbackActive(Widget &widget) {
 		return;
 	}
 
-	for (uint32 lvl = 0; lvl <= _maxLevel; ++lvl) {
-		if (widget.getTag() == "SpellLevel" + Common::composeString<uint32>(lvl)) {
+	for (uint32_t lvl = 0; lvl <= _maxLevel; ++lvl) {
+		if (widget.getTag() == "SpellLevel" + Common::composeString<uint32_t>(lvl)) {
 			showSpellLevel(lvl);
 			return;
 		}
@@ -319,7 +319,7 @@ void CharSpells::makeSpellsList() {
 			continue;
 
 		// Check spell level.
-		uint32 spellLevel = static_cast<uint32>(spellRow.getInt(casterName));
+		uint32_t spellLevel = static_cast<uint32_t>(spellRow.getInt(casterName));
 		if (spellLevel > _maxLevel)
 			continue;
 
@@ -347,10 +347,10 @@ void CharSpells::makeSpellsList() {
 	}
 
 	// Add icon to spells levels.
-	for (uint32 lvl = 0; lvl <= _maxLevel; ++lvl) {
-		WidgetButton *spellLvlButton = getButton("SpellLevel" + Common::composeString<uint32>(lvl), true);
+	for (uint32_t lvl = 0; lvl <= _maxLevel; ++lvl) {
+		WidgetButton *spellLvlButton = getButton("SpellLevel" + Common::composeString<uint32_t>(lvl), true);
 
-		Common::UString lvlStr = Common::composeString<uint32>(lvl);
+		Common::UString lvlStr = Common::composeString<uint32_t>(lvl);
 		Common::UString iconName;
 		if (lvl == 0) {
 			iconName = "ir_cantrips";
@@ -386,7 +386,7 @@ void CharSpells::makeSpellsList() {
 }
 
 void CharSpells::computeRemainingSpells(const Aurora::TwoDARow &classRow) {
-	uint16 classLevel = _choices->getCharacter().getClassLevel(_choices->getClass());
+	uint16_t classLevel = _choices->getCharacter().getClassLevel(_choices->getClass());
 
 	// Check if it is a first level wizard.
 	if (classRow.empty("SpellKnownTable") && classLevel == 0) {
@@ -403,17 +403,17 @@ void CharSpells::computeRemainingSpells(const Aurora::TwoDARow &classRow) {
 		if (knownRow.empty(c))
 			break;
 
-		_remainingSpells[c - 1] = static_cast<uint8>(knownRow.getInt(c));
+		_remainingSpells[c - 1] = static_cast<uint8_t>(knownRow.getInt(c));
 	}
 
 }
 
 void CharSpells::updateRemainLabel() {
-	getLabel("RemainLabel")->setText(Common::composeString<uint8>(_remainingSpells[_currentSpellLevel]));
+	getLabel("RemainLabel")->setText(Common::composeString<uint8_t>(_remainingSpells[_currentSpellLevel]));
 }
 
 void CharSpells::setRecommendedSpells() {
-	std::vector<std::vector<uint16> > prefSpells;
+	std::vector<std::vector<uint16_t> > prefSpells;
 	_choices->getPrefSpells(prefSpells);
 
 	for (size_t lvl = 0; lvl < _remainingSpells.size(); ++lvl) {

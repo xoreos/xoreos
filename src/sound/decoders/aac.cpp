@@ -51,7 +51,7 @@ public:
 	int getRate() const { return _rate; }
 	bool endOfData() const { return _audStream->endOfData(); }
 	bool endOfStream() const { return _audStream->endOfStream(); }
-	size_t readBuffer(int16 *buffer, const size_t numSamples) { return _audStream->readBuffer(buffer, numSamples); }
+	size_t readBuffer(int16_t *buffer, const size_t numSamples) { return _audStream->readBuffer(buffer, numSamples); }
 
 	// PacketizedAudioStream API
 	void finish() { _audStream->finish(); }

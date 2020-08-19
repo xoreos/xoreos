@@ -78,7 +78,7 @@ public:
 	VertexBuffer &operator=(const VertexBuffer &other);
 
 	/** Change buffer size. Will allocate memory, free previous. */
-	void setSize(uint32 vertCount, uint32 vertSize);
+	void setSize(uint32_t vertCount, uint32_t vertSize);
 
 	/** Set vertex declaration for this buffer. */
 	void setVertexDecl(const VertexDecl &decl);
@@ -88,13 +88,13 @@ public:
 	 *  Will allocate memory to fit vertCount vertices into this buffer and
 	 *  modify the declaration's pointers and strides to fit a linear layout.
 	 */
-	void setVertexDeclLinear(uint32 vertCount, VertexDecl &decl);
+	void setVertexDeclLinear(uint32_t vertCount, VertexDecl &decl);
 	/** Set the interleaved vertex declaration for this buffer.
 	 *
 	 *  Will allocate memory to fit vertCount vertices into this buffer and
 	 *  modify the declaration's pointers and strides to fit an interleaved layout.
 	 */
-	void setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl);
+	void setVertexDeclInterleave(uint32_t vertCount, VertexDecl &decl);
 
 	/** Access buffer data. */
 	GLvoid *getData();
@@ -112,10 +112,10 @@ public:
 	const VertexDecl &getVertexDecl() const;
 
 	/** Get vertex count. */
-	uint32 getCount() const;
+	uint32_t getCount() const;
 
 	/** Get vertex element size in bytes. */
-	uint32 getSize() const;
+	uint32_t getSize() const;
 
 	/** Initialise internal buffer object for GL handling. */
 	void initGL(GLuint hint = GL_STATIC_DRAW);
@@ -137,15 +137,15 @@ public:
 	void draw(GLenum mode, const IndexBuffer &indexBuffer) const;
 
 private:
-	VertexDecl _decl; ///< Vertex declaration.
-	uint32 _count;    ///< Number of elements in buffer.
-	uint32 _size;     ///< Size of a buffer element in bytes (vertex attributes size sum).
-	byte  *_data;     ///< Buffer data.
+	VertexDecl _decl;  ///< Vertex declaration.
+	uint32_t   _count; ///< Number of elements in buffer.
+	uint32_t   _size;  ///< Size of a buffer element in bytes (vertex attributes size sum).
+	byte      *_data;  ///< Buffer data.
 
-	GLuint _vbo;      ///< Vertex Buffer Object.
-	GLuint _hint;     ///< GL hint for static or dynamic data.
+	GLuint _vbo;       ///< Vertex Buffer Object.
+	GLuint _hint;      ///< GL hint for static or dynamic data.
 
-	static uint32 getTypeSize(GLenum type);
+	static uint32_t getTypeSize(GLenum type);
 };
 
 } // End of namespace Graphics

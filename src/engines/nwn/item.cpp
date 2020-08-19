@@ -167,7 +167,7 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 }
 
 void Item::loadPortrait(const Aurora::GFF3Struct &gff) {
-	uint32 portraitID = gff.getUint("PortraitId");
+	uint32_t portraitID = gff.getUint("PortraitId");
 	if (portraitID != 0) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 
@@ -205,13 +205,13 @@ bool Item::isArmor() const {
 	return _armorParts[kArmorPartTorso] != Aurora::kFieldIDInvalid;
 }
 
-uint32 Item::getColor(Color color) const {
+uint32_t Item::getColor(Color color) const {
 	assert((size_t)color < kColorMAX);
 
 	return _colors[(size_t)color];
 }
 
-uint32 Item::getArmorPart(size_t index) const {
+uint32_t Item::getArmorPart(size_t index) const {
 	assert(index < kArmorPartMAX);
 
 	return _armorParts[index];

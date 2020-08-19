@@ -405,18 +405,18 @@ GTEST_TEST(ImageUtil, rotate90) {
 }
 
 GTEST_TEST(ImagesUtil, deSwizzleOffset) {
-	static const uint32 kWidth = 4, kHeight = 4;
-	static const uint32 kSwizzled[kWidth * kHeight] = {
+	static const uint32_t kWidth = 4, kHeight = 4;
+	static const uint32_t kSwizzled[kWidth * kHeight] = {
 		 0,  1,  4,  5,
 		 2,  3,  6,  7,
 		 8,  9, 12, 13,
 		10, 11, 14, 15,
 	};
 
-	uint32 buffer[kWidth * kHeight];
+	uint32_t buffer[kWidth * kHeight];
 
-	for (uint32 y = 0; y < kHeight; y++)
-		for (uint32 x = 0; x < kWidth; x++)
+	for (uint32_t y = 0; y < kHeight; y++)
+		for (uint32_t x = 0; x < kWidth; x++)
 			buffer[y * kHeight + x] = Graphics::deSwizzleOffset(x, y, kWidth, kHeight);
 
 	for (size_t i = 0; i < (kWidth * kHeight); i++)

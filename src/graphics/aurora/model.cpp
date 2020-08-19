@@ -442,7 +442,7 @@ const ModelNode *Model::getNode(const Common::UString &stateName, const Common::
 	return n->second;
 }
 
-ModelNode *Model::getNode(uint16 nodeNumber) {
+ModelNode *Model::getNode(uint16_t nodeNumber) {
 	if (_currentState) {
 		const NodeList &nodes = _currentState->nodeList;
 		for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
@@ -455,7 +455,7 @@ ModelNode *Model::getNode(uint16 nodeNumber) {
 	return 0;
 }
 
-const ModelNode *Model::getNode(uint16 nodeNumber) const {
+const ModelNode *Model::getNode(uint16_t nodeNumber) const {
 	if (_currentState) {
 		const NodeList &nodes = _currentState->nodeList;
 		for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
@@ -554,7 +554,7 @@ void Model::clearDefaultAnimations() {
 	channel->clearDefaultAnimations();
 }
 
-void Model::addDefaultAnimation(const Common::UString &anim, uint8 probability) {
+void Model::addDefaultAnimation(const Common::UString &anim, uint8_t probability) {
 	AnimationChannel *channel = _animationChannels.begin()->second;
 	channel->addDefaultAnimation(anim, probability);
 }
@@ -896,7 +896,7 @@ void Model::createBound() {
 	_absoluteBoundBox.absolutize();
 }
 
-void Model::readValue(Common::SeekableReadStream &stream, uint32 &value) {
+void Model::readValue(Common::SeekableReadStream &stream, uint32_t &value) {
 	value = stream.readUint32LE();
 }
 
@@ -905,12 +905,12 @@ void Model::readValue(Common::SeekableReadStream &stream, float &value) {
 }
 
 void Model::readArrayDef(Common::SeekableReadStream &stream,
-                         uint32 &offset, uint32 &count) {
+                         uint32_t &offset, uint32_t &count) {
 
 	offset = stream.readUint32LE();
 
-	uint32 usedCount      = stream.readUint32LE();
-	uint32 allocatedCount = stream.readUint32LE();
+	uint32_t usedCount      = stream.readUint32LE();
+	uint32_t allocatedCount = stream.readUint32LE();
 
 	if (usedCount != allocatedCount)
 		warning("Model::readArrayDef(): usedCount != allocatedCount (%d, %d)",
@@ -921,23 +921,23 @@ void Model::readArrayDef(Common::SeekableReadStream &stream,
 
 template<typename T>
 void Model::readArray(Common::SeekableReadStream &stream,
-                      uint32 offset, uint32 count, std::vector<T> &values) {
+                      uint32_t offset, uint32_t count, std::vector<T> &values) {
 
 	const size_t pos = stream.seek(offset);
 
 	values.resize(count);
-	for (uint32 i = 0; i < count; i++)
+	for (uint32_t i = 0; i < count; i++)
 		readValue(stream, values[i]);
 
 	stream.seek(pos);
 }
 
 template
-void Model::readArray<uint32>(Common::SeekableReadStream &stream,
-                              uint32 offset, uint32 count, std::vector<uint32> &values);
+void Model::readArray<uint32_t>(Common::SeekableReadStream &stream,
+                              uint32_t offset, uint32_t count, std::vector<uint32_t> &values);
 template
 void Model::readArray<float>(Common::SeekableReadStream &stream,
-                             uint32 offset, uint32 count, std::vector<float> &values);
+                             uint32_t offset, uint32_t count, std::vector<float> &values);
 
 } // End of namespace Aurora
 

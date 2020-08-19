@@ -49,7 +49,7 @@ const Archive::ResourceList &PEFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoCopy)) const {
+Common::SeekableReadStream *PEFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	ResourceList::const_iterator iter = _resources.begin();
 	if (index >= _resources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_resources.size());
@@ -97,7 +97,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 			Common::PtrVector<Common::SeekableReadStream> cursorStreams;
 			cursorStreams.resize(cursorCount);
 
-			uint32 startOffset = 6 + cursorCount * 16;
+			uint32_t startOffset = 6 + cursorCount * 16;
 
 			for (size_t i = 0; i < cursorCount; i++) {
 				out.writeByte(cursorGroup->readUint16LE());     // width
@@ -107,7 +107,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 				out.writeByte(0);                               // reserved
 
 				cursorGroup->readUint32LE();                    // data size
-				uint16 id = cursorGroup->readUint16LE();
+				uint16_t id = cursorGroup->readUint16LE();
 
 				cursorStreams[i] = _peFile->getResource(Common::kPECursor, id);
 				if (!cursorStreams[i])
@@ -141,7 +141,7 @@ void PEFile::load(const std::vector<Common::UString> &remap) {
 		if (it->getID() == 0xFFFFFFFF)
 			throw Common::Exception("Found non-integer cursor group");
 
-		uint32 id = it->getID();
+		uint32_t id = it->getID();
 		if (id >= remap.size() || id <= 0)
 			res.name = Common::UString::format("cursor%d", id);
 		else
@@ -159,7 +159,7 @@ void PEFile::load(const std::vector<Common::UString> &remap) {
 	for (std::vector<Common::PEResourceID>::const_iterator it = bitmapList.begin(); it != bitmapList.end(); ++it) {
 		Resource res;
 
-		uint32 id = it->getID();
+		uint32_t id = it->getID();
 		if (id >= remap.size())
 			res.name = Common::UString::format("bitmap%d", id);
 		else

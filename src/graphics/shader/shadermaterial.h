@@ -46,8 +46,8 @@ public:
 
 	const Common::UString &getName() const;
 
-	uint32 getFlags() const;
-	void setFlags(uint32 flags);
+	uint32_t getFlags() const;
+	void setFlags(uint32_t flags);
 
 	void setBlendEquationRGB(GLenum equation);
 	void setBlendEquationAlpha(GLenum equation);
@@ -58,27 +58,27 @@ public:
 
 	Shader::ShaderObject *getFragmentShader() const;
 
-	uint32 getVariableCount() const;
+	uint32_t getVariableCount() const;
 
-	Shader::ShaderVariableType getVariableType(uint32 index) const;
+	Shader::ShaderVariableType getVariableType(uint32_t index) const;
 
-	void *getVariableData(uint32 index) const;
+	void *getVariableData(uint32_t index) const;
 	void *getVariableData(const Common::UString &name) const;
 
-	const Common::UString &getVariableName(uint32 index) const;
+	const Common::UString &getVariableName(uint32_t index) const;
 
-	uint32 getVariableFlags(uint32 index) const;
+	uint32_t getVariableFlags(uint32_t index) const;
 
 	// Do not use this function to set sampler data. Instead, get the the variable data and modify
 	// it directly; the texture unit associated with the texture id might be incorrect otherwise.
-	void setVariableExternal(uint32 index, void *loc, bool textureUnitRecalc = true);
+	void setVariableExternal(uint32_t index, void *loc, bool textureUnitRecalc = true);
 	void setVariableExternal(const Common::UString &name, void *loc, bool textureUnitRecalc = true);
-	void setVariableInternal(uint32 index, bool textureUnitRecalc = true);
+	void setVariableInternal(uint32_t index, bool textureUnitRecalc = true);
 	void setVariableInternal(const Common::UString &name, bool textureUnitRecalc = true);
 
 	void recalcTextureUnits();
 
-	bool isVariableOwned(uint32 index) const;
+	bool isVariableOwned(uint32_t index) const;
 	bool isVariableOwned(const Common::UString &name) const;
 
 	void bindProgram(Shader::ShaderProgram *program);
@@ -92,17 +92,17 @@ public:
 
 	void useIncrement();
 	void useDecrement();
-	uint32 useCount() const;
+	uint32_t useCount() const;
 
 private:
 	struct ShaderMaterialVariable {
 		void *data;
-		uint32 flags;  // Full flags may or may not be required here.
+		uint32_t flags;  // Full flags may or may not be required here.
 	};
 
 	std::vector<ShaderMaterialVariable> _variableData;
 	Shader::ShaderObject *_fragShader;
-	uint32 _flags;
+	uint32_t _flags;
 	GLenum _blendEquationRGB;
 	GLenum _blendEquationAlpha;
 	GLenum _blendSrcRGB;
@@ -111,12 +111,12 @@ private:
 	GLenum _blendDstAlpha;
 
 	Common::UString _name;
-	uint32 _usageCount;
+	uint32_t _usageCount;
 
-	uint32 _alphaIndex;
+	uint32_t _alphaIndex;
 
-	void *genMaterialVar(uint32 index);
-	void delMaterialVar(uint32 index);
+	void *genMaterialVar(uint32_t index);
+	void delMaterialVar(uint32_t index);
 };
 
 } // End of namespace Shader

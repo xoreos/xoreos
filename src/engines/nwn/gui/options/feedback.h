@@ -45,7 +45,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	void updateTooltipDelay(uint32 tooltipDelay);
+	void updateTooltipDelay(uint32_t tooltipDelay);
 
 	void adoptChanges();
 	void revertChanges();

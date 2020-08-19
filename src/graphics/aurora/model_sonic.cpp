@@ -73,8 +73,8 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
-static const uint32 kBMD0ID = MKTAG('B', 'M', 'D', '0');
-static const uint32 kMDL0ID = MKTAG('M', 'D', 'L', '0');
+static const uint32_t kBMD0ID = MKTAG('B', 'M', 'D', '0');
+static const uint32_t kMDL0ID = MKTAG('M', 'D', 'L', '0');
 
 namespace Graphics {
 
@@ -182,12 +182,12 @@ void Model_Sonic::readModel(ParserContext &ctx) {
 
 // --- Loader utility methods ---
 
-uint8 Model_Sonic::readInfoOffset(ParserContext &ctx, Infos &infos, uint32 offset) {
+uint8_t Model_Sonic::readInfoOffset(ParserContext &ctx, Infos &infos, uint32_t offset) {
 	/* Contains names and offsets of entries in a section. */
 
 	ctx.nsbmd->skip(1); // Unknown
 
-	const uint8 count = ctx.nsbmd->readByte();
+	const uint8_t count = ctx.nsbmd->readByte();
 	infos.resize(count);
 
 	ctx.nsbmd->skip(2); // Section size
@@ -206,12 +206,12 @@ uint8 Model_Sonic::readInfoOffset(ParserContext &ctx, Infos &infos, uint32 offse
 	return count;
 }
 
-uint8 Model_Sonic::readInfoOffsetCount(ParserContext &ctx, Infos &infos, uint32 offset) {
+uint8_t Model_Sonic::readInfoOffsetCount(ParserContext &ctx, Infos &infos, uint32_t offset) {
 	/* Contains names, offsets and counts/sizes of entries in a section. */
 
 	ctx.nsbmd->skip(1); // Unknown
 
-	const uint8 count = ctx.nsbmd->readByte();
+	const uint8_t count = ctx.nsbmd->readByte();
 	infos.resize(count);
 
 	ctx.nsbmd->skip(2); // Section size
@@ -237,28 +237,28 @@ uint8 Model_Sonic::readInfoOffsetCount(ParserContext &ctx, Infos &infos, uint32 
 void Model_Sonic::readHeader(ParserContext &ctx) {
 	/* Global NSBMD header. */
 
-	const uint32 tag = ctx.nsbmd->readUint32BE();
+	const uint32_t tag = ctx.nsbmd->readUint32BE();
 	if (tag != kBMD0ID)
 		throw Common::Exception("Invalid NSBMD file (%s)", Common::debugTag(tag).c_str());
 
-	const uint16 bom = ctx.nsbmd->readUint16();
+	const uint16_t bom = ctx.nsbmd->readUint16();
 	if (bom != 0xFEFF)
 		throw Common::Exception("Invalid BOM: %u", bom);
 
-	const uint8 versionMajor = ctx.nsbmd->readByte();
-	const uint8 versionMinor = ctx.nsbmd->readByte();
+	const uint8_t versionMajor = ctx.nsbmd->readByte();
+	const uint8_t versionMinor = ctx.nsbmd->readByte();
 	if ((versionMajor != 2) || (versionMinor != 0))
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
-	const uint32 fileSize = ctx.nsbmd->readUint32();
+	const uint32_t fileSize = ctx.nsbmd->readUint32();
 	if (fileSize > ctx.nsbmd->size())
 		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)ctx.nsbmd->size());
 
-	const uint16 headerSize = ctx.nsbmd->readUint16();
+	const uint16_t headerSize = ctx.nsbmd->readUint16();
 	if (headerSize != 16)
 		throw Common::Exception("Invalid header size (%u)", headerSize);
 
-	const uint16 sectionCount = ctx.nsbmd->readUint16();
+	const uint16_t sectionCount = ctx.nsbmd->readUint16();
 	if (sectionCount != 1)
 		throw Common::Exception("Invalid number of sections (%u)", sectionCount);
 
@@ -270,14 +270,14 @@ void Model_Sonic::readModelHeader(ParserContext &ctx) {
 
 	ctx.nsbmd->seek(ctx.offsetMDL0);
 
-	const uint32 tag = ctx.nsbmd->readUint32BE();
+	const uint32_t tag = ctx.nsbmd->readUint32BE();
 	if (tag != kMDL0ID)
 		throw Common::Exception("Invalid model section (%s)", Common::debugTag(tag).c_str());
 
 	ctx.nsbmd->skip(4); // Size
 
 	Infos models;
-	const uint8 modelCount = readInfoOffset(ctx, models, ctx.offsetMDL0);
+	const uint8_t modelCount = readInfoOffset(ctx, models, ctx.offsetMDL0);
 
 	if (modelCount != 1)
 		throw Common::Exception("Unsupported number of models (%u)", modelCount);
@@ -293,7 +293,7 @@ void Model_Sonic::readBones(ParserContext &ctx) {
 	ctx.nsbmd->seek(ctx.offsetBones);
 
 	Infos bones;
-	const uint8 boneCount = readInfoOffset(ctx, bones, ctx.offsetBones);
+	const uint8_t boneCount = readInfoOffset(ctx, bones, ctx.offsetBones);
 
 	ctx.bones.resize(boneCount);
 	for (uint i = 0; i < boneCount; i++)
@@ -308,7 +308,7 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 	bone.transform = glm::mat4();
 
 
-	const uint16 flags = ctx.nsbmd->readUint16();
+	const uint16_t flags = ctx.nsbmd->readUint16();
 
 	const double rotate0 = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
@@ -317,8 +317,8 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 	const bool hasScale     =  (flags & 0x04) == 0;
 	const bool hasPivot     =  (flags & 0x08) != 0;
 
-	const uint8 pivotSelect = (flags >> 4) & 0xF;
-	const uint8 pivotNegate = (flags >> 8) & 0xF;
+	const uint8_t pivotSelect = (flags >> 4) & 0xF;
+	const uint8_t pivotNegate = (flags >> 8) & 0xF;
 
 	// TRS: translate, rotate/pivot, scale
 
@@ -374,7 +374,7 @@ void Model_Sonic::readBoneCommands(ParserContext &ctx) {
 		ctx.boneCommands.push_back(BoneCommand(cmd));
 		BoneCommand &boneCommand = ctx.boneCommands.back();
 
-		uint8 count = 0;
+		uint8_t count = 0;
 		if (cmd == kBoneLoadStack) {
 			size_t pos = ctx.nsbmd->pos();
 
@@ -384,7 +384,7 @@ void Model_Sonic::readBoneCommands(ParserContext &ctx) {
 			ctx.nsbmd->seek(pos);
 		}
 
-		const uint8 paramCount = getBoneParameterCount(cmd, count);
+		const uint8_t paramCount = getBoneParameterCount(cmd, count);
 
 		boneCommand.parameters.resize(paramCount);
 		for (uint i = 0; i < paramCount; i++)
@@ -414,7 +414,7 @@ void Model_Sonic::readMaterials(ParserContext &ctx) {
 
 void Model_Sonic::readMaterialDefinitions(ParserContext &ctx) {
 	Infos materials;
-	const uint8 materialCount = readInfoOffset(ctx, materials, ctx.offsetMaterials);
+	const uint8_t materialCount = readInfoOffset(ctx, materials, ctx.offsetMaterials);
 
 	ctx.materials.resize(materialCount);
 	for (uint i = 0; i < materialCount; i++)
@@ -428,7 +428,7 @@ void Model_Sonic::readMaterialDefinition(ParserContext &ctx, Material &material,
 
 	ctx.nsbmd->skip(2 + 2 + 18); // Unknown + section size + unknown
 
-	const uint16 flags = ctx.nsbmd->readUint16();
+	const uint16_t flags = ctx.nsbmd->readUint16();
 
 	// TODO: Are the different from the ones inside the NSBTX?
 	// TODO: Actually use those parameters
@@ -454,13 +454,13 @@ void Model_Sonic::readMaterialResource(ParserContext &ctx, uint textureOrPalette
 	/* Each texture/palette has a list of materials it belongs to. */
 
 	Infos resources;
-	const uint8 resCount = readInfoOffsetCount(ctx, resources, ctx.offsetMaterials);
+	const uint8_t resCount = readInfoOffsetCount(ctx, resources, ctx.offsetMaterials);
 
 	for (uint i = 0; i < resCount; i++) {
 		ctx.nsbmd->seek(resources[i].offset);
 
 		for (uint j = 0; j < resources[i].count; j++) {
-			const uint8 materialID = ctx.nsbmd->readByte();
+			const uint8_t materialID = ctx.nsbmd->readByte();
 			if (materialID >= ctx.materials.size())
 				continue;
 
@@ -478,7 +478,7 @@ void Model_Sonic::readPolygons(ParserContext &ctx) {
 	ctx.nsbmd->seek(ctx.offsetPolygons);
 
 	Infos polygons;
-	const uint8 polygonCount = readInfoOffset(ctx, polygons, ctx.offsetPolygons);
+	const uint8_t polygonCount = readInfoOffset(ctx, polygons, ctx.offsetPolygons);
 
 	ctx.polygons.resize(polygonCount);
 	for (uint i = 0; i < polygonCount; i++)
@@ -492,20 +492,20 @@ void Model_Sonic::readPolygon(ParserContext &ctx, Polygon &polygon, Info &info) 
 
 	ctx.nsbmd->skip(8); // Unknown
 
-	const uint32 listOffset = ctx.nsbmd->readUint32() + info.offset;
-	const uint32 listSize   = ctx.nsbmd->readUint32();
+	const uint32_t listOffset = ctx.nsbmd->readUint32() + info.offset;
+	const uint32_t listSize   = ctx.nsbmd->readUint32();
 
 	ctx.nsbmd->seek(listOffset);
 
 	readPolygonCommands(ctx, polygon, listSize);
 }
 
-void Model_Sonic::readPolygonCommands(ParserContext &ctx, Polygon &polygon, uint32 listSize) {
+void Model_Sonic::readPolygonCommands(ParserContext &ctx, Polygon &polygon, uint32_t listSize) {
 	/* Read the commands for a polygon.
 	*
 	 * For some reason (alignment?), the layout is as follows:
-	 * - 4 command IDs (uint8 each)
-	 * - parameters for each of those 4 command IDs (uint32 each)
+	 * - 4 command IDs (uint8_t each)
+	 * - parameters for each of those 4 command IDs (uint32_t each)
 	 * - 4 command IDs
 	 * - [...]
 	 *
@@ -513,9 +513,9 @@ void Model_Sonic::readPolygonCommands(ParserContext &ctx, Polygon &polygon, uint
 	 * that will be created and how long they'll be.
 	 */
 
-	uint8 buffer[4];
+	uint8_t buffer[4];
 
-	uint32 primitiveSize = 0;
+	uint32_t primitiveSize = 0;
 
 	polygon.commands.reserve(listSize / 4);
 	while (listSize >= 4) {
@@ -526,7 +526,7 @@ void Model_Sonic::readPolygonCommands(ParserContext &ctx, Polygon &polygon, uint
 			polygon.commands.push_back(PolygonCommand((PolygonCommandID) buffer[i]));
 			PolygonCommand &cmd = polygon.commands.back();
 
-			const uint8 paramCount = getPolygonParameterCount(cmd.command);
+			const uint8_t paramCount = getPolygonParameterCount(cmd.command);
 			cmd.parameters.resize(paramCount);
 
 			for (uint j = 0; (j < paramCount) && (listSize >= 4); j++, listSize -= 4)
@@ -552,15 +552,15 @@ void Model_Sonic::readPolygonCommands(ParserContext &ctx, Polygon &polygon, uint
 void Model_Sonic::parseBoneCommands(ParserContext &ctx) {
 	/* Go through and evaluate all bone commands. */
 
-	uint16 polygon      = 0xFFFF;
-	uint16 polygonStack = 0xFFFF;
-	uint16 material     = 0xFFFF;
+	uint16_t polygon      = 0xFFFF;
+	uint16_t polygonStack = 0xFFFF;
+	uint16_t material     = 0xFFFF;
 
-	uint16 nodeStack   = 0;
-	uint16 parentStack = 0xFFFF;
+	uint16_t nodeStack   = 0;
+	uint16_t parentStack = 0xFFFF;
 
-	uint16 nodeID   = 0xFFFF;
-	uint16 parentID = 0xFFFF;
+	uint16_t nodeID   = 0xFFFF;
+	uint16_t parentID = 0xFFFF;
 
 	Bone *node   = 0;
 	Bone *parent = 0;
@@ -591,7 +591,7 @@ void Model_Sonic::parseBoneCommands(ParserContext &ctx) {
 				ctx.stackMix[polygonStack] = StackMixes();
 				ctx.stackMix[polygonStack].resize(c->parameters[1]);
 
-				for (uint32 i = 0; i < c->parameters[1]; i++) {
+				for (uint32_t i = 0; i < c->parameters[1]; i++) {
 					ctx.stackMix[polygonStack][i].nodeID    = c->parameters[2 + i * 3 + 0];
 					ctx.stackMix[polygonStack][i].nodeStack = c->parameters[2 + i * 3 + 1];
 					ctx.stackMix[polygonStack][i].ratio     = c->parameters[2 + i * 3 + 2] / 256.0f;
@@ -1072,7 +1072,7 @@ void Model_Sonic::createBound() {
 			assert(vpos.index == VPOSITION);
 			assert(vpos.type == GL_FLOAT);
 
-			uint32 stride = MAX<uint32>(vpos.size, vpos.stride / sizeof(float));
+			uint32_t stride = MAX<uint32_t>(vpos.size, vpos.stride / sizeof(float));
 
 			const float *vertexData = reinterpret_cast<const float *>(vpos.pointer);
 
@@ -1080,7 +1080,7 @@ void Model_Sonic::createBound() {
 			const float *vY = vertexData + 1;
 			const float *vZ = vertexData + 2;
 
-			for (uint32 v = 0; v < p->vertexBuffer.getCount(); v++)
+			for (uint32_t v = 0; v < p->vertexBuffer.getCount(); v++)
 				_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
 		}
 	}
@@ -1145,10 +1145,10 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 
 	// Create the index buffer
 
-	primitive.indexBuffer.setSize(primitive.indices.size(), sizeof(uint16), GL_UNSIGNED_SHORT);
+	primitive.indexBuffer.setSize(primitive.indices.size(), sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *indices = reinterpret_cast<uint16 *>(primitive.indexBuffer.getData());
-	memcpy(indices, &primitive.indices[0], primitive.indices.size() * sizeof(uint16));
+	uint16_t *indices = reinterpret_cast<uint16_t *>(primitive.indexBuffer.getData());
+	memcpy(indices, &primitive.indices[0], primitive.indices.size() * sizeof(uint16_t));
 
 	// Create vertex buffer
 
@@ -1194,7 +1194,7 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 
 // --- Utility methods ---
 
-uint8 Model_Sonic::getBoneParameterCount(BoneCommandID cmd, uint8 count) {
+uint8_t Model_Sonic::getBoneParameterCount(BoneCommandID cmd, uint8_t count) {
 	switch (cmd) {
 		case kBoneNOP:             return 0;
 		case kBoneEnd:             return 0;
@@ -1220,7 +1220,7 @@ uint8 Model_Sonic::getBoneParameterCount(BoneCommandID cmd, uint8 count) {
 	}
 }
 
-uint8 Model_Sonic::getPolygonParameterCount(PolygonCommandID cmd) {
+uint8_t Model_Sonic::getPolygonParameterCount(PolygonCommandID cmd) {
 	switch (cmd) {
 		case kPolygonNOP:             return  0;
 
@@ -1280,7 +1280,7 @@ uint8 Model_Sonic::getPolygonParameterCount(PolygonCommandID cmd) {
 	}
 }
 
-glm::mat4 Model_Sonic::createPivot(double a, double b, uint8 select, uint8 negate) {
+glm::mat4 Model_Sonic::createPivot(double a, double b, uint8_t select, uint8_t negate) {
 	float pivot[16] = {
 		0.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 0.0f,

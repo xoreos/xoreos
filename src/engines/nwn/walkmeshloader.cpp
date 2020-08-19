@@ -51,8 +51,8 @@ WalkmeshLoader::~WalkmeshLoader() {
 
 void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &name,
                           float orientation[4], float position[3],
-                          std::vector<float> &vertices, std::vector<uint32> &faces,
-                          std::vector<uint32> &facesProperty, const Common::UString &filterNode) {
+                          std::vector<float> &vertices, std::vector<uint32_t> &faces,
+                          std::vector<uint32_t> &facesProperty, const Common::UString &filterNode) {
 	std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(name, fileType));
 	if (!stream)
 		return;
@@ -67,7 +67,7 @@ void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &na
 	if (fileType == Aurora::kFileTypePWK)
 		orientation[3] = Common::deg2rad(orientation[3]);
 
-	uint8 axisAlignedOrientation = static_cast<uint8>(orientation[3] / M_PI * 2);
+	uint8_t axisAlignedOrientation = static_cast<uint8_t>(orientation[3] / M_PI * 2);
 	glm::mat4 rotation(1.f);
 	rotation = glm::rotate(rotation,
 	                       orientation[3],
@@ -76,7 +76,7 @@ void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &na
 	_sameVertex.clear();
 	bool axisRotation = true;
 	float localPosition[3] = { 0.0f, 0.0f, 0.0f };
-	uint32 startVertex = vertices.size() / 3;
+	uint32_t startVertex = vertices.size() / 3;
 	Common::UString currentNode = "";
 	bool goodNode = filterNode.empty();
 
@@ -111,13 +111,13 @@ void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &na
 				axisRotation = false;
 			}
 
-			axisAlignedOrientation += (int8) roundf(ori[2] * ori[3] / (3.14 / 2));
+			axisAlignedOrientation += (int8_t) roundf(ori[2] * ori[3] / (3.14 / 2));
 			axisAlignedOrientation %= 4;
 
 			// Update position and orientation.
 			glm::vec4 shift = rotation * glm::vec4(localPosition[0], localPosition[1], localPosition[2], 1.f);
 
-			for (uint8 i = 0; i < 3; ++i)
+			for (uint8_t i = 0; i < 3; ++i)
 				position[i] += shift[i];
 
 		} else if (line[0] == "verts") {
@@ -135,7 +135,7 @@ void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &na
 
 			changeOrientation(axisAlignedOrientation, rawMin);
 			changeOrientation(axisAlignedOrientation, rawMax);
-			for (uint32 i = 0; i < 3; ++i) {
+			for (uint32_t i = 0; i < 3; ++i) {
 				rawMin[i] += position[i];
 				rawMax[i] += position[i];
 				min[i] = MIN(rawMin[i], rawMax[i]);
@@ -171,12 +171,12 @@ Common::AABBNode *WalkmeshLoader::getAABB() {
 }
 
 void WalkmeshLoader::readFloats(const std::vector<Common::UString> &strings,
-                                float *floats, uint32 n, uint32 start) {
+                                float *floats, uint32_t n, uint32_t start) {
 
 	if (strings.size() < (start + n))
 		throw Common::Exception("Missing tokens");
 
-	for (uint32 i = 0; i < n; i++)
+	for (uint32_t i = 0; i < n; i++)
 		Common::parseString(strings[start + i], floats[i]);
 }
 
@@ -198,7 +198,7 @@ void WalkmeshLoader::readVerts(size_t n, float *position, Common::SeekableReadSt
 			continue;
 		}
 
-		for (uint32 vi = 0; vi < 3; ++vi) {
+		for (uint32_t vi = 0; vi < 3; ++vi) {
 			float val;
 			Common::parseString(line[vi], val);
 			vertices[3 * i + vi] = val;
@@ -206,7 +206,7 @@ void WalkmeshLoader::readVerts(size_t n, float *position, Common::SeekableReadSt
 
 		// Adjust vertex.
 		glm::vec4 vert = rotation * glm::vec4(vertices[3 * i], vertices[3 * i + 1], vertices[3 * i + 2], 1.f);
-		for (uint32 vi = 0; vi < 3; ++vi)
+		for (uint32_t vi = 0; vi < 3; ++vi)
 			vertices[3 * i + vi] = vert[vi] + position[vi];
 
 		// Some vertices are exactly the same, remove redundancy.
@@ -224,9 +224,9 @@ void WalkmeshLoader::readVerts(size_t n, float *position, Common::SeekableReadSt
 
 void WalkmeshLoader::readFaces(size_t n, Common::SeekableReadStream *stream,
                                Common::StreamTokenizer *tokenize,
-                               std::vector<uint32> &faces, std::vector<uint32> &facesProperty,
-                               uint32 startVertex) {
-	uint32 startFace = faces.size() / 3;
+                               std::vector<uint32_t> &faces, std::vector<uint32_t> &facesProperty,
+                               uint32_t startVertex) {
+	uint32_t startFace = faces.size() / 3;
 	faces.resize((startFace + n) * 3);
 	facesProperty.resize(startFace + n);
 
@@ -241,8 +241,8 @@ void WalkmeshLoader::readFaces(size_t n, Common::SeekableReadStream *stream,
 			continue;
 		}
 
-		for (uint32 vi = 0; vi < 3; ++vi) {
-			uint32 val;
+		for (uint32_t vi = 0; vi < 3; ++vi) {
+			uint32_t val;
 			Common::parseString(line[vi], val);
 			if (_sameVertex.find(val + startVertex) != _sameVertex.end()) {
 				// Replace redundant vertex.
@@ -257,15 +257,15 @@ void WalkmeshLoader::readFaces(size_t n, Common::SeekableReadStream *stream,
 	}
 }
 
-void WalkmeshLoader::changeOrientation(uint8 orientation, float *position) const {
-	for (uint8 o = 0; o < orientation; ++o) {
+void WalkmeshLoader::changeOrientation(uint8_t orientation, float *position) const {
+	for (uint8_t o = 0; o < orientation; ++o) {
 		float temp = position[0];
 		position[0] = - position[1];
 		position[1] = temp;
 	}
 }
 
-Common::AABBNode *WalkmeshLoader::readAABB(float *position, uint8 orientation,
+Common::AABBNode *WalkmeshLoader::readAABB(float *position, uint8_t orientation,
                                            Common::SeekableReadStream *stream,
                                            Common::StreamTokenizer *tokenize) {
 	std::vector<Common::UString> line;
@@ -278,7 +278,7 @@ Common::AABBNode *WalkmeshLoader::readAABB(float *position, uint8 orientation,
 
 	changeOrientation(orientation, rawMin);
 	changeOrientation(orientation, rawMax);
-	for (uint8 i = 0; i < 3; ++i) {
+	for (uint8_t i = 0; i < 3; ++i) {
 		rawMin[i] += position[i];
 		rawMax[i] += position[i];
 		min[i] = MIN(rawMin[i], rawMax[i]);
@@ -286,7 +286,7 @@ Common::AABBNode *WalkmeshLoader::readAABB(float *position, uint8 orientation,
 	}
 
 	// If it's a child node, record the related face.
-	int32 face;
+	int32_t face;
 	Common::parseString(line[6], face);
 
 	Common::AABBNode *node = new Common::AABBNode(min, max, face);
@@ -300,21 +300,21 @@ Common::AABBNode *WalkmeshLoader::readAABB(float *position, uint8 orientation,
 }
 
 Common::AABBNode *WalkmeshLoader::buildAABBTree(std::vector<float> &vertices,
-                                                std::vector<uint32> &faces) {
+                                                std::vector<uint32_t> &faces) {
 	// No face, no tree.
 	if (faces.empty())
 		return 0;
 
 	std::list<Common::AABBNode *> nodes;
 
-	uint32 faceCount = faces.size() / 3;
+	uint32_t faceCount = faces.size() / 3;
 	Common::AABBNode *AABBRoot = createAABB(0, vertices, faces);
 	if (faceCount < 2)
 		return AABBRoot;
 
 	nodes.push_back(AABBRoot);
 
-	for (uint32 f = 1; f < faceCount; ++f) {
+	for (uint32_t f = 1; f < faceCount; ++f) {
 		// First, create a new AABB from the face.
 		Common::AABBNode *AABBFace = createAABB(f, vertices, faces);
 		// Find the best match to pair with it.
@@ -359,13 +359,13 @@ Common::AABBNode *WalkmeshLoader::buildAABBTree(std::vector<float> &vertices,
 	return AABBRoot;
 }
 
-Common::AABBNode *WalkmeshLoader::createAABB(uint32 face, std::vector<float> &vertices,
-                                             std::vector<uint32> &faces) const {
+Common::AABBNode *WalkmeshLoader::createAABB(uint32_t face, std::vector<float> &vertices,
+                                             std::vector<uint32_t> &faces) const {
 	float max[3] = {FLT_MIN, FLT_MIN, FLT_MIN};
 	float min[3] = {FLT_MAX, FLT_MAX, FLT_MAX};
 
-	for (uint32 v = 0; v < 3; ++v) {
-		for (uint32 i = 0; i < 3; ++i) {
+	for (uint32_t v = 0; v < 3; ++v) {
+		for (uint32_t i = 0; i < 3; ++i) {
 			max[i] = MAX(vertices[faces[face * 3 + v] * 3 + i], max[i]);
 			min[i] = MIN(vertices[faces[face * 3 + v] * 3 + i], min[i]);
 		}
@@ -384,7 +384,7 @@ float WalkmeshLoader::AABBCompatibility(Common::AABBNode *nodeA, Common::AABBNod
 	nodeA->getMax(maxA[0], maxA[1], maxA[2]);
 	nodeB->getMax(max[0], max[1], max[2]);
 
-	for (uint32 i = 0; i < 3; ++i) {
+	for (uint32_t i = 0; i < 3; ++i) {
 		min[i] = MIN(minA[i], min[i]);
 		max[i] = MAX(maxA[i], max[i]);
 		// Set a cutoff.

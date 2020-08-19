@@ -74,14 +74,14 @@ public:
 	/** A Gradient. */
 	struct Gradient {
 		glm::mat3x2 matrix;
-		uint8 spreadMode;
-		uint8 interpolationMode;
+		uint8_t spreadMode;
+		uint8_t interpolationMode;
 		std::vector<GradientRecord> records;
 	};
 
 	/** An image. */
 	struct Bitmap {
-		uint16 id;
+		uint16_t id;
 		glm::mat3x2 matrix;
 	};
 
@@ -97,7 +97,7 @@ public:
 
 	/** A style for the border. */
 	struct LineStyle {
-		uint16 width;
+		uint16_t width;
 		glm::u8vec4 color;
 
 		LineStyle() {
@@ -116,14 +116,14 @@ public:
 			LineStyle lineStyle;
 		} style;
 		struct {
-			int32 deltaX, deltaY;
+			int32_t deltaX, deltaY;
 		} move;
 		struct {
-			int32 deltaX, deltaY;
+			int32_t deltaX, deltaY;
 		} straightEdge;
 		struct {
-			int32 controlDeltaX, controlDeltaY;
-			int32 anchorDeltaX, anchorDeltaY;
+			int32_t controlDeltaX, controlDeltaY;
+			int32_t anchorDeltaX, anchorDeltaY;
 		} curvedEdge;
 
 		ShapeRecord() {
@@ -140,7 +140,7 @@ public:
 
 	/** A character glyph for a font. */
 	struct Glyph {
-		uint16 code;
+		uint16_t code;
 		Common::Rect bounds;
 		std::vector<ShapeRecord> shapeRecords;
 	};
@@ -149,8 +149,8 @@ public:
 	 *  specific characters to another.
 	 */
 	struct KerningCode {
-		uint16 code1, code2;
-		int16 adjustment;
+		uint16_t code1, code2;
+		int16_t adjustment;
 	};
 
 	/** The alignment of text. */
@@ -166,7 +166,7 @@ public:
 	 * statements and other characters.
 	 */
 	struct Sprite {
-		uint16 frameCount;
+		uint16_t frameCount;
 		std::vector<GFXControl> controls;
 	};
 
@@ -181,10 +181,10 @@ public:
 	/** Optional layout for edit texts. */
 	struct EditTextLayout {
 		TextAlignment alignment;
-		uint16 leftMargin;
-		uint16 rightMargin;
-		uint16 indent;
-		uint16 leading;
+		uint16_t leftMargin;
+		uint16_t rightMargin;
+		uint16_t indent;
+		uint16_t leading;
 	};
 
 	/**
@@ -200,10 +200,10 @@ public:
 		bool autosize;
 		bool noSelect;
 		bool html;
-		boost::optional<uint16> fontId;
-		boost::optional<uint16> fontHeight;
+		boost::optional<uint16_t> fontId;
+		boost::optional<uint16_t> fontHeight;
 		boost::optional<glm::u8vec4> textColor;
-		boost::optional<uint16> maxLength;
+		boost::optional<uint16_t> maxLength;
 		boost::optional<Common::UString> initialText;
 		boost::optional<EditTextLayout> layout;
 	};
@@ -215,9 +215,9 @@ public:
 		Common::UString name;
 		std::vector<Glyph> glyphs;
 		std::vector<KerningCode> kerningCodes;
-		boost::optional<uint16> fontAscent;
-		boost::optional<uint16> fontDescent;
-		boost::optional<int16> fontLeading;
+		boost::optional<uint16_t> fontAscent;
+		boost::optional<uint16_t> fontDescent;
+		boost::optional<int16_t> fontLeading;
 	};
 
 	/**
@@ -226,25 +226,25 @@ public:
 	 */
 	struct ExternalImage {
 		Common::UString name;
-		uint16 width, height;
-		uint16 bitmapFormat;
+		uint16_t width, height;
+		uint16_t bitmapFormat;
 	};
 
 	/** Create a sprite character. */
-	static GFXCharacter createSprite(uint16 id, Sprite sprite);
+	static GFXCharacter createSprite(uint16_t id, Sprite sprite);
 	/** Create a shape character. */
-	static GFXCharacter createShape(uint16 id, Shape shape);
+	static GFXCharacter createShape(uint16_t id, Shape shape);
 	/** Create an edit text character. */
-	static GFXCharacter createEditText(uint16 id, EditText editText);
+	static GFXCharacter createEditText(uint16_t id, EditText editText);
 	/** Create a font character. */
-	static GFXCharacter createFont(uint16 id, Font font);
+	static GFXCharacter createFont(uint16_t id, Font font);
 	/** Create an external image character. */
-	static GFXCharacter createExternalImage(uint16 id, ExternalImage externalImage);
+	static GFXCharacter createExternalImage(uint16_t id, ExternalImage externalImage);
 
 	/** Get the type of this character. */
 	CharacterType getType() const;
 	/** Get the character id of this character. */
-	uint16 getId() const;
+	uint16_t getId() const;
 
 	/** Get the sprite character. */
 	void getSprite(Sprite &sprite) const;
@@ -266,10 +266,10 @@ private:
 		ExternalImage
 	> _value;
 
-	uint16 _id;
+	uint16_t _id;
 	CharacterType _type;
 
-	GFXCharacter(uint16 id, CharacterType type);
+	GFXCharacter(uint16_t id, CharacterType type);
 };
 
 /**
@@ -305,12 +305,12 @@ public:
 	struct PlaceObject {
 		bool hasMove;
 
-		uint16 depth;
-		boost::optional<uint16> characterId;
+		uint16_t depth;
+		boost::optional<uint16_t> characterId;
 		boost::optional<Common::UString> name;
 		boost::optional<glm::mat3x2> matrix;
 		boost::optional<ColorTransform> colorTransform;
-		boost::optional<uint8> blendMode;
+		boost::optional<uint8_t> blendMode;
 	};
 
 	/** A do action control tag. */
@@ -359,9 +359,9 @@ public:
 	float getFrameRate() { return _frameRate; };
 
 	/** Get the corresponding character id for an exported asset. */
-	uint16 getExportedAssetId(const Common::UString &id);
+	uint16_t getExportedAssetId(const Common::UString &id);
 	/** Get a character by id. */
-	GFXCharacter getCharacter(uint16 id);
+	GFXCharacter getCharacter(uint16_t id);
 
 	/** Get all root controls. */
 	std::vector<GFXControl> getControls() { return _controlTags; };
@@ -369,14 +369,14 @@ public:
 private:
 	/** The standard header of every tag. */
 	struct RecordHeader {
-		uint16 tagType;
-		uint32 tagLength;
+		uint16_t tagType;
+		uint32_t tagLength;
 	};
 
 	/** Every exported character id with the associated export name. */
-	std::map<Common::UString, uint16> _exportTable;
+	std::map<Common::UString, uint16_t> _exportTable;
 	/** Every character associated with it's character id. */
-	std::map<uint16, GFXCharacter> _characters;
+	std::map<uint16_t, GFXCharacter> _characters;
 	/** All root control tags. */
 	std::vector<GFXControl> _controlTags;
 
@@ -465,7 +465,7 @@ private:
 	/** Read a byte length prefixed string. */
 	Common::UString readLengthPrefixedString();
 	/** Read a 2's complement value. */
-	int32 read2ComplementValue(Common::BitStream &bitStream, size_t n);
+	int32_t read2ComplementValue(Common::BitStream &bitStream, size_t n);
 
 	// '---
 };

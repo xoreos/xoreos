@@ -194,7 +194,7 @@ void GUI::initCaption(WidgetContext &ctx, NWNWidgetWithCaption &widget) {
 	Common::UString font = caption.getString("AurString_Font");
 
 	Common::UString text;
-	uint32 strRef = caption.getUint("Obj_StrRef", Aurora::kStrRefInvalid);
+	uint32_t strRef = caption.getUint("Obj_StrRef", Aurora::kStrRefInvalid);
 	if (strRef != Aurora::kStrRefInvalid)
 		text = TalkMan.getString(strRef);
 

@@ -78,7 +78,7 @@ private:
 	bool _isActive;
 	std::unique_ptr<Graphics::Aurora::KotORDialogFrame> _frame;
 	std::unique_ptr<Aurora::DLGFile> _dlg;
-	std::vector<uint32> _replyIds;
+	std::vector<uint32_t> _replyIds;
 	std::unique_ptr<Sound::ChannelHandle> _voice;
 	std::unique_ptr<Sound::ChannelHandle> _sound;
 	Common::UString _owner;

@@ -95,16 +95,16 @@ void TRXFile::hide() {
 }
 
 void TRXFile::load(Common::SeekableReadStream &trx) {
-	uint32 magic = trx.readUint32BE();
+	uint32_t magic = trx.readUint32BE();
 	if (magic != MKTAG('N', 'W', 'N', '2'))
 		throw Common::Exception("Invalid magic %s", Common::debugTag(magic).c_str());
 
-	uint16 versionMajor = trx.readUint16LE();
-	uint16 versionMinor = trx.readUint16LE();
+	uint16_t versionMajor = trx.readUint16LE();
+	uint16_t versionMinor = trx.readUint16LE();
 	if ((versionMajor != 2) || (versionMinor != 3))
 		throw Common::Exception("Invalid version %d.%d", versionMajor, versionMinor);
 
-	uint32 packetCount = trx.readUint32LE();
+	uint32_t packetCount = trx.readUint32LE();
 	if ((trx.size() - trx.pos()) < (packetCount * 8))
 		throw Common::Exception("TRX won't fit the packet packets");
 
@@ -129,7 +129,7 @@ void TRXFile::loadPackets(Common::SeekableReadStream &trx, std::vector<Packet> &
 	for (std::vector<Packet>::iterator p = packets.begin(); p != packets.end(); ++p) {
 		trx.seek(p->offset);
 
-		uint32 type = trx.readUint32BE();
+		uint32_t type = trx.readUint32BE();
 		if (type != p->type)
 			throw Common::Exception("Packet type mismatch (0x%08X vs 0x%08X)", type, p->type);
 
@@ -178,8 +178,8 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 		for (int j = 0; j < 3; j++)
 			textureColors[i][j] = ttrn.readIEEEFloatLE();
 
-	const uint32 vCount = ttrn.readUint32LE();
-	const uint32 fCount = ttrn.readUint32LE();
+	const uint32_t vCount = ttrn.readUint32LE();
+	const uint32_t fCount = ttrn.readUint32LE();
 
 	Graphics::VertexDecl vertexDecl;
 
@@ -191,7 +191,7 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	vBuf.setVertexDeclInterleave(vCount, vertexDecl);
 
 	float *v = reinterpret_cast<float *>(vBuf.getData());
-	for (uint32 i = 0; i < vCount; i++) {
+	for (uint32_t i = 0; i < vCount; i++) {
 		*v++ = ttrn.readIEEEFloatLE();
 		*v++ = ttrn.readIEEEFloatLE();
 		*v++ = ttrn.readIEEEFloatLE();
@@ -222,22 +222,22 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	}
 
 	Graphics::IndexBuffer iBuf;
-	iBuf.setSize(fCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	iBuf.setSize(fCount * 3, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(iBuf.getData());
-	for (uint32 i = 0; i < fCount; i++) {
+	uint16_t *f = reinterpret_cast<uint16_t *>(iBuf.getData());
+	for (uint32_t i = 0; i < fCount; i++) {
 		*f++ = ttrn.readUint16LE();
 		*f++ = ttrn.readUint16LE();
 		*f++ = ttrn.readUint16LE();
 	}
 
 	/* TODO:
-	 *   - uint32 dds1Size
-	 *   - byte  *dds1
-	 *   - uint32 dds2Size
-	 *   - byte  *dds2
-	 *   - uint32 grassCount
-	 *   - Grass  grass
+	 *   - uint32_t dds1Size
+	 *   - byte    *dds1
+	 *   - uint32_t dds2Size
+	 *   - byte    *dds2
+	 *   - uint32_t grassCount
+	 *   - Grass    grass
 	 */
 
 	_terrain.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));
@@ -274,8 +274,8 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	watr.skip(4); // float offsetX
 	watr.skip(4); // float offsetY
 
-	uint32 vCount = watr.readUint32LE();
-	uint32 fCount = watr.readUint32LE();
+	uint32_t vCount = watr.readUint32LE();
+	uint32_t fCount = watr.readUint32LE();
 
 	Graphics::VertexDecl vertexDecl;
 
@@ -286,7 +286,7 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	vBuf.setVertexDeclInterleave(vCount, vertexDecl);
 
 	float *v = reinterpret_cast<float *>(vBuf.getData());
-	for (uint32 i = 0; i < vCount; i++) {
+	for (uint32_t i = 0; i < vCount; i++) {
 		*v++ = watr.readIEEEFloatLE();
 		*v++ = watr.readIEEEFloatLE();
 		*v++ = watr.readIEEEFloatLE();
@@ -299,21 +299,21 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	}
 
 	Graphics::IndexBuffer iBuf;
-	iBuf.setSize(fCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	iBuf.setSize(fCount * 3, sizeof(uint16_t), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(iBuf.getData());
-	for (uint32 i = 0; i < fCount; i++) {
+	uint16_t *f = reinterpret_cast<uint16_t *>(iBuf.getData());
+	for (uint32_t i = 0; i < fCount; i++) {
 		*f++ = watr.readUint16LE();
 		*f++ = watr.readUint16LE();
 		*f++ = watr.readUint16LE();
 	}
 
 	/* TODO:
-	 *   - uint32  ddsSize
-	 *   - byte   *dds
-	 *   - uint32  flags[vCount]
-	 *   - uint32  tileX
-	 *   - uint32  tileY
+	 *   - uint32_t  ddsSize
+	 *   - byte     *dds
+	 *   - uint32_t  flags[vCount]
+	 *   - uint32_t  tileX
+	 *   - uint32_t  tileY
 	 */
 
 	_water.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));

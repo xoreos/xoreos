@@ -43,17 +43,17 @@ namespace Jade {
 
 class Event : public Aurora::NWScript::EngineType {
 public:
-	Event(Script script, int32 eventNumber = 0);
+	Event(Script script, int32_t eventNumber = 0);
 	~Event();
 
 	Event *clone() const;
 
 	Script getScript() const;
-	int32 getEventNumber() const;
+	int32_t getEventNumber() const;
 
 private:
 	Script _script;
-	int32 _eventNumber;
+	int32_t _eventNumber;
 };
 
 } // End of namespace Jade

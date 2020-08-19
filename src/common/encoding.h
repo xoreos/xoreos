@@ -25,6 +25,8 @@
 #ifndef COMMON_ENCODING_H
 #define COMMON_ENCODING_H
 
+#include <cstddef>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -145,7 +147,7 @@ size_t getBytesPerCodepoint(Encoding encoding);
  *
  *  TODO: Implement for Unicode and CJK encodings.
  */
-bool isValidCodepoint(Encoding encoding, uint32 cp);
+bool isValidCodepoint(Encoding encoding, uint32_t cp);
 
 } // End of namespace Common
 

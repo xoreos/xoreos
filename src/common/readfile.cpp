@@ -23,6 +23,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 
 #include "src/common/readfile.h"
 #include "src/common/error.h"
@@ -69,7 +70,7 @@ bool ReadFile::open(const UString &fileName) {
 		return false;
 	}
 
-	if ((uint64)((unsigned long)fileSize) > (uint64)0x7FFFFFFFULL) {
+	if ((uint64_t)((unsigned long)fileSize) > (uint64_t)0x7FFFFFFFULL) {
 		warning("ReadFile \"%s\" is too big", fileName.c_str());
 
 		close();

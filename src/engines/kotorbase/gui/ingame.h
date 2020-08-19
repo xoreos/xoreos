@@ -57,8 +57,8 @@ public:
 
 	// Return to hideout
 
-	void setReturnStrref(uint32 id);
-	void setReturnQueryStrref(uint32 id);
+	void setReturnStrref(uint32_t id);
+	void setReturnQueryStrref(uint32_t id);
 	void setReturnEnabled(bool enabled);
 
 	// Container

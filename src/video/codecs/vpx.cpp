@@ -119,7 +119,7 @@ void VPXDecoder::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStr
 	// Do the conversion based on the color space
 	switch (image->fmt) {
 	case VPX_IMG_FMT_I420:
-		YUVToRGBMan.convert420(scale, surface.getData(), surface.getPitch(), image->planes[0], image->planes[1], image->planes[2], std::min<int64>(surface.getWidth(), image->d_w), std::min<int64>(surface.getHeight(), image->d_h), image->stride[0], image->stride[1]);
+		YUVToRGBMan.convert420(scale, surface.getData(), surface.getPitch(), image->planes[0], image->planes[1], image->planes[2], std::min<int64_t>(surface.getWidth(), image->d_w), std::min<int64_t>(surface.getHeight(), image->d_h), image->stride[0], image->stride[1]);
 		break;
 	default:
 		return;

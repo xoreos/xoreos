@@ -57,7 +57,7 @@ public:
 	struct ResourceID {
 		Common::UString name;
 		FileType type;
-		uint64 hash;
+		uint64_t hash;
 	};
 
 	ResourceManager();
@@ -124,7 +124,7 @@ public:
 	 *                  and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @param changeID If given, record the collective changes done here.
 	 */
-	void indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
+	void indexArchive(const Common::UString &file, uint32_t priority, Common::ChangeID *changeID = 0);
 	// '---
 
 	/** Add all the resources of an archive to the resource manager.
@@ -137,7 +137,7 @@ public:
 	 *  @param password Use this password to decrypt the archive file, if necessary.
 	 *  @param changeID If given, record the collective changes done here.
 	 */
-	void indexArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+	void indexArchive(const Common::UString &file, uint32_t priority, const std::vector<byte> &password,
 	                  Common::ChangeID *changeID = 0);
 	// '---
 
@@ -158,7 +158,7 @@ public:
 	 *                  and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @param changeID If given, record the collective changes done here.
 	 */
-	void indexResourceFile(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
+	void indexResourceFile(const Common::UString &file, uint32_t priority, Common::ChangeID *changeID = 0);
 
 	/** Add a directory's contents to the resource manager.
 	 *
@@ -173,7 +173,7 @@ public:
 	 *  @param changeID If given, record the collective changes done here.
 	 */
 	void indexResourceDir(const Common::UString &dir, const char *glob, int depth,
-	                      uint32 priority, Common::ChangeID *changeID = 0);
+	                      uint32_t priority, Common::ChangeID *changeID = 0);
 	// '---
 
 	// .--- Utility methods
@@ -213,7 +213,7 @@ public:
 	 *  @param  hash The hash of the name and extension of the resource.
 	 *  @return true if the resource exists, false otherwise.
 	 */
-	bool hasResource(uint64 hash) const;
+	bool hasResource(uint64_t hash) const;
 
 	/** Does a specific resource exist?
 	 *
@@ -291,7 +291,7 @@ public:
 	 *  @param  type If != 0, that's where the type of the resource is stored.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(uint64 hash, FileType *type = 0) const;
+	Common::SeekableReadStream *getResource(uint64_t hash, FileType *type = 0) const;
 
 	/** Return a resource.
 	 *
@@ -405,7 +405,7 @@ private:
 		bool isSmall;
 
 		/** The resource's priority over others with the same name and type. */
-		uint32 priority;
+		uint32_t priority;
 
 		/** The archive this resource itself is. */
 		std::pair<KnownArchives *, KnownArchives::iterator> selfArchive;
@@ -418,7 +418,7 @@ private:
 
 		// For kSourceArchive
 		OpenedArchive *archive;      ///< Pointer to the opened archive.
-		uint32         archiveIndex; ///< Index into the archive.
+		uint32_t       archiveIndex; ///< Index into the archive.
 
 		Resource();
 
@@ -428,7 +428,7 @@ private:
 	/** List of resources, sorted by priority. */
 	typedef std::list<Resource> ResourceList;
 	/** Map over resources, indexed by their hashed name. */
-	typedef std::map<uint64, ResourceList> ResourceMap;
+	typedef std::map<uint64_t, ResourceList> ResourceMap;
 	// '---
 
 	// .--- Changes
@@ -506,12 +506,12 @@ private:
 	// '---
 
 	// .--- Indexing archives
-	void indexKEY(Common::SeekableReadStream *stream, uint32 priority, Change *change);
-	uint32 openKEYBIFs(Common::SeekableReadStream *keyStream,
+	void indexKEY(Common::SeekableReadStream *stream, uint32_t priority, Change *change);
+	uint32_t openKEYBIFs(Common::SeekableReadStream *keyStream,
 	                   std::vector<KnownArchive *> &archives, std::vector<KEYDataFile *> &keyData);
 
 	void indexArchive(KnownArchive &knownArchive, Archive *archive,
-	                  uint32 priority, Change *change);
+	                  uint32_t priority, Change *change);
 
 	Common::SeekableReadStream *openArchiveStream(const KnownArchive &archive) const;
 	// '---
@@ -520,14 +520,14 @@ private:
 
 	bool checkResourceIsArchive(Resource &resource, Change *change);
 
-	void addResource(Resource &resource, uint64 hash, Change *change);
-	void addResource(const Common::UString &path, Change *change, uint32 priority);
+	void addResource(Resource &resource, uint64_t hash, Change *change);
+	void addResource(const Common::UString &path, Change *change, uint32_t priority);
 
-	void addResources(const Common::FileList &files, Change *change, uint32 priority);
+	void addResources(const Common::FileList &files, Change *change, uint32_t priority);
 	// '---
 
 	// .--- Finding and getting resources
-	const Resource *getRes(uint64 hash) const;
+	const Resource *getRes(uint64_t hash) const;
 	const Resource *getRes(const Common::UString &name, const std::vector<FileType> &types) const;
 	const Resource *getRes(const Common::UString &name, FileType type) const;
 
@@ -535,7 +535,7 @@ private:
 
 	Common::SeekableReadStream *getArchiveResource(const Resource &res, bool tryNoCopy = false) const;
 
-	uint32 getResourceSize(const Resource &res) const;
+	uint32_t getResourceSize(const Resource &res) const;
 	// '---
 
 	// .--- Resource utility methods
@@ -545,8 +545,8 @@ private:
 	ArchiveType     getArchiveType(const Common::UString &name) const;
 	Common::UString getArchiveName(const Resource &resource) const;
 
-	inline uint64 getHash(const Common::UString &name, FileType type) const;
-	inline uint64 getHash(const Common::UString &name) const;
+	inline uint64_t getHash(const Common::UString &name, FileType type) const;
+	inline uint64_t getHash(const Common::UString &name) const;
 
 	void checkHashCollision(const Resource &resource, ResourceMap::const_iterator resList);
 

@@ -65,7 +65,7 @@ public:
 	double getDistance() const;
 
 	/** Get the object's unique ID. */
-	uint32 getID() const;
+	uint32_t getID() const;
 
 	/** Is the object clickable? */
 	bool isClickable() const;
@@ -93,7 +93,7 @@ protected:
 	QueueType _queueExists;
 	QueueType _queueVisible;
 
-	uint32 _id;
+	uint32_t _id;
 
 	bool _clickable;
 	Common::UString _tag;

@@ -30,15 +30,15 @@
 #include "src/common/memreadstream.h"
 #include "src/common/bitstream.h"
 
-static const uint32 kCodes  [] = {  0,   4,   5,   6,   7  };
-static const uint8  kLengths[] = {  1,   3,   3,   3,   3  };
-static const uint32 kSymbols[] = { 'A', 'B', 'C', 'D', 'E' };
-static const uint8  kMaxLength = 3;
+static const uint32_t kCodes  [] = {  0,   4,   5,   6,   7  };
+static const uint8_t  kLengths[] = {  1,   3,   3,   3,   3  };
+static const uint32_t kSymbols[] = { 'A', 'B', 'C', 'D', 'E' };
+static const uint8_t  kMaxLength = 3;
 
 static const byte   kHuffmanData[] = { 0x45, 0x67 };
 
-static const uint32 kDeHuffmanDataSymbols[] = { 'A', 'B', 'A', 'C', 'A', 'D', 'A', 'E' };
-static const uint32 kDeHuffmanDataCodes  [] = {  0,   1,   0,   2,   0,   3,   0,   4  };
+static const uint32_t kDeHuffmanDataSymbols[] = { 'A', 'B', 'A', 'C', 'A', 'D', 'A', 'E' };
+static const uint32_t kDeHuffmanDataCodes  [] = {  0,   1,   0,   2,   0,   3,   0,   4  };
 
 GTEST_TEST(Huffman, getSymbolSymbols) {
 	Common::MemoryReadStream byteStream(kHuffmanData);
@@ -105,9 +105,9 @@ GTEST_TEST(Huffman, setSymbols) {
 }
 
 GTEST_TEST(Huffman, invalidSymbol) {
-	static const uint32 kInvalidCodes  [] = { 0, 4, 5, 6 };
-	static const uint8  kInvalidLengths[] = { 1, 3, 3, 3 };
-	static const uint8  kInvalidMaxLength = 3;
+	static const uint32_t kInvalidCodes  [] = { 0, 4, 5, 6 };
+	static const uint8_t  kInvalidLengths[] = { 1, 3, 3, 3 };
+	static const uint8_t  kInvalidMaxLength = 3;
 
 	static const byte   kInvalidHuffmanData[] = { 0x77 };
 

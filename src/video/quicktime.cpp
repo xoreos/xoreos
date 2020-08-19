@@ -84,7 +84,7 @@ namespace Video {
 // QuickTimeDecoder
 ////////////////////////////////////////////
 
-static const char *tag2str(uint32 tag) {
+static const char *tag2str(uint32_t tag) {
 	static char string[5];
 	string[0] = (tag >> 24) & 0xff;
 	string[1] = (tag >> 16) & 0xff;
@@ -143,7 +143,7 @@ void QuickTimeDecoder::load() {
 	addTrack(new VideoTrackHandler(this, _tracks[_videoTrackIndex]));
 
 	// Initialize all the audio tracks, but ignore ones we can't process
-	for (uint32 i = 0; i < _tracks.size(); i++) {
+	for (uint32_t i = 0; i < _tracks.size(); i++) {
 		if (_tracks[i]->codecType == CODEC_TYPE_AUDIO && static_cast<AudioSampleDesc *>(_tracks[i]->sampleDescs[0])->isAudioCodecSupported()) {
 			_audioTracks.push_back(new QuickTimeAudioTrack(this, _tracks[i]));
 			addTrack(new AudioTrackHandler(this, _audioTracks.back()));
@@ -154,7 +154,7 @@ void QuickTimeDecoder::load() {
 	initVideo();
 }
 
-QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *track, uint32 format) {
+QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *track, uint32_t format) {
 	if (track->codecType == CODEC_TYPE_VIDEO) {
 		std::unique_ptr<VideoSampleDesc> entry = std::make_unique<VideoSampleDesc>(track, format);
 
@@ -164,8 +164,8 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *t
 		_fd->readUint32BE(); // temporal quality
 		_fd->readUint32BE(); // spacial quality
 
-		uint16 width = _fd->readUint16BE(); // width
-		uint16 height = _fd->readUint16BE(); // height
+		uint16_t width = _fd->readUint16BE(); // width
+		uint16_t height = _fd->readUint16BE(); // height
 
 		// The width is most likely invalid for entries after the first one
 		// so only set the overall width if it is not zero here.
@@ -201,7 +201,7 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *t
 	} else if (track->codecType == CODEC_TYPE_AUDIO) {
 		std::unique_ptr<AudioSampleDesc> entry = std::make_unique<AudioSampleDesc>(track, format);
 
-		uint16 stsdVersion = _fd->readUint16BE();
+		uint16_t stsdVersion = _fd->readUint16BE();
 		_fd->readUint16BE(); // revision level
 		_fd->readUint32BE(); // vendor
 
@@ -287,7 +287,7 @@ void QuickTimeDecoder::initParseTable() {
 }
 
 int QuickTimeDecoder::readDefault(Atom atom) {
-	uint32 total_size = 0;
+	uint32_t total_size = 0;
 	Atom a;
 	int err = 0;
 
@@ -321,7 +321,7 @@ int QuickTimeDecoder::readDefault(Atom atom) {
 				break;
 		}
 
-		uint32 i = 0;
+		uint32_t i = 0;
 
 		for (; _parseTable[i].type != 0 && _parseTable[i].type != a.type; i++)
 			; // Empty
@@ -407,9 +407,9 @@ int QuickTimeDecoder::readTRAK(Atom atom) {
 int QuickTimeDecoder::readELST(Atom UNUSED(atom)) {
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
-	uint32 editCount = _fd->readUint32BE();            // entries
+	uint32_t editCount = _fd->readUint32BE();            // entries
 
-	for (uint32 i = 0; i < editCount; i++){
+	for (uint32_t i = 0; i < editCount; i++){
 		_fd->readUint32BE(); // Track duration
 		_fd->readUint32BE(); // Media time
 		_fd->readUint32BE(); // Media rate
@@ -428,8 +428,8 @@ int QuickTimeDecoder::readHDLR(Atom atom) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	// component type
-	/* uint32 ctype = */ _fd->readUint32BE();
-	uint32 type = _fd->readUint32BE(); // component subtype
+	/* uint32_t ctype = */ _fd->readUint32BE();
+	uint32_t type = _fd->readUint32BE(); // component subtype
 
 	if (type == MKTAG('v', 'i', 'd', 'e'))
 		track->codecType = CODEC_TYPE_VIDEO;
@@ -485,14 +485,14 @@ int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
-	uint32 entryCount = _fd->readUint32BE();
+	uint32_t entryCount = _fd->readUint32BE();
 	track->sampleDescs.reserve(entryCount);
 
-	for (uint32 i = 0; i < entryCount; i++) { // Parsing Sample description table
+	for (uint32_t i = 0; i < entryCount; i++) { // Parsing Sample description table
 		Atom a = { 0, 0, 0 };
 		size_t start_pos = _fd->pos();
 		int size = _fd->readUint32BE(); // size
-		uint32 format = _fd->readUint32BE(); // data format
+		uint32_t format = _fd->readUint32BE(); // data format
 
 		_fd->readUint32BE(); // reserved
 		_fd->readUint16BE(); // reserved
@@ -529,7 +529,7 @@ int QuickTimeDecoder::readSTSC(Atom UNUSED(atom)) {
 	if (!track->sampleToChunk)
 		return -1;
 
-	for (uint32 i = 0; i < track->sampleToChunkCount; i++) {
+	for (uint32_t i = 0; i < track->sampleToChunkCount; i++) {
 		track->sampleToChunk[i].first = _fd->readUint32BE() - 1;
 		track->sampleToChunk[i].count = _fd->readUint32BE();
 		track->sampleToChunk[i].id = _fd->readUint32BE();
@@ -546,12 +546,12 @@ int QuickTimeDecoder::readSTSS(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->keyframeCount = _fd->readUint32BE();
-	track->keyframes = std::make_unique<uint32[]>(track->keyframeCount);
+	track->keyframes = std::make_unique<uint32_t[]>(track->keyframeCount);
 
 	if (!track->keyframes)
 		return -1;
 
-	for (uint32 i = 0; i < track->keyframeCount; i++)
+	for (uint32_t i = 0; i < track->keyframeCount; i++)
 		track->keyframes[i] = _fd->readUint32BE() - 1; // Adjust here, the frames are based on 1
 
 	return 0;
@@ -569,12 +569,12 @@ int QuickTimeDecoder::readSTSZ(Atom UNUSED(atom)) {
 	if (track->sampleSize)
 		return 0; // there isn't any table following
 
-	track->sampleSizes = std::make_unique<uint32[]>(track->sampleCount);
+	track->sampleSizes = std::make_unique<uint32_t[]>(track->sampleCount);
 
 	if (!track->sampleSizes)
 		return -1;
 
-	for (uint32 i = 0; i < track->sampleCount; i++)
+	for (uint32_t i = 0; i < track->sampleCount; i++)
 		track->sampleSizes[i] = _fd->readUint32BE();
 
 	return 0;
@@ -582,7 +582,7 @@ int QuickTimeDecoder::readSTSZ(Atom UNUSED(atom)) {
 
 int QuickTimeDecoder::readSTTS(Atom UNUSED(atom)) {
 	QuickTimeTrack *track = _tracks.back();
-	uint32 totalSampleCount = 0;
+	uint32_t totalSampleCount = 0;
 
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
@@ -590,7 +590,7 @@ int QuickTimeDecoder::readSTTS(Atom UNUSED(atom)) {
 	track->timeToSampleCount = _fd->readUint32BE();
 	track->timeToSample = std::make_unique<TimeToSampleEntry[]>(track->timeToSampleCount);
 
-	for (int32 i = 0; i < track->timeToSampleCount; i++) {
+	for (int32_t i = 0; i < track->timeToSampleCount; i++) {
 		track->timeToSample[i].count = _fd->readUint32BE();
 		track->timeToSample[i].duration = _fd->readUint32BE();
 
@@ -609,12 +609,12 @@ int QuickTimeDecoder::readSTCO(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->chunkCount = _fd->readUint32BE();
-	track->chunkOffsets = std::make_unique<uint32[]>(track->chunkCount);
+	track->chunkOffsets = std::make_unique<uint32_t[]>(track->chunkCount);
 
 	if (!track->chunkOffsets)
 		return -1;
 
-	for (uint32 i = 0; i < track->chunkCount; i++)
+	for (uint32_t i = 0; i < track->chunkCount; i++)
 		track->chunkOffsets[i] = _fd->readUint32BE();
 
 	return 0;
@@ -690,7 +690,7 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	return 0;
 }
 
-QuickTimeDecoder::SampleDesc::SampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) {
+QuickTimeDecoder::SampleDesc::SampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32_t codecTag) {
 	_parentTrack = parentTrack;
 	_codecTag = codecTag;
 	_objectTypeMP4 = 0;
@@ -702,7 +702,7 @@ QuickTimeDecoder::QuickTimeTrack::QuickTimeTrack() : chunkCount(0), timeToSample
 
 }
 
-QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
+QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32_t codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
 	_channels = 0;
 	_sampleRate = 0;
 	_samplesPerFrame = 0;
@@ -744,7 +744,7 @@ Sound::PacketizedAudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStre
 	switch (_codecTag) {
 	case MKTAG('t', 'w', 'o', 's'):
 	case MKTAG('r', 'a', 'w', ' '): {
-		uint16 flags = 0;
+		uint16_t flags = 0;
 		if (_codecTag == MKTAG('r', 'a', 'w', ' '))
 			flags |= Sound::FLAG_UNSIGNED;
 		if (_bitsPerSample == 16)
@@ -772,7 +772,7 @@ void QuickTimeDecoder::checkAudioBuffer(AudioTrack &track, const Common::Timesta
 	static_cast<AudioTrackHandler &>(track).updateBuffer(endTime);
 }
 
-QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
+QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32_t codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
 	std::memset(_codecName, 0, 32);
 	_colorTableId = 0;
 	_bitsPerSample = 0;
@@ -867,7 +867,7 @@ Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChun
 	_decoder->_fd->seek(_parentTrack->chunkOffsets[chunk]);
 
 	// First, we have to get the sample count
-	uint32 sampleCount = getAudioChunkSampleCount(chunk);
+	uint32_t sampleCount = getAudioChunkSampleCount(chunk);
 	assert(sampleCount != 0);
 
 	if (isOldDemuxing()) {
@@ -875,16 +875,16 @@ Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChun
 
 		// Then calculate the right sizes
 		while (sampleCount > 0) {
-			uint32 samples = 0, size = 0;
+			uint32_t samples = 0, size = 0;
 
 			if (entry->_samplesPerFrame >= 160) {
 				samples = entry->_samplesPerFrame;
 				size = entry->_bytesPerFrame;
 			} else if (entry->_samplesPerFrame > 1) {
-				samples = MIN<uint32>((1024 / entry->_samplesPerFrame) * entry->_samplesPerFrame, sampleCount);
+				samples = MIN<uint32_t>((1024 / entry->_samplesPerFrame) * entry->_samplesPerFrame, sampleCount);
 				size = (samples / entry->_samplesPerFrame) * entry->_bytesPerFrame;
 			} else {
-				samples = MIN<uint32>(1024, sampleCount);
+				samples = MIN<uint32_t>(1024, sampleCount);
 				size = samples * _parentTrack->sampleSize;
 			}
 
@@ -898,12 +898,12 @@ Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChun
 		// New-style audio demuxing
 
 		// Find our starting sample
-		uint32 startSample = 0;
-		for (uint32 i = 0; i < chunk; i++)
+		uint32_t startSample = 0;
+		for (uint32_t i = 0; i < chunk; i++)
 			startSample += getAudioChunkSampleCount(i);
 
-		for (uint32 i = 0; i < sampleCount; i++) {
-			uint32 size = (_parentTrack->sampleSize != 0) ? _parentTrack->sampleSize : _parentTrack->sampleSizes[i + startSample];
+		for (uint32_t i = 0; i < sampleCount; i++) {
+			uint32_t size = (_parentTrack->sampleSize != 0) ? _parentTrack->sampleSize : _parentTrack->sampleSizes[i + startSample];
 
 			// Now, we read in the data for this data and output it
 			std::unique_ptr<byte[]> data = std::make_unique<byte[]>(size);
@@ -915,10 +915,10 @@ Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChun
 	return new Common::MemoryReadStream(wStream->getData(), wStream->size(), true);
 }
 
-uint32 QuickTimeDecoder::QuickTimeAudioTrack::getAudioChunkSampleCount(uint chunk) const {
-	uint32 sampleCount = 0;
+uint32_t QuickTimeDecoder::QuickTimeAudioTrack::getAudioChunkSampleCount(uint chunk) const {
+	uint32_t sampleCount = 0;
 
-	for (uint32 i = 0; i < _parentTrack->sampleToChunkCount; i++)
+	for (uint32_t i = 0; i < _parentTrack->sampleToChunkCount; i++)
 		if (chunk >= _parentTrack->sampleToChunk[i].first)
 			sampleCount = _parentTrack->sampleToChunk[i].count;
 
@@ -926,7 +926,7 @@ uint32 QuickTimeDecoder::QuickTimeAudioTrack::getAudioChunkSampleCount(uint chun
 }
 
 Common::Timestamp QuickTimeDecoder::QuickTimeAudioTrack::getChunkLength(uint chunk, bool skipAACPrimer) const {
-	uint32 chunkSampleCount = getAudioChunkSampleCount(chunk);
+	uint32_t chunkSampleCount = getAudioChunkSampleCount(chunk);
 
 	if (isOldDemuxing())
 		return Common::Timestamp(0, chunkSampleCount, getRate());
@@ -935,12 +935,12 @@ Common::Timestamp QuickTimeDecoder::QuickTimeAudioTrack::getChunkLength(uint chu
 	return Common::Timestamp(0, getAACSampleTime(chunkSampleCount, skipAACPrimer), getRate());
 }
 
-uint32 QuickTimeDecoder::QuickTimeAudioTrack::getAACSampleTime(uint32 totalSampleCount, bool skipAACPrimer) const{
-	uint32 curSample = 0;
-	uint32 time = 0;
+uint32_t QuickTimeDecoder::QuickTimeAudioTrack::getAACSampleTime(uint32_t totalSampleCount, bool skipAACPrimer) const{
+	uint32_t curSample = 0;
+	uint32_t time = 0;
 
-	for (int32 i = 0; i < _parentTrack->timeToSampleCount; i++) {
-		uint32 sampleCount = _parentTrack->timeToSample[i].count;
+	for (int32_t i = 0; i < _parentTrack->timeToSampleCount; i++) {
+		uint32_t sampleCount = _parentTrack->timeToSample[i].count;
 
 		if (totalSampleCount < curSample + sampleCount) {
 			time += (totalSampleCount - curSample) * _parentTrack->timeToSample[i].duration;
@@ -973,11 +973,11 @@ Common::Timestamp QuickTimeDecoder::VideoTrackHandler::getDuration() const {
 	return Common::Timestamp(0, _parent->duration, _decoder->_timeScale);
 }
 
-uint32 QuickTimeDecoder::VideoTrackHandler::getWidth() const {
+uint32_t QuickTimeDecoder::VideoTrackHandler::getWidth() const {
 	return _parent->width;
 }
 
-uint32 QuickTimeDecoder::VideoTrackHandler::getHeight() const {
+uint32_t QuickTimeDecoder::VideoTrackHandler::getHeight() const {
 	return _parent->height;
 }
 
@@ -997,7 +997,7 @@ bool QuickTimeDecoder::VideoTrackHandler::decodeNextFrame(Graphics::Surface &sur
 	_nextFrameStartTime += getFrameDuration();
 
 	// Get the next packet
-	uint32 descId;
+	uint32_t descId;
 	std::unique_ptr<Common::SeekableReadStream> frameData(getNextFramePacket(descId));
 
 	if (!frameData || !descId || descId > _parent->sampleDescs.size())
@@ -1012,14 +1012,14 @@ bool QuickTimeDecoder::VideoTrackHandler::decodeNextFrame(Graphics::Surface &sur
 	return true;
 }
 
-Common::SeekableReadStream *QuickTimeDecoder::VideoTrackHandler::getNextFramePacket(uint32 &descId) {
+Common::SeekableReadStream *QuickTimeDecoder::VideoTrackHandler::getNextFramePacket(uint32_t &descId) {
 	// First, we have to track down which chunk holds the sample and which sample in the chunk contains the frame we are looking for.
-	int32 totalSampleCount = 0;
-	int32 sampleInChunk = 0;
-	int32 actualChunk = -1;
-	uint32 sampleToChunkIndex = 0;
+	int32_t totalSampleCount = 0;
+	int32_t sampleInChunk = 0;
+	int32_t actualChunk = -1;
+	uint32_t sampleToChunkIndex = 0;
 
-	for (uint32 i = 0; i < _parent->chunkCount; i++) {
+	for (uint32_t i = 0; i < _parent->chunkCount; i++) {
 		if (sampleToChunkIndex < _parent->sampleToChunkCount && i >= _parent->sampleToChunk[sampleToChunkIndex].first)
 			sampleToChunkIndex++;
 
@@ -1040,7 +1040,7 @@ Common::SeekableReadStream *QuickTimeDecoder::VideoTrackHandler::getNextFramePac
 	_decoder->_fd->seek(_parent->chunkOffsets[actualChunk]);
 
 	// Then, if the chunk holds more than one frame, seek to where the frame we want is located
-	for (int32 i = _curFrame - sampleInChunk; i < _curFrame; i++) {
+	for (int32_t i = _curFrame - sampleInChunk; i < _curFrame; i++) {
 		if (_parent->sampleSize != 0)
 			_decoder->_fd->skip(_parent->sampleSize);
 		else
@@ -1056,11 +1056,11 @@ Common::SeekableReadStream *QuickTimeDecoder::VideoTrackHandler::getNextFramePac
 	return _decoder->_fd->readStream(_parent->sampleSizes[_curFrame]);
 }
 
-uint32 QuickTimeDecoder::VideoTrackHandler::getFrameDuration() {
-	uint32 curFrameIndex = 0;
-	for (int32 i = 0; i < _parent->timeToSampleCount; i++) {
+uint32_t QuickTimeDecoder::VideoTrackHandler::getFrameDuration() {
+	uint32_t curFrameIndex = 0;
+	for (int32_t i = 0; i < _parent->timeToSampleCount; i++) {
 		curFrameIndex += _parent->timeToSample[i].count;
-		if ((uint32)_curFrame < curFrameIndex) {
+		if ((uint32_t)_curFrame < curFrameIndex) {
 			// Ok, now we have what duration this frame has.
 			return _parent->timeToSample[i].duration;
 		}

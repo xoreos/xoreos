@@ -176,9 +176,9 @@ struct ShaderUBO {
 struct ShaderSampler {
 	Texture *texture;
 	Graphics::Aurora::TextureHandle handle;
-	uint32 unit;
+	uint32_t unit;
 	ShaderSampler() : texture(0), unit(0) {}
-	ShaderSampler(Texture *t, uint32 u) : texture(t), unit(u) {}
+	ShaderSampler(Texture *t, uint32_t u) : texture(t), unit(u) {}
 };
 
 
@@ -186,20 +186,20 @@ class ShaderObject : public GLContainer {
 public:
 	struct ShaderObjectVariable {
 		ShaderVariableType type;
-		uint32 count;  // Number of variables (normally 1, but higher if an array is defined).
+		uint32_t count;  // Number of variables (normally 1, but higher if an array is defined).
 		Common::UString name;
 
 		ShaderObjectVariable() : type(SHADER_INVALID), count(0), name() {}
 		ShaderObjectVariable(const ShaderObjectVariable &src) : type(src.type), count(src.count), name(src.name) {}
-		ShaderObjectVariable(ShaderVariableType t, uint32 cnt, const Common::UString &n) : type(t), count(cnt), name(n) {}
+		ShaderObjectVariable(ShaderVariableType t, uint32_t cnt, const Common::UString &n) : type(t), count(cnt), name(n) {}
 
 		inline const ShaderObjectVariable &operator=(const ShaderObjectVariable &src) { type = src.type; count = src.count; name = src.name; return *this; }
 	};
 
 	ShaderObject();
 
-	uint32 usageCount { 0 };
-	uint32 id { 0 };  // ID unique to a shader within its type (i.e unique across vertex shaders, or unique across fragment shaders). 0 is an invalid id.
+	uint32_t usageCount { 0 };
+	uint32_t id { 0 };  // ID unique to a shader within its type (i.e unique across vertex shaders, or unique across fragment shaders). 0 is an invalid id.
 	GLuint glid { 0 };  // Defaults to zero if not compiled.
 	ShaderType type { SHADER_VERTEX };  // Type of shader (typically vertex or fragment).
 	Common::UString shaderString;
@@ -221,9 +221,9 @@ public:
 	ShaderObject *fragmentObject { nullptr };  // Fragment shader.
 	std::vector<GLint> vertexVariableLocations;
 	std::vector<GLint> fragmentVariableLocations;
-	uint64 id { 0 };  // Set to (vertex.id << 32) | fragment.id
+	uint64_t id { 0 };  // Set to (vertex.id << 32) | fragment.id
 	GLuint glid { 0 };
-	uint32 usageCount { 0 };
+	uint32_t usageCount { 0 };
 
 	void bindAttribute(ShaderVertexAttrib attrib, const Common::UString &name) {
 		glBindAttribLocation(glid, (GLuint)(attrib), name.c_str());
@@ -278,8 +278,8 @@ public:
 	void genGLProgram(ShaderProgram *program);
 
 private:
-	uint32 _counterVID;
-	uint32 _counterFID;
+	uint32_t _counterVID;
+	uint32_t _counterFID;
 	std::map<Common::UString, Shader::ShaderObject *> _shaderObjectMap;
 	std::vector<Shader::ShaderProgram *> _shaderProgramArray;
 

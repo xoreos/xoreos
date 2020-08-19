@@ -75,7 +75,7 @@ public:
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 
-	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
+	uint32_t _soundAppType; ///< The index within the situated sounds 2DA.
 
 	bool _locked; ///< Is the situated object locked?
 

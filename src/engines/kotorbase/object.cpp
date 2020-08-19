@@ -71,7 +71,7 @@ ObjectType Object::getType() const {
 	return _type;
 }
 
-const std::list<uint32> &Object::getIDs() const {
+const std::list<uint32_t> &Object::getIDs() const {
 	return _ids;
 }
 

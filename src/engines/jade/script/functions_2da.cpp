@@ -35,9 +35,9 @@ namespace Engines {
 
 namespace Jade {
 
-const Aurora::TwoDAFile &Functions::findTable(int32 nr) {
+const Aurora::TwoDAFile &Functions::findTable(int32_t nr) {
 	const Aurora::TwoDAFile &scriptlist = TwoDAReg.get2DA("scriptlist");
-	int32 twodasNr = scriptlist.getRow(nr).getInt("2da");
+	int32_t twodasNr = scriptlist.getRow(nr).getInt("2da");
 
 	const Aurora::TwoDAFile &twodas = TwoDAReg.get2DA("2das");
 	const Common::UString twodaName = twodas.getRow(twodasNr).getString("file");
@@ -46,24 +46,24 @@ const Aurora::TwoDAFile &Functions::findTable(int32 nr) {
 }
 
 void Functions::get2DANumRows(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
 
-	ctx.getReturn() = (int32) table.getRowCount();
+	ctx.getReturn() = (int32_t) table.getRowCount();
 }
 
 void Functions::get2DANumColumn(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
 
-	ctx.getReturn() = (int32) table.getColumnCount();
+	ctx.getReturn() = (int32_t) table.getColumnCount();
 }
 
 void Functions::get2DAEntryIntByString(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
-	int32 rowNr = ctx.getParams()[1].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
+	int32_t rowNr = ctx.getParams()[1].getInt();
 	Common::UString &columnName = ctx.getParams()[2].getString();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
@@ -72,8 +72,8 @@ void Functions::get2DAEntryIntByString(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::get2DAEntryFloatByString(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
-	int32 rowNr = ctx.getParams()[1].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
+	int32_t rowNr = ctx.getParams()[1].getInt();
 	Common::UString &columnName = ctx.getParams()[2].getString();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
@@ -82,8 +82,8 @@ void Functions::get2DAEntryFloatByString(Aurora::NWScript::FunctionContext &ctx)
 }
 
 void Functions::get2DAEntryStringByString(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
-	int32 rowNr = ctx.getParams()[1].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
+	int32_t rowNr = ctx.getParams()[1].getInt();
 	Common::UString &columnName = ctx.getParams()[2].getString();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
@@ -92,9 +92,9 @@ void Functions::get2DAEntryStringByString(Aurora::NWScript::FunctionContext &ctx
 }
 
 void Functions::get2DAEntryInt(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
-	int32 rowNr = ctx.getParams()[1].getInt();
-	int32 columnNr = ctx.getParams()[2].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
+	int32_t rowNr = ctx.getParams()[1].getInt();
+	int32_t columnNr = ctx.getParams()[2].getInt();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
 
@@ -102,9 +102,9 @@ void Functions::get2DAEntryInt(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::get2DAEntryFloat(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
-	int32 rowNr = ctx.getParams()[1].getInt();
-	int32 columnNr = ctx.getParams()[2].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
+	int32_t rowNr = ctx.getParams()[1].getInt();
+	int32_t columnNr = ctx.getParams()[2].getInt();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
 
@@ -112,9 +112,9 @@ void Functions::get2DAEntryFloat(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::get2DAEntryString(Aurora::NWScript::FunctionContext &ctx) {
-	int32 tableNr = ctx.getParams()[0].getInt();
-	int32 rowNr = ctx.getParams()[1].getInt();
-	int32 columnNr = ctx.getParams()[2].getInt();
+	int32_t tableNr = ctx.getParams()[0].getInt();
+	int32_t rowNr = ctx.getParams()[1].getInt();
+	int32_t columnNr = ctx.getParams()[2].getInt();
 
 	const Aurora::TwoDAFile &table = findTable(tableNr);
 

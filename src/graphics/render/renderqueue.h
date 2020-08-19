@@ -55,7 +55,7 @@ public:
 		inline const RenderQueueNode &operator=(const RenderQueueNode &src) { program = src.program; material = src.material; surface = src.surface; mesh = src.mesh; transform = src.transform; reference = src.reference; alpha = src.alpha; return *this; }
 	};
 
-	RenderQueue(uint32 precache = 1000);
+	RenderQueue(uint32_t precache = 1000);
 	~RenderQueue();
 
 	void setCameraReference(const glm::vec3 &reference);

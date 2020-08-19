@@ -45,8 +45,8 @@ namespace Engines {
 
 namespace DragonAge {
 
-static const uint32 kCIFID     = MKTAG('C', 'I', 'F', ' ');
-static const uint32 kVersion01 = MKTAG('V', '0', '.', '1');
+static const uint32_t kCIFID     = MKTAG('C', 'I', 'F', ' ');
+static const uint32_t kVersion01 = MKTAG('V', '0', '.', '1');
 
 using ::Aurora::GFF4File;
 using ::Aurora::GFF4Struct;

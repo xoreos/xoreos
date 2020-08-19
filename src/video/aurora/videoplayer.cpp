@@ -99,8 +99,8 @@ void VideoPlayer::play() {
 		_video->abort();
 	} BOOST_SCOPE_EXIT_END
 
-	uint32 width = _video->getWidth();
-	uint32 height = _video->getHeight();
+	uint32_t width = _video->getWidth();
+	uint32_t height = _video->getHeight();
 
 	debugC(Common::kDebugVideo, 1, "Starting video (%ux%u)", width, height);
 

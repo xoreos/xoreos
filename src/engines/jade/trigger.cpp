@@ -131,7 +131,7 @@ void Trigger::loadInstance(const Aurora::GFF3Struct &gff) {
 	_vertexBuffer.setVertexDeclLinear(geometry.size(), vertexDecl);
 
 	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
-	for (uint32 i = 0; i < geometry.size(); i++) {
+	for (uint32_t i = 0; i < geometry.size(); i++) {
 		geometry[i]->getVector("Vertex", x, y, z);
 
 		// Position

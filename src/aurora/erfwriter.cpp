@@ -34,9 +34,9 @@
 
 namespace Aurora {
 
-static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
+static const uint32_t kVersion10 = MKTAG('V', '1', '.', '0');
 
-ERFWriter::ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream, Version version, Compression compression, LocString description) :
+ERFWriter::ERFWriter(uint32_t id, uint32_t fileCount, Common::SeekableWriteStream &stream, Version version, Compression compression, LocString description) :
 		_stream(stream), _version(version), _compression(compression), _fileCount(fileCount) {
 
 	switch (_version) {
@@ -85,7 +85,7 @@ void ERFWriter::add(const Common::UString &resRef, FileType resType, Common::See
 	}
 }
 
-void ERFWriter::initV10(uint32 id, LocString description) {
+void ERFWriter::initV10(uint32_t id, LocString description) {
 	_stream.writeUint32BE(id);
 	_stream.writeUint32BE(kVersion10);
 
@@ -96,7 +96,7 @@ void ERFWriter::initV10(uint32 id, LocString description) {
 	_stream.writeUint32LE(_fileCount); // Entry Count
 
 	// The size of the ERF header, which is immediately followed by the LocString table
-	static const uint32 kLocStringTableOffset = 160;
+	static const uint32_t kLocStringTableOffset = 160;
 
 	_keyTableOffset = kLocStringTableOffset + description.getWrittenSize();
 	_resourceTableOffset = _keyTableOffset + _fileCount * 24;
@@ -201,9 +201,9 @@ void ERFWriter::initV22(ERFWriter::Compression compression) {
 	_stream.writeUint32BE(0xFFFFFFFF);
 
 	// Create and write the flags.
-	uint32 flags = 0;
+	uint32_t flags = 0;
 
-	uint32 compressionFlags = 0;
+	uint32_t compressionFlags = 0;
 	switch (compression) {
 		case kCompressionBiowareZlib:
 			compressionFlags |= 0x20000000;

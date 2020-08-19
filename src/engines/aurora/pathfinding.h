@@ -51,7 +51,7 @@ class AStar;
 
 class Pathfinding {
 public:
-	Pathfinding(std::vector<bool> walkableProperties, uint32 polygonEdges = 3);
+	Pathfinding(std::vector<bool> walkableProperties, uint32_t polygonEdges = 3);
 	virtual ~Pathfinding();
 
 	/** Find a path of face between two points.
@@ -61,7 +61,7 @@ public:
 	 *  set in the constructor thanks to setAStarAlgorithm() method.
 	 */
 	bool findPath(float startX, float startY, float endX, float endY,
-	              std::vector<uint32> &facePath, float width = 0.f, uint32 nbrIt = 10000);
+	              std::vector<uint32_t> &facePath, float width = 0.f, uint32_t nbrIt = 10000);
 	/** Compute a smooth line from a path of face.
 	 *
 	 *  @param startX       The x component of the starting point.
@@ -71,7 +71,7 @@ public:
 	 *  @param facePath     The path of face.
 	 */
 	void smoothPath(float startX, float startY, float endX, float endY,
-	                std::vector<uint32> &facePath, std::vector<glm::vec3> &path);
+	                std::vector<uint32_t> &facePath, std::vector<glm::vec3> &path);
 
 	/** Get the intersection between a line and the walkmesh.
 	 *
@@ -90,7 +90,7 @@ public:
 	void setAStarAlgorithm(AStar *aStarAlgorithm);
 
 	/** Is the face from walkmesh walkable? */
-	virtual bool faceWalkable(uint32 faceID) const;
+	virtual bool faceWalkable(uint32_t faceID) const;
 	/** Get the height at a specific point (in the XY plane) in the walkmesh. */
 	float getHeight(float x, float y, bool onlyWalkable = false) const;
 
@@ -103,18 +103,18 @@ protected:
 	/** State if the point, in the XY plane, is walkable. */
 	bool walkable(glm::vec3 point);
 	/** Find a face according to a point in the XY plane. */
-	virtual uint32 findFace(float x, float y, bool onlyWalkable = true);
+	virtual uint32_t findFace(float x, float y, bool onlyWalkable = true);
 	/** Is the surface walkable? */
-	virtual bool surfaceWalkable(uint32 surfaceID) const;
+	virtual bool surfaceWalkable(uint32_t surfaceID) const;
 	/** Get the adjacent faces of a specific face. */
-	virtual void getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint32> &adjFaces,
+	virtual void getAdjacentFaces(uint32_t face, uint32_t parent, std::vector<uint32_t> &adjFaces,
 	                              bool onlyWalkable = true) const;
 	/** Get the vertices of a face. */
-	virtual void getVertices(uint32 faceID, std::vector<glm::vec3> &vertices, bool xyPlane = true) const;
+	virtual void getVertices(uint32_t faceID, std::vector<glm::vec3> &vertices, bool xyPlane = true) const;
 	/** The vertex position from the vertex id. */
-	virtual void getVertex(uint32 vertexID, glm::vec3 &vertex, bool xyPlane = true) const;
+	virtual void getVertex(uint32_t vertexID, glm::vec3 &vertex, bool xyPlane = true) const;
 	/** Get the vertices along a path of faces. */
-	virtual void getVerticesTunnel(std::vector<uint32> &facePath, std::vector<glm::vec3> &tunnel,
+	virtual void getVerticesTunnel(std::vector<uint32_t> &facePath, std::vector<glm::vec3> &tunnel,
 	                       std::vector<bool> &tunnelLeftRight);
 	/** Check if a given align-axis square is walkable. */
 	virtual bool walkableAASquare(glm::vec3 center, float halfWidth);
@@ -125,16 +125,16 @@ protected:
 	/** Are two points close? Use the _epsilon value to evaluate the proximity.*/
 	bool close(glm::vec3 &pointA, glm::vec3 &pointB) const;
 
-	uint32 _polygonEdges;  ///< The number of edge a walkmesh face has.
-	uint32 _verticesCount; ///< The total number of vertices in the walkmesh.
-	uint32 _facesCount;    ///< The total number of faces in the walkmesh.
+	uint32_t _polygonEdges;  ///< The number of edge a walkmesh face has.
+	uint32_t _verticesCount; ///< The total number of vertices in the walkmesh.
+	uint32_t _facesCount;    ///< The total number of faces in the walkmesh.
 
 	float  _epsilon; ///< The minimal distance to consider two vertices equal.
 
 	std::vector<float>  _vertices;     ///< The vertices of the walkmesh. Each vertex has 3 components.
-	std::vector<uint32> _faces;        ///< The faces of the walkmesh.
-	std::vector<uint32> _adjFaces;     ///< The adjacent faces in the walkmesh.
-	std::vector<uint32> _faceProperty; ///< The property of each faces. Usually used to state the walkability.
+	std::vector<uint32_t> _faces;        ///< The faces of the walkmesh.
+	std::vector<uint32_t> _adjFaces;     ///< The adjacent faces in the walkmesh.
+	std::vector<uint32_t> _faceProperty; ///< The property of each faces. Usually used to state the walkability.
 
 	std::vector<Common::AABBNode *> _aabbTrees; ///< The set of AABB trees in the walkmesh.
 	bool _pathVisible;
@@ -142,21 +142,21 @@ protected:
 
 private:
 	/** Is a point in a specific face? */
-	bool inFace(uint32 faceID, glm::vec3 point) const;
+	bool inFace(uint32_t faceID, glm::vec3 point) const;
 	/** Is a line in a specific face? */
-	bool inFace(uint32 faceID, glm::vec3 lineStart, glm::vec3 lineEnd,
+	bool inFace(uint32_t faceID, glm::vec3 lineStart, glm::vec3 lineEnd,
 	            glm::vec3 &intersect) const;
 	/** Get the vertices shared by two faces. */
-	bool getSharedVertices(uint32 face1, uint32 face2,
+	bool getSharedVertices(uint32_t face1, uint32_t face2,
 	                       glm::vec3 &vert1, glm::vec3 &vert2) const;
 	/** Can a creature go from one face to an other one? */
-	bool goThrough(uint32 fromFace, uint32 toFace, float width);
+	bool goThrough(uint32_t fromFace, uint32_t toFace, float width);
 	/** Get the orthonornmal vector of a segment. */
 	glm::vec3 getOrthonormalVec(glm::vec3 segment, bool clockwise = true) const;
 	/** Is a point to the left from a given segment? */
 	bool isToTheLeft(glm::vec3 startSegment, glm::vec3 endSegment, glm::vec3 Point) const;
 	/** Get the center of the adjacency edge from two faces. */
-	void getAdjacencyCenter(uint32 faceA, uint32 faceB, float &x, float &y) const;
+	void getAdjacencyCenter(uint32_t faceA, uint32_t faceB, float &x, float &y) const;
 
 	Graphics::Aurora::Line *_pathDrawing;
 	Graphics::Aurora::Walkmesh *_walkmeshDrawing;

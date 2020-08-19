@@ -42,7 +42,7 @@ public:
 	ObjectReference(const Object *object);
 	~ObjectReference() = default;
 
-	uint32 getId() const;
+	uint32_t getId() const;
 
 	Object *operator*() const;
 
@@ -52,7 +52,7 @@ public:
 	bool operator==(const ObjectReference &objref);
 
 private:
-	uint32 _id { kObjectIDInvalid };
+	uint32_t _id { kObjectIDInvalid };
 };
 
 } // End of namespace NWScript

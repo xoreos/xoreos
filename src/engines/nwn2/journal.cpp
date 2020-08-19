@@ -37,7 +37,7 @@ Journal::Journal(const Aurora::GFF3Struct &journal) {
 	load(journal);
 }
 
-uint32 Journal::getJournalQuestExperience(const Common::UString &plotID) const {
+uint32_t Journal::getJournalQuestExperience(const Common::UString &plotID) const {
 	auto category = std::find_if(_categories.begin(), _categories.end(), [&](const Category &c) {
 		return c.name == plotID;
 	});

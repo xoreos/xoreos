@@ -53,7 +53,7 @@ public:
 	/** Move relative to the current view axis. */
 	void moveRelative(float x, float y, float z);
 
-	uint32 lastChanged() const; ///< The timestamp the camera was changed last.
+	uint32_t lastChanged() const; ///< The timestamp the camera was changed last.
 
 	/** Update the caches with the current position and orientation.
 	 *
@@ -63,7 +63,7 @@ public:
 	void update();
 
 private:
-	uint32 _lastChanged;
+	uint32_t _lastChanged;
 
 	float _minPosition[3];
 	float _maxPosition[3];

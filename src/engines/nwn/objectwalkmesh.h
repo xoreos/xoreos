@@ -51,7 +51,7 @@ public:
 	                      glm::vec3 &intersect) const;
 
 	const std::vector<float> &getVertices() const;
-	const std::vector<uint32> &getFaces() const;
+	const std::vector<uint32_t> &getFaces() const;
 
 private:
 	void computeMinMax();
@@ -60,7 +60,7 @@ private:
 	glm::vec3 _max;
 
 	std::vector<float>  _vertices;
-	std::vector<uint32> _faces;
+	std::vector<uint32_t> _faces;
 };
 
 } // End of namespace NWN

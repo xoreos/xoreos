@@ -89,12 +89,12 @@ public:
 	/** Some objects in FMOD can have generic properties. */
 	struct Property {
 		PropertyType type;
-		boost::variant<int32, float, Common::UString> value;
+		boost::variant<int32_t, float, Common::UString> value;
 	};
 
 	/** Reference to an external wave bank. */
 	struct WaveBank {
-		uint32 maxStreams;
+		uint32_t maxStreams;
 		StreamingType streamingType;
 		Common::UString name;
 	};
@@ -102,8 +102,8 @@ public:
 	/** A category which is organized hierarchically. */
 	struct Category {
 		Common::UString name;
-		uint32 volume;
-		uint32 pitch;
+		uint32_t volume;
+		uint32_t pitch;
 	};
 
 	/** An event category for storing events. */
@@ -112,7 +112,7 @@ public:
 	};
 
 	struct EventLayer {
-		int16 priority;
+		int16_t priority;
 	};
 
 	/** An FMOD event.
@@ -129,15 +129,15 @@ public:
 		float pitch;
 		float pitchRandomization;
 		float volumeRandomization;
-		uint32 priority;
+		uint32_t priority;
 		EventMode mode;
-		uint32 maxPlaybacks;
-		uint32 maxPlaybacksBehavior;
+		uint32_t maxPlaybacks;
+		uint32_t maxPlaybacksBehavior;
 
 		Rollof3DType rollof3D;
 		Position3DType position3D;
 
-		uint32 positionRandomization3D;
+		uint32_t positionRandomization3D;
 
 		float coneInsideAngle3D;
 		float coneOutsideAngle3D;
@@ -165,8 +165,8 @@ public:
 		float ReverbDryLevel;
 		float ReverbWetLevel;
 
-		uint32 fadeInTime;
-		uint32 fadeOutTime;
+		uint32_t fadeInTime;
+		uint32_t fadeOutTime;
 
 		float spawnIntensity;
 		float spawnIntensityRandomization;
@@ -183,9 +183,9 @@ public:
 
 		Common::UString name;
 
-		uint32 spawnTimeMin;
-		uint32 spawnTimeMax;
-		uint32 maximumSpawnedSounds;
+		uint32_t spawnTimeMin;
+		uint32_t spawnTimeMax;
+		uint32_t maximumSpawnedSounds;
 		float volume;
 		float volumeRandomization;
 		float pitch;
@@ -197,24 +197,24 @@ public:
 	struct ReverbDefinition {
 		Common::UString name;
 
-		int32 room;
-		int32 roomHF;
+		int32_t room;
+		int32_t roomHF;
 		float roomRollof;
 
 		float decayTime;
 		float decayHFRatio;
 
-		int32 reflections;
+		int32_t reflections;
 		float reflectDelay;
 
-		int32 reverb;
+		int32_t reverb;
 		float reverbDelay;
 
 		float diffusion;
 		float density;
 
 		float hfReference;
-		int32 roomLF;
+		int32_t roomLF;
 		float lfReference;
 	};
 

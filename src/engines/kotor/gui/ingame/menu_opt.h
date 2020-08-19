@@ -43,10 +43,10 @@ enum {
 class MenuOptions : public KotORBase::GUI {
 public:
 	MenuOptions(::Engines::Console *console = 0);
-	uint8 pollSelectedItem();
+	uint8_t pollSelectedItem();
 
 protected:
-	uint8 _selectedItem;
+	uint8_t _selectedItem;
 
 	void callbackActive(Widget &widget);
 };

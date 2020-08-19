@@ -40,7 +40,7 @@ Common::UString SACFile::getLevelFile() const {
 
 Common::SeekableReadStream *SACFile::load(Common::SeekableReadStream *stream) {
 	stream->skip(4); // Unknown value, probably a version header?
-	const uint32 nameLength = stream->readUint32LE(); // Length of the level identifier.
+	const uint32_t nameLength = stream->readUint32LE(); // Length of the level identifier.
 
 	_levelFile = Common::readStringFixed(*stream, Common::kEncodingASCII, nameLength); // The Level identifier string.
 

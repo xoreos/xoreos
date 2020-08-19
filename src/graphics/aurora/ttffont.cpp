@@ -42,8 +42,8 @@
 #include "src/graphics/mesh/meshman.h"
 #include "src/graphics/shader/surfaceman.h"
 
-static const uint32 kPageWidth  = 256;
-static const uint32 kPageHeight = 256;
+static const uint32_t kPageWidth  = 256;
+static const uint32_t kPageHeight = 256;
 
 namespace Graphics {
 
@@ -94,7 +94,7 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 		throw Common::Exception("Font height too big (%d)", _height);
 
 	// Add all ASCII characters
-	for (uint32 i = 0; i < 128; i++)
+	for (uint32_t i = 0; i < 128; i++)
 		addChar(i);
 
 	// Add the Unicode "replacement character" character
@@ -106,7 +106,7 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 		// This font doesn't have the Unicode "replacement character"
 
 		// Try to find the width of an m. Alternatively, take half of a line's height.
-		std::map<uint32, Char>::const_iterator m = _chars.find('m');
+		std::map<uint32_t, Char>::const_iterator m = _chars.find('m');
 		if (m != _chars.end())
 			_missingWidth = m->second.width;
 		else
@@ -128,8 +128,8 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 	_renderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material, _mesh);
 }
 
-float TTFFont::getWidth(uint32 c) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+float TTFFont::getWidth(uint32_t c) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 	if (cC == _chars.end())
 		return _missingWidth;
 
@@ -155,8 +155,8 @@ void TTFFont::drawMissing() const {
 	glTranslatef(width + 1.0f, 0.0f, 0.0f);
 }
 
-void TTFFont::draw(uint32 c) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+void TTFFont::draw(uint32_t c) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 	if (cC == _chars.end()) {
 		cC = _missingChar;
 
@@ -204,8 +204,8 @@ void TTFFont::renderBind(const glm::mat4 &transform) const {
 	glBindBuffer(GL_ARRAY_BUFFER, _mesh->getVertexBuffer()->getVBO());
 }
 
-void TTFFont::render(uint32 c, float &x, float &y, float *rgba) const {
-	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+void TTFFont::render(uint32_t c, float &x, float &y, float *rgba) const {
+	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 
 	if (cC == _chars.end()) {
 		// Nothing is rendered for missing characters. Maybe one day use a placeholder instead.
@@ -260,8 +260,8 @@ void TTFFont::rebuildPages() {
 		(*p)->rebuild();
 }
 
-void TTFFont::addChar(uint32 c) {
-	std::map<uint32, Char>::iterator cC = _chars.find(c);
+void TTFFont::addChar(uint32_t c) {
+	std::map<uint32_t, Char>::iterator cC = _chars.find(c);
 	if (cC != _chars.end())
 		return;
 
@@ -270,7 +270,7 @@ void TTFFont::addChar(uint32 c) {
 
 	try {
 
-		uint32 cWidth = _ttf->getCharWidth(c);
+		uint32_t cWidth = _ttf->getCharWidth(c);
 		if (cWidth > kPageWidth)
 			return;
 
@@ -302,7 +302,7 @@ void TTFFont::addChar(uint32 c) {
 
 		_ttf->drawCharacter(c, *_pages.back()->surface, _pages.back()->curX, _pages.back()->curY);
 
-		std::pair<std::map<uint32, Char>::iterator, bool> result;
+		std::pair<std::map<uint32_t, Char>::iterator, bool> result;
 
 		result = _chars.insert(std::make_pair(c, Char()));
 

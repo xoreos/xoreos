@@ -54,10 +54,10 @@ public:
 	~WidgetListItem();
 
 	bool operator<(const WidgetListItem &item) const;
-	void mouseUp   (uint8 state, float x, float y);
-	void mouseWheel(uint8 state, int x, int y);
+	void mouseUp   (uint8_t state, float x, float y);
+	void mouseWheel(uint8_t state, int x, int y);
 
-	void mouseDblClick(uint8 state, float x, float y);
+	void mouseDblClick(uint8_t state, float x, float y);
 
 	void select();
 
@@ -163,8 +163,8 @@ public:
 
 	bool wasDblClicked();
 
-	void mouseDown(uint8 state, float x, float y);
-	void mouseWheel(uint8 state, int x, int y);
+	void mouseDown(uint8_t state, float x, float y);
+	void mouseWheel(uint8_t state, int x, int y);
 
 	void subActive(Widget &widget);
 

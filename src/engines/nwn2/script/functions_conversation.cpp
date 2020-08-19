@@ -52,8 +52,8 @@ void Functions::speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	// TODO: Volume
-	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
-	const uint32 volume = (uint32) ctx.getParams()[1].getInt();
+	const uint32_t strRef = (uint32_t) ctx.getParams()[0].getInt();
+	const uint32_t volume = (uint32_t) ctx.getParams()[1].getInt();
 
 	object->speakString(TalkMan.getString(strRef).c_str(), volume);
 }

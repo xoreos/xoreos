@@ -41,17 +41,17 @@ namespace NWN {
 class WidgetListItemVoice : public WidgetListItemButton {
 public:
 	WidgetListItemVoice(::Engines::GUI &gui, const Common::UString &title,
-	                    const Common::UString &soundSet, uint16 soundSetID);
+	                    const Common::UString &soundSet, uint16_t soundSetID);
 	~WidgetListItemVoice();
 
-	void mouseDown(uint8 state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
 	bool deactivate();
 
 private:
 	Common::UString _title;
 	std::unique_ptr<Aurora::SSFFile> _soundSet;
 	size_t _currentSound;
-	uint32 _soundSetID;
+	uint32_t _soundSetID;
 
 	friend class CharInfoVoice;
 };

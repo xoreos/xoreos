@@ -55,7 +55,7 @@ public:
 	/** Set the health bar color. */
 	void setHealthColor(float r, float g, float b, float a);
 	/** Set the character health. */
-	void setHealth(int32 current, int32 max);
+	void setHealth(int32_t current, int32_t max);
 
 protected:
 	void callbackActive(Widget &widget);
@@ -71,8 +71,8 @@ private:
 	Common::UString _name;
 	Common::UString _area;
 
-	int32 _currentHP;
-	int32 _maxHP;
+	int32_t _currentHP;
+	int32_t _maxHP;
 
 
 	void updatePortraitTooltip();

@@ -63,12 +63,12 @@ public:
 	TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding);
 	~TalkTable_GFF();
 
-	bool hasEntry(uint32 strRef) const;
+	bool hasEntry(uint32_t strRef) const;
 
-	const Common::UString &getString     (uint32 strRef) const;
-	const Common::UString &getSoundResRef(uint32 strRef) const;
+	const Common::UString &getString     (uint32_t strRef) const;
+	const Common::UString &getSoundResRef(uint32_t strRef) const;
 
-	uint32 getSoundID(uint32 strRef) const;
+	uint32_t getSoundID(uint32_t strRef) const;
 
 
 private:
@@ -80,7 +80,7 @@ private:
 		Entry(const GFF4Struct *s = 0) : strct(s) { }
 	};
 
-	typedef Common::PtrMap<uint32, Entry> Entries;
+	typedef Common::PtrMap<uint32_t, Entry> Entries;
 
 
 	std::unique_ptr<GFF4File> _gff;

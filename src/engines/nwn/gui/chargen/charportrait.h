@@ -44,7 +44,7 @@ public:
 	float getHeight() const;
 	float getWidth() const;
 
-	void mouseDown(uint8 state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
 
 	bool activate();
 	bool deactivate();

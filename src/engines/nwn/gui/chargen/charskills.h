@@ -44,7 +44,7 @@ public:
 	void setPosition(float x, float y, float z);
 
 	void reset();
-	void mouseDown(uint8 state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
 
 private:
 	void subActive(Widget &widget);
@@ -68,13 +68,13 @@ public:
 	void hide();
 
 	bool changeAvailableSkillRank(int rankChange);
-	void setSkillCost(uint8 cost);
+	void setSkillCost(uint8_t cost);
 	void setHelpText(const Common::UString &title, const Common::UString &text);
 
 private:
 	void callbackActive(Widget &widget);
 	void createSkillsList();
-	void computeAvailablePoints(uint8 pointBase);
+	void computeAvailablePoints(uint8_t pointBase);
 	void setRecommendedSkills();
 
 	size_t _availableSkillRank;

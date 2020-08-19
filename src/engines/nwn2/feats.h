@@ -50,12 +50,12 @@ public:
 	void clear();
 
 	// Manipulate the feats list
-	void featAdd(const uint32 id, uint16 level = 1);
-	void featRemove(const uint32 id, uint16 maxLevel = 0);
-	bool getHasFeat(uint32 id, uint16 maxLevel = 0) const;
+	void featAdd(const uint32_t id, uint16_t level = 1);
+	void featRemove(const uint32_t id, uint16_t maxLevel = 0);
+	bool getHasFeat(uint32_t id, uint16_t maxLevel = 0) const;
 
-	int  getFeatsSkillBonus(uint32 skill) const;
-	int  getFeatsSaveVsBonus(uint32 type) const;
+	int  getFeatsSkillBonus(uint32_t skill) const;
+	int  getFeatsSaveVsBonus(uint32_t type) const;
 	int  getFeatsFortBonus() const;
 	int  getFeatsRefBonus() const;
 	int  getFeatsWillBonus() const;
@@ -64,12 +64,12 @@ public:
 
 	bool getHasCustomFeat(Custom feat) const;
 
-	bool meetsRequirements(const Creature &creature, uint32 id) const;
+	bool meetsRequirements(const Creature &creature, uint32_t id) const;
 
 private:
 	struct Feat {
-		uint32 id;
-		uint16 level;
+		uint32_t id;
+		uint16_t level;
 	};
 
 	// List of included feats
@@ -89,8 +89,8 @@ private:
 
 	// Modifier update functions
 	void initParameters();
-	void resetFeats(uint16 maxLevel = 0);
-	void applyFeat(const uint32 id);
+	void resetFeats(uint16_t maxLevel = 0);
+	void applyFeat(const uint32_t id);
 };
 
 } // End of namespace NWN2

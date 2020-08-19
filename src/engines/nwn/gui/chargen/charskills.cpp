@@ -90,20 +90,20 @@ void WidgetListItemSkill::setPosition(float x, float y, float z) {
 
 void WidgetListItemSkill::reset() {
 	_skill.rank = _skill.minRank;
-	_skillPointPanel->setText(Common::composeString<uint8>(_skill.rank));
+	_skillPointPanel->setText(Common::composeString<uint8_t>(_skill.rank));
 }
 
-void WidgetListItemSkill::mouseDown(uint8 state, float x, float y) {
+void WidgetListItemSkill::mouseDown(uint8_t state, float x, float y) {
 	WidgetListItem::mouseDown(state, x, y);
 
-	uint8 cost = (_skill.isClassSkill) ? 1 : 2;
+	uint8_t cost = (_skill.isClassSkill) ? 1 : 2;
 	dynamic_cast<CharSkills &>(*_gui).setSkillCost(cost);
 }
 
 void WidgetListItemSkill::subActive(Widget &widget) {
 	select();
 
-	uint8 cost = (_skill.isClassSkill) ? 1 : 2;
+	uint8_t cost = (_skill.isClassSkill) ? 1 : 2;
 	dynamic_cast<CharSkills &>(*_gui).setSkillCost(cost);
 	dynamic_cast<CharSkills &>(*_gui).setHelpText(_skill.name, _skill.help);
 
@@ -115,7 +115,7 @@ void WidgetListItemSkill::subActive(Widget &widget) {
 }
 
 bool WidgetListItemSkill::changeRank(bool isIncreasing) {
-	uint8 classRankFactor = (_skill.isClassSkill) ? 1 : 2;
+	uint8_t classRankFactor = (_skill.isClassSkill) ? 1 : 2;
 
 	if (isIncreasing) {
 		if (_skill.maxRank == _skill.rank)
@@ -131,7 +131,7 @@ bool WidgetListItemSkill::changeRank(bool isIncreasing) {
 		--_skill.rank;
 	}
 
-	_skillPointPanel->setText(Common::composeString<uint8>(_skill.rank));
+	_skillPointPanel->setText(Common::composeString<uint8_t>(_skill.rank));
 	return true;
 }
 
@@ -147,7 +147,7 @@ CharSkills::CharSkills(CharGenChoices &choices, ::Engines::Console *console) : C
 
 	createSkillsList();
 
-	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint8>(_availableSkillRank));
+	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint8_t>(_availableSkillRank));
 
 	// Default help texts.
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(58250));
@@ -161,7 +161,7 @@ void CharSkills::reset() {
 	WidgetListBox *skillBox = getListBox("SkillsButtonBox", true);
 	skillBox->deselect();
 
-	uint8 spentPoint = 0;
+	uint8_t spentPoint = 0;
 	for (std::vector<WidgetListItem *>::iterator it = skillBox->begin();
 	     it != skillBox->end(); ++it) {
 
@@ -193,12 +193,12 @@ bool CharSkills::changeAvailableSkillRank(int changeRank) {
 		return false;
 
 	_availableSkillRank += changeRank;
-	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint8>(_availableSkillRank));
+	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint8_t>(_availableSkillRank));
 	return true;
 }
 
-void CharSkills::setSkillCost(uint8 cost) {
-	getLabel("CostBox")->setText(Common::composeString<uint8>(cost));
+void CharSkills::setSkillCost(uint8_t cost) {
+	getLabel("CostBox")->setText(Common::composeString<uint8_t>(cost));
 }
 
 void CharSkills::callbackActive(Widget &widget) {
@@ -217,7 +217,7 @@ void CharSkills::callbackActive(Widget &widget) {
 		     it != skillBox->end(); ++it) {
 			WidgetListItemSkill &item = dynamic_cast<WidgetListItemSkill &>(**it);
 			size_t skillIndex         = item._skill.skillID;
-			uint8 skillRank           = item._skill.rank;
+			uint8_t skillRank           = item._skill.rank;
 
 			_choices->setSkill(skillIndex, skillRank);
 		}
@@ -266,13 +266,13 @@ void CharSkills::createSkillsList() {
 void CharSkills::setRecommendedSkills() {
 	reset();
 
-	std::vector<uint8> prefSkills;
+	std::vector<uint8_t> prefSkills;
 	_choices->getPrefSkills(prefSkills);
 
 	WidgetListBox *listBox = getListBox("SkillsButtonBox");
 
 	// Fill preferred skills
-	for (std::vector<uint8>::iterator pS = prefSkills.begin(); pS != prefSkills.end(); ++pS) {
+	for (std::vector<uint8_t>::iterator pS = prefSkills.begin(); pS != prefSkills.end(); ++pS) {
 		if (_availableSkillRank == 0)
 			break;
 

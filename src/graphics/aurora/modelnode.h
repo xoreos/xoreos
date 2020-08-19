@@ -152,7 +152,7 @@ public:
 	/** Get the alpha (transparency) of the node. */
 	float getAlpha();
 	/** Get the node number. */
-	uint16 getNodeNumber() const;
+	uint16_t getNodeNumber() const;
 
 	/** Change the environment map on this model node. */
 	void setEnvironmentMap(const Common::UString &environmentMap = "");
@@ -185,7 +185,7 @@ public:
 
 	struct Skin {
 		std::vector<float>       boneMapping;
-		uint32                   boneMappingCount;
+		uint32_t                 boneMappingCount;
 		std::vector<float>       boneWeights;
 		std::vector<float>       boneMappingId;
 		std::vector<ModelNode *> boneNodeMap;
@@ -229,7 +229,7 @@ public:
 
 		bool hasTransparencyHint;
 		bool transparencyHint;
-		uint32 transparencyHintFull;
+		uint32_t transparencyHintFull;
 
 		bool isBackgroundGeometry;
 
@@ -246,10 +246,10 @@ public:
 		Aurora::TextureHandle *phandles;
 		Aurora::TextureHandle *penvmap;
 		EnvironmentMapMode envmapmode;
-		uint32 textureCount;
+		uint32_t textureCount;
 		Shader::ShaderMaterial *material;
 		Common::UString materialName;
-		uint32 materialFlags;
+		uint32_t materialFlags;
 
 		MaterialConfiguration();
 	};
@@ -262,7 +262,7 @@ protected:
 
 	Model *_attachedModel; ///< The model that is attached to this node.
 
-	uint32 _level;
+	uint32_t _level;
 
 	Common::UString _name; ///< The node's name.
 
@@ -292,7 +292,7 @@ protected:
 	Common::BoundingBox _boundBox;
 	Common::BoundingBox _absoluteBoundBox;
 
-	uint16 _nodeNumber;
+	uint16_t _nodeNumber;
 
 	// Transformation matrices for skeletal animation
 
@@ -346,7 +346,7 @@ protected:
 	void setBufferedOrientation(float x, float y, float z, float angle);
 	void flushBuffers();
 
-	TextureHandle *getTextures(uint32 &count);
+	TextureHandle *getTextures(uint32_t &count);
 	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
 
 	void setMaterial(Shader::ShaderMaterial *material);

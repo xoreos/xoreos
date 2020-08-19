@@ -87,12 +87,12 @@ private:
 
 		Codec codec; ///< The codec the wave is in.
 
-		uint32 samplingRate; ///< Sampling frequency in Hz.
-		uint8  channels;     ///< Number of channels.
-		uint8  bitRate;      ///< Number of bits per sample.
-		uint8  blockAlign;   ///< Size of a compressed block in bytes.
+		uint32_t samplingRate; ///< Sampling frequency in Hz.
+		uint8_t  channels;     ///< Number of channels.
+		uint8_t  bitRate;      ///< Number of bits per sample.
+		uint8_t  blockAlign;   ///< Size of a compressed block in bytes.
 
-		uint32 flags; ///< Flags for this wave.
+		uint32_t flags; ///< Flags for this wave.
 
 		size_t loopOffset; ///< Start a loop from here.
 		size_t loopLength; ///< Length of the looping section.
@@ -104,7 +104,7 @@ private:
 	std::unique_ptr<Common::SeekableReadStream> _xwb;
 
 	Common::UString _name; ///< The internal name of this wavebank. */
-	uint32 _flags;
+	uint32_t _flags;
 
 	Waves _waves;
 

@@ -44,8 +44,8 @@ public:
 	AreaBackground(const Common::UString &name);
 	~AreaBackground();
 
-	uint32 getImageWidth()  const;
-	uint32 getImageHeight() const;
+	uint32_t getImageWidth()  const;
+	uint32_t getImageHeight() const;
 
 	// Renderable
 	void calculateDistance();

@@ -73,7 +73,7 @@ LoadProgress::~LoadProgress() {
 }
 
 void LoadProgress::step(const Common::UString &description) {
-	const uint32 timeNow = EventMan.getTimestamp();
+	const uint32_t timeNow = EventMan.getTimestamp();
 
 	if (_currentStep == 0)
 		_startTime = timeNow;
@@ -89,7 +89,7 @@ void LoadProgress::step(const Common::UString &description) {
 	}
 
 	const int    percentage  = (int) (_currentAmount * 100.0f);
-	const uint32 timeElapsed = timeNow - _startTime;
+	const uint32_t timeElapsed = timeNow - _startTime;
 
 	const Common::UString timeStr = Common::UString::format("(%.2fs)", timeElapsed / 1000.0);
 
@@ -124,25 +124,25 @@ Common::UString LoadProgress::createProgressbar(size_t length, double filled) {
 	Common::UString str;
 
 	// RIGHT ONE EIGHTH BLOCK
-	str += (uint32) 0x2595;
+	str += (uint32_t) 0x2595;
 
-	str += Common::UString((uint32) 0x2588,          amount); // FULL BLOCK
-	str += Common::UString((uint32) 0x0020, length - amount); // Space
+	str += Common::UString((uint32_t) 0x2588,          amount); // FULL BLOCK
+	str += Common::UString((uint32_t) 0x0020, length - amount); // Space
 
 	// LEFT ONE EIGHTH BLOCK
-	str += (uint32) 0x258F;
+	str += (uint32_t) 0x258F;
 
 	return str;
 }
 
 Common::UString LoadProgress::createProgressbarUpper(size_t length) {
 	// UPPER ONE EIGHTH BLOCK
-	return Common::UString((uint32) 0x2594, length);
+	return Common::UString((uint32_t) 0x2594, length);
 }
 
 Common::UString LoadProgress::createProgressbarLower(size_t length) {
 	// LOWER ONE EIGHTH BLOCK
-	return Common::UString((uint32) 0x2581, length);
+	return Common::UString((uint32_t) 0x2581, length);
 }
 
 } // End of namespace Engines

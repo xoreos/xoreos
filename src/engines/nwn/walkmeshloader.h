@@ -48,7 +48,7 @@ public:
 	~WalkmeshLoader();
 
 	void load(Aurora::FileType fileType, const Common::UString &name, float orientation[4], float position[3],
-	          std::vector<float> &vertices, std::vector<uint32> &faces, std::vector<uint32> &facesProperty,
+	          std::vector<float> &vertices, std::vector<uint32_t> &faces, std::vector<uint32_t> &facesProperty,
 	          const Common::UString &filterNode = "");
 
 	Common::AABBNode *getAABB();
@@ -59,21 +59,21 @@ private:
 	               Common::StreamTokenizer *tokenize, glm::mat4x4 &rotation, std::vector<float> &vertices);
 	/** Read the faces vertices from an ASCII stream. */
 	void readFaces(size_t n, Common::SeekableReadStream *stream, Common::StreamTokenizer *tokenize,
-	               std::vector<uint32> &faces, std::vector<uint32> &facesProperty, uint32 startVertex);
+	               std::vector<uint32_t> &faces, std::vector<uint32_t> &facesProperty, uint32_t startVertex);
 	/** Read floats number from lines of Common::UString. */
 	void readFloats(const std::vector<Common::UString> &strings,
-	                float *floats, uint32 n, uint32 start);
+	                float *floats, uint32_t n, uint32_t start);
 	/** Read and construct an AABB tree/node from an ASCII stream. */
-	Common::AABBNode *readAABB(float *position, uint8 orientation,
+	Common::AABBNode *readAABB(float *position, uint8_t orientation,
 	                           Common::SeekableReadStream *stream,
 	                           Common::StreamTokenizer *tokenize);
-	Common::AABBNode *buildAABBTree(std::vector<float> &vertices, std::vector<uint32> &faces);
-	Common::AABBNode *createAABB(uint32 face, std::vector<float> &vertices,
-	                             std::vector<uint32> &faces) const;
+	Common::AABBNode *buildAABBTree(std::vector<float> &vertices, std::vector<uint32_t> &faces);
+	Common::AABBNode *createAABB(uint32_t face, std::vector<float> &vertices,
+	                             std::vector<uint32_t> &faces) const;
 	float AABBCompatibility(Common::AABBNode *nodeA, Common::AABBNode *nodeB,
 	                        float min[], float max[]) const;
 	/** Change the axis orientation of coordonates. */
-	void changeOrientation(uint8 orientation, float *position) const;
+	void changeOrientation(uint8_t orientation, float *position) const;
 
 	Common::AABBNode *_node;
 	/** A map between vertices with same coordinates. */

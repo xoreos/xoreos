@@ -619,7 +619,7 @@ void ASBuffer::actionStoreRegister(AVM &avm) {
 }
 
 void ASBuffer::actionConstantPool() {
-	uint16 count = _script->readUint16LE();
+	uint16_t count = _script->readUint16LE();
 	_constants.resize(count);
 	for (int i = 0; i < count; ++i) {
 		Common::UString constant = readString();
@@ -650,7 +650,7 @@ void ASBuffer::actionDefineFunction2() {
 
 	bool preloadGlobalFlag = bitstream.getBit() != 0;
 
-	std::vector<uint8> parameterIds(numParams);
+	std::vector<uint8_t> parameterIds(numParams);
 	for (int i = 0; i < numParams; ++i) {
 		parameterIds[i] = _script->readByte();
 		readString();
@@ -743,7 +743,7 @@ void ASBuffer::actionPush(AVM &avm) {
 			}
 			case 6: {
 				// Double values are weird encoded.
-				uint32 value[2];
+				uint32_t value[2];
 				value[1] = _script->readUint32LE();
 				value[0] = _script->readUint32LE();
 
@@ -785,7 +785,7 @@ void ASBuffer::actionPush(AVM &avm) {
 }
 
 void ASBuffer::actionJump() {
-	int16 offset = _script->readSint16LE();
+	int16_t offset = _script->readSint16LE();
 
 	_script->seek(offset, Common::SeekableReadStream::kOriginCurrent);
 	_seeked = offset;
@@ -836,13 +836,13 @@ void ASBuffer::actionGetURL2(AVM &avm) {
 void ASBuffer::actionDefineFunction() {
 	Common::UString functionName = readString();
 
-	uint16 numParams = _script->readUint16LE();
+	uint16_t numParams = _script->readUint16LE();
 	for (int i = 0; i < numParams; ++i) {
 		Common::UString param = readString();
 	}
 
-	uint16 codeSize = _script->readUint16LE();
-	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, std::vector<uint8>(), 0, false, false, false, false)));
+	uint16_t codeSize = _script->readUint16LE();
+	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, std::vector<uint8_t>(), 0, false, false, false, false)));
 
 	_seeked = codeSize;
 
@@ -871,7 +871,7 @@ void ASBuffer::actionIf() {
 Common::UString ASBuffer::readString() {
 	Common::UString string;
 
-	uint32 character = _script->readChar();
+	uint32_t character = _script->readChar();
 	while (character != 0) {
 		string += character;
 		character = _script->readChar();

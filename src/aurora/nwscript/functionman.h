@@ -46,16 +46,16 @@ public:
 
 	void clear();
 
-	void registerFunction(const Common::UString &name, uint32 id, const Function &func,
+	void registerFunction(const Common::UString &name, uint32_t id, const Function &func,
 	                      const Signature &signature);
-	void registerFunction(const Common::UString &name, uint32 id, const Function &func,
+	void registerFunction(const Common::UString &name, uint32_t id, const Function &func,
 	                      const Signature &signature, const Parameters &defaults);
 
 	FunctionContext createContext(const Common::UString &function) const;
 	void call(const Common::UString &function, FunctionContext &ctx) const;
 
-	FunctionContext createContext(uint32 function) const;
-	void call(uint32 function, FunctionContext &ctx) const;
+	FunctionContext createContext(uint32_t function) const;
+	void call(uint32_t function, FunctionContext &ctx) const;
 
 private:
 	struct FunctionEntry {
@@ -74,7 +74,7 @@ private:
 	FunctionArray _functionArray;
 
 	const FunctionEntry &find(const Common::UString &function) const;
-	const FunctionEntry &find(uint32 function) const;
+	const FunctionEntry &find(uint32_t function) const;
 };
 
 } // End of namespace NWScript

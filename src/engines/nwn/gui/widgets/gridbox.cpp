@@ -23,6 +23,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 
 #include "src/common/util.h"
 
@@ -90,7 +91,7 @@ void WidgetGridBox::subActive(Widget &widget) {
 	}
 }
 
-void WidgetGridBox::mouseDown(uint8 UNUSED(state), float x, float y) {
+void WidgetGridBox::mouseDown(uint8_t UNUSED(state), float x, float y) {
 	if (isDisabled() || _visibleItems.empty())
 		return;
 

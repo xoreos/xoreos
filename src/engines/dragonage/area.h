@@ -96,14 +96,14 @@ private:
 	typedef Common::PtrVector<Room> Rooms;
 
 	typedef Common::PtrList<DragonAge::Object> Objects;
-	typedef std::map<uint32, DragonAge::Object *> ObjectMap;
+	typedef std::map<uint32_t, DragonAge::Object *> ObjectMap;
 
 
 	Campaign *_campaign;
 
 	Common::UString _resRef;
 
-	uint32 _environmentID;
+	uint32_t _environmentID;
 	Common::UString _environmentName;
 	Common::UString _skyDome;
 

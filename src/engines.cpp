@@ -22,6 +22,8 @@
  *  Utility functions to handle the engines.
  */
 
+#include "src/common/system.h"
+
 #include "src/engines/engineprobe.h"
 
 #ifdef ENABLE_NWN

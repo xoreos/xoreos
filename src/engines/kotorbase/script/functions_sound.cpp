@@ -62,13 +62,13 @@ void Functions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ct
 void Functions::musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx) {
 	Area *area = ObjectContainer::toArea(getParamObject(ctx, 0));
 
-	ctx.getReturn() = area ? (int32)area->getMusicDayTrack() : -1;
+	ctx.getReturn() = area ? (int32_t)area->getMusicDayTrack() : -1;
 }
 
 void Functions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx) {
 	Area *area = ObjectContainer::toArea(getParamObject(ctx, 0));
 
-	ctx.getReturn() = area ? (int32)area->getMusicNightTrack() : -1;
+	ctx.getReturn() = area ? (int32_t)area->getMusicNightTrack() : -1;
 }
 
 void Functions::soundObjectPlay(Aurora::NWScript::FunctionContext &ctx) {

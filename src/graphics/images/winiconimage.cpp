@@ -102,19 +102,19 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 		cur.readUint16LE();
 	}
 
-	/* uint32 size = */ cur.readUint32LE();
-	uint32 offset = cur.readUint32LE();
+	/* uint32_t size = */ cur.readUint32LE();
+	uint32_t offset = cur.readUint32LE();
 
 	// Welcome to the cursor data. Let's ride through the Win bitmap header v3
 	cur.seek(offset);
 
-	/* uint32 headerSize = */ cur.readUint32LE();
-	/* uint32 bitmapWidth = */ cur.readUint32LE();
-	/* uint32 bitmapHeight = */ cur.readUint32LE();
-	/* uint16 planes = */ cur.readUint16LE();
-	uint16 bitsPerPixel = cur.readUint16LE();
-	/* uint32 compression = */ cur.readUint32LE();
-	/* uint32 imageSize = */ cur.readUint32LE();
+	/* uint32_t headerSize = */ cur.readUint32LE();
+	/* uint32_t bitmapWidth = */ cur.readUint32LE();
+	/* uint32_t bitmapHeight = */ cur.readUint32LE();
+	/* uint16_t planes = */ cur.readUint16LE();
+	uint16_t bitsPerPixel = cur.readUint16LE();
+	/* uint32_t compression = */ cur.readUint32LE();
+	/* uint32_t imageSize = */ cur.readUint32LE();
 	cur.skip(16); // Skip the rest
 
 	// We're only using 8bpp/24bpp for now. If more is required, DrMcCoy will
@@ -136,7 +136,7 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 		throw Common::Exception(Common::kReadError);
 
 	// The AND map
-	const uint32 andWidth = (width + 7) / 8;
+	const uint32_t andWidth = (width + 7) / 8;
 	std::unique_ptr<byte[]> andMap = std::make_unique<byte[]>(andWidth * height);
 	if (cur.read(andMap.get(), andWidth * height) != (andWidth * height))
 		throw Common::Exception(Common::kReadError);
@@ -155,10 +155,10 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	const byte *xorSrc = xorMap.get();
 	      byte *dst    = _mipMaps[0]->data.get();
 
-	for (uint32 y = 0; y < height; y++) {
+	for (uint32_t y = 0; y < height; y++) {
 		const byte *andSrc = andMap.get() + andWidth * y;
 
-		for (uint32 x = 0; x < width; x++) {
+		for (uint32_t x = 0; x < width; x++) {
 			if (bitsPerPixel == 8) {
 				const byte pixel = *xorSrc++;
 

@@ -72,7 +72,7 @@ void WidgetSlider::setState(int state) {
 	changePosition(CLIP(((float) _state) / _steps, 0.0f, 1.0f));
 }
 
-void WidgetSlider::mouseMove(uint8 state, float x, float y) {
+void WidgetSlider::mouseMove(uint8_t state, float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -83,7 +83,7 @@ void WidgetSlider::mouseMove(uint8 state, float x, float y) {
 	changedValue(x, y);
 }
 
-void WidgetSlider::mouseDown(uint8 state, float x, float y) {
+void WidgetSlider::mouseDown(uint8_t state, float x, float y) {
 	if (isDisabled())
 		return;
 

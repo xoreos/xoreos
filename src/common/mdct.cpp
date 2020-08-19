@@ -93,7 +93,7 @@ void MDCT::calcMDCT(float *output, const float *input) {
 	const int size8 = _size >> 3;
 	const int size3 = _size * 3;
 
-	const uint16 *revTab = _fft->getRevTab();
+	const uint16_t *revTab = _fft->getRevTab();
 
 	// Pre rotation
 	for (int i = 0; i < size8; i++) {
@@ -145,7 +145,7 @@ void MDCT::calcHalfIMDCT(float *output, const float *input) {
 	const int size4 = _size >> 2;
 	const int size8 = _size >> 3;
 
-	const uint16 *revTab = _fft->getRevTab();
+	const uint16_t *revTab = _fft->getRevTab();
 
 	// Pre rotation
 	const float *in1 = input;

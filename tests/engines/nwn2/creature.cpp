@@ -78,8 +78,8 @@ GTEST_TEST(NWN2Creature, creature1) {
 	EXPECT_EQ(cr->getAbility(Engines::NWN2::kAbilityCharisma), 8);
 
 	// Classes
-	uint32 classID;
-	uint16 level;
+	uint32_t classID;
+	uint16_t level;
 	cr->getClass(0, classID, level);
 	EXPECT_EQ(classID, Engines::NWN2::kCClassFighter);
 	EXPECT_EQ(level, 1);

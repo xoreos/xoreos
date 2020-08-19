@@ -43,8 +43,8 @@ class HUD : public KotORBase::HUD, Events::Notifyable {
 public:
 	HUD(KotORBase::Module &module, ::Engines::Console *console = 0);
 
-	void setReturnStrref(uint32 id);
-	void setReturnQueryStrref(uint32 id);
+	void setReturnStrref(uint32_t id);
+	void setReturnQueryStrref(uint32_t id);
 	void setReturnEnabled(bool);
 
 	void setMinimap(const Common::UString &map, int northAxis,
@@ -75,7 +75,7 @@ private:
 
 	void update(int width, int height);
 	void initWidget(Widget &widget);
-	void setPortrait(uint8 n, bool visible, const Common::UString &portrait = "");
+	void setPortrait(uint8_t n, bool visible, const Common::UString &portrait = "");
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 };
 

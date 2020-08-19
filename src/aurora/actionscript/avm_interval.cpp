@@ -51,7 +51,7 @@ Variable AVM::setInterval(const std::vector<Variable> arguments) {
 		function->call("", *this, functionArguments);
 	};
 
-	uint32 id = 0;
+	uint32_t id = 0;
 
 	if (_handler)
 		id = _handler->setInterval(interval, intervalFun);
@@ -64,7 +64,7 @@ Variable AVM::clearInterval(const std::vector<Variable> arguments) {
 	if (arguments.size() != 1)
 		throw Common::Exception("AVM::clearInterval() Invalid number of arguments, need exactly 1");
 
-	uint32 id = arguments[0].asNumber();
+	uint32_t id = arguments[0].asNumber();
 
 	if (_handler)
 		_handler->clearInterval(id);

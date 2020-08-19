@@ -71,7 +71,7 @@ public:
 
 	void useIncrement();
 	void useDecrement();
-	uint32 useCount() const;
+	uint32_t useCount() const;
 
 	const glm::vec3 &getCentre() const;
 
@@ -99,7 +99,7 @@ protected:
 
 private:
 	Common::UString _name;
-	uint32 _usageCount;
+	uint32_t _usageCount;
 
 	GLuint _vao;  ///< Vertex Array Object handle. GL3.x only.
 

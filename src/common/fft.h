@@ -69,7 +69,7 @@ public:
 	FFT(int bits, bool inverse);
 	~FFT();
 
-	const uint16 *getRevTab() const;
+	const uint16_t *getRevTab() const;
 
 	/** Do the permutation needed BEFORE calling calc(). */
 	void permute(Complex *z);
@@ -85,7 +85,7 @@ private:
 	int  _bits;
 	bool _inverse;
 
-	std::unique_ptr<uint16[]> _revTab;
+	std::unique_ptr<uint16_t[]> _revTab;
 
 	std::unique_ptr<Complex[]> _expTab;
 	std::unique_ptr<Complex[]> _tmpBuf;

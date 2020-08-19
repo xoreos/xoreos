@@ -122,7 +122,7 @@ void Functions::intToFloat(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::floatToInt(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) ctx.getParams()[0].getFloat();
+	ctx.getReturn() = (int32_t) ctx.getParams()[0].getFloat();
 }
 
 void Functions::feetToMeters(Aurora::NWScript::FunctionContext &ctx) {

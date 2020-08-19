@@ -32,11 +32,11 @@ namespace Engines {
 
 namespace Eclipse {
 
-uint32 ExternalHandler::setInterval(double interval, Aurora::ActionScript::IntervalFunction fun) {
+uint32_t ExternalHandler::setInterval(double interval, Aurora::ActionScript::IntervalFunction fun) {
 	// Generate an id for accessing the timer later.
-	uint32 id = Common::generateIDNumber();
+	uint32_t id = Common::generateIDNumber();
 
-	auto intervalFun = [fun](uint32  currentInterval) -> uint32 {
+	auto intervalFun = [fun](uint32_t  currentInterval) -> uint32_t {
 		fun();
 		return currentInterval;
 	};
@@ -46,11 +46,11 @@ uint32 ExternalHandler::setInterval(double interval, Aurora::ActionScript::Inter
 	return id;
 }
 
-void ExternalHandler::clearInterval(uint32 id) {
+void ExternalHandler::clearInterval(uint32_t id) {
 	TimerMan.removeTimer(_timers[id]);
 }
 
-uint32 ExternalHandler::getTime() {
+uint32_t ExternalHandler::getTime() {
 	return EventMan.getTimestamp();
 }
 

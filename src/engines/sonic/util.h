@@ -39,7 +39,7 @@ namespace Engines {
 namespace Sonic {
 
 Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Common::UString &nclr,
-                                         uint32 width, uint32 height, ...);
+                                         uint32_t width, uint32_t height, ...);
 
 Graphics::Aurora::FontHandle loadFont(const Common::UString &name, const Common::UString &nftr, bool invert);
 

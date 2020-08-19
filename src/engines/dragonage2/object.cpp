@@ -37,7 +37,7 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-static const uint32 kVARSID = MKTAG('V', 'A', 'R', 'S');
+static const uint32_t kVARSID = MKTAG('V', 'A', 'R', 'S');
 
 using ::Aurora::GFF3File;
 using ::Aurora::GFF3Struct;
@@ -77,7 +77,7 @@ void Object::show() {
 void Object::hide() {
 }
 
-const std::list<uint32> &Object::getIDs() const {
+const std::list<uint32_t> &Object::getIDs() const {
 	return _ids;
 }
 
@@ -174,7 +174,7 @@ bool Object::click(Object *UNUSED(triggerer)) {
 void Object::readVarTable(const GFF3List &varTable) {
 	for (GFF3List::const_iterator v = varTable.begin(); v != varTable.end(); ++v) {
 		const Common::UString name  = (*v)->getString ("Name");
-		const uint8           type  = (*v)->getUint   ("Type");
+		const uint8_t         type  = (*v)->getUint   ("Type");
 
 		if (name.empty())
 			continue;
@@ -186,7 +186,7 @@ void Object::readVarTable(const GFF3List &varTable) {
 				break;
 
 			case  1:
-				setVariable(name, (int32) (*v)->getSint("Value"));
+				setVariable(name, (int32_t) (*v)->getSint("Value"));
 				break;
 
 			case  2:
@@ -215,7 +215,7 @@ void Object::readVarTable(const GFF4List &varTable) {
 			continue;
 
 		const Common::UString name  = (*v)->getString (kGFF4ScriptVarTableName);
-		const uint8           type  = (*v)->getUint   (kGFF4ScriptVarTableType);
+		const uint8_t         type  = (*v)->getUint   (kGFF4ScriptVarTableType);
 		const GFF4Struct     *value = (*v)->getGeneric(kGFF4ScriptVarTableValue);
 
 		if (name.empty() || (type == 0) || !value || !value->hasField(0))
@@ -227,7 +227,7 @@ void Object::readVarTable(const GFF4List &varTable) {
 				break;
 
 			case  1:
-				setVariable(name, (int32) value->getSint(0));
+				setVariable(name, (int32_t) value->getSint(0));
 				break;
 
 			case  2:

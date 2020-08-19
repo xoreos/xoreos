@@ -74,11 +74,11 @@ using Aurora::NWScript::kTypeAny;
 static Witcher::Object kDefaultValueObjectInvalid(kObjectTypeInvalid);
 static Witcher::Object kDefaultValueObjectSelf   (kObjectTypeSelf);
 
-static const Aurora::NWScript::Variable kDefaultIntMinus1((int32) - 1);
-static const Aurora::NWScript::Variable kDefaultInt0     ((int32)   0);
-static const Aurora::NWScript::Variable kDefaultInt1     ((int32)   1);
-static const Aurora::NWScript::Variable kDefaultInt9     ((int32)   9);
-static const Aurora::NWScript::Variable kDefaultInt18    ((int32)  18);
+static const Aurora::NWScript::Variable kDefaultIntMinus1((int32_t) - 1);
+static const Aurora::NWScript::Variable kDefaultInt0     ((int32_t)   0);
+static const Aurora::NWScript::Variable kDefaultInt1     ((int32_t)   1);
+static const Aurora::NWScript::Variable kDefaultInt9     ((int32_t)   9);
+static const Aurora::NWScript::Variable kDefaultInt18    ((int32_t)  18);
 
 static const Aurora::NWScript::Variable kDefaultFloatMinus1_0(- 1.0f);
 static const Aurora::NWScript::Variable kDefaultFloat0_0     (  0.0f);
@@ -96,15 +96,15 @@ static const Aurora::NWScript::Variable kDefaultObjectSelf   (&kDefaultValueObje
 
 // TODO: Add the relevant enums to types.h, and use these values.
 
-static const Aurora::NWScript::Variable kDefaultCameraTransitionTypeSnap ((int32)     0);
-static const Aurora::NWScript::Variable kDefaultFalse                    ((int32)     0);
-static const Aurora::NWScript::Variable kDefaultGenderMale               ((int32)     0);
-static const Aurora::NWScript::Variable kDefaultObjectTypeAll            ((int32) 32767);
-static const Aurora::NWScript::Variable kDefaultObjectTypeCreature       ((int32)     1);
-static const Aurora::NWScript::Variable kDefaultPersistentZoneActive     ((int32)     0);
-static const Aurora::NWScript::Variable kDefaultProjectilePathTypeDefault((int32)     0);
-static const Aurora::NWScript::Variable kDefaultTalkVolumeTalk           ((int32)     0);
-static const Aurora::NWScript::Variable kDefaultTrue                     ((int32)     1);
+static const Aurora::NWScript::Variable kDefaultCameraTransitionTypeSnap ((int32_t)     0);
+static const Aurora::NWScript::Variable kDefaultFalse                    ((int32_t)     0);
+static const Aurora::NWScript::Variable kDefaultGenderMale               ((int32_t)     0);
+static const Aurora::NWScript::Variable kDefaultObjectTypeAll            ((int32_t) 32767);
+static const Aurora::NWScript::Variable kDefaultObjectTypeCreature       ((int32_t)     1);
+static const Aurora::NWScript::Variable kDefaultPersistentZoneActive     ((int32_t)     0);
+static const Aurora::NWScript::Variable kDefaultProjectilePathTypeDefault((int32_t)     0);
+static const Aurora::NWScript::Variable kDefaultTalkVolumeTalk           ((int32_t)     0);
+static const Aurora::NWScript::Variable kDefaultTrue                     ((int32_t)     1);
 
 static const Aurora::NWScript::Variable kDefaultFadeSpeedMedium          (2.0f);
 

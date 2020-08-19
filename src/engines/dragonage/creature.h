@@ -98,7 +98,7 @@ private:
 		bool stealable; ///< Can this item be stolen?
 		bool droopable; ///< Does this item drop with the creature's death?
 
-		int32 setNumber; ///< ID of the set the item belongs to.
+		int32_t setNumber; ///< ID of the set the item belongs to.
 	};
 	typedef std::vector<EquipItem> Items;
 
@@ -108,14 +108,14 @@ private:
 	bool _isPC; ///< Is the creature a PC?
 
 	/** The creature's appearance; index into the Appearances MGDA. */
-	uint32 _appearanceID;
+	uint32_t _appearanceID;
 	/** The gender of the creature's model files. */
-	uint8  _appearanceGender;
+	uint8_t  _appearanceGender;
 
 	/** Name of the morph file describing the creature's head. */
 	Common::UString _headMorph;
 	/** Indices into the MGDAs describing the creature's head model parts. */
-	uint32 _partVariation[kPartVariationCount];
+	uint32_t _partVariation[kPartVariationCount];
 
 	/** All item the creature has currently equipped. */
 	Items _items;
@@ -139,9 +139,9 @@ private:
 	void loadModelsHeadList(const Aurora::GDAFile &gda, size_t row, bool loadHair = true);
 
 	Common::UString findEquipModel(InventorySlot slot, const Common::UString &prefix,
-	                               uint8 *armorType = 0) const;
+	                               uint8_t *armorType = 0) const;
 
-	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender);
+	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8_t gender);
 	static Common::UString createModelPart(const Aurora::GDAFile &gda, size_t row,
 	                                       const Common::UString &prefix);
 };

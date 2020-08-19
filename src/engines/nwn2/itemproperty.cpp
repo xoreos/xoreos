@@ -39,7 +39,7 @@ ItemProperty::ItemProperty(const Aurora::GFF3Struct &itemProperty) {
 	load(itemProperty);
 }
 
-ItemProperty::ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value, uint8 costValue) {
+ItemProperty::ItemProperty(ItemPropertyType type, uint16_t subtype, uint8_t param1, uint8_t param1Value, uint8_t costValue) {
 
 	load(type, subtype, param1, param1Value, costValue);
 }
@@ -52,23 +52,23 @@ ItemPropertyType ItemProperty::getItemPropertyType() const {
 	return _type;
 }
 
-uint16 ItemProperty::getItemPropertySubType() const {
+uint16_t ItemProperty::getItemPropertySubType() const {
 	return _subtype;
 }
 
-uint8 ItemProperty::getItemPropertyParam1() const {
+uint8_t ItemProperty::getItemPropertyParam1() const {
 	return _param1;
 }
 
-uint8 ItemProperty::getItemPropertyParam1Value() const {
+uint8_t ItemProperty::getItemPropertyParam1Value() const {
 	return _param1Value;
 }
 
-uint8 ItemProperty::getItemPropertyCostTable() const {
+uint8_t ItemProperty::getItemPropertyCostTable() const {
 	return _costTable;
 }
 
-uint8 ItemProperty::getItemPropertyCostTableValue() const {
+uint8_t ItemProperty::getItemPropertyCostTableValue() const {
 	return _costValue;
 }
 
@@ -118,7 +118,7 @@ void ItemProperty::load(const Aurora::GFF3Struct &gff) {
 	_costValue = gff.getUint("CostValue");
 }
 
-void ItemProperty::load(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value, uint8 costValue) {
+void ItemProperty::load(ItemPropertyType type, uint16_t subtype, uint8_t param1, uint8_t param1Value, uint8_t costValue) {
 
 	_type = type;
 	_subtype = subtype;

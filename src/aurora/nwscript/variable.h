@@ -48,7 +48,7 @@ class EngineType;
 class ObjectReference;
 
 struct ScriptState {
-	uint32 offset;
+	uint32_t offset;
 	std::vector<class Variable> globals;
 	std::vector<class Variable> locals;
 };
@@ -58,7 +58,7 @@ public:
 	typedef std::vector< boost::shared_ptr<Variable> > Array;
 
 	Variable(Type type = kTypeVoid);
-	Variable(int32 value);
+	Variable(int32_t value);
 	Variable(float value);
 	Variable(const Common::UString &value);
 	Variable(Object *value);
@@ -73,7 +73,7 @@ public:
 
 	Variable &operator=(const Variable &var);
 
-	Variable &operator=(int32 value);
+	Variable &operator=(int32_t value);
 	Variable &operator=(float value);
 	Variable &operator=(const Common::UString &value);
 	Variable &operator=(Object *value);
@@ -86,7 +86,7 @@ public:
 
 	Type getType() const;
 
-	int32 getInt() const;
+	int32_t getInt() const;
 	float getFloat() const;
 	Common::UString &getString();
 	const Common::UString &getString() const;
@@ -113,7 +113,7 @@ private:
 	Type _type;
 
 	union {
-		int32 _int;
+		int32_t _int;
 		float _float;
 		Common::UString *_string;
 		ObjectReference *_object;

@@ -153,7 +153,7 @@ void WidgetCheckBox::leave() {
 	}
 }
 
-void WidgetCheckBox::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetCheckBox::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

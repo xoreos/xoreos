@@ -29,7 +29,7 @@
 
 namespace Aurora {
 
-typedef Common::BinSearchValue<uint32, const char *> GDAHeaderHash;
+typedef Common::BinSearchValue<uint32_t, const char *> GDAHeaderHash;
 
 /** All currently known GDA column header strings, together with their CRC32 hashes.
  *
@@ -2243,7 +2243,7 @@ static const GDAHeaderHash kGDAHeaderHashes[] = {
 	{4294639615U, "CameraOffset"                }
 };
 
-const char *findGDAHeader(uint32 hash) {
+const char *findGDAHeader(uint32_t hash) {
 	const GDAHeaderHash *header = Common::binarySearch(kGDAHeaderHashes, ARRAYSIZE(kGDAHeaderHashes), hash);
 	if (!header)
 		return 0;

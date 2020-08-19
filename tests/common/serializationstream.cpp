@@ -33,19 +33,19 @@ GTEST_TEST(SerializationStream, readAndWriteData) {
 
 	Common::SerializationWriteStream serialWriteStream(writeStream);
 
-	uint64 test64 = UINT64_C(0x1122334455667788);
+	uint64_t test64 = UINT64_C(0x1122334455667788);
 	serialWriteStream.readOrWriteUint64LE(UINT64_C(0x1122334455667788));
 	serialWriteStream.readOrWriteUint64LE(test64);
 	serialWriteStream.readOrWriteUint64BE(UINT64_C(0x1122334455667788));
 	serialWriteStream.readOrWriteUint64BE(test64);
 
-	uint32 test32 = 0x11223344;
+	uint32_t test32 = 0x11223344;
 	serialWriteStream.readOrWriteUint32LE(0x11223344);
 	serialWriteStream.readOrWriteUint32LE(test32);
 	serialWriteStream.readOrWriteUint32BE(0x11223344);
 	serialWriteStream.readOrWriteUint32BE(test32);
 
-	uint16 test16 = 0x1122;
+	uint16_t test16 = 0x1122;
 	serialWriteStream.readOrWriteUint16LE(0x1122);
 	serialWriteStream.readOrWriteUint16LE(test16);
 	serialWriteStream.readOrWriteUint16BE(0x1122);

@@ -126,7 +126,7 @@ public:
 	void delayScript(const Common::UString &script,
 	                 const Aurora::NWScript::ScriptState &state,
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
-	                 uint32 delay);
+	                 uint32_t delay);
 
 	void signalUserDefinedEvent(Object *owner, int number);
 
@@ -168,9 +168,9 @@ public:
 	// GUI management
 
 	/** Set the return string for the 'Return to Ebon Hawk' button. */
-	void setReturnStrref(uint32 id);
+	void setReturnStrref(uint32_t id);
 	/** Set the string for the return dialog */
-	void setReturnQueryStrref(uint32 id);
+	void setReturnQueryStrref(uint32_t id);
 	/** Enable or disable the 'Return to Ebon Hawk' button. */
 	void setReturnEnabled(bool enabled);
 
@@ -279,7 +279,7 @@ private:
 		Aurora::NWScript::ObjectReference owner;
 		Aurora::NWScript::ObjectReference triggerer;
 
-		uint32 timestamp;
+		uint32_t timestamp;
 
 		bool operator<(const Action &s) const;
 	};
@@ -346,7 +346,7 @@ private:
 	CameraController _cameraController;
 	RoundController _roundController;
 
-	uint32 _prevTimestamp;
+	uint32_t _prevTimestamp;
 	float _frameTime;
 	bool _inDialog;
 	int _runScriptVar;

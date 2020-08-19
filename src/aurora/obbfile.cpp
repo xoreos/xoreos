@@ -64,29 +64,29 @@ void OBBFile::load(Common::SeekableReadStream &obb) {
 }
 
 void OBBFile::readResList(Common::SeekableReadStream &index) {
-	const uint32 resCount = index.readUint32LE();
-	index.skip(4); // Always 0. Possibly space for uint64?
+	const uint32_t resCount = index.readUint32LE();
+	index.skip(4); // Always 0. Possibly space for uint64_t?
 
 	_iResources.reserve(resCount);
 
-	uint32 resIndex = 0;
-	for (uint32 i = 0; i < resCount; i++) {
-		const uint32 nameLength = index.readUint32LE();
-		index.skip(4); // Always 0. Possibly space for uint64?
+	uint32_t resIndex = 0;
+	for (uint32_t i = 0; i < resCount; i++) {
+		const uint32_t nameLength = index.readUint32LE();
+		index.skip(4); // Always 0. Possibly space for uint64_t?
 
 		const Common::UString name = Common::readStringFixed(index, Common::kEncodingASCII, nameLength);
 
 		IResource iRes;
 
 		iRes.offset = index.readUint32LE();
-		index.skip(4); // Always 0. Possibly space for uint64?
+		index.skip(4); // Always 0. Possibly space for uint64_t?
 
 		iRes.uncompressedSize = index.readUint32LE();
-		index.skip(4); // Always 0. Possibly space for uint64?
+		index.skip(4); // Always 0. Possibly space for uint64_t?
 
 		// Unreliable. See note about the compressed size in getResource()
 		iRes.compressedSize = index.readUint32LE();
-		index.skip(4); // Always 0. Possibly space for uint64?
+		index.skip(4); // Always 0. Possibly space for uint64_t?
 
 		// Entries with a size of 0 are directories. We don't care about directories
 		if (iRes.uncompressedSize == 0)
@@ -154,18 +154,18 @@ const Archive::ResourceList &OBBFile::getResources() const {
 	return _resources;
 }
 
-const OBBFile::IResource &OBBFile::getIResource(uint32 index) const {
+const OBBFile::IResource &OBBFile::getIResource(uint32_t index) const {
 	if (index >= _iResources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }
 
-uint32 OBBFile::getResourceSize(uint32 index) const {
+uint32_t OBBFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).uncompressedSize;
 }
 
-Common::SeekableReadStream *OBBFile::getResource(uint32 index, bool UNUSED(tryNoCopy)) const {
+Common::SeekableReadStream *OBBFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	/* Decompress a single file.
 	 *
 	 * Files in OBB virtual filesystems are split up in zlib compressed chunks.

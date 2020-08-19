@@ -90,7 +90,7 @@ void Highlightable::flipHighlightDelta() {
 
 void Highlightable::incrementColor(float initialR, float initialG, float initialB, float initialA,
                                    float &r, float &g, float &b, float &a) {
-	uint32 time = EventMan.getTimestamp();
+	uint32_t time = EventMan.getTimestamp();
 	float dt = (time - _prevIncTime) / 50.f;
 
 	r = initialR + _deltaR * dt;

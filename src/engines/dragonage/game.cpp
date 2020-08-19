@@ -102,7 +102,7 @@ void Game::runCampaigns() {
 	_campaigns->unload();
 }
 
-void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList &res) {
+void Game::loadResources(const Common::UString &dir, uint32_t priority, ChangeList &res) {
 	indexOptionalDirectory(dir + "/data"           , 0,  0, priority + 10, res);
 	indexOptionalDirectory(dir + "/data/abilities" , 0,  0, priority + 11, res);
 	indexOptionalDirectory(dir + "/data/movies"    , 0,  0, priority + 12, res);
@@ -121,7 +121,7 @@ void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList
 	indexOptionalDirectory(dir + "/override", 0, -1, 0x40000000 | (priority + 499), res);
 }
 
-void Game::loadTexturePack(const Common::UString &dir, uint32 priority,
+void Game::loadTexturePack(const Common::UString &dir, uint32_t priority,
                            ChangeList &res, TextureQuality quality) {
 
 	static const char * const kTextureQualityName[kTextureQualityMAX] = { "high", "medium" };
@@ -132,14 +132,14 @@ void Game::loadTexturePack(const Common::UString &dir, uint32 priority,
 	loadResourceDir(dir + "/textures/" + kTextureQualityName[quality], priority + 300, res);
 }
 
-void Game::loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &res) {
+void Game::loadTalkTables(const Common::UString &dir, uint32_t priority, ChangeList &res) {
 	Aurora::Language language = Aurora::kLanguageInvalid;
 	_engine->getLanguage(language);
 
 	loadTalkTables(dir, priority, res, language);
 }
 
-void Game::loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &res,
+void Game::loadTalkTables(const Common::UString &dir, uint32_t priority, ChangeList &res,
                           Aurora::Language language) {
 
 	if (EventMan.quitRequested())
@@ -166,7 +166,7 @@ void Game::loadTalkTables(const Common::UString &dir, uint32 priority, ChangeLis
 }
 
 void Game::loadTalkTable(const Common::UString &tlk, Aurora::Language language,
-                                    uint32 priority, ChangeList &changes) {
+                                    uint32_t priority, ChangeList &changes) {
 
 	Common::UString tlkM = tlk + DragonAgeEngine::getLanguageString(language);
 	Common::UString tlkF = tlk + DragonAgeEngine::getLanguageString(language) + "_f";
@@ -175,7 +175,7 @@ void Game::loadTalkTable(const Common::UString &tlk, Aurora::Language language,
 	TalkMan.addTable(tlkM, tlkF, false, priority, &changes.back());
 }
 
-void Game::loadResourceDir(const Common::UString &dir, uint32 priority, ChangeList &changes) {
+void Game::loadResourceDir(const Common::UString &dir, uint32_t priority, ChangeList &changes) {
 	if (EventMan.quitRequested())
 		return;
 

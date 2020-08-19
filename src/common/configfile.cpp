@@ -263,7 +263,7 @@ ConfigFile::~ConfigFile() {
 
 bool ConfigFile::isValidName(const UString &name) {
 	for (UString::iterator it = name.begin(); it != name.end(); ++it) {
-		uint32 c = *it;
+		uint32_t c = *it;
 
 		if (UString::isASCII(c) &&
 				(!isalnum(c) && (c != '-') && (c != '_') && (c != '.') && (c != ' ')))
@@ -426,7 +426,7 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 
 	int state = 0;
 	for (UString::iterator l = line.begin(); l != line.end(); ++l) {
-		uint32 c = *l;
+		uint32_t c = *l;
 
 		if (state == 1) {
 			// Collecting comments

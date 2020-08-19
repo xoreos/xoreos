@@ -61,8 +61,8 @@ public:
 
 	void enter();
 	void leave();
-	void mouseUp(uint8 state, float x, float y);
-	virtual void mouseWheel(uint8 state, int x, int y);
+	void mouseUp(uint8_t state, float x, float y);
+	virtual void mouseWheel(uint8_t state, int x, int y);
 
 	// Sound
 

@@ -66,14 +66,14 @@ static const float kLightBlueR = 101.0f / 255.0f;
 static const float kLightBlueG = 176.0f / 255.0f;
 static const float kLightBlueB = 252.0f / 255.0f;
 
-static const uint32 kContinue  = 1741;
-static const uint32 kEndDialog = 1742;
+static const uint32_t kContinue  = 1741;
+static const uint32_t kEndDialog = 1742;
 
 namespace Engines {
 
 namespace NWN {
 
-DialogBox::Reply::Reply(const Common::UString &r, uint32 i) : reply(r), id(i) {
+DialogBox::Reply::Reply(const Common::UString &r, uint32_t i) : reply(r), id(i) {
 }
 
 
@@ -340,7 +340,7 @@ void DialogBox::clearReplies() {
 	_replyCountWidth = 0.0f;
 }
 
-void DialogBox::addReply(const Common::UString &reply, uint32 id) {
+void DialogBox::addReply(const Common::UString &reply, uint32_t id) {
 	_replies.push_back(Reply(reply, id));
 }
 
@@ -430,7 +430,7 @@ void DialogBox::mouseClick(int x, int y) {
 		_pickedReply = _highlightedReply->reply;
 }
 
-void DialogBox::pickReply(uint32 n) {
+void DialogBox::pickReply(uint32_t n) {
 	if (n >= _replyCount) {
 		_pickedReply = _replies.end();
 		return;
@@ -440,7 +440,7 @@ void DialogBox::pickReply(uint32 n) {
 	std::advance(_pickedReply, n);
 }
 
-uint32 DialogBox::getPickedID() const {
+uint32_t DialogBox::getPickedID() const {
 	if (_pickedReply == _replies.end())
 		return Aurora::DLGFile::kInvalidLine;
 
@@ -449,7 +449,7 @@ uint32 DialogBox::getPickedID() const {
 
 void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
 	if (_highlightedReply != _replyLines.end()) {
-		uint32 id = _highlightedReply->reply->id;
+		uint32_t id = _highlightedReply->reply->id;
 
 		for (std::list<ReplyLine>::iterator r = _replyLines.begin();
 		     r != _replyLines.end(); ++r) {
@@ -475,7 +475,7 @@ void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
 	}
 
 	if (_highlightedReply != _replyLines.end()) {
-		uint32 id = _highlightedReply->reply->id;
+		uint32_t id = _highlightedReply->reply->id;
 
 		for (std::list<ReplyLine>::iterator r = _replyLines.begin();
 		     r != _replyLines.end(); ++r) {
@@ -701,7 +701,7 @@ void Dialog::keyPressed(const Events::Event &event) {
 }
 
 void Dialog::checkPicked() {
-	uint32 picked = _dlgBox->getPickedID();
+	uint32_t picked = _dlgBox->getPickedID();
 	if (picked == Aurora::DLGFile::kInvalidLine)
 		return;
 

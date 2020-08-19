@@ -55,7 +55,7 @@ void Trigger::hide() {
 void Trigger::notifyNotSeen() {
 }
 
-void Trigger::createTrap(uint8 trapType, uint32 faction,
+void Trigger::createTrap(uint8_t trapType, uint32_t faction,
                          const Common::UString &disarm,
                          const Common::UString &triggered) {
 	Trap::createTrap(trapType, faction, disarm, triggered);
@@ -117,7 +117,7 @@ void Trigger::loadBlueprint(const Aurora::GFF3Struct &gff) {
 	readScripts(gff);
 }
 
-uint8 Trigger::getReputation(Object *source) const {
+uint8_t Trigger::getReputation(Object *source) const {
 	return getArea()->getFactionReputation(source, _faction);
 }
 

@@ -55,21 +55,21 @@ protected:
 private:
 	/** An audio track's information. */
 	struct AudioInfo {
-		uint16 compression;   ///< The compression method.
-		uint16 channels;      ///< The number of channels.
-		uint32 rate;          ///< The sampling rate.
-		uint16 bitsPerSample; ///< The number of bits per encoded sample.
-		uint16 flags;         ///< Flags.
+		uint16_t compression;   ///< The compression method.
+		uint16_t channels;      ///< The number of channels.
+		uint32_t rate;          ///< The sampling rate.
+		uint16_t bitsPerSample; ///< The number of bits per encoded sample.
+		uint16_t flags;         ///< Flags.
 	};
 
 	class XMVVideoTrack : public VideoTrack {
 	public:
-		XMVVideoTrack(uint32 width, uint32 height, uint32 &timestamp);
+		XMVVideoTrack(uint32_t width, uint32_t height, uint32_t &timestamp);
 
 		bool endOfTrack() const { return _finished; }
 
-		uint32 getWidth() const { return _width; }
-		uint32 getHeight() const { return _height; }
+		uint32_t getWidth() const { return _width; }
+		uint32_t getHeight() const { return _height; }
 		int getCurFrame() const { return _curFrame; }
 		Common::Timestamp getNextFrameStartTime() const;
 
@@ -78,9 +78,9 @@ private:
 		void finish() { _finished = true; }
 
 	private:
-		uint32 _width;
-		uint32 _height;
-		uint32 &_timestamp;
+		uint32_t _width;
+		uint32_t _height;
+		uint32_t &_timestamp;
 		int _curFrame;
 		bool _finished;
 
@@ -128,24 +128,24 @@ private:
 
 	/** A video packet. */
 	struct PacketVideo {
-		uint32 dataSize;   ///< The video data size.
-		uint32 dataOffset; ///< The video data offset within the XMV stream.
+		uint32_t dataSize;   ///< The video data size.
+		uint32_t dataOffset; ///< The video data offset within the XMV stream.
 
-		uint32 frameCount; ///< Number of frames left in this packet.
+		uint32_t frameCount; ///< Number of frames left in this packet.
 
 		/** The size of the current frame. */
-		uint32 currentFrameSize; ///< The size of the current frame.
+		uint32_t currentFrameSize; ///< The size of the current frame.
 		/** The timestamp of when the current frame should be shown. */
-		uint32 currentFrameTimestamp;
+		uint32_t currentFrameTimestamp;
 
 		/** The timestamp of when the current last frame was shown. */
-		uint32 lastFrameTime;
+		uint32_t lastFrameTime;
 	};
 
 	/** An audio packet. */
 	struct PacketAudio {
-		uint32 dataSize;   ///< The audio data size.
-		uint32 dataOffset; ///< The audio data offset within the XMV stream.
+		uint32_t dataSize;   ///< The audio data size.
+		uint32_t dataOffset; ///< The audio data offset within the XMV stream.
 
 		XMVAudioTrack *track; ///< The audio track mapping.
 		AudioInfo *info; ///< The audio info related to this packet.
@@ -174,7 +174,7 @@ private:
 	XMVVideoTrack *_videoTrack;
 
 	/** The audio track count. */
-	uint32 _audioTrackCount;
+	uint32_t _audioTrackCount;
 
 	/** The current packet. */
 	Packet _curPacket;

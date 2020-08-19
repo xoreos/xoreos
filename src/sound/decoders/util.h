@@ -30,22 +30,22 @@
 
 namespace Sound {
 
-// Convert one float sample into a int16 sample
-static inline int16 floatToInt16(float src) {
-	return (int16) CLIP<int>((int) floor(src + 0.5), -32768, 32767);
+// Convert one float sample into a int16_t sample
+static inline int16_t floatToInt16(float src) {
+	return (int16_t) CLIP<int>((int) floor(src + 0.5), -32768, 32767);
 }
 
-// Convert planar float samples into interleaved int16 samples
-static inline void floatToInt16Interleave(int16 *dst, const float **src,
-                                          uint32 length, uint8 channels) {
+// Convert planar float samples into interleaved int16_t samples
+static inline void floatToInt16Interleave(int16_t *dst, const float **src,
+                                          uint32_t length, uint8_t channels) {
 	if (channels == 2) {
-		for (uint32 i = 0; i < length; i++) {
+		for (uint32_t i = 0; i < length; i++) {
 			dst[2 * i    ] = floatToInt16(src[0][i]);
 			dst[2 * i + 1] = floatToInt16(src[1][i]);
 		}
 	} else {
-		for (uint8 c = 0; c < channels; c++)
-			for (uint32 i = 0, j = c; i < length; i++, j += channels)
+		for (uint8_t c = 0; c < channels; c++)
+			for (uint32_t i = 0, j = c; i < length; i++, j += channels)
 				dst[j] = floatToInt16(src[c][i]);
 	}
 }

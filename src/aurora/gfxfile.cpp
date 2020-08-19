@@ -36,7 +36,7 @@
 
 namespace Aurora {
 
-static const uint32 kCFXID = MKTAG('C', 'F', 'X', 0x08);
+static const uint32_t kCFXID = MKTAG('C', 'F', 'X', 0x08);
 
 enum TagType {
 	kTagTypeEnd                     = 0,
@@ -74,7 +74,7 @@ enum TagType {
 	kTagTypeGFXDefineExternalImage2 = 1009
 };
 
-GFXCharacter GFXCharacter::createSprite(uint16 id, Sprite sprite) {
+GFXCharacter GFXCharacter::createSprite(uint16_t id, Sprite sprite) {
 	GFXCharacter character(id, kSprite);
 
 	character._value = sprite;
@@ -82,7 +82,7 @@ GFXCharacter GFXCharacter::createSprite(uint16 id, Sprite sprite) {
 	return character;
 }
 
-GFXCharacter GFXCharacter::createShape(uint16 id, Shape shape) {
+GFXCharacter GFXCharacter::createShape(uint16_t id, Shape shape) {
 	GFXCharacter character(id, kShape);
 
 	character._value = shape;
@@ -90,7 +90,7 @@ GFXCharacter GFXCharacter::createShape(uint16 id, Shape shape) {
 	return character;
 }
 
-GFXCharacter GFXCharacter::createFont(uint16 id, Font font) {
+GFXCharacter GFXCharacter::createFont(uint16_t id, Font font) {
 	GFXCharacter character(id, kFont);
 
 	character._value = font;
@@ -98,7 +98,7 @@ GFXCharacter GFXCharacter::createFont(uint16 id, Font font) {
 	return character;
 }
 
-GFXCharacter GFXCharacter::createEditText(uint16 id, EditText editText) {
+GFXCharacter GFXCharacter::createEditText(uint16_t id, EditText editText) {
 	GFXCharacter character(id, kEditText);
 
 	character._value = editText;
@@ -106,7 +106,7 @@ GFXCharacter GFXCharacter::createEditText(uint16 id, EditText editText) {
 	return character;
 }
 
-GFXCharacter GFXCharacter::createExternalImage(uint16 id, ExternalImage externalImage) {
+GFXCharacter GFXCharacter::createExternalImage(uint16_t id, ExternalImage externalImage) {
 	GFXCharacter character(id, kExternalImage);
 
 	character._value = externalImage;
@@ -114,14 +114,14 @@ GFXCharacter GFXCharacter::createExternalImage(uint16 id, ExternalImage external
 	return character;
 }
 
-GFXCharacter::GFXCharacter(uint16 id, CharacterType type) : _id(id), _type(type) {
+GFXCharacter::GFXCharacter(uint16_t id, CharacterType type) : _id(id), _type(type) {
 }
 
 GFXCharacter::CharacterType GFXCharacter::getType() const {
 	return _type;
 }
 
-uint16 GFXCharacter::getId() const {
+uint16_t GFXCharacter::getId() const {
 	return _id;
 }
 
@@ -205,16 +205,16 @@ GFXFile::GFXFile(const Common::UString &resref, Aurora::ActionScript::AVM &avm) 
 	load(gfx, avm);
 }
 
-uint16 GFXFile::getExportedAssetId(const Common::UString &id) {
-	std::map<Common::UString, uint16>::iterator iter = _exportTable.find(id);
+uint16_t GFXFile::getExportedAssetId(const Common::UString &id) {
+	std::map<Common::UString, uint16_t>::iterator iter = _exportTable.find(id);
 	if (iter == _exportTable.end())
 		throw Common::Exception("Export entry %s not found", id.c_str());
 
 	return iter->second;
 }
 
-GFXCharacter GFXFile::getCharacter(uint16 id) {
-	std::map<uint16, GFXCharacter>::iterator iter = _characters.find(id);
+GFXCharacter GFXFile::getCharacter(uint16_t id) {
+	std::map<uint16_t, GFXCharacter>::iterator iter = _characters.find(id);
 	if (iter == _characters.end())
 		throw Common::Exception("Character entry %i not found", id);
 
@@ -225,11 +225,11 @@ void GFXFile::load(Common::SeekableReadStream *gfx, Aurora::ActionScript::AVM &a
 	/* Read the magic id, which corresponds to CFX, where the C marks a zlib compression, and an appended  0x08,
 	 * which corresponds to the SWF version 8.
 	 */
-	const uint32 magicId = gfx->readUint32BE();
+	const uint32_t magicId = gfx->readUint32BE();
 	if (magicId != kCFXID)
 		throw Common::Exception("Invalid gfx magic id");
 
-	/* The next uint32 should determine the total size of the compressed data, but since this value is not reliable
+	/* The next uint32_t should determine the total size of the compressed data, but since this value is not reliable
 	 * we skip it and decompress the file without knowing the output size.
 	 */
 	gfx->skip(4);
@@ -331,7 +331,7 @@ void GFXFile::readHeader() {
 }
 
 void GFXFile::readDefineShape(byte version) {
-	const uint16 shapeId = _gfx->readUint16LE();
+	const uint16_t shapeId = _gfx->readUint16LE();
 	GFXCharacter::Shape shape;
 
 	shape.bounds = readRectangle();
@@ -345,9 +345,9 @@ void GFXFile::readBackgroundColor() {
 }
 
 void GFXFile::readExportAssets() {
-	const uint16 count = _gfx->readUint16LE();
+	const uint16_t count = _gfx->readUint16LE();
 	for (unsigned int i = 0; i < count; ++i) {
-		uint16 id = _gfx->readUint16LE();
+		uint16_t id = _gfx->readUint16LE();
 		Common::UString name = readNullTerminatedString();
 
 		_exportTable[name] = id;
@@ -363,12 +363,12 @@ void GFXFile::readImportAssets(ActionScript::AVM &avm) {
 	reserved = _gfx->readByte();
 	assert(reserved == 0);
 
-	const uint16 count = _gfx->readUint16LE();
+	const uint16_t count = _gfx->readUint16LE();
 	for (unsigned int i = 0; i < count; ++i) {
-		uint16 tag = _gfx->readUint16LE();
+		uint16_t tag = _gfx->readUint16LE();
 		Common::UString name = readNullTerminatedString();
 
-		uint16 exportId = import.getExportedAssetId(name);
+		uint16_t exportId = import.getExportedAssetId(name);
 
 		_characters.insert(std::make_pair(tag, import.getCharacter(exportId)));
 	}
@@ -385,7 +385,7 @@ void GFXFile::readFileAttributes() {
 	bitStream.skip(2); // Reserved bits
 	const bool useNetwork = bitStream.getBit() == 1;
 
-	const uint32 zeros = bitStream.getBits(24);
+	const uint32_t zeros = bitStream.getBits(24);
 	assert(zeros == 0);
 
 	if (useDirectBlit)
@@ -401,7 +401,7 @@ void GFXFile::readFileAttributes() {
 }
 
 void GFXFile::readDefineSprite() {
-	uint16 spriteId = _gfx->readUint16LE();
+	uint16_t spriteId = _gfx->readUint16LE();
 
 	GFXCharacter::Sprite sprite;
 	sprite.frameCount = _gfx->readUint16LE();
@@ -523,7 +523,7 @@ GFXControl GFXFile::readPlaceObject(byte version) {
 }
 
 void GFXFile::readDefineFont() {
-	const uint16 fontId = _gfx->readUint16LE();
+	const uint16_t fontId = _gfx->readUint16LE();
 	GFXCharacter::Font font;
 
 	Common::BitStream8MSB bitStream(_gfx.get());
@@ -555,11 +555,11 @@ void GFXFile::readDefineFont() {
 
 	font.name = readLengthPrefixedString();
 
-	const uint16 numGlyphs = _gfx->readUint16LE();
+	const uint16_t numGlyphs = _gfx->readUint16LE();
 
 	const size_t startOffsetTable = _gfx->pos();
 
-	std::vector<uint32> offsetTable;
+	std::vector<uint32_t> offsetTable;
 	for (unsigned int i = 0; i < numGlyphs; ++i) {
 		if (fontFlagWideOffsets) {
 			offsetTable.push_back(_gfx->readUint32LE());
@@ -568,7 +568,7 @@ void GFXFile::readDefineFont() {
 		}
 	}
 
-	uint32 codeTableOffset;
+	uint32_t codeTableOffset;
 	if (fontFlagWideOffsets)
 		codeTableOffset = _gfx->readUint32LE();
 	else
@@ -582,13 +582,13 @@ void GFXFile::readDefineFont() {
 
 	assert(codeTableOffset == _gfx->pos() - startOffsetTable);
 
-	std::vector<uint16> codeTable;
+	std::vector<uint16_t> codeTable;
 	for (unsigned int i = 0; i < numGlyphs; ++i) {
 		codeTable.push_back(_gfx->readUint16LE());
 	}
 
 	std::vector<Common::Rect> bounds;
-	std::vector<int16> advance;
+	std::vector<int16_t> advance;
 	std::vector<GFXCharacter::KerningCode> kerningCodes;
 	if (fontFlagHasLayout) {
 		font.fontAscent = _gfx->readUint16LE();
@@ -603,7 +603,7 @@ void GFXFile::readDefineFont() {
 			bounds.push_back(readRectangle());
 		}
 
-		const uint16 kerningCount = _gfx->readUint16LE();
+		const uint16_t kerningCount = _gfx->readUint16LE();
 		kerningCodes.resize(kerningCount);
 		for (unsigned int i = 0; i < kerningCount; ++i) {
 			if (fontFlagWideCodes) {
@@ -640,7 +640,7 @@ void GFXFile::readDefineFont() {
 }
 
 void GFXFile::readDefineEditText() {
-	const uint16 characterId = _gfx->readUint16LE();
+	const uint16_t characterId = _gfx->readUint16LE();
 	GFXCharacter::EditText editText;
 
 	editText.bounds = readRectangle();
@@ -750,11 +750,11 @@ Aurora::ActionScript::ASBuffer *GFXFile::readAction() {
 void GFXFile::readGFXExporterInfo(RecordHeader header) {
 	const size_t oldPos = _gfx->pos();
 
-	const uint16 version = _gfx->readUint16LE();
+	const uint16_t version = _gfx->readUint16LE();
 	if (version > 0x010A)
 		_gfx->skip(4);
 
-	const uint16 bitmapFormat = _gfx->readUint16LE();
+	const uint16_t bitmapFormat = _gfx->readUint16LE();
 	assert(bitmapFormat == 14);
 
 	const byte prefixLen = _gfx->readByte();
@@ -763,7 +763,7 @@ void GFXFile::readGFXExporterInfo(RecordHeader header) {
 	const Common::UString swfName = readLengthPrefixedString();
 
 	if (_gfx->pos() - oldPos < header.tagLength) {
-		uint16 numCodeOffsets = _gfx->readUint16LE();
+		uint16_t numCodeOffsets = _gfx->readUint16LE();
 		for (unsigned int i = 0; i < numCodeOffsets; ++i) {
 			_gfx->skip(4);
 		}
@@ -773,7 +773,7 @@ void GFXFile::readGFXExporterInfo(RecordHeader header) {
 void GFXFile::readGFXDefineExternalImage(RecordHeader header, byte version) {
 	const size_t oldPos = _gfx->pos();
 
-	uint16 id;
+	uint16_t id;
 	if (version == 0)
 		id = _gfx->readUint16LE();
 	else
@@ -805,7 +805,7 @@ GFXFile::RecordHeader GFXFile::readRecordHeader() {
 	recordHeader.tagType = bitStream.getBits(10);
 	recordHeader.tagLength = bitStream.getBits(6);
 
-	// if the length is 0x3f, we have a long record header and read an the next uint32 as length
+	// if the length is 0x3f, we have a long record header and read an the next uint32_t as length
 	if (recordHeader.tagLength == 63)
 		recordHeader.tagLength = _gfx->readUint32LE();
 
@@ -836,19 +836,19 @@ glm::mat3x2 GFXFile::readMatrix() {
 
 	const bool hasScale = bitStream.getBit() == 1;
 	if (hasScale) {
-		uint32 numScaleBits = bitStream.getBits(5);
-		matrix[0][0] = readNintendoFixedPoint(bitStream.getBits(numScaleBits), numScaleBits > 16, MAX<int32>(0, numScaleBits % 16 - 1), MIN<uint32>(numScaleBits, 16));
-		matrix[1][1] = readNintendoFixedPoint(bitStream.getBits(numScaleBits), numScaleBits > 16, MAX<int32>(0, numScaleBits % 16 - 1), MIN<uint32>(numScaleBits, 16));
+		uint32_t numScaleBits = bitStream.getBits(5);
+		matrix[0][0] = readNintendoFixedPoint(bitStream.getBits(numScaleBits), numScaleBits > 16, MAX<int32_t>(0, numScaleBits % 16 - 1), MIN<uint32_t>(numScaleBits, 16));
+		matrix[1][1] = readNintendoFixedPoint(bitStream.getBits(numScaleBits), numScaleBits > 16, MAX<int32_t>(0, numScaleBits % 16 - 1), MIN<uint32_t>(numScaleBits, 16));
 	}
 
 	const bool hasRotate = bitStream.getBit() == 1;
 	if (hasRotate) {
-		uint32 numRotateBits = bitStream.getBits(5);
+		uint32_t numRotateBits = bitStream.getBits(5);
 		matrix[1][0] = bitStream.getBits(numRotateBits);
 		matrix[0][1] = bitStream.getBits(numRotateBits);
 	}
 
-	const uint32 numTranslateBits = bitStream.getBits(5);
+	const uint32_t numTranslateBits = bitStream.getBits(5);
 	matrix[2][0] = read2ComplementValue(bitStream, numTranslateBits) / 20;
 	matrix[2][1] = read2ComplementValue(bitStream, numTranslateBits) / 20;
 
@@ -874,7 +874,7 @@ glm::u8vec4 GFXFile::readRGBA() {
 
 std::vector<GFXCharacter::FillStyle> GFXFile::readFillStyleArray(byte version) {
 	std::vector<GFXCharacter::FillStyle> fillStyleArray;
-	uint16 fillStyleCount = _gfx->readByte();
+	uint16_t fillStyleCount = _gfx->readByte();
 	if (fillStyleCount == 0xFF)
 		fillStyleCount = _gfx->readUint16LE();
 
@@ -910,9 +910,9 @@ GFXCharacter::FillStyle GFXFile::readFillStyle(byte version) {
 
 			gradient.spreadMode = bitStream.getBits(2);
 			gradient.interpolationMode = bitStream.getBits(2);
-			uint32 numGradients = bitStream.getBits(4);
+			uint32_t numGradients = bitStream.getBits(4);
 
-			for (uint32 i = 0; i < numGradients; ++i) {
+			for (uint32_t i = 0; i < numGradients; ++i) {
 				gradient.records.push_back(readGradientRecord(version));
 			}
 
@@ -937,7 +937,7 @@ GFXCharacter::FillStyle GFXFile::readFillStyle(byte version) {
 }
 
 std::vector<GFXCharacter::LineStyle> GFXFile::readLineStyleArray(byte version) {
-	uint16 lineStyleCount = _gfx->readByte();
+	uint16_t lineStyleCount = _gfx->readByte();
 	std::vector<GFXCharacter::LineStyle> lineStyleArray;
 	if (lineStyleCount == 0xFF)
 		lineStyleCount = _gfx->readUint16LE();
@@ -1027,7 +1027,7 @@ std::vector<GFXCharacter::ShapeRecord> GFXFile::readShape(byte version, bool wit
 		// Edge record.
 		if (type) {
 			const bool straightEdge = bitStream.getBit() == 1;
-			uint32 numBits = bitStream.getBits(4);
+			uint32_t numBits = bitStream.getBits(4);
 
 			if (straightEdge) {
 				const bool generalLine = bitStream.getBit() == 1;
@@ -1069,7 +1069,7 @@ std::vector<GFXCharacter::ShapeRecord> GFXFile::readShape(byte version, bool wit
 			}
 
 			if (stateFillStyle0) {
-				const uint32 index = bitStream.getBits(numFillBits);
+				const uint32_t index = bitStream.getBits(numFillBits);
 				if (!fillStyles.empty()) {
 					if (index)
 						record.style.fillStyle0 = fillStyles[index - 1];
@@ -1079,7 +1079,7 @@ std::vector<GFXCharacter::ShapeRecord> GFXFile::readShape(byte version, bool wit
 			}
 
 			if (stateFillStyle1) {
-				const uint32 index = bitStream.getBits(numFillBits);
+				const uint32_t index = bitStream.getBits(numFillBits);
 				if (!fillStyles.empty()) {
 					if (index)
 						record.style.fillStyle1 = fillStyles[index - 1];
@@ -1089,7 +1089,7 @@ std::vector<GFXCharacter::ShapeRecord> GFXFile::readShape(byte version, bool wit
 			}
 
 			if (stateLineStyle) {
-				const uint32 index = bitStream.getBits(numLineBits);
+				const uint32_t index = bitStream.getBits(numLineBits);
 				if (!lineStyles.empty()) {
 					if (!index)
 						record.style.lineStyle = GFXCharacter::LineStyle();
@@ -1128,10 +1128,10 @@ Common::UString GFXFile::readLengthPrefixedString() {
 	return Common::readStringFixed(*_gfx, Common::kEncodingASCII, length);
 }
 
-int32 GFXFile::read2ComplementValue(Common::BitStream &bitStream, size_t n) {
-	const uint32 v = bitStream.getBits(n);
-	const uint32 sign = v >> (n - 1) << (n - 1);
-	const int32 value = -sign + (v ^ sign);
+int32_t GFXFile::read2ComplementValue(Common::BitStream &bitStream, size_t n) {
+	const uint32_t v = bitStream.getBits(n);
+	const uint32_t sign = v >> (n - 1) << (n - 1);
+	const int32_t value = -sign + (v ^ sign);
 	return value;
 }
 

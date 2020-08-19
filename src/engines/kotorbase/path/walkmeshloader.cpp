@@ -43,10 +43,10 @@ void WalkmeshLoader::load(Aurora::FileType fileType,
                           const Common::UString &resRef,
                           const glm::mat4 &transform,
                           std::vector<float> &vertices,
-                          std::vector<uint32> &faces,
-                          std::vector<uint32> &faceTypes,
-                          std::vector<uint32> &adjFaces,
-                          std::map<uint32, uint32> &adjRooms,
+                          std::vector<uint32_t> &faces,
+                          std::vector<uint32_t> &faceTypes,
+                          std::vector<uint32_t> &adjFaces,
+                          std::map<uint32_t, uint32_t> &adjRooms,
                           Pathfinding *pathfinding) {
 
 	_pathfinding = pathfinding;
@@ -64,10 +64,10 @@ void WalkmeshLoader::load(Aurora::FileType fileType,
 
 		/** Header format:
 		 *
-		 *  uint8[8]  - BWM version
-		 *  uint32    - walkmesh type
-		 *  uint8[48] - reserved
-		 *  float[3]  - position
+		 *  uint8_t[8]  - BWM version
+		 *  uint32_t    - walkmesh type
+		 *  uint8_t[48] - reserved
+		 *  float[3]    - position
 		 */
 
 		if (stream->readUint32BE() != MKTAG('B', 'W', 'M', ' ') ||
@@ -76,22 +76,22 @@ void WalkmeshLoader::load(Aurora::FileType fileType,
 
 		stream->skip(64);
 
-		const uint32 vertexCount = stream->readUint32LE();
+		const uint32_t vertexCount = stream->readUint32LE();
 		if (vertexCount == 0)
 			return;
 
-		const uint32 vertexOffset   = stream->readUint32LE();
-		const uint32 faceCount      = stream->readUint32LE();
-		const uint32 faceOffset     = stream->readUint32LE();
-		const uint32 faceTypeOffset = stream->readUint32LE();
+		const uint32_t vertexOffset   = stream->readUint32LE();
+		const uint32_t faceCount      = stream->readUint32LE();
+		const uint32_t faceOffset     = stream->readUint32LE();
+		const uint32_t faceTypeOffset = stream->readUint32LE();
 		stream->skip(8);
-		const uint32 AABBCount   = stream->readUint32LE();
-		const uint32 AABBsOffset = stream->readUint32LE();
+		const uint32_t AABBCount   = stream->readUint32LE();
+		const uint32_t AABBsOffset = stream->readUint32LE();
 		stream->skip(4);
-		const uint32 faceAdjCount     = stream->readUint32LE();
-		const uint32 faceAdjOffset    = stream->readUint32LE();
-		const uint32 perimEdgesCount  = stream->readUint32LE();
-		const uint32 perimEdgesOffset = stream->readUint32LE();
+		const uint32_t faceAdjCount     = stream->readUint32LE();
+		const uint32_t faceAdjOffset    = stream->readUint32LE();
+		const uint32_t perimEdgesCount  = stream->readUint32LE();
+		const uint32_t perimEdgesOffset = stream->readUint32LE();
 
 		const size_t prevVertexCount = vertices.size() / 3;
 		const size_t prevFaceCount = faces.size() / 3;
@@ -117,9 +117,9 @@ Common::AABBNode *WalkmeshLoader::getAABB() {
 }
 
 void WalkmeshLoader::appendFaceTypes(Common::SeekableReadStream &stream,
-                                     std::vector<uint32> &faceTypes,
-                                     uint32 faceCount,
-                                     uint32 faceTypeOffset) {
+                                     std::vector<uint32_t> &faceTypes,
+                                     uint32_t faceCount,
+                                     uint32_t faceTypeOffset) {
 	stream.seek(faceTypeOffset);
 
 	const size_t prevFaceCount = faceTypes.size();
@@ -135,10 +135,10 @@ void WalkmeshLoader::appendFaceTypes(Common::SeekableReadStream &stream,
 }
 
 void WalkmeshLoader::appendFaces(Common::SeekableReadStream &stream,
-                                 std::vector<uint32> &faces,
+                                 std::vector<uint32_t> &faces,
                                  size_t prevVertexCount,
-                                 uint32 faceCount,
-                                 uint32 faceOffset) {
+                                 uint32_t faceCount,
+                                 uint32_t faceOffset) {
 	stream.seek(faceOffset);
 
 	const size_t prevFaceCount = faces.size() / 3;
@@ -153,15 +153,15 @@ void WalkmeshLoader::appendFaces(Common::SeekableReadStream &stream,
 }
 
 void WalkmeshLoader::appendAdjFaces(Common::SeekableReadStream &stream,
-                                    std::vector<uint32> &adjFaces,
+                                    std::vector<uint32_t> &adjFaces,
                                     size_t prevFaceCount,
-                                    uint32 faceAdjCount,
-                                    uint32 faceAdjOffset) {
+                                    uint32_t faceAdjCount,
+                                    uint32_t faceAdjOffset) {
 	stream.seek(faceAdjOffset);
 
-	for (uint32 a = 0; a < faceAdjCount; ++a) {
-		for (uint32 i = 0; i < 3; ++i) {
-			const uint32 edge = stream.readSint32LE();
+	for (uint32_t a = 0; a < faceAdjCount; ++a) {
+		for (uint32_t i = 0; i < 3; ++i) {
+			const uint32_t edge = stream.readSint32LE();
 			// Map edge to face.
 			if (edge < UINT32_MAX)
 				adjFaces[_walkableFaces[a] * 3 + i] = (edge + (2 - edge % 3)) / 3 + prevFaceCount;
@@ -181,8 +181,8 @@ void WalkmeshLoader::multiply(const float *v, const glm::mat4 &m, float *rv) con
 
 void WalkmeshLoader::appendVertices(Common::SeekableReadStream &stream,
                                     std::vector<float> &vertices,
-                                    uint32 vertexCount,
-                                    uint32 vertexOffset,
+                                    uint32_t vertexCount,
+                                    uint32_t vertexOffset,
                                     const glm::mat4 &transform) {
 	stream.seek(vertexOffset);
 
@@ -190,7 +190,7 @@ void WalkmeshLoader::appendVertices(Common::SeekableReadStream &stream,
 	const size_t totalVertexCount = prevVertexCount + vertexCount;
 	vertices.resize(vertices.size() + 3 * vertexCount);
 
-	for (uint32 i = prevVertexCount; i < totalVertexCount; ++i) {
+	for (uint32_t i = prevVertexCount; i < totalVertexCount; ++i) {
 		float v[3];
 		v[0] = stream.readIEEEFloatLE();
 		v[1] = stream.readIEEEFloatLE();
@@ -206,38 +206,38 @@ void WalkmeshLoader::appendVertices(Common::SeekableReadStream &stream,
 }
 
 void WalkmeshLoader::appendPerimEdges(Common::SeekableReadStream &stream,
-                                      std::map<uint32, uint32> &adjRooms,
-                                      uint32 perimEdgeCount, uint32 perimEdgeOffset) {
+                                      std::map<uint32_t, uint32_t> &adjRooms,
+                                      uint32_t perimEdgeCount, uint32_t perimEdgeOffset) {
 	stream.seek(perimEdgeOffset);
-	for (uint32 pe = 0; pe < perimEdgeCount; ++pe) {
-		uint32 perimetricEdge = stream.readUint32LE();
+	for (uint32_t pe = 0; pe < perimEdgeCount; ++pe) {
+		uint32_t perimetricEdge = stream.readUint32LE();
 		adjRooms[perimetricEdge] = stream.readUint32LE();
 	}
 }
 
 Common::AABBNode *WalkmeshLoader::getAABB(Common::SeekableReadStream &stream,
-                                          uint32 nodeOffset, uint32 AABBsOffset,
+                                          uint32_t nodeOffset, uint32_t AABBsOffset,
                                           size_t prevFaceCount) {
 	stream.seek(nodeOffset);
 
 	float min[3], max[3];
-	for (uint8 m = 0; m < 3; ++m)
+	for (uint8_t m = 0; m < 3; ++m)
 		min[m] = stream.readIEEEFloatLE();
-	for (uint8 m = 0; m < 3; ++m)
+	for (uint8_t m = 0; m < 3; ++m)
 		max[m] = stream.readIEEEFloatLE();
 
-	const int32 relatedFace = stream.readSint32LE();
+	const int32_t relatedFace = stream.readSint32LE();
 	stream.skip(4); // Unknown
 	stream.readUint32LE(); // Plane
-	const uint32 leftOffset = stream.readUint32LE();
-	const uint32 rightOffset = stream.readUint32LE();
+	const uint32_t leftOffset = stream.readUint32LE();
+	const uint32_t rightOffset = stream.readUint32LE();
 
 	// Children always come as pair.
 	if (relatedFace >= 0)
 		return new Common::AABBNode(min, max, relatedFace + prevFaceCount);
 
 	// 44 is the size of an AABBNode.
-	const uint32 AABBNodeSize = 44;
+	const uint32_t AABBNodeSize = 44;
 	Common::AABBNode *leftNode = getAABB(stream, leftOffset * AABBNodeSize + AABBsOffset,
 	                                     AABBsOffset, prevFaceCount);
 	Common::AABBNode *rightNode = getAABB(stream, rightOffset * AABBNodeSize + AABBsOffset,

@@ -92,13 +92,13 @@ void AVM::setExternalInterface(ExternalHandler *handler) {
 	_handler = handler;
 }
 
-void AVM::pushRegisters(uint8 n) {
+void AVM::pushRegisters(uint8_t n) {
 	for (unsigned int i = 1; i < n; ++i) {
 		_registers[i].push(Variable());
 	}
 }
 
-void AVM::popRegisters(uint8 n) {
+void AVM::popRegisters(uint8_t n) {
 	for (unsigned int i = 1; i < n; ++i) {
 		_registers[i].pop();
 	}
@@ -213,7 +213,7 @@ void AVM::startTime() {
 	_startTime = _handler->getTime();
 }
 
-uint32 AVM::getTime() {
+uint32_t AVM::getTime() {
 	if (!_handler)
 		return 0;
 

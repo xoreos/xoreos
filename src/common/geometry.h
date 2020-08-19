@@ -78,7 +78,7 @@ static inline bool intersectSegmentPoint2D(glm::vec2 start, glm::vec2 end, glm::
 }
 
 /** Find the intersection between two segments. */
-static inline uint32 intersectSegments2D(const glm::vec2 &startA, const glm::vec2 &endA,
+static inline uint32_t intersectSegments2D(const glm::vec2 &startA, const glm::vec2 &endA,
                                          const glm::vec2 &startB, const glm::vec2 &endB,
                                          glm::vec2 &intersectA, glm::vec2 &intersectB) {
 	// From http://geomalgorithms.com/a05-_intersect-1.html.
@@ -225,7 +225,7 @@ static inline bool intersectBoxTriangle3D(const glm::vec3 &min, const glm::vec3 
 	std::vector<glm::vec3> triangle = {vertA, vertB, vertC};
 	std::vector<glm::vec3> box = {min, max};
 
-	for (uint8 i = 0; i < 3; ++i) {
+	for (uint8_t i = 0; i < 3; ++i) {
 		projectOnAxis(triangle, boxNormals[i], triangleMin, triangleMax);
 		if (triangleMax < min[i] || triangleMin > max[i])
 			return false;
@@ -242,8 +242,8 @@ static inline bool intersectBoxTriangle3D(const glm::vec3 &min, const glm::vec3 
 	// Test the nine edge cross-products.
 	std::vector<glm::vec3> triangleEdges = {vertA - vertB, vertB - vertC, vertC - vertA};
 
-	for (uint8 i = 0; i < 3; ++i) {
-		for (uint8 j = 0; j < 3; ++j)	{
+	for (uint8_t i = 0; i < 3; ++i) {
+		for (uint8_t j = 0; j < 3; ++j)	{
 			// The box normals are the same as it's edge tangents.
 			const glm::vec3 axis = glm::cross(triangleEdges[i], boxNormals[j]);
 			projectOnAxis(box, axis, boxMin, boxMax);

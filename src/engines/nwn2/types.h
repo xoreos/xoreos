@@ -555,34 +555,34 @@ enum Feat {
 	kFeatHistoryVeteran = 2247,
 };
 
-static const uint32 kRaceInvalid    =  28;
-static const uint32 kSubRaceInvalid = 255;
-static const uint32 kClassInvalid   = 255;
+static const uint32_t kRaceInvalid    =  28;
+static const uint32_t kSubRaceInvalid = 255;
+static const uint32_t kClassInvalid   = 255;
 
 // ItemProperty modifier range limits
-static const uint8  kMaxAbilityBonus   = 12;
-static const uint8  kMaxAbilityPenalty = 10;
-static const uint8  kMaxACBonus        = 20;
-static const uint8  kMaxACPenalty      =  5;
-static const uint16 kMaxAttackBonus    = 20;
-static const uint8  kMaxAttackPenalty  =  5;
-static const uint8  kMaxDamagePenalty  =  5;
-static const uint16 kMaxDamageType     =  2;
-static const uint8  kMaxEnhanceBonus   = 20;
-static const uint16 kMaxEnhancePenalty =  5;
-static const uint8  kMaxHealersKit     = 12;
-static const uint8  kMaxRangeStrMod    = 20;
-static const uint8  kMaxRegeneration   = 20;
-static const uint8  kMaxSaveBonus      = 20;
-static const uint8  kMaxSavePenalty    = 20;
-static const uint8  kMaxSkillBonus     = 50;
-static const uint8  kMaxSkillPenalty   = 10;
-static const uint8  kMaxSpellLevel     =  9;
-static const uint8  kMaxThievesTools   = 12;
-static const uint8  kMaxTurnResist     = 50;
+static const uint8_t  kMaxAbilityBonus   = 12;
+static const uint8_t  kMaxAbilityPenalty = 10;
+static const uint8_t  kMaxACBonus        = 20;
+static const uint8_t  kMaxACPenalty      =  5;
+static const uint16_t kMaxAttackBonus    = 20;
+static const uint8_t  kMaxAttackPenalty  =  5;
+static const uint8_t  kMaxDamagePenalty  =  5;
+static const uint16_t kMaxDamageType     =  2;
+static const uint8_t  kMaxEnhanceBonus   = 20;
+static const uint16_t kMaxEnhancePenalty =  5;
+static const uint8_t  kMaxHealersKit     = 12;
+static const uint8_t  kMaxRangeStrMod    = 20;
+static const uint8_t  kMaxRegeneration   = 20;
+static const uint8_t  kMaxSaveBonus      = 20;
+static const uint8_t  kMaxSavePenalty    = 20;
+static const uint8_t  kMaxSkillBonus     = 50;
+static const uint8_t  kMaxSkillPenalty   = 10;
+static const uint8_t  kMaxSpellLevel     =  9;
+static const uint8_t  kMaxThievesTools   = 12;
+static const uint8_t  kMaxTurnResist     = 50;
 
-Alignment getAlignmentLawChaos(uint8 lawChaos);
-Alignment getAlignmentGoodEvil(uint8 goodEvil);
+Alignment getAlignmentLawChaos(uint8_t lawChaos);
+Alignment getAlignmentGoodEvil(uint8_t goodEvil);
 
 } // End of namespace NWN2
 

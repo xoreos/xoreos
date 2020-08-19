@@ -49,7 +49,7 @@ public:
 
 	void setPosition(float x, float y, float z);
 
-	void mouseDown(uint8 state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
 
 	float getWidth () const;
 	float getHeight() const;
@@ -79,7 +79,7 @@ class WidgetListItemButton : public WidgetListItemBaseButton {
 public:
 	WidgetListItemButton(::Engines::GUI &gui, const Common::UString &button,
 	                     const Common::UString &text, const Common::UString &icon,
-	                     uint32 otherButtons = 0x04,
+	                     uint32_t otherButtons = 0x04,
 	                     const Common::UString &soundClick = "gui_button");
 	~WidgetListItemButton();
 
@@ -88,8 +88,8 @@ public:
 
 	void setPosition(float x, float y, float z);
 
-	void mouseDown(uint8 state, float x, float y);
-	void mouseUp(uint8 state, float x, float y);
+	void mouseDown(uint8_t state, float x, float y);
+	void mouseUp(uint8_t state, float x, float y);
 
 	void enter();
 	void leave();

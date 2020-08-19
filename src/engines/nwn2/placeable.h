@@ -75,12 +75,12 @@ public:
 	bool isActivated() const;
 
 	/** Create a trap on the placeable. */
-	void createTrap(uint8 trapType, uint32 faction,
+	void createTrap(uint8_t trapType, uint32_t faction,
 	                const Common::UString &disarm,
 	                const Common::UString &triggered);
 
 	/** Create an item in the creature's inventory. */
-	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
+	Item *createItemOnObject(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag);
 
 	/** The opener object opens this placeable. */
 	bool open(Object *opener);
@@ -104,7 +104,7 @@ public:
 	bool click(Object *triggerer = 0);
 
 	/** Get the reputation of the placeable with the source. */
-	uint8 getReputation(Object *source) const;
+	uint8_t getReputation(Object *source) const;
 
 protected:
 	/** Load placeable-specific properties. */

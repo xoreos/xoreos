@@ -60,7 +60,7 @@ void CharacterGenerationInfo::setSkin(Skin skin) {
 	_skin = skin;
 }
 
-void CharacterGenerationInfo::setFace(uint8 face) {
+void CharacterGenerationInfo::setFace(uint8_t face) {
 	_face = face;
 }
 

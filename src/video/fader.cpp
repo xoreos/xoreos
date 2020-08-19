@@ -34,7 +34,7 @@
 
 namespace Video {
 
-Fader::Fader(uint32 width, uint32 height, int n) {
+Fader::Fader(uint32_t width, uint32_t height, int n) {
 	addTrack(new FaderVideoTrack(width, height, n));
 	initVideo();
 }
@@ -45,16 +45,16 @@ void Fader::decodeNextTrackFrame(VideoTrack &track) {
 	_needCopy = true;
 }
 
-Fader::FaderVideoTrack::FaderVideoTrack(uint32 width, uint32 height, int n) : _width(width), _height(height), _curFrame(-1), _c(0), _n(n) {
+Fader::FaderVideoTrack::FaderVideoTrack(uint32_t width, uint32_t height, int n) : _width(width), _height(height), _curFrame(-1), _c(0), _n(n) {
 }
 
 void Fader::FaderVideoTrack::drawFrame(Graphics::Surface &surface) {
 	// Fade from black to green
 	byte *data = surface.getData();
-	for (uint32 i = 0; i < _height; i++) {
+	for (uint32_t i = 0; i < _height; i++) {
 		byte *rowData = data;
 
-		for (uint32 j = 0; j < _width; j++, rowData += 4) {
+		for (uint32_t j = 0; j < _width; j++, rowData += 4) {
 			rowData[0] = 0;
 			rowData[1] = _c;
 			rowData[2] = 0;

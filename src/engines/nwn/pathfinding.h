@@ -58,19 +58,19 @@ public:
 private:
 	/** Informations about adjacencies and the position along the border of the tile. */
 	struct Face {
-		uint32 faceId;               ///< Id of the face in the current tile.
-		uint32 adjacentTile;         ///< Id of the adjacent tile.
-		uint32 adjacentFace;         ///< Id of the adjacent face in the adjacent tile.
-		glm::vec3 vert[3];           ///< Vertices of the face.
-		bool yAxis;                  ///< Is the border of the related tile along the y axis?
-		float axisPosition;          ///< The position of the border.
-		float epsilon;               ///< The epsilon value to state if two vertices are close.
-		std::vector<uint8> axisVert; ///< The vertices along the border axis.
-		uint8 oppositeVert;          ///< The vertex at the other end of the border.
-		uint8 minVert;               ///< The lower vertex on the border.
-		uint8 maxVert;               ///< The higher vertex on the border.
-		float min;                   ///< The minimal position on the border.
-		float max;                   ///< The maximal position on the border.
+		uint32_t faceId;               ///< Id of the face in the current tile.
+		uint32_t adjacentTile;         ///< Id of the adjacent tile.
+		uint32_t adjacentFace;         ///< Id of the adjacent face in the adjacent tile.
+		glm::vec3 vert[3];             ///< Vertices of the face.
+		bool yAxis;                    ///< Is the border of the related tile along the y axis?
+		float axisPosition;            ///< The position of the border.
+		float epsilon;                 ///< The epsilon value to state if two vertices are close.
+		std::vector<uint8_t> axisVert; ///< The vertices along the border axis.
+		uint8_t oppositeVert;          ///< The vertex at the other end of the border.
+		uint8_t minVert;               ///< The lower vertex on the border.
+		uint8_t maxVert;               ///< The higher vertex on the border.
+		float min;                     ///< The minimal position on the border.
+		float max;                     ///< The maximal position on the border.
 
 		Face();
 		void computeMinOnAxis();
@@ -79,12 +79,12 @@ private:
 
 	/** Structure used to connect the tiles together. */
 	struct Tile {
-		uint32 tileId;
-		uint32 xPosition;
-		uint32 yPosition;
-		std::vector<uint32> faces;
-		std::vector<uint32> adjFaces;
-		std::vector<uint32> facesProperty;
+		uint32_t tileId;
+		uint32_t xPosition;
+		uint32_t yPosition;
+		std::vector<uint32_t> faces;
+		std::vector<uint32_t> adjFaces;
+		std::vector<uint32_t> facesProperty;
 		std::vector<Face> borderBottom;
 		std::vector<Face> borderRight;
 		std::vector<Face> borderLeft;
@@ -92,23 +92,23 @@ private:
 	};
 
 	/** Find face adjacencies between two tiles and make all border faces match an other face. */
-	void connectTiles(uint32 tileA, uint32 tileB, bool yAxis, float axisPosition);
+	void connectTiles(uint32_t tileA, uint32_t tileB, bool yAxis, float axisPosition);
 	/** Find face adjacencies within a tile. */
-	void connectInnerFaces(uint32 tile);
+	void connectInnerFaces(uint32_t tile);
 	/** Get the position in the adjacent face vector from the vertices positions. */
-	uint32 getAdjPosition(uint32 vertA, uint32 vertB) const;
+	uint32_t getAdjPosition(uint32_t vertA, uint32_t vertB) const;
 	/** Find the faces on the border of a tile. */
-	void getBorderface(std::vector<Face> &border, uint32 tile, bool yAxis, float axisPosition, float epsilon) const;
+	void getBorderface(std::vector<Face> &border, uint32_t tile, bool yAxis, float axisPosition, float epsilon) const;
 	/** Find out the order of the vertices of a face along the border of a tile. */
 	void getMinMaxFromFace(Face &face, float min[3], float max[3]) const;
 	/** Is a face, in a given tile, walkable? */
-	bool faceInTileWalkable(uint32 tile, uint32 face) const;
+	bool faceInTileWalkable(uint32_t tile, uint32_t face) const;
 	/** Cut a face in two. The face to be cut is shrink and the other part is returned. */
 	Face cutFaceAt(bool isAtGoodMax, Tile &tileToCut, Tile &tileGood, Face &faceToCut, Face &faceGood);
 
-	bool _loaded;                     ///< State if the walkmesh is finalized.
-	std::vector<uint32> _startVertex; ///< Starting index of the vertex for each tiles.
-	std::vector<Tile> _tiles;         ///< Tiles of the area.
+	bool _loaded;                       ///< State if the walkmesh is finalized.
+	std::vector<uint32_t> _startVertex; ///< Starting index of the vertex for each tiles.
+	std::vector<Tile> _tiles;           ///< Tiles of the area.
 
 	WalkmeshLoader *_walkmeshLoader;  ///< Walkmesh loader.
 };

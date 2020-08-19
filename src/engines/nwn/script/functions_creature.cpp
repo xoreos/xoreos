@@ -43,7 +43,7 @@ void Functions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 	Ability   ability  = (Ability) ctx.getParams()[1].getInt();
 
-	ctx.getReturn() = creature ? (int32) creature->getAbility(ability) : 0;
+	ctx.getReturn() = creature ? (int32_t) creature->getAbility(ability) : 0;
 }
 
 void Functions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
@@ -59,17 +59,17 @@ void Functions::getHasFeat(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kClassInvalid;
+	ctx.getReturn() = (int32_t) kClassInvalid;
 
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
 	if (!creature)
 		return;
 
-	uint32 classID;
-	uint16 level;
-	creature->getClass(MAX<int32>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
+	uint32_t classID;
+	uint16_t level;
+	creature->getClass(MAX<int32_t>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
 
-	ctx.getReturn() = (int32) classID;
+	ctx.getReturn() = (int32_t) classID;
 }
 
 void Functions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
@@ -79,11 +79,11 @@ void Functions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
 	if (!creature)
 		return;
 
-	uint32 classID;
-	uint16 level;
-	creature->getClass(MAX<int32>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
+	uint32_t classID;
+	uint16_t level;
+	creature->getClass(MAX<int32_t>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
 
-	ctx.getReturn() = (int32) level;
+	ctx.getReturn() = (int32_t) level;
 }
 
 void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
@@ -95,7 +95,7 @@ void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getXP(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (creature ? creature->getXP() : 0);
+	ctx.getReturn() = (int32_t) (creature ? creature->getXP() : 0);
 }
 
 void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
@@ -117,13 +117,13 @@ void Functions::getIsDM(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getGender(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (creature ? creature->getGender() : kGenderNone);
+	ctx.getReturn() = (int32_t) (creature ? creature->getGender() : kGenderNone);
 }
 
 void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (creature ? creature->getRace() : kRaceInvalid);
+	ctx.getReturn() = (int32_t) (creature ? creature->getRace() : kRaceInvalid);
 }
 
 void Functions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
@@ -135,31 +135,31 @@ void Functions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getLawChaosValue(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) creature->getLawChaos() : -1;
+	ctx.getReturn() = creature ? (int32_t) creature->getLawChaos() : -1;
 }
 
 void Functions::getGoodEvilValue(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) creature->getGoodEvil() : -1;
+	ctx.getReturn() = creature ? (int32_t) creature->getGoodEvil() : -1;
 }
 
 void Functions::getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) NWN::getAlignmentLawChaos(creature->getLawChaos()) : -1;
+	ctx.getReturn() = creature ? (int32_t) NWN::getAlignmentLawChaos(creature->getLawChaos()) : -1;
 }
 
 void Functions::getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (int32) NWN::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
+	ctx.getReturn() = creature ? (int32_t) NWN::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
 }
 
 void Functions::getCommandable(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (creature ? creature->isCommandable() : false);
+	ctx.getReturn() = (int32_t) (creature ? creature->isCommandable() : false);
 }
 
 void Functions::setCommandable(Aurora::NWScript::FunctionContext &ctx) {

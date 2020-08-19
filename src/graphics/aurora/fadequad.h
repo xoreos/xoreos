@@ -69,9 +69,9 @@ private:
 
 	float _r, _g, _b;
 	float _opacity;
-	uint32 _wait;
-	uint32 _run;
-	uint32 _start;
+	uint32_t _wait;
+	uint32_t _run;
+	uint32_t _start;
 };
 
 } // End of namespace Aurora

@@ -28,7 +28,7 @@ namespace Engines {
 
 namespace Jade {
 
-Event::Event(Script script, int32 eventNumber) : _script(script), _eventNumber(eventNumber) {
+Event::Event(Script script, int32_t eventNumber) : _script(script), _eventNumber(eventNumber) {
 
 }
 
@@ -43,7 +43,7 @@ Script Event::getScript() const {
 	return _script;
 }
 
-int32 Event::getEventNumber() const {
+int32_t Event::getEventNumber() const {
 	return _eventNumber;
 }
 

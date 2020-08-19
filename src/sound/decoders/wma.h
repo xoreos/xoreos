@@ -41,8 +41,8 @@ class PacketizedAudioStream;
  * @param extraData  The stream containing the extra data needed for initialization
  * @return             A new PacketizedAudioStream, or NULL on error
  */
-PacketizedAudioStream *makeWMAStream(int version, uint32 sampleRate, uint8 channels,
-	uint32 bitRate, uint32 blockAlign, Common::SeekableReadStream &extraData);
+PacketizedAudioStream *makeWMAStream(int version, uint32_t sampleRate, uint8_t channels,
+	uint32_t bitRate, uint32_t blockAlign, Common::SeekableReadStream &extraData);
 
 } // End of namespace Sound
 

@@ -40,7 +40,7 @@ public:
 	 *  @param max       Maximal values of the bounding box.
 	 *  @param property  An integer value assigned to AABB.
 	 */
-	AABBNode(float min[3], float max[3], int32 property = -1);
+	AABBNode(float min[3], float max[3], int32_t property = -1);
 	~AABBNode();
 
 	/** Has the AABB children? */
@@ -57,7 +57,7 @@ public:
 	/** Rotate the AABB and its children. Must be a 90° multiple. */
 	void rotate(float angle, float x, float y, float z);
 	/** Change orientation around the z axis. */
-	void setOrientation(uint8 orientation);
+	void setOrientation(uint8_t orientation);
 	/** Translate the AABB and its children. */
 	void translate(float x, float y, float z);
 	/** Scale the AABB and its children. */
@@ -76,9 +76,9 @@ public:
 	/** Get the nodes that intersect a given segment in the XY plane. */
 	void getNodesInSegment(glm::vec3 start, glm::vec3 end, std::vector<AABBNode *> &nodes);
 	/** Get the property of the AABB. */
-	int32 getProperty() const;
+	int32_t getProperty() const;
 	/** Add a given value to the leaves nodes. */
-	void adjustChildrenProperty(int32 adjust);
+	void adjustChildrenProperty(int32_t adjust);
 	/** Ensure the parent surrounds the node. */
 	void surroundParent();
 
@@ -86,7 +86,7 @@ private:
 	AABBNode *_parent;     ///< The parent node.
 	AABBNode *_leftChild;  ///< Left child.
 	AABBNode *_rightChild; ///< Right child.
-	int32 _property;       ///< An arbitrary value of the AABB.
+	int32_t _property;       ///< An arbitrary value of the AABB.
 };
 
 } // End of namespace Common

@@ -53,7 +53,7 @@ public:
 	// Basic visuals
 
 	/** Return the object's model IDs. */
-	const std::list<uint32> &getIDs() const;
+	const std::list<uint32_t> &getIDs() const;
 
 	/** Is the object's model(s) visible? */
 	virtual bool isVisible() const;
@@ -182,7 +182,7 @@ protected:
 	Common::UString _templateResRef;
 	ObjectType _type; ///< The object's type.
 
-	std::list<uint32> _ids; ///< The object's model IDs.
+	std::list<uint32_t> _ids; ///< The object's model IDs.
 
 	Common::UString _name;        ///< The object's display name.
 	Common::UString _description; ///< The object's description.

@@ -51,11 +51,11 @@ void IngameGUI::setRotation(float angle) {
 	_hud->setRotation(angle);
 }
 
-void IngameGUI::setReturnStrref(uint32 id) {
+void IngameGUI::setReturnStrref(uint32_t id) {
 	_hud->setReturnStrref(id);
 }
 
-void IngameGUI::setReturnQueryStrref(uint32 id) {
+void IngameGUI::setReturnQueryStrref(uint32_t id) {
 	_hud->setReturnQueryStrref(id);
 }
 

@@ -45,13 +45,13 @@
 #include "src/engines/sonic/areaminimap.h"
 #include "src/engines/sonic/placeable.h"
 
-static const uint32 kAREID = MKTAG('A', 'R', 'E', ' ');
+static const uint32_t kAREID = MKTAG('A', 'R', 'E', ' ');
 
 namespace Engines {
 
 namespace Sonic {
 
-Area::Area(Module &module, uint32 id) : Object(kObjectTypeArea),
+Area::Area(Module &module, uint32_t id) : Object(kObjectTypeArea),
 	_module(&module), _width(0), _height(0), _startPosX(0.0f), _startPosY(0.0f),
 	_miniMapWidth(0), _miniMapHeight(0), _soundMapBank(-1), _sound(-1), _soundType(-1), _soundBank(-1),
 	_numberRings(0), _numberChaoEggs(0), _activeObject(0), _highlightAll(false) {
@@ -80,11 +80,11 @@ const Common::UString &Area::getName() {
 	return _name;
 }
 
-uint32 Area::getWidth() const {
+uint32_t Area::getWidth() const {
 	return _width;
 }
 
-uint32 Area::getHeight() const {
+uint32_t Area::getHeight() const {
 	return _height;
 }
 
@@ -223,8 +223,8 @@ void Area::loadDefinition() {
 	if (_layout.empty())
 		throw Common::Exception("Area has no layout");
 
-	const uint32 tileSizeX = areas.getInt(_id, "TileSizeX");
-	const uint32 tileSizeY = areas.getInt(_id, "TileSizeY");
+	const uint32_t tileSizeX = areas.getInt(_id, "TileSizeX");
+	const uint32_t tileSizeY = areas.getInt(_id, "TileSizeY");
 	if ((tileSizeX != 64) || (tileSizeY != 64))
 		throw Common::Exception("Unsupported tile dimensions (%ux%u)", tileSizeX, tileSizeY);
 

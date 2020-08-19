@@ -65,8 +65,8 @@ public:
 
 	bool isArmor() const;
 
-	uint32 getColor(Color color) const;
-	uint32 getArmorPart(size_t index) const;
+	uint32_t getColor(Color color) const;
+	uint32_t getArmorPart(size_t index) const;
 
 private:
 	/** Parts of an armor set. */
@@ -96,10 +96,10 @@ private:
 
 	Common::UString _modelName; ///< The model's resource name.
 
-	uint32 _baseItem; ///< The index within the baseitem 2DA.
+	uint32_t _baseItem; ///< The index within the baseitem 2DA.
 
-	uint32 _colors[kColorMAX];         ///< The item's colors.
-	uint32 _armorParts[kArmorPartMAX]; ///< The item's armor parts.
+	uint32_t _colors[kColorMAX];         ///< The item's colors.
+	uint32_t _armorParts[kArmorPartMAX]; ///< The item's armor parts.
 
 	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The item's model.
 

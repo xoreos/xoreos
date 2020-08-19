@@ -442,9 +442,9 @@ enum Platform {
 	kPlatformUnknown      ///< Unknown (must be last).
 };
 
-static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
-static const uint32 kFieldIDInvalid  = 0xFFFFFFFF;
-static const uint32 kStrRefInvalid   = 0xFFFFFFFF;
+static const uint32_t kObjectIDInvalid = 0xFFFFFFFF;
+static const uint32_t kFieldIDInvalid  = 0xFFFFFFFF;
+static const uint32_t kStrRefInvalid   = 0xFFFFFFFF;
 
 class TwoDAFile;
 class TwoDARow;

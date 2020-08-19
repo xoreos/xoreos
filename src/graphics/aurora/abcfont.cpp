@@ -63,13 +63,13 @@ float ABCFont::getHeight() const {
 	return 32.0f;
 }
 
-float ABCFont::getWidth(uint32 c) const {
+float ABCFont::getWidth(uint32_t c) const {
 	const Char &cC = findChar(c);
 
 	return cC.spaceL + cC.width + cC.spaceR;
 }
 
-void ABCFont::draw(uint32 c) const {
+void ABCFont::draw(uint32_t c) const {
 	TextureMan.set(_texture);
 
 	const Char &cC = findChar(c);
@@ -95,7 +95,7 @@ void ABCFont::renderBind(const glm::mat4 &transform) const {
 	_mesh->renderBind();
 }
 
-void ABCFont::render(uint32 c, float &x, float &y, float *rgba) const {
+void ABCFont::render(uint32_t c, float &x, float &y, float *rgba) const {
 	const Char &cC = findChar(c);
 
 	x += cC.spaceL;
@@ -189,13 +189,13 @@ void ABCFont::load(const Common::UString &name) {
 		}
 
 		calcCharVertices(c);
-		_extended.insert(std::make_pair(Common::UString::fromUTF16((uint16) i), c));
+		_extended.insert(std::make_pair(Common::UString::fromUTF16((uint16_t) i), c));
 	}
 }
 
 void ABCFont::readCharDesc(Char &c, Common::SeekableReadStream &abc) {
-	uint32 offset = abc.readUint32LE();
-	byte   plane  = abc.readByte();
+	uint32_t offset = abc.readUint32LE();
+	byte     plane  = abc.readByte();
 
 	c.spaceL = abc.readByte();
 	c.width  = abc.readByte();
@@ -231,11 +231,11 @@ void ABCFont::calcCharVertices(Char &c) {
 	c.vX[3] = 0.0f     ; c.vY[3] = 0.0f + vH;
 }
 
-const ABCFont::Char &ABCFont::findChar(uint32 c) const {
+const ABCFont::Char &ABCFont::findChar(uint32_t c) const {
 	if (Common::UString::isASCII(c))
 		return _ascii[c];
 
-	std::map<uint32, Char>::const_iterator ch = _extended.find(c);
+	std::map<uint32_t, Char>::const_iterator ch = _extended.find(c);
 	if (ch == _extended.end())
 		return _invalid;
 

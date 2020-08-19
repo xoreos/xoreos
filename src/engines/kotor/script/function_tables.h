@@ -74,11 +74,11 @@ using Aurora::NWScript::kTypeAny;
 static KotORBase::Object kDefaultValueObjectInvalid(KotORBase::kObjectTypeInvalid);
 static KotORBase::Object kDefaultValueObjectSelf   (KotORBase::kObjectTypeSelf);
 
-static const Aurora::NWScript::Variable kDefaultIntMinus1((int32) - 1);
-static const Aurora::NWScript::Variable kDefaultInt0     ((int32)   0);
-static const Aurora::NWScript::Variable kDefaultInt1     ((int32)   1);
-static const Aurora::NWScript::Variable kDefaultInt9     ((int32)   9);
-static const Aurora::NWScript::Variable kDefaultInt18    ((int32)  18);
+static const Aurora::NWScript::Variable kDefaultIntMinus1((int32_t) - 1);
+static const Aurora::NWScript::Variable kDefaultInt0     ((int32_t)   0);
+static const Aurora::NWScript::Variable kDefaultInt1     ((int32_t)   1);
+static const Aurora::NWScript::Variable kDefaultInt9     ((int32_t)   9);
+static const Aurora::NWScript::Variable kDefaultInt18    ((int32_t)  18);
 
 static const Aurora::NWScript::Variable kDefaultFloat0_0 ( 0.0f);
 static const Aurora::NWScript::Variable kDefaultFloat0_75( 0.75f);
@@ -96,24 +96,24 @@ static const Aurora::NWScript::Variable kDefaultObjectSelf   (&kDefaultValueObje
 
 // TODO: Add the relevant enums to types.h, and use these values.
 
-static const Aurora::NWScript::Variable kDefaultACDodgeBonus              ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultACVsDamageTypeAll         ((int32)   8199);
-static const Aurora::NWScript::Variable kDefaultAlignmentAll              ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultAttackBonusMisc           ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultConversationTypeCinematic ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultDamagePowerNormal         ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultDamageTypeUniversal       ((int32)      8);
-static const Aurora::NWScript::Variable kDefaultFalse                     ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultForcePowerAllForcePowers  ((int32) -    1);
-static const Aurora::NWScript::Variable kDefaultObjectTypeAll             ((int32)  32767);
-static const Aurora::NWScript::Variable kDefaultObjectTypeCreature        ((int32)      1);
-static const Aurora::NWScript::Variable kDefaultObjectTypeInvalid         ((int32)  32767);
-static const Aurora::NWScript::Variable kDefaultPersistentZoneActive      ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultProjectilePathTypeDefault ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultSavingThrowTypeAll        ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultSavingThrowTypeNone       ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultTalkVolumeTalk            ((int32)      0);
-static const Aurora::NWScript::Variable kDefaultTrue                      ((int32)      1);
+static const Aurora::NWScript::Variable kDefaultACDodgeBonus              ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultACVsDamageTypeAll         ((int32_t)   8199);
+static const Aurora::NWScript::Variable kDefaultAlignmentAll              ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultAttackBonusMisc           ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultConversationTypeCinematic ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultDamagePowerNormal         ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultDamageTypeUniversal       ((int32_t)      8);
+static const Aurora::NWScript::Variable kDefaultFalse                     ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultForcePowerAllForcePowers  ((int32_t) -    1);
+static const Aurora::NWScript::Variable kDefaultObjectTypeAll             ((int32_t)  32767);
+static const Aurora::NWScript::Variable kDefaultObjectTypeCreature        ((int32_t)      1);
+static const Aurora::NWScript::Variable kDefaultObjectTypeInvalid         ((int32_t)  32767);
+static const Aurora::NWScript::Variable kDefaultPersistentZoneActive      ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultProjectilePathTypeDefault ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultSavingThrowTypeAll        ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultSavingThrowTypeNone       ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultTalkVolumeTalk            ((int32_t)      0);
+static const Aurora::NWScript::Variable kDefaultTrue                      ((int32_t)      1);
 
 
 /** The table defining the name and function pointer of each engine function. */

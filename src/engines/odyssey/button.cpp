@@ -141,7 +141,7 @@ void WidgetButton::leave() {
 	_hovered = false;
 }
 
-void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+void WidgetButton::mouseUp(uint8_t UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 

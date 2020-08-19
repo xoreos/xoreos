@@ -39,8 +39,8 @@
 #include "src/aurora/locstring.h"
 #include "src/aurora/resman.h"
 
-static const uint32 kVersion32 = MKTAG('V', '3', '.', '2');
-static const uint32 kVersion33 = MKTAG('V', '3', '.', '3'); // Found in The Witcher, different language table
+static const uint32_t kVersion32 = MKTAG('V', '3', '.', '2');
+static const uint32_t kVersion33 = MKTAG('V', '3', '.', '3'); // Found in The Witcher, different language table
 
 namespace Aurora {
 
@@ -63,7 +63,7 @@ void GFF3File::Header::read(Common::SeekableReadStream &gff3) {
 }
 
 
-GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32 id, bool repairNWNPremium) :
+GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32_t id, bool repairNWNPremium) :
 	_stream(gff3), _repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
 
 	assert(_stream);
@@ -71,7 +71,7 @@ GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32 id, bool repairNWNPr
 	load(id);
 }
 
-GFF3File::GFF3File(const Common::UString &gff3, FileType type, uint32 id, bool repairNWNPremium) :
+GFF3File::GFF3File(const Common::UString &gff3, FileType type, uint32_t id, bool repairNWNPremium) :
 	_repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
 
 	_stream.reset(ResMan.getResource(gff3, type));
@@ -84,7 +84,7 @@ GFF3File::GFF3File(const Common::UString &gff3, FileType type, uint32 id, bool r
 GFF3File::~GFF3File() {
 }
 
-uint32 GFF3File::getType() const {
+uint32_t GFF3File::getType() const {
 	return _id;
 }
 
@@ -94,7 +94,7 @@ const GFF3Struct &GFF3File::getTopLevel() const {
 
 // --- Loader ---
 
-void GFF3File::load(uint32 id) {
+void GFF3File::load(uint32_t id) {
 	try {
 
 		loadHeader(id);
@@ -107,7 +107,7 @@ void GFF3File::load(uint32 id) {
 	}
 }
 
-void GFF3File::loadHeader(uint32 id) {
+void GFF3File::loadHeader(uint32_t id) {
 	if (_repairNWNPremium) {
 		/* The GFF3 files in the encrypted premium module archive for Neverwinter
 		 * nights are deliberately broken: the file type and version have been
@@ -120,8 +120,8 @@ void GFF3File::loadHeader(uint32 id) {
 		 * need to know the MD5 of the NWM file.
 		 */
 
-		uint32 firstOffset  = _stream->readUint32LE();
-		uint32 maybeVersion = _stream->readUint32BE();
+		uint32_t firstOffset  = _stream->readUint32LE();
+		uint32_t maybeVersion = _stream->readUint32BE();
 
 		if ((maybeVersion != kVersion32) && (maybeVersion != kVersion33)) {
 			if ((firstOffset >= 0x30) && (firstOffset <= 0x12F)) {
@@ -181,10 +181,10 @@ void GFF3File::loadHeader(uint32 id) {
 }
 
 void GFF3File::loadStructs() {
-	static const uint32 kStructSize = 12;
+	static const uint32_t kStructSize = 12;
 
 	_structs.reserve(_header.structCount);
-	for (uint32 i = 0; i < _header.structCount; i++)
+	for (uint32_t i = 0; i < _header.structCount; i++)
 		_structs.push_back(new GFF3Struct(*this, _header.structOffset + i * kStructSize));
 }
 
@@ -207,15 +207,15 @@ void GFF3File::loadLists() {
 	_stream->seek(_header.listIndicesOffset);
 
 	// Read list array
-	std::vector<uint32> rawLists;
+	std::vector<uint32_t> rawLists;
 	rawLists.resize(_header.listIndicesCount / 4);
-	for (std::vector<uint32>::iterator it = rawLists.begin(); it != rawLists.end(); ++it)
+	for (std::vector<uint32_t>::iterator it = rawLists.begin(); it != rawLists.end(); ++it)
 		*it = _stream->readUint32LE();
 
 	// Counting the actual amount of lists
-	uint32 listCount = 0;
+	uint32_t listCount = 0;
 	for (size_t i = 0; i < rawLists.size(); i++) {
-		uint32 n = rawLists[i];
+		uint32_t n = rawLists[i];
 
 		if ((i + n) > rawLists.size())
 			throw Common::Exception("GFF3: List indices broken during counting");
@@ -228,16 +228,16 @@ void GFF3File::loadLists() {
 	_listOffsetToIndex.resize(rawLists.size(), 0xFFFFFFFF);
 
 	// Converting the raw list array into real, usable lists
-	uint32 listIndex = 0;
+	uint32_t listIndex = 0;
 	for (size_t i = 0; i < rawLists.size(); listIndex++) {
 		_listOffsetToIndex[i] = listIndex;
 
-		const uint32 n = rawLists[i++];
+		const uint32_t n = rawLists[i++];
 		if ((i + n) > rawLists.size())
 			throw Common::Exception("GFF3: List indices broken during conversion");
 
 		_lists[listIndex].resize(n);
-		for (uint32 j = 0; j < n; j++, i++) {
+		for (uint32_t j = 0; j < n; j++, i++) {
 			const size_t structIndex = rawLists[i];
 			if (structIndex >= _structs.size())
 				throw Common::Exception("GFF3: List struct index out of range (%u >= %u)",
@@ -250,19 +250,19 @@ void GFF3File::loadLists() {
 
 // --- Helpers for GFF3Struct ---
 
-const GFF3Struct &GFF3File::getStruct(uint32 i) const {
+const GFF3Struct &GFF3File::getStruct(uint32_t i) const {
 	if (i >= _structs.size())
 		throw Common::Exception("GFF3: Struct index out of range (%u >= %u)", i, (uint) _structs.size());
 
 	return *_structs[i];
 }
 
-const GFF3List &GFF3File::getList(uint32 i) const {
+const GFF3List &GFF3File::getList(uint32_t i) const {
 	if (i >= _listOffsetToIndex.size())
 		throw Common::Exception("GFF3: List offset index out of range (%u >= %u)",
 		                        i, (uint) _listOffsetToIndex.size());
 
-	const uint32 listIndex = _listOffsetToIndex[i];
+	const uint32_t listIndex = _listOffsetToIndex[i];
 
 	if (listIndex == 0xFFFFFFFF)
 		throw Common::Exception("GFF3: Empty list index at %u", i);
@@ -272,7 +272,7 @@ const GFF3List &GFF3File::getList(uint32 i) const {
 	return _lists[listIndex];
 }
 
-Common::SeekableReadStream &GFF3File::getStream(uint32 offset) const {
+Common::SeekableReadStream &GFF3File::getStream(uint32_t offset) const {
 	_stream->seek(offset);
 
 	return *_stream;
@@ -286,7 +286,7 @@ Common::SeekableReadStream &GFF3File::getFieldData() const {
 GFF3Struct::Field::Field() : type(kFieldTypeNone), data(0), extended(false) {
 }
 
-GFF3Struct::Field::Field(FieldType t, uint32 d) : type(t), data(d) {
+GFF3Struct::Field::Field(FieldType t, uint32_t d) : type(t), data(d) {
 	// These field types need extended field data
 	extended = (type == kFieldTypeUint64     ) ||
 	           (type == kFieldTypeSint64     ) ||
@@ -301,20 +301,20 @@ GFF3Struct::Field::Field(FieldType t, uint32 d) : type(t), data(d) {
 }
 
 
-GFF3Struct::GFF3Struct(const GFF3File &parent, uint32 offset) : _parent(&parent) {
+GFF3Struct::GFF3Struct(const GFF3File &parent, uint32_t offset) : _parent(&parent) {
 	load(offset);
 }
 
 GFF3Struct::~GFF3Struct() {
 }
 
-uint32 GFF3Struct::getID() const {
+uint32_t GFF3Struct::getID() const {
 	return _id;
 }
 
 // --- Loader ---
 
-void GFF3Struct::load(uint32 offset) {
+void GFF3Struct::load(uint32_t offset) {
 	Common::SeekableReadStream &data = _parent->getStream(offset);
 
 	_id         = data.readUint32LE();
@@ -328,7 +328,7 @@ void GFF3Struct::load(uint32 offset) {
 		readFields(data, _fieldIndex, _fieldCount);
 }
 
-void GFF3Struct::readField(Common::SeekableReadStream &data, uint32 index) {
+void GFF3Struct::readField(Common::SeekableReadStream &data, uint32_t index) {
 	// Sanity check
 	if (index > _parent->_header.fieldCount)
 		throw Common::Exception("GFF3: Field index out of range (%d/%d)",
@@ -338,9 +338,9 @@ void GFF3Struct::readField(Common::SeekableReadStream &data, uint32 index) {
 	data.seek(_parent->_header.fieldOffset + index * 12);
 
 	// Read the field data
-	const uint32 fieldType  = data.readUint32LE();
-	const uint32 fieldLabel = data.readUint32LE();
-	const uint32 fieldData  = data.readUint32LE();
+	const uint32_t fieldType  = data.readUint32LE();
+	const uint32_t fieldLabel = data.readUint32LE();
+	const uint32_t fieldData  = data.readUint32LE();
 
 	// Read the name
 	Common::UString fieldName = readLabel(data, fieldLabel);
@@ -351,7 +351,7 @@ void GFF3Struct::readField(Common::SeekableReadStream &data, uint32 index) {
 	_fieldNames.push_back(fieldName);
 }
 
-void GFF3Struct::readFields(Common::SeekableReadStream &data, uint32 index, uint32 count) {
+void GFF3Struct::readFields(Common::SeekableReadStream &data, uint32_t index, uint32_t count) {
 	// Sanity check
 	if (index > _parent->_header.fieldIndicesCount)
 		throw Common::Exception("GFF3: Field indices index out of range (%d/%d)",
@@ -361,22 +361,22 @@ void GFF3Struct::readFields(Common::SeekableReadStream &data, uint32 index, uint
 	data.seek(_parent->_header.fieldIndicesOffset + index);
 
 	// Read the field indices
-	std::vector<uint32> indices;
+	std::vector<uint32_t> indices;
 	readIndices(data, indices, count);
 
 	// Read the fields
-	for (std::vector<uint32>::const_iterator i = indices.begin(); i != indices.end(); ++i)
+	for (std::vector<uint32_t>::const_iterator i = indices.begin(); i != indices.end(); ++i)
 		readField(data, *i);
 }
 
 void GFF3Struct::readIndices(Common::SeekableReadStream &data,
-                             std::vector<uint32> &indices, uint32 count) const {
+                             std::vector<uint32_t> &indices, uint32_t count) const {
 	indices.reserve(count);
 	while (count-- > 0)
 		indices.push_back(data.readUint32LE());
 }
 
-Common::UString GFF3Struct::readLabel(Common::SeekableReadStream &data, uint32 index) const {
+Common::UString GFF3Struct::readLabel(Common::SeekableReadStream &data, uint32_t index) const {
 	data.seek(_parent->_header.labelOffset + index * 16);
 
 	return Common::readStringFixed(data, Common::kEncodingASCII, 16);
@@ -433,75 +433,75 @@ char GFF3Struct::getChar(const Common::UString &field, char def) const {
 	return (char) f->data;
 }
 
-uint64 GFF3Struct::getUint(const Common::UString &field, uint64 def) const {
+uint64_t GFF3Struct::getUint(const Common::UString &field, uint64_t def) const {
 	const Field *f = getField(field);
 	if (!f)
 		return def;
 
 	// Int types
 	if (f->type == kFieldTypeByte)
-		return (uint64) ((uint8 ) f->data);
+		return (uint64_t) ((uint8_t ) f->data);
 	if (f->type == kFieldTypeUint16)
-		return (uint64) ((uint16) f->data);
+		return (uint64_t) ((uint16_t) f->data);
 	if (f->type == kFieldTypeUint32)
-		return (uint64) ((uint32) f->data);
+		return (uint64_t) ((uint32_t) f->data);
 	if (f->type == kFieldTypeChar)
-		return (uint64) ((int64) ((int8 ) ((uint8 ) f->data)));
+		return (uint64_t) ((int64_t) ((int8_t ) ((uint8_t ) f->data)));
 	if (f->type == kFieldTypeSint16)
-		return (uint64) ((int64) ((int16) ((uint16) f->data)));
+		return (uint64_t) ((int64_t) ((int16_t) ((uint16_t) f->data)));
 	if (f->type == kFieldTypeSint32)
-		return (uint64) ((int64) ((int32) ((uint32) f->data)));
+		return (uint64_t) ((int64_t) ((int32_t) ((uint32_t) f->data)));
 	if (f->type == kFieldTypeUint64)
-		return (uint64) getData(*f).readUint64LE();
+		return (uint64_t) getData(*f).readUint64LE();
 	if (f->type == kFieldTypeSint64)
-		return ( int64) getData(*f).readUint64LE();
+		return ( int64_t) getData(*f).readUint64LE();
 
 	// StrRef, a numerical reference to a string in a talk table
 	if (f->type == kFieldTypeStrRef) {
 		Common::SeekableReadStream &data = getData(*f);
 
-		const uint32 size = data.readUint32LE();
+		const uint32_t size = data.readUint32LE();
 		if (size != 4)
 			Common::Exception("StrRef field with invalid size (%d)", size);
 
-		return (uint64) data.readUint32LE();
+		return (uint64_t) data.readUint32LE();
 	}
 
 	throw Common::Exception("GFF3: Field is not an int type");
 }
 
-int64 GFF3Struct::getSint(const Common::UString &field, int64 def) const {
+int64_t GFF3Struct::getSint(const Common::UString &field, int64_t def) const {
 	const Field *f = getField(field);
 	if (!f)
 		return def;
 
 	// Int types
 	if (f->type == kFieldTypeByte)
-		return (int64) ((int8 ) ((uint8 ) f->data));
+		return (int64_t) ((int8_t ) ((uint8_t ) f->data));
 	if (f->type == kFieldTypeUint16)
-		return (int64) ((int16) ((uint16) f->data));
+		return (int64_t) ((int16_t) ((uint16_t) f->data));
 	if (f->type == kFieldTypeUint32)
-		return (int64) ((int32) ((uint32) f->data));
+		return (int64_t) ((int32_t) ((uint32_t) f->data));
 	if (f->type == kFieldTypeChar)
-		return (int64) ((int8 ) ((uint8 ) f->data));
+		return (int64_t) ((int8_t ) ((uint8_t ) f->data));
 	if (f->type == kFieldTypeSint16)
-		return (int64) ((int16) ((uint16) f->data));
+		return (int64_t) ((int16_t) ((uint16_t) f->data));
 	if (f->type == kFieldTypeSint32)
-		return (int64) ((int32) ((uint32) f->data));
+		return (int64_t) ((int32_t) ((uint32_t) f->data));
 	if (f->type == kFieldTypeUint64)
-		return (int64) getData(*f).readUint64LE();
+		return (int64_t) getData(*f).readUint64LE();
 	if (f->type == kFieldTypeSint64)
-		return (int64) getData(*f).readUint64LE();
+		return (int64_t) getData(*f).readUint64LE();
 
 	// StrRef, a numerical reference to a string in a talk table
 	if (f->type == kFieldTypeStrRef) {
 		Common::SeekableReadStream &data = getData(*f);
 
-		const uint32 size = data.readUint32LE();
+		const uint32_t size = data.readUint32LE();
 		if (size != 4)
 			Common::Exception("GFF3: StrRef field with invalid size (%d)", size);
 
-		return (int64) ((uint64) data.readUint32LE());
+		return (int64_t) ((uint64_t) data.readUint32LE());
 	}
 
 	throw Common::Exception("GFF3: Field is not an int type");
@@ -535,7 +535,7 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 	if (f->type == kFieldTypeExoString) {
 		Common::SeekableReadStream &data = getData(*f);
 
-		const uint32 length = data.readUint32LE();
+		const uint32_t length = data.readUint32LE();
 		return Common::readStringFixed(data, Common::kEncodingASCII, length);
 	}
 
@@ -549,7 +549,7 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 
 		Common::SeekableReadStream &data = getData(*f);
 
-		const uint32 length = data.readByte();
+		const uint32_t length = data.readByte();
 		return Common::readStringFixed(data, Common::kEncodingASCII, length);
 	}
 
@@ -622,7 +622,7 @@ bool GFF3Struct::getLocString(const Common::UString &field, LocString &str) cons
 
 		Common::SeekableReadStream &data = getData(*f);
 
-		const uint32 size = data.readUint32LE();
+		const uint32_t size = data.readUint32LE();
 		Common::SeekableSubReadStream locStringData(&data, data.pos(), data.pos() + size);
 
 		locString.readLocString(locStringData);
@@ -646,7 +646,7 @@ Common::SeekableReadStream *GFF3Struct::getData(const Common::UString &field) co
 
 	Common::SeekableReadStream &data = getData(*f);
 
-	uint32 size = 0;
+	uint32_t size = 0;
 	if      ((f->type == kFieldTypeVoid) || (f->type == kFieldTypeExoString))
 		size = data.readUint32LE();
 	else if ( f->type == kFieldTypeResRef)

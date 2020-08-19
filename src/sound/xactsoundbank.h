@@ -95,11 +95,11 @@ public:
 
 
 protected:
-	static constexpr uint8 kCategoryNone = 0xFF; ///< No category assigned.
-	static constexpr uint8 kLayerNone    = 0xFF; ///< No layer assigned.
+	static constexpr uint8_t kCategoryNone = 0xFF; ///< No category assigned.
+	static constexpr uint8_t kLayerNone    = 0xFF; ///< No layer assigned.
 
 	/** Special value to mean "loop forever". */
-	static constexpr uint16 kLoopCountInfinite = 0xFFFF;
+	static constexpr uint16_t kLoopCountInfinite = 0xFFFF;
 
 	static constexpr size_t kWeightMinimum = 0;     ///< Absolute lower bound on variation weights.
 	static constexpr size_t kWeightMaximum = 10000; ///< Absolute upper bound on variation weights
@@ -177,8 +177,8 @@ protected:
 	struct Parameters3D {
 		Mode3D mode { Mode3D::Normal };
 
-		uint16 coneInsideAngle  { 360 }; ///< Angle of the inside cone.
-		uint16 coneOutsideAngle { 360 }; ///< Angle of the outside cone.
+		uint16_t coneInsideAngle  { 360 }; ///< Angle of the inside cone.
+		uint16_t coneOutsideAngle { 360 }; ///< Angle of the outside cone.
 
 		/** Attenuation in dB (-64.0f to 0.0f) for sounds outside the ouside angle. */
 		float coneOutsideVolume { 0.0f };
@@ -208,7 +208,7 @@ protected:
 	/** An event within a sound track. */
 	struct Event {
 		EventType type;
-		uint32 timestamp { 0 }; ///< Timestamp of the event, in milliseconds.
+		uint32_t timestamp { 0 }; ///< Timestamp of the event, in milliseconds.
 
 		union {
 			struct {
@@ -216,8 +216,8 @@ protected:
 				bool enableFade;      ///< Fade from pitchStart to pitchEnd.
 				bool enableVariation; ///< Randomly vary between pitchStart and pitchEnd.
 
-				uint16 fadeStepCount; ///< Number of steps during a fade.
-				uint32 fadeDuration;  ///< Number of milliseconds a fade should last.
+				uint16_t fadeStepCount; ///< Number of steps during a fade.
+				uint32_t fadeDuration;  ///< Number of milliseconds a fade should last.
 
 				float pitchStart; ///< Lower bound or starting value in semitones (-24.0f to 24.0f).
 				float pitchEnd;   ///< Upper bound or ending value in semitones (-24.0f to 24.0f).
@@ -228,8 +228,8 @@ protected:
 				bool enableFade;      ///< Fade from volumeStart to volumeEnd.
 				bool enableVariation; ///< Randomly vary between volumeStart and volumeEnd.
 
-				uint16 fadeStepCount; ///< Number of steps during a fade.
-				uint32 fadeDuration;  ///< Number of milliseconds a fade should last.
+				uint16_t fadeStepCount; ///< Number of steps during a fade.
+				uint32_t fadeDuration;  ///< Number of milliseconds a fade should last.
 
 				float volumeStart; ///< Lower bound or starting value in dB (-64.0f to 64.0f).
 				float volumeEnd;   ///< Upper bound or ending value in dB (-64.0f to 64.0f).
@@ -240,14 +240,14 @@ protected:
 				bool random;      ///< Randomize values.
 				bool sweepCutOff; ///< Sweep cut-off frequency.
 
-				uint16 sweepStepCount; ///< Number of steps during a sweep.
-				uint32 sweepDuration;  ///< Number of milliseconds a sweep should last.
+				uint16_t sweepStepCount; ///< Number of steps during a sweep.
+				uint32_t sweepDuration;  ///< Number of milliseconds a sweep should last.
 
 				float resonanceStart; ///< Lower bound of the resonance in dB (0.0f to 32.0f).
 				float resonanceEnd;   ///< Upper bound of the resonance in dB (0.0f to 32.0f).
 
-				uint16 cutOffStart; ///< Lower bound or starting value of cut-off frequency in Hz (0 to 8192).
-				uint16 cutOffEnd;   ///< Upper bound or ending value of cut-off frequency in Hz (0 to 8192).
+				uint16_t cutOffStart; ///< Lower bound or starting value of cut-off frequency in Hz (0 to 8192).
+				uint16_t cutOffEnd;   ///< Upper bound or ending value of cut-off frequency in Hz (0 to 8192).
 			} lowpass;
 
 			struct {
@@ -263,21 +263,21 @@ protected:
 			} lfomulti;
 
 			struct {
-				uint32 delay;   ///< Delay length in milliseconds.
-				uint32 attack;  ///< Attack length in milliseconds.
-				uint32 hold;    ///< Hold length in milliseconds.
-				uint32 decay;   ///< Deay length in milliseconds.
-				uint32 release; ///< Release length in milliseconds.
+				uint32_t delay;   ///< Delay length in milliseconds.
+				uint32_t attack;  ///< Attack length in milliseconds.
+				uint32_t hold;    ///< Hold length in milliseconds.
+				uint32_t decay;   ///< Deay length in milliseconds.
+				uint32_t release; ///< Release length in milliseconds.
 
 				float sustain; ///< Sustain power in fractions (0.0f to 1.0f).
 			} aeg;
 
 			struct {
-				uint32 delay;   ///< Delay length in milliseconds.
-				uint32 attack;  ///< Attack length in milliseconds.
-				uint32 hold;    ///< Hold length in milliseconds.
-				uint32 decay;   ///< Deay length in milliseconds.
-				uint32 release; ///< Release length in milliseconds.
+				uint32_t delay;   ///< Delay length in milliseconds.
+				uint32_t attack;  ///< Attack length in milliseconds.
+				uint32_t hold;    ///< Hold length in milliseconds.
+				uint32_t decay;   ///< Deay length in milliseconds.
+				uint32_t release; ///< Release length in milliseconds.
 
 				float sustain; ///< Sustain power in fractions (0.0f to 1.0f).
 
@@ -286,21 +286,21 @@ protected:
 			} pfeg;
 
 			struct {
-				uint16 count;
+				uint16_t count;
 			} loop;
 
 			struct {
-				bool   repeat;         ///< Repeat the marker?
-				uint16 repeatCount;    ///< Number of times the marker should occur.
-				uint32 repeatDuration; ///< Total duration of the marker.
+				bool     repeat;         ///< Repeat the marker?
+				uint16_t repeatCount;    ///< Number of times the marker should occur.
+				uint32_t repeatDuration; ///< Total duration of the marker.
 
-				uint32 value; ///< Custom, user-set value of the marker.
+				uint32_t value; ///< Custom, user-set value of the marker.
 			} marker;
 
 			struct {
 				struct {
-					uint8 channel; ///< Index of the channel to set the volume of.
-					float volume;  ///< Attenuation in dB (-64.0f to 0.0f).
+					uint8_t channel; ///< Index of the channel to set the volume of.
+					float   volume;  ///< Attenuation in dB (-64.0f to 0.0f).
 				} bins[8];
 			} mixbins;
 
@@ -309,32 +309,32 @@ protected:
 				float roomHF;            ///< High-frequency room effect attenuation in dB (-1.0f to 0.0).
 				float roomRollOffFactor; ///< Roll-off factor for the room effect.
 
-				uint32 decay;        ///< Decay time in milliseconds.
-				float  decayHFRatio; ///< High-frequency to low-frequency decay time ratio.
+				uint32_t decay;        ///< Decay time in milliseconds.
+				float    decayHFRatio; ///< High-frequency to low-frequency decay time ratio.
 
-				float reflection;       ///< (Early) Reflection attenuation in dB (-1.0f to 0.0).
-				uint32 reflectionDelay; ///< (Early) Reflection delay in milliseconds.
+				float   reflection;       ///< (Early) Reflection attenuation in dB (-1.0f to 0.0).
+				uint32_t reflectionDelay; ///< (Early) Reflection delay in milliseconds.
 
-				float reverb;       ///< (Late) Reverb attenuation in dB (-1.0f to 0.0).
-				uint32 reverbDelay; ///< (Late) Reverb delay in milliseconds.
+				float   reverb;       ///< (Late) Reverb attenuation in dB (-1.0f to 0.0).
+				uint32_t reverbDelay; ///< (Late) Reverb delay in milliseconds.
 
 				float diffusion; ///< Echo density in (late) reverb decay in fractions (0.0f to 1.0f).
 				float density;   ///< Modal density in (late) reverb decay in fractions (0.0f to 1.0f).
 
-				uint16 referenceHF; ///< Reference high frequency in Hz (20 to 20000).
+				uint16_t referenceHF; ///< Reference high frequency in Hz (20 to 20000).
 			} envreverb;
 
 			struct {
 				bool use3D; // Use 3D mixbins?
 
-				uint16 angleStart;
-				uint16 angleEnd;
+				uint16_t angleStart;
+				uint16_t angleEnd;
 
-				uint8 speakerChannelCount; // Number of channels in the speaker configuration.
+				uint8_t speakerChannelCount; // Number of channels in the speaker configuration.
 
 				struct {
-					uint8 channel; ///< Index of the channel to set the volume of.
-					float volume;  ///< Attenuation in dB (-64.0f to 0.0f).
+					uint8_t channel; ///< Index of the channel to set the volume of.
+					float   volume;  ///< Attenuation in dB (-64.0f to 0.0f).
 				} bins[4];
 
 			} mixbinspan;
@@ -372,13 +372,13 @@ protected:
 	struct Sound {
 		Common::UString name; ///< Name of the sound. Can be empty.
 
-		Common::UString categoryName;          ///< Name of the category. Can be empty.
-		uint8 categoryIndex { kCategoryNone }; ///< Index of the category.
+		Common::UString categoryName;            ///< Name of the category. Can be empty.
+		uint8_t categoryIndex { kCategoryNone }; ///< Index of the category.
 
 		bool gainBoost { false }; ///< Gain boost of 6dB enabled?
 
 		bool loopNewVariation { false }; ///< Select a new wave variation on each loop?
-		uint16 loopCount { 0 };          ///< Number of times to loop the sound.
+		uint16_t loopCount { 0 };        ///< Number of times to loop the sound.
 
 		float volume { 0.0f }; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f maximum attenuation.
 		float pitch  { 0.0f }; ///< Pitch change in semitones (-24.0f to 24.0f).
@@ -391,18 +391,18 @@ protected:
 
 		bool linger { false }; ///< Should the sound linger, if it's in an interactive cue?
 
-		uint16 delay { 0 }; ///< Maximum variable delay, in milliseconds.
+		uint16_t delay { 0 }; ///< Maximum variable delay, in milliseconds.
 
-		uint8 layer { kLayerNone };
-		uint8 priority { 255 };
+		uint8_t layer { kLayerNone };
+		uint8_t priority { 255 };
 
 		bool is3D { false };
 		Parameters3D params3D;
 
-		bool parametricEQ { false};      ///< Is the parametric EQ enabled?
-		float parametricEQGain { 0.0f }; ///< Parametric EQ gain (-1.0f to 4.0f).
-		float parametricEQQ { 1.0f };    ///< Parametric EQ Q coefficient (1.0f/2^0 to 1.0f/2^7 in 8 exponential steps).
-		uint16 parametricEQFreq { 30 };  ///< Parametric EQ frequency (30 to 8000).
+		bool parametricEQ { false};        ///< Is the parametric EQ enabled?
+		float parametricEQGain { 0.0f };   ///< Parametric EQ gain (-1.0f to 4.0f).
+		float parametricEQQ { 1.0f };      ///< Parametric EQ Q coefficient (1.0f/2^0 to 1.0f/2^7 in 8 exponential steps).
+		uint16_t parametricEQFreq { 30 };  ///< Parametric EQ frequency (30 to 8000).
 
 		Tracks tracks; ///< All the tracks in the sound.
 	};
@@ -429,14 +429,14 @@ protected:
 
 		size_t transitionSound { kSoundSilence }; ///< Sound index to use as a transition.
 
-		uint16 sourceFadeDuration      { 0 }; ///< Source fade-out duration in milliseconds.
-		uint16 destinationFadeDuration { 0 }; ///< Destination fade-in duration in milliseconds.
+		uint16_t sourceFadeDuration      { 0 }; ///< Source fade-out duration in milliseconds.
+		uint16_t destinationFadeDuration { 0 }; ///< Destination fade-in duration in milliseconds.
 
-		uint32 sourceMarkerLow  { 0 }; ///< Lower bound of a marker in the source.
-		uint32 sourceMarkerHigh { 0 }; ///< Upper bound of a marker in the source.
+		uint32_t sourceMarkerLow  { 0 }; ///< Lower bound of a marker in the source.
+		uint32_t sourceMarkerHigh { 0 }; ///< Upper bound of a marker in the source.
 
-		uint32 destinationMarkerLow  { 0 }; ///< Lower bound of a marker in the destination.
-		uint32 destinationMarkerHigh { 0 }; ///< Upper bound of a marker in the destination.
+		uint32_t destinationMarkerLow  { 0 }; ///< Lower bound of a marker in the destination.
+		uint32_t destinationMarkerHigh { 0 }; ///< Upper bound of a marker in the destination.
 	};
 
 	using Transitions = std::vector<Transition>;
@@ -444,8 +444,8 @@ protected:
 	struct ParametersCrossfade {
 		CrossfadeType type { CrossfadeType::Disabled };
 
-		uint32 duration  { 0 }; ///< Fade duration in milliseconds.
-		uint8  stepCount { 0 }; ///< Number of steps during the fade.
+		uint32_t duration  { 0 }; ///< Fade duration in milliseconds.
+		uint8_t  stepCount { 0 }; ///< Number of steps during the fade.
 
 		float volume { 0.0f }; ///< Initial (fade-in) or final (fade-out) attenuation in dB (-64.0f to 0.0f).
 	};
@@ -466,7 +466,7 @@ protected:
 
 		CueVariations variations; ///< All the cue variations in the cue.
 
-		uint8 transitionTrigger { 0 };
+		uint8_t transitionTrigger { 0 };
 		Transitions transitions;
 	};
 

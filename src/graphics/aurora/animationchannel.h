@@ -63,12 +63,12 @@ public:
 	 */
 	void playAnimationCount(const Common::UString &anim,
 	                        bool restart = true,
-	                        int32 loopCount = 0);
+	                        int32_t loopCount = 0);
 
 	// .--- Default animations
 
 	void clearDefaultAnimations();
-	void addDefaultAnimation(const Common::UString &name, uint8 probability);
+	void addDefaultAnimation(const Common::UString &name, uint8_t probability);
 	void playDefaultAnimation();
 
 	// '---
@@ -77,7 +77,7 @@ public:
 private:
 	struct DefaultAnimation {
 		Animation *animation;
-		uint8 probability; ///< The probability (in percent) this animation is selected.
+		uint8_t probability; ///< The probability (in percent) this animation is selected.
 	};
 
 	typedef std::list<DefaultAnimation> DefaultAnimations;

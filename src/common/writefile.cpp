@@ -23,6 +23,7 @@
  */
 
 #include <cassert>
+#include <cstddef>
 
 #include "src/common/writefile.h"
 #include "src/common/error.h"

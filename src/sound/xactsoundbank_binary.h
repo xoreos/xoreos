@@ -62,19 +62,19 @@ public:
 private:
 	void load(Common::SeekableReadStream &xsb);
 
-	void readCueVarations(Common::SeekableReadStream &xsb, Cue &cue, uint32 offset);
+	void readCueVarations(Common::SeekableReadStream &xsb, Cue &cue, uint32_t offset);
 
-	void addWaveVariation(Track &track, uint32 indices, uint32 weightMin, uint32 weightMax);
-	void readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32 offset);
+	void addWaveVariation(Track &track, uint32_t indices, uint32_t weightMin, uint32_t weightMax);
+	void readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32_t offset);
 
 	void readComplexTrack(Common::SeekableReadStream &xsb, Track &track, Sound &sound);
-	void readTracks(Common::SeekableReadStream &xsb, Sound &sound, uint32 indicesOrOffset,
-	                uint32 count, uint8 flags);
+	void readTracks(Common::SeekableReadStream &xsb, Sound &sound, uint32_t indicesOrOffset,
+	                uint32_t count, uint8_t flags);
 
-	void readWaveBanks(Common::SeekableReadStream &xsb, uint32 offset, uint32 count);
-	void readCues(Common::SeekableReadStream &xsb, uint32 xsbFlags, uint32 offset, uint32 count,
-	              uint32 offsetFadeParams);
-	void readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count, uint32 offset3DParams);
+	void readWaveBanks(Common::SeekableReadStream &xsb, uint32_t offset, uint32_t count);
+	void readCues(Common::SeekableReadStream &xsb, uint32_t xsbFlags, uint32_t offset, uint32_t count,
+	              uint32_t offsetFadeParams);
+	void readSounds(Common::SeekableReadStream &xsb, uint32_t offset, uint32_t count, uint32_t offset3DParams);
 };
 
 } // End of namespace Sound

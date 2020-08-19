@@ -50,6 +50,8 @@
 #ifndef COMMON_MEMWRITESTREAM_H
 #define COMMON_MEMWRITESTREAM_H
 
+#include <cstddef>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"

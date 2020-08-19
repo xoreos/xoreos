@@ -50,7 +50,7 @@ void Functions::getCurrentEvent(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getCurrentEventType(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kEventTypeInvalid;
+	ctx.getReturn() = (int32_t) kEventTypeInvalid;
 
 	Aurora::NWScript::VariableContainer *env = ctx.getCurrentEnvironment();
 	if (!env || !env->hasVariable("Event"))
@@ -60,7 +60,7 @@ void Functions::getCurrentEventType(Aurora::NWScript::FunctionContext &ctx) {
 	if (!event)
 		return;
 
-	ctx.getReturn() = (int32) event->getType();
+	ctx.getReturn() = (int32_t) event->getType();
 }
 
 void Functions::isEventValid(Aurora::NWScript::FunctionContext &ctx) {
@@ -70,13 +70,13 @@ void Functions::isEventValid(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getEventType(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kEventTypeInvalid;
+	ctx.getReturn() = (int32_t) kEventTypeInvalid;
 
 	const Event *event = DragonAge2::ObjectContainer::toEvent(ctx.getParams()[0].getEngineType());
 	if (!event)
 		return;
 
-	ctx.getReturn() = (int32) event->getType();
+	ctx.getReturn() = (int32_t) event->getType();
 }
 
 void Functions::getEventCreator(Aurora::NWScript::FunctionContext &ctx) {
@@ -120,7 +120,7 @@ void Functions::setEventCreator(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getEventTypeRef(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kEventTypeInvalid;
+	ctx.getReturn() = (int32_t) kEventTypeInvalid;
 
 	const Aurora::NWScript::Variable *variable = ctx.getParams()[0].getReference();
 	if (!variable)
@@ -130,7 +130,7 @@ void Functions::getEventTypeRef(Aurora::NWScript::FunctionContext &ctx) {
 	if (!event)
 		return;
 
-	ctx.getReturn() = (int32) event->getType();
+	ctx.getReturn() = (int32_t) event->getType();
 }
 
 void Functions::getEventCreatorRef(Aurora::NWScript::FunctionContext &ctx) {

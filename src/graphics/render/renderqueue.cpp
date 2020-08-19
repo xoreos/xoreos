@@ -55,7 +55,7 @@ bool compareDepth(const RenderQueue::RenderQueueNode &a, const RenderQueue::Rend
 	//return (a.reference.lengthSquared() <= b.reference.lengthSquared());
 }
 
-RenderQueue::RenderQueue(uint32 precache) : _nodeArray(precache), _cameraReference(0.0f, 0.0f, 0.0f) {
+RenderQueue::RenderQueue(uint32_t precache) : _nodeArray(precache), _cameraReference(0.0f, 0.0f, 0.0f) {
 //	_nodeArray.reserve(1000);
 }
 
@@ -111,8 +111,8 @@ void RenderQueue::render() {
 	Shader::ShaderSurface *currentSurface = 0;
 	Mesh::Mesh *currentMesh = 0;
 
-	uint32 i = 0;
-	uint32 limit = _nodeArray.size();
+	uint32_t i = 0;
+	uint32_t limit = _nodeArray.size();
 	while (i < limit) {
 		assert(_nodeArray[i].program);
 		if (currentProgram != _nodeArray[i].program) {

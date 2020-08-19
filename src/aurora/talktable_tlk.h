@@ -57,17 +57,17 @@ public:
 	~TalkTable_TLK();
 
 	/** Return the language ID (ungendered) of the talk table. */
-	uint32 getLanguageID() const;
+	uint32_t getLanguageID() const;
 
-	bool hasEntry(uint32 strRef) const;
+	bool hasEntry(uint32_t strRef) const;
 
-	const Common::UString &getString     (uint32 strRef) const;
-	const Common::UString &getSoundResRef(uint32 strRef) const;
+	const Common::UString &getString     (uint32_t strRef) const;
+	const Common::UString &getSoundResRef(uint32_t strRef) const;
 
-	uint32 getSoundID(uint32 strRef) const;
+	uint32_t getSoundID(uint32_t strRef) const;
 
-	static uint32 getLanguageID(Common::SeekableReadStream &tlk);
-	static uint32 getLanguageID(const Common::UString &file);
+	static uint32_t getLanguageID(Common::SeekableReadStream &tlk);
+	static uint32_t getLanguageID(const Common::UString &file);
 
 
 private:
@@ -81,18 +81,18 @@ private:
 	/** A talk resource entry. */
 	struct Entry {
 		Common::UString text;
-		uint32 offset;
-		uint32 length;
+		uint32_t offset;
+		uint32_t length;
 
 		// V3
-		uint32 flags;
+		uint32_t flags;
 		Common::UString soundResRef;
-		uint32 volumeVariance; // Unused
-		uint32 pitchVariance; // Unused
+		uint32_t volumeVariance; // Unused
+		uint32_t pitchVariance; // Unused
 		float soundLength; // In seconds
 
 		// V4
-		uint32 soundID;
+		uint32_t soundID;
 	};
 
 	typedef std::vector<Entry> Entries;
@@ -100,13 +100,13 @@ private:
 
 	std::unique_ptr<Common::SeekableReadStream> _tlk;
 
-	uint32 _languageID;
+	uint32_t _languageID;
 
 	mutable Entries _entries;
 
 	void load();
 
-	void readEntryTableV3(uint32 stringsOffset);
+	void readEntryTableV3(uint32_t stringsOffset);
 	void readEntryTableV4();
 
 	void readString(Entry &entry) const;

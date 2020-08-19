@@ -61,10 +61,10 @@ public:
 	virtual void setLockable(bool lockable);       ///< Set whether the situated object can be locked.
 	virtual void setKeyRequired(bool keyRequired); ///< Set whether a key is required to unlock.
 
-	uint8 getLockLockDC() const;                  ///< Get the DC to lock the situated object.
-	uint8 getLockUnlockDC() const;                ///< Get the DC to unlock the situated object.
-	virtual void setLockLockDC(uint8 lockDC);     ///< Set the DC to lock the situated object.
-	virtual void setLockUnlockDC(uint8 unlockDC); ///< Set the DC to unlock the situated object.
+	uint8_t getLockLockDC() const;                  ///< Get the DC to lock the situated object.
+	uint8_t getLockUnlockDC() const;                ///< Get the DC to unlock the situated object.
+	virtual void setLockLockDC(uint8_t lockDC);     ///< Set the DC to lock the situated object.
+	virtual void setLockUnlockDC(uint8_t unlockDC); ///< Set the DC to unlock the situated object.
 
 	/** Get the tag of the key to unlock the situated object. */
 	const Common::UString &getLockKeyTag() const;
@@ -77,9 +77,9 @@ public:
 	void setKeyRequiredFeedbackMessage(const Common::UString &feedback);
 
 	/** Return the current HP this situated object has. */
-	int32 getCurrentHP() const;
+	int32_t getCurrentHP() const;
 	/** Return the max HP this situated object can have. */
-	int32 getMaxHP() const;
+	int32_t getMaxHP() const;
 
 	/** Return the object that last opened this situated object. */
 	Object *getLastOpenedBy() const;
@@ -98,23 +98,23 @@ public:
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 
-	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
-	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
+	uint32_t _appearanceID; ///< The index within the situated appearance 2DA.
+	uint32_t _soundAppType; ///< The index within the situated sounds 2DA.
 
 	bool _locked;      ///< Is the situated object locked?
 	bool _lockable;    ///< Can the situated object be locked?
 	bool _keyRequired; ///< Is a key required to unlock the situated object?
 	bool _autoRemove;  ///< Automatically remove key on use?
 
-	uint8 _openLockDC;  ///< DC to open the lock.
-	uint8 _closeLockDC; ///< DC to close the lock.
+	uint8_t _openLockDC;  ///< DC to open the lock.
+	uint8_t _closeLockDC; ///< DC to close the lock.
 
-	uint32 _currentHP; ///< Remaining hit points.
-	uint32 _baseHP;    ///< Maximum hit points.
-	uint32 _hardness;  ///< Resistance to damage.
-	int32 _fortSave;   ///< Fortitude saving throw modifier.
-	int32 _refSave;    ///< Reflex saving throw modifier.
-	int32 _willSave;   ///< Willpower saving throw modifier.
+	uint32_t _currentHP; ///< Remaining hit points.
+	uint32_t _baseHP;    ///< Maximum hit points.
+	uint32_t _hardness;  ///< Resistance to damage.
+	int32_t _fortSave;   ///< Fortitude saving throw modifier.
+	int32_t _refSave;    ///< Reflex saving throw modifier.
+	int32_t _willSave;   ///< Willpower saving throw modifier.
 
 	Common::UString _keyTag;      ///< Tag of the key that unlocks the situated object.
 	Common::UString _keyFeedback; ///< Feedback message on attempt to open without key.

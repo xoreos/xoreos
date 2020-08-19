@@ -63,17 +63,17 @@ public:
 	const ResourceList &getResources() const;
 
 	/** Return the size of a resource. */
-	uint32 getResourceSize(uint32 index) const;
+	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
+	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
 
 private:
 	/** Internal resource information. */
 	struct IResource {
-		uint32 offset;           ///< The offset of the resource within the OBB.
-		uint32 uncompressedSize; ///< The resource's uncompressed size.
-		uint32 compressedSize;   ///< The resource's compressed size.
+		uint32_t offset;           ///< The offset of the resource within the OBB.
+		uint32_t uncompressedSize; ///< The resource's uncompressed size.
+		uint32_t compressedSize;   ///< The resource's compressed size.
 	};
 
 	typedef std::vector<IResource> IResourceList;
@@ -91,7 +91,7 @@ private:
 
 	Common::SeekableReadStream *getIndex(Common::SeekableReadStream &obb);
 
-	const IResource &getIResource(uint32 index) const;
+	const IResource &getIResource(uint32_t index) const;
 };
 
 } // End of namespace Aurora

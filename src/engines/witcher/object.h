@@ -68,7 +68,7 @@ public:
 	virtual void hide(); ///< Hide the object's model(s).
 
 	/** Return the object's model IDs. */
-	const std::list<uint32> &getIDs() const;
+	const std::list<uint32_t> &getIDs() const;
 
 	// Basic properties
 
@@ -126,7 +126,7 @@ public:
 	// Object (text) talking
 
 	/** Speak the specified string. */
-	void speakString(const Common::UString &string, uint32 volume);
+	void speakString(const Common::UString &string, uint32_t volume);
 	/** Speak an one-liner from the specified conversation file. */
 	void speakOneLiner(Common::UString conv, Object *tokenTarget = 0);
 
@@ -151,7 +151,7 @@ protected:
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
 
-	std::list<uint32> _ids; ///< The object's model IDs.
+	std::list<uint32_t> _ids; ///< The object's model IDs.
 
 	Area *_area; ///< The area the object is currently in.
 

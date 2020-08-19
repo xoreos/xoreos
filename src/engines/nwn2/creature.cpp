@@ -52,7 +52,7 @@
 #include "src/engines/nwn2/faction.h"
 #include "src/engines/nwn2/cursor.h"
 
-static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
+static const uint32_t kBICID = MKTAG('B', 'I', 'C', ' ');
 
 namespace Engines {
 
@@ -211,11 +211,11 @@ const Common::UString &Creature::getLastName() const {
 	return _lastName;
 }
 
-uint32 Creature::getGender() const {
+uint32_t Creature::getGender() const {
 	return _gender;
 }
 
-void Creature::setGender(uint32 gender) {
+void Creature::setGender(uint32_t gender) {
 	_gender = gender;
 }
 
@@ -226,19 +226,19 @@ bool Creature::isFemale() const {
 	return _gender == kGenderFemale;
 }
 
-uint32 Creature::getRace() const {
+uint32_t Creature::getRace() const {
 	return _race;
 }
 
-void Creature::setRace(uint32 race) {
+void Creature::setRace(uint32_t race) {
 	_race = race;
 }
 
-uint32 Creature::getSubRace() const {
+uint32_t Creature::getSubRace() const {
 	return _subRace;
 }
 
-void Creature::setSubRace(uint32 subRace) {
+void Creature::setSubRace(uint32_t subRace) {
 	_subRace = subRace;
 }
 
@@ -250,19 +250,19 @@ bool Creature::isDM() const {
 	return _isDM;
 }
 
-uint32 Creature::getAge() const {
+uint32_t Creature::getAge() const {
 	return _age;
 }
 
-uint32 Creature::getXP() const {
+uint32_t Creature::getXP() const {
 	return _xp;
 }
 
-int32 Creature::getCurrentHP() const {
+int32_t Creature::getCurrentHP() const {
 	return _currentHP + _bonusHP;
 }
 
-int32 Creature::getMaxHP() const {
+int32_t Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
 }
 
@@ -298,11 +298,11 @@ void Creature::setLootable(bool lootable) {
 	_isLootable = lootable;
 }
 
-Item *Creature::createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+Item *Creature::createItemOnObject(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag) {
 	return createItem(blueprint, stackSize, tag);
 }
 
-void Creature::addJournalQuestEntry(const Common::UString &plotID, uint32 state, bool override) {
+void Creature::addJournalQuestEntry(const Common::UString &plotID, uint32_t state, bool override) {
 	auto category = std::find_if(_questStates.begin(), _questStates.end(), [&](const QuestState &qs) {
 		return qs.plotID == plotID;
 	});
@@ -333,7 +333,7 @@ void Creature::removeJournalQuestEntry(const Common::UString &plotID) {
 		_questStates.erase(category);
 }
 
-uint32 Creature::getJournalEntry(const Common::UString &plotID) {
+uint32_t Creature::getJournalEntry(const Common::UString &plotID) {
 	auto category = std::find_if(_questStates.begin(), _questStates.end(), [&](const QuestState &qs) {
 		return qs.plotID == plotID;
 	});
@@ -346,12 +346,12 @@ uint32 Creature::getJournalEntry(const Common::UString &plotID) {
  *
  * Modifier effects are applied via data lookup calls.
  */
-bool Creature::getIsSkillSuccessful(uint32 skill, int DC) {
+bool Creature::getIsSkillSuccessful(uint32_t skill, int DC) {
 	if (!getHasSkill(skill))
 		return false;
 
 	// Simulate a d20 roll
-	int32 roll = RNG.getNext(1, 21); // TODO: Seed randomized?
+	int32_t roll = RNG.getNext(1, 21); // TODO: Seed randomized?
 
 	// Make a skill check vs the DC
 	bool result = !(roll + getSkillRank(skill) < DC);
@@ -371,7 +371,7 @@ Common::UString Creature::getBaseModel(const Common::UString &base) {
 }
 
 bool Creature::loadArmorModel(const Common::UString &body,
-		const Common::UString &armor, uint8 visualType, uint8 variation) {
+		const Common::UString &armor, uint8_t visualType, uint8_t variation) {
 
 	const Aurora::TwoDARow &armorVisual = TwoDAReg.get2DA("armorvisualdata").getRow(visualType);
 	Common::UString armorPrefix = armorVisual.getString("Prefix");
@@ -387,7 +387,7 @@ bool Creature::loadArmorModel(const Common::UString &body,
 	return model != 0;
 }
 
-bool Creature::loadHeadModel(uint8 appearance) {
+bool Creature::loadHeadModel(uint8_t appearance) {
 	if (appearance == 0)
 		return false;
 
@@ -405,7 +405,7 @@ bool Creature::loadHeadModel(uint8 appearance) {
 	return model != 0;
 }
 
-bool Creature::loadHairModel(uint8 appearance) {
+bool Creature::loadHairModel(uint8_t appearance) {
 	if (appearance == 0)
 		return false;
 
@@ -652,7 +652,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 }
 
 void Creature::loadClasses(const Aurora::GFF3Struct &gff,
-                           std::vector<Class> &classes, uint8 &hitDice) {
+                           std::vector<Class> &classes, uint8_t &hitDice) {
 
 	if (!gff.hasField("ClassList"))
 		return;
@@ -682,7 +682,7 @@ void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
 
 	levelStats.clear();
 
-	uint32 level = 0;
+	uint32_t level = 0;
 	const Aurora::GFF3List &cLvlStatList = gff.getList("LvlStatList");
 	for (Aurora::GFF3List::const_iterator c = cLvlStatList.begin(); c != cLvlStatList.end(); ++c) {
 		levelStats.push_back(LevelStats());
@@ -714,12 +714,12 @@ void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
 }
 
 void Creature::loadSkills(const Aurora::GFF3Struct &gff,
-                          uint8 ranks[]) {
+                          uint8_t ranks[]) {
 
 	if (!gff.hasField("SkillList"))
 		return;
 
-	uint32 i = 0;
+	uint32_t i = 0;
 	const Aurora::GFF3List &skills = gff.getList("SkillList");
 	for (Aurora::GFF3List::const_iterator s = skills.begin(); s != skills.end(); ++s) {
 		const Aurora::GFF3Struct &skill = **s;
@@ -730,7 +730,7 @@ void Creature::loadSkills(const Aurora::GFF3Struct &gff,
 
 void Creature::loadFeats(const Aurora::GFF3Struct &gff,
                          std::unique_ptr<Feats> &feats,
-                         uint32 level) {
+                         uint32_t level) {
 
 	if (!gff.hasField("FeatList"))
 		return;
@@ -758,7 +758,7 @@ void Creature::loadListenPatterns(const Aurora::GFF3Struct &gff) {
 	}
 }
 
-void Creature::getClass(uint32 position, uint32 &classID, uint16 &level) const {
+void Creature::getClass(uint32_t position, uint32_t &classID, uint16_t &level) const {
 	if (position >= _classes.size()) {
 		classID = kClassInvalid;
 		level   = 0;
@@ -769,7 +769,7 @@ void Creature::getClass(uint32 position, uint32 &classID, uint16 &level) const {
 	level   = _classes[position].level;
 }
 
-uint16 Creature::getClassLevel(uint32 classID) const {
+uint16_t Creature::getClassLevel(uint32_t classID) const {
 	for (std::vector<Class>::const_iterator c = _classes.begin(); c != _classes.end(); ++c)
 		if (c->classID == classID)
 			return c->level;
@@ -781,32 +781,32 @@ const Common::UString &Creature::getDeity() const {
 	return _deity;
 }
 
-uint8 Creature::getGoodEvil() const {
+uint8_t Creature::getGoodEvil() const {
 	return _goodEvil;
 }
 
-uint8 Creature::getLawChaos() const {
+uint8_t Creature::getLawChaos() const {
 	return _lawChaos;
 }
 
-uint8 Creature::getHitDice() const {
+uint8_t Creature::getHitDice() const {
 	return _hitDice;
 }
 
-uint8 Creature::getAbility(Ability ability) const {
+uint8_t Creature::getAbility(Ability ability) const {
 	assert((ability >= 0) && (ability < kAbilityMAX));
 
 	return _abilities[ability];
 }
 
-int8 Creature::getAbilityModifier(Ability ability) const {
+int8_t Creature::getAbilityModifier(Ability ability) const {
 	assert((ability >= 0) && (ability < kAbilityMAX));
 
 	return floor((_abilities[ability] - 10) / 2);
 }
 
 /** Return true if skill is valid and useable */
-bool Creature::getHasSkill(uint32 skill) const {
+bool Creature::getHasSkill(uint32_t skill) const {
 	if (skill >= kSkillMAX)
 		return false;
 
@@ -834,7 +834,7 @@ bool Creature::getHasSkill(uint32 skill) const {
 	return hasSkill;
 }
 
-int8 Creature::getSkillRank(uint32 skill, bool baseOnly) const {
+int8_t Creature::getSkillRank(uint32_t skill, bool baseOnly) const {
 	if (skill >= kSkillMAX)
 		return -1;
 
@@ -941,11 +941,11 @@ int8 Creature::getSkillRank(uint32 skill, bool baseOnly) const {
 	return _ranks[skill] + modSynergy + modAbility + modFeats;
 }
 
-bool Creature::hasFeat(uint32 feat) const {
+bool Creature::hasFeat(uint32_t feat) const {
 	return _feats->getHasFeat(feat);
 }
 
-bool Creature::featAdd(uint32 feat, bool checkRequirements) {
+bool Creature::featAdd(uint32_t feat, bool checkRequirements) {
 	if (checkRequirements) {
 		if (!_feats->meetsRequirements(*this, feat))
 			return false;
@@ -964,11 +964,11 @@ bool Creature::featAdd(uint32 feat, bool checkRequirements) {
  * decayed, return that reputation. Otherwise, return
  * this creature's reputation with the source's faction.
  */
-uint8 Creature::getReputation(Object *source) const {
+uint8_t Creature::getReputation(Object *source) const {
 	assert(source);
 
 	// Get this creature's reputation with the source
-	uint8 repute = 0;
+	uint8_t repute = 0;
 	if (!_personalRep->getPersonalRep(source, &repute))
 		repute = _area->getFactionReputation(source, _faction);
 

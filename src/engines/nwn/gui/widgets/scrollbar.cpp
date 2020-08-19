@@ -409,7 +409,7 @@ float WidgetScrollbar::getBarPosition() const {
 	return 0.0f;
 }
 
-void WidgetScrollbar::mouseDown(uint8 state, float x, float y) {
+void WidgetScrollbar::mouseDown(uint8_t state, float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -429,7 +429,7 @@ void WidgetScrollbar::mouseDown(uint8 state, float x, float y) {
 	_dragState = _state;
 }
 
-void WidgetScrollbar::mouseMove(uint8 state, float x, float y) {
+void WidgetScrollbar::mouseMove(uint8_t state, float x, float y) {
 	if (isDisabled())
 		return;
 
@@ -451,7 +451,7 @@ void WidgetScrollbar::mouseMove(uint8 state, float x, float y) {
 	setActive(true);
 }
 
-void WidgetScrollbar::mouseWheel(uint8 state, int x, int y) {
+void WidgetScrollbar::mouseWheel(uint8_t state, int x, int y) {
 	if (isDisabled())
 		return;
 

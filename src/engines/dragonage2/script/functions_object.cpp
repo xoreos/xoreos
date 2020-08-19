@@ -231,13 +231,13 @@ void Functions::setLocalItemProperty(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getObjectType(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) kObjectTypeInvalid;
+	ctx.getReturn() = (int32_t) kObjectTypeInvalid;
 
 	DragonAge2::Object *object = DragonAge2::ObjectContainer::toObject(getParamObject(ctx, 0));
-	if (!object || ((uint32)object->getType() >= kObjectTypeMAX))
+	if (!object || ((uint32_t)object->getType() >= kObjectTypeMAX))
 		return;
 
-	ctx.getReturn() = (int32) object->getType();
+	ctx.getReturn() = (int32_t) object->getType();
 }
 
 void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -349,9 +349,9 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	// Bitfield of type(s) to check for
-	const uint32 type = ctx.getParams()[1].getInt();
+	const uint32_t type = ctx.getParams()[1].getInt();
 	// We want the nth nearest object
-	size_t count = MAX<int32>(ctx.getParams()[2].getInt(), 0);
+	size_t count = MAX<int32_t>(ctx.getParams()[2].getInt(), 0);
 
 	if (count == 0)
 		return;
@@ -381,7 +381,7 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 			continue;
 
 		// Ignore invalid object types
-		const uint32 objectType = (uint32) daObject->getType();
+		const uint32_t objectType = (uint32_t) daObject->getType();
 		if (objectType >= kObjectTypeMAX)
 			continue;
 
@@ -409,9 +409,9 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	// Bitfield of type(s) to check for
-	const uint32 type = ctx.getParams()[2].getInt();
+	const uint32_t type = ctx.getParams()[2].getInt();
 	// We want the nth nearest object
-	size_t count = MAX<int32>(ctx.getParams()[3].getInt(), 0);
+	size_t count = MAX<int32_t>(ctx.getParams()[3].getInt(), 0);
 
 	if (count == 0)
 		return;
@@ -441,7 +441,7 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 			continue;
 
 		// Ignore invalid object types
-		const uint32 objectType = (uint32) daObject->getType();
+		const uint32_t objectType = (uint32_t) daObject->getType();
 		if (objectType >= kObjectTypeMAX)
 			continue;
 

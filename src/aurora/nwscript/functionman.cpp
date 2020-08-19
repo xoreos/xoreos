@@ -50,14 +50,14 @@ void FunctionManager::clear() {
 	_functionArray.clear();
 }
 
-void FunctionManager::registerFunction(const Common::UString &name, uint32 id,
+void FunctionManager::registerFunction(const Common::UString &name, uint32_t id,
                                        const Function &func, const Signature &signature) {
 	Parameters defaults;
 
 	registerFunction(name, id, func, signature, defaults);
 }
 
-void FunctionManager::registerFunction(const Common::UString &name, uint32 id,
+void FunctionManager::registerFunction(const Common::UString &name, uint32_t id,
                                        const Function &func, const Signature &signature,
                                        const Parameters &defaults) {
 
@@ -98,11 +98,11 @@ void FunctionManager::call(const Common::UString &function, FunctionContext &ctx
 		       ctx.getName().c_str(), formatParams(ctx).c_str(), r.empty() ? "" : " => ", r.c_str());
 }
 
-FunctionContext FunctionManager::createContext(uint32 function) const {
+FunctionContext FunctionManager::createContext(uint32_t function) const {
 	return find(function).ctx;
 }
 
-void FunctionManager::call(uint32 function, FunctionContext &ctx) const {
+void FunctionManager::call(uint32_t function, FunctionContext &ctx) const {
 	debugCN(Common::kDebugEngineScripts, 5, "%s %s(%s)", formatType(ctx.getReturn().getType()).c_str(),
 	        ctx.getName().c_str(), formatParams(ctx).c_str());
 
@@ -124,7 +124,7 @@ const FunctionManager::FunctionEntry &FunctionManager::find(const Common::UStrin
 	return f->second;
 }
 
-const FunctionManager::FunctionEntry &FunctionManager::find(uint32 function) const {
+const FunctionManager::FunctionEntry &FunctionManager::find(uint32_t function) const {
 	if ((function >= _functionArray.size()) || _functionArray[function].empty)
 		throw Common::Exception("No such NWScript function %d", function);
 

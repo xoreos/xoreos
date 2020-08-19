@@ -39,7 +39,7 @@
 #include "src/aurora/nwscript/variable.h"
 #include "src/aurora/nwscript/ncsfile.h"
 
-static const uint32 kDLGID = MKTAG('D', 'L', 'G', ' ');
+static const uint32_t kDLGID = MKTAG('D', 'L', 'G', ' ');
 
 namespace Aurora {
 
@@ -71,11 +71,11 @@ bool DLGFile::getNoZoomIn() const {
 	return _noZoomIn;
 }
 
-uint32 DLGFile::getDelayEntry() const {
+uint32_t DLGFile::getDelayEntry() const {
 	return _delayEntry;
 }
 
-uint32 DLGFile::getDelayReply() const {
+uint32_t DLGFile::getDelayReply() const {
 	return _delayReply;
 }
 
@@ -111,7 +111,7 @@ void DLGFile::abortConversation() {
 	_ended = true;
 }
 
-void DLGFile::pickReply(uint32 id) {
+void DLGFile::pickReply(uint32_t id) {
 	if (_ended || (id == kInvalidLine))
 		return;
 

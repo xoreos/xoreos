@@ -79,7 +79,7 @@ bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::U
 			return true;
 
 		for (size_t i = 0; i < Aurora::kLanguageMAX; i++) {
-			const uint32 langID = LangMan.getLanguageID((Aurora::Language) i);
+			const uint32_t langID = LangMan.getLanguageID((Aurora::Language) i);
 
 			const Common::UString voiceKey = Common::UString::format("lang_%d.key"  , langID);
 			const Common::UString textKey  = Common::UString::format("dialog_%d.tlk", langID);

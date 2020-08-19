@@ -49,7 +49,7 @@ TimerManager::~TimerManager() {
 void TimerManager::init() {
 }
 
-void TimerManager::addTimer(uint32 interval, TimerHandle &handle, const TimerFunc &func) {
+void TimerManager::addTimer(uint32_t interval, TimerHandle &handle, const TimerFunc &func) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	removeTimer(handle);
@@ -95,13 +95,13 @@ void TimerManager::removeTimer(TimerID &id) {
 	SDL_RemoveTimer(id._id);
 }
 
-uint32 TimerManager::timerCallback(uint32 interval, void *data) {
+uint32_t TimerManager::timerCallback(uint32_t interval, void *data) {
 	TimerHandle &handle = *static_cast<TimerHandle *>(data);
 
 	if (handle._empty)
 		return 0;
 
-	uint32 newInterval = handle._iterator->_func(interval);
+	uint32_t newInterval = handle._iterator->_func(interval);
 	if (newInterval == 0) {
 		handle._iterator->_id = 0;
 		TimerMan.removeTimer(handle);

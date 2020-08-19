@@ -51,11 +51,11 @@ public:
 
 protected:
 	WalkmeshLoader _walkmeshLoader;
-	std::vector<std::map<uint32, uint32> > _adjRooms;
-	std::vector<uint32> _startFace;
+	std::vector<std::map<uint32_t, uint32_t> > _adjRooms;
+	std::vector<uint32_t> _startFace;
 
 private:
-	uint32 getFaceFromEdge(uint32 edge, uint32 room) const;
+	uint32_t getFaceFromEdge(uint32_t edge, uint32_t room) const;
 	std::vector<Room *> _rooms;
 };
 

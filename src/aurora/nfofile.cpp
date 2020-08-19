@@ -28,7 +28,7 @@
 #include "src/aurora/gff3file.h"
 #include "src/aurora/nfofile.h"
 
-static const uint32 kNFOID = MKTAG('N', 'F', 'O', ' ');
+static const uint32_t kNFOID = MKTAG('N', 'F', 'O', ' ');
 
 namespace Aurora {
 
@@ -53,7 +53,7 @@ const Common::UString &NFOFile::getPortrait2() const {
 	return _portrait2;
 }
 
-uint32 NFOFile::getTimePlayed() const {
+uint32_t NFOFile::getTimePlayed() const {
 	return _timePlayed;
 }
 

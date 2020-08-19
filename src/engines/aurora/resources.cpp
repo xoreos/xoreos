@@ -33,7 +33,7 @@
 
 namespace Engines {
 
-void indexMandatoryArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+void indexMandatoryArchive(const Common::UString &file, uint32_t priority, const std::vector<byte> &password,
                            Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
@@ -47,26 +47,26 @@ void indexMandatoryArchive(const Common::UString &file, uint32 priority, const s
 	}
 }
 
-void indexMandatoryArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+void indexMandatoryArchive(const Common::UString &file, uint32_t priority, const std::vector<byte> &password,
                            ChangeList &changes) {
 
 	changes.push_back(Common::ChangeID());
 	indexMandatoryArchive(file, priority, password, &changes.back());
 }
 
-void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+void indexMandatoryArchive(const Common::UString &file, uint32_t priority, Common::ChangeID *changeID) {
 	std::vector<byte> password;
 
 	indexMandatoryArchive(file, priority, password, changeID);
 }
 
-void indexMandatoryArchive(const Common::UString &file, uint32 priority, ChangeList &changes) {
+void indexMandatoryArchive(const Common::UString &file, uint32_t priority, ChangeList &changes) {
 	std::vector<byte> password;
 
 	indexMandatoryArchive(file, priority, password, changes);
 }
 
-bool indexOptionalArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+bool indexOptionalArchive(const Common::UString &file, uint32_t priority, const std::vector<byte> &password,
                           Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
@@ -85,7 +85,7 @@ bool indexOptionalArchive(const Common::UString &file, uint32 priority, const st
 	return true;
 }
 
-bool indexOptionalArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+bool indexOptionalArchive(const Common::UString &file, uint32_t priority, const std::vector<byte> &password,
                           ChangeList &changes) {
 
 	changes.push_back(Common::ChangeID());
@@ -97,20 +97,20 @@ bool indexOptionalArchive(const Common::UString &file, uint32 priority, const st
 	return true;
 }
 
-bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+bool indexOptionalArchive(const Common::UString &file, uint32_t priority, Common::ChangeID *changeID) {
 	std::vector<byte> password;
 
 	return indexOptionalArchive(file, priority, password, changeID);
 }
 
-bool indexOptionalArchive(const Common::UString &file, uint32 priority, ChangeList &changes) {
+bool indexOptionalArchive(const Common::UString &file, uint32_t priority, ChangeList &changes) {
 	std::vector<byte> password;
 
 	return indexOptionalArchive(file, priority, password, changes);
 }
 
 void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
-                             uint32 priority, Common::ChangeID *changeID) {
+                             uint32_t priority, Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
 		return;
@@ -124,14 +124,14 @@ void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int d
 }
 
 void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
-                             uint32 priority, ChangeList &changes) {
+                             uint32_t priority, ChangeList &changes) {
 
 	changes.push_back(Common::ChangeID());
 	indexMandatoryDirectory(dir, glob, depth, priority, &changes.back());
 }
 
 bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
-                            uint32 priority, Common::ChangeID *changeID) {
+                            uint32_t priority, Common::ChangeID *changeID) {
 
 	if (EventMan.quitRequested())
 		return false;
@@ -150,7 +150,7 @@ bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int de
 }
 
 bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
-                            uint32 priority, ChangeList &changes) {
+                            uint32_t priority, ChangeList &changes) {
 
 	changes.push_back(Common::ChangeID());
 	if (!indexOptionalDirectory(dir, glob, depth, priority, &changes.back())) {

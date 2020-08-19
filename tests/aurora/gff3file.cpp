@@ -187,9 +187,9 @@ GTEST_TEST(GFF3Struct, getUint) {
 	EXPECT_EQ(strct.getUint("FieldStrRef"), 101);
 
 	EXPECT_EQ(strct.getUint("FieldChar"  ), 120);
-	EXPECT_EQ(strct.getUint("FieldSint16"), (uint64)((int64) -24));
-	EXPECT_EQ(strct.getUint("FieldSint32"), (uint64)((int64) -25));
-	EXPECT_EQ(strct.getUint("FieldSint64"), (uint64)((int64) -42));
+	EXPECT_EQ(strct.getUint("FieldSint16"), (uint64_t)((int64_t) -24));
+	EXPECT_EQ(strct.getUint("FieldSint32"), (uint64_t)((int64_t) -25));
+	EXPECT_EQ(strct.getUint("FieldSint64"), (uint64_t)((int64_t) -42));
 
 	EXPECT_EQ(strct.getUint("Nope", 99), 99);
 

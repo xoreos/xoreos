@@ -75,7 +75,7 @@ protected:
 	const int _rate;                     ///< Sample rate of stream.
 	const int _channels;                 ///< Amount of channels.
 
-	uint64 _length;
+	uint64_t _length;
 
 	Common::DisposablePtr<Common::SeekableReadStream> _stream; ///< Stream to read data from.
 
@@ -89,18 +89,18 @@ public:
 	virtual ~PCMStream() {
 	}
 
-	size_t readBuffer(int16 *buffer, const size_t numSamples);
+	size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 	int getChannels() const { return _channels; }
 	bool endOfData() const { return _stream->pos() >= _stream->size(); }
 	int getRate() const { return _rate; }
-	uint64 getLength() const { return _length; }
+	uint64_t getLength() const { return _length; }
 
 	bool rewind();
 };
 
 template<bool is16Bit, bool isUnsigned, bool isLE>
-size_t PCMStream<is16Bit, isUnsigned, isLE>::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t PCMStream<is16Bit, isUnsigned, isLE>::readBuffer(int16_t *buffer, const size_t numSamples) {
 	size_t samples = numSamples;
 
 	while (samples > 0 && !endOfData()) {

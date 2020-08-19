@@ -74,8 +74,8 @@ public:
 		Common::UString name; ///< The resource's name.
 		FileType        type; ///< The resource's type.
 
-		uint32 bifIndex; ///< Index into the bif list.
-		uint32 resIndex; ///< Index into the bif's resource table.
+		uint32_t bifIndex; ///< Index into the bif list.
+		uint32_t resIndex; ///< Index into the bif's resource table.
 	};
 
 	typedef std::vector<Resource> ResourceList;
@@ -96,8 +96,8 @@ private:
 
 	void load(Common::SeekableReadStream &key);
 
-	void readBIFList(Common::SeekableReadStream &key, uint32 offset);
-	void readResList(Common::SeekableReadStream &key, uint32 offset);
+	void readBIFList(Common::SeekableReadStream &key, uint32_t offset);
+	void readResList(Common::SeekableReadStream &key, uint32_t offset);
 };
 
 } // End of namespace Aurora

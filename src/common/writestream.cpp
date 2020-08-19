@@ -48,6 +48,7 @@
  */
 
 #include <cstring>
+#include <cstddef>
 
 #include "src/common/writestream.h"
 #include "src/common/readstream.h"

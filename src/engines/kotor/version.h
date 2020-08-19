@@ -52,26 +52,26 @@ public:
 
 	Common::UString getPlatformName() const;
 
-	uint16 getVersionMajor() const; ///< Return the major version.
-	uint16 getVersionMinor() const; ///< Return the minor version.
-	uint32 getVersionBuild() const; ///< Return the build number.
+	uint16_t getVersionMajor() const; ///< Return the major version.
+	uint16_t getVersionMinor() const; ///< Return the minor version.
+	uint32_t getVersionBuild() const; ///< Return the build number.
 
 	Common::UString getVersionString() const;
 
 	bool isTooOld() const; ///< Is this version older than the optimum?
 	bool isTooNew() const; ///< Is this version newer than the optimum?
 
-	uint16 getOptimumVersionMajor() const; ///< Return the optimum major version.
-	uint16 getOptimumVersionMinor() const; ///< Return the optimum minor version.
+	uint16_t getOptimumVersionMajor() const; ///< Return the optimum major version.
+	uint16_t getOptimumVersionMinor() const; ///< Return the optimum minor version.
 
 	Common::UString getOptimumVersionString();
 
 private:
 	Aurora::Platform _platform;
 
-	uint16 _versionMajor; ///< v1.03.514078 ->      1
-	uint16 _versionMinor; ///< v1.03.514078 ->      3
-	uint32 _versionBuild; ///< v1.03.514078 -> 514078
+	uint16_t _versionMajor; ///< v1.03.514078 ->      1
+	uint16_t _versionMinor; ///< v1.03.514078 ->      3
+	uint32_t _versionBuild; ///< v1.03.514078 -> 514078
 
 	bool detectWindows(const Common::UString &directory);
 	bool detectMacOSX (const Common::UString &directory);

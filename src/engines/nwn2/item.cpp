@@ -48,7 +48,7 @@ Item::Item(const Aurora::GFF3Struct &item) :
 	load(item);
 }
 
-Item::Item(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) :
+Item::Item(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag) :
 	Object(kObjectTypeItem), Inventory() {
 
 	load(blueprint, stackSize, tag);
@@ -154,19 +154,19 @@ ItemType Item::getBaseItemType() const {
 	return _baseItem;
 }
 
-uint32 Item::getItemIcon() const {
+uint32_t Item::getItemIcon() const {
 	return _icon;
 }
 
-uint16 Item::getItemStackSize() const {
+uint16_t Item::getItemStackSize() const {
 	return _stackSize;
 }
 
-uint8 Item::getItemCharges() const {
+uint8_t Item::getItemCharges() const {
 	return _charges;
 }
 
-void Item::setItemIcon(uint32 icon) {
+void Item::setItemIcon(uint32_t icon) {
 	// Check if the icon is in range
 	const Aurora::TwoDAFile &icons = TwoDAReg.get2DA("nwn2_icons");
 	size_t rows = icons.getRowCount();
@@ -181,18 +181,18 @@ void Item::setItemIcon(uint32 icon) {
 	_icon = icon;
 }
 
-void Item::setItemStackSize(uint16 stackSize) {
+void Item::setItemStackSize(uint16_t stackSize) {
 	if (stackSize == 0)
 		return;
 
 	// Constrain stack to be no more than allowed by the baseitem
-	uint16 maxStack = getMaxStackSize();
+	uint16_t maxStack = getMaxStackSize();
 	_stackSize = (stackSize > maxStack) ? maxStack : stackSize;
 }
 
-void Item::setItemCharges(uint8 charges) {
+void Item::setItemCharges(uint8_t charges) {
 	const Aurora::TwoDARow &row = TwoDAReg.get2DA("baseitems").getRow((size_t) _baseItem);
-	uint8 maxCharges = (uint8) row.getInt("ChargesStarting");
+	uint8_t maxCharges = (uint8_t) row.getInt("ChargesStarting");
 	if (maxCharges == 0)
 		return;
 
@@ -200,12 +200,12 @@ void Item::setItemCharges(uint8 charges) {
 	_charges = (charges > maxCharges) ? maxCharges : charges;
 }
 
-uint16 Item::getMaxStackSize() const {
+uint16_t Item::getMaxStackSize() const {
 	const Aurora::TwoDARow &row = TwoDAReg.get2DA("baseitems").getRow((size_t) _baseItem);
-	return (uint16) row.getInt("Stacking");
+	return (uint16_t) row.getInt("Stacking");
 }
 
-Item *Item::createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+Item *Item::createItemOnObject(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag) {
 	if (!getHasInventory())
 		return 0;
 
@@ -222,7 +222,7 @@ void Item::load(const Aurora::GFF3Struct &item) {
 	load(item, uti ? &uti->getTopLevel() : 0);
 }
 
-void Item::load(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+void Item::load(const Common::UString &blueprint, uint16_t stackSize, const Common::UString &tag) {
 	std::unique_ptr<Aurora::GFF3File> uti;
 	uti.reset(loadOptionalGFF3(blueprint, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' ')));
 	if (!uti)

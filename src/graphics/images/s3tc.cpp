@@ -29,11 +29,11 @@
 
 namespace Graphics {
 
-static inline uint32 convert565To8888(uint16 color) {
+static inline uint32_t convert565To8888(uint16_t color) {
 	return ((color & 0x1F) << 11) | ((color & 0x7E0) << 13) | ((color & 0xF800) << 16) | 0xFF;
 }
 
-static inline uint32 interpolate32(double weight, uint32 color_0, uint32 color_1) {
+static inline uint32_t interpolate32(double weight, uint32_t color_0, uint32_t color_1) {
 	byte r[3], g[3], b[3], a[3];
 	r[0] = color_0 >> 24;
 	r[1] = color_1 >> 24;
@@ -51,9 +51,9 @@ static inline uint32 interpolate32(double weight, uint32 color_0, uint32 color_1
 }
 
 struct DXT1Texel {
-	uint16 color_0;
-	uint16 color_1;
-	uint32 pixels;
+	uint16_t color_0;
+	uint16_t color_1;
+	uint32_t pixels;
 };
 
 #define READ_DXT1_TEXEL(x) \
@@ -61,12 +61,12 @@ struct DXT1Texel {
 	x.color_1 = src.readUint16LE(); \
 	x.pixels = src.readUint32BE()
 
-void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch) {
-	for (int32 ty = height; ty > 0; ty -= 4) {
-		for (uint32 tx = 0; tx < width; tx += 4) {
+void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32_t width, uint32_t height, uint32_t pitch) {
+	for (int32_t ty = height; ty > 0; ty -= 4) {
+		for (uint32_t tx = 0; tx < width; tx += 4) {
 			DXT1Texel tex;
 			READ_DXT1_TEXEL(tex);
-			uint32 blended[4];
+			uint32_t blended[4];
 
 			blended[0] = convert565To8888(tex.color_0);
 			blended[1] = convert565To8888(tex.color_1);
@@ -79,16 +79,16 @@ void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 				blended[3] = 0;
 			}
 
-			uint32 cpx = tex.pixels;
-			uint32 blockWidth = MIN<uint32>(width, 4);
-			uint32 blockHeight = MIN<uint32>(height, 4);
+			uint32_t cpx = tex.pixels;
+			uint32_t blockWidth = MIN<uint32_t>(width, 4);
+			uint32_t blockHeight = MIN<uint32_t>(height, 4);
 
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
-					const uint32 destX = tx + x;
-					const uint32 destY = height - 1 - (ty - blockHeight + y);
+					const uint32_t destX = tx + x;
+					const uint32_t destY = height - 1 - (ty - blockHeight + y);
 
-					const uint32 pixel =  blended[cpx & 3];
+					const uint32_t pixel =  blended[cpx & 3];
 
 					cpx >>= 2;
 
@@ -101,7 +101,7 @@ void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 }
 
 struct DXT23Texel : public DXT1Texel {
-	uint16 alpha[4];
+	uint16_t alpha[4];
 };
 
 #define READ_DXT3_TEXEL(x) \
@@ -111,11 +111,11 @@ struct DXT23Texel : public DXT1Texel {
 	x.alpha[3] = src.readUint16LE(); \
 	READ_DXT1_TEXEL(x)
 
-void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch) {
-	for (int32 ty = height; ty > 0; ty -= 4) {
-		for (uint32 tx = 0; tx < width; tx += 4) {
+void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32_t width, uint32_t height, uint32_t pitch) {
+	for (int32_t ty = height; ty > 0; ty -= 4) {
+		for (uint32_t tx = 0; tx < width; tx += 4) {
 			DXT23Texel tex;
-			uint32 blended[4];
+			uint32_t blended[4];
 			READ_DXT3_TEXEL(tex);
 
 			blended[0] = convert565To8888(tex.color_0) & 0xFFFFFF00;
@@ -123,17 +123,17 @@ void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 			blended[2] = interpolate32(0.333333f, blended[0], blended[1]);
 			blended[3] = interpolate32(0.666666f, blended[0], blended[1]);
 
-			uint32 cpx = tex.pixels;
-			uint32 blockWidth = MIN<uint32>(width, 4);
-			uint32 blockHeight = MIN<uint32>(height, 4);
+			uint32_t cpx = tex.pixels;
+			uint32_t blockWidth = MIN<uint32_t>(width, 4);
+			uint32_t blockHeight = MIN<uint32_t>(height, 4);
 
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
-					const uint32 destX = tx + x;
-					const uint32 destY = height - 1 - (ty - blockHeight + y);
+					const uint32_t destX = tx + x;
+					const uint32_t destY = height - 1 - (ty - blockHeight + y);
 
-					const uint32 alpha = (tex.alpha[y] >> (x * 4)) & 0xF;
-					const uint32 pixel = blended[cpx & 3] | alpha << 4;
+					const uint32_t alpha = (tex.alpha[y] >> (x * 4)) & 0xF;
+					const uint32_t pixel = blended[cpx & 3] | alpha << 4;
 
 					cpx >>= 2;
 
@@ -148,12 +148,12 @@ void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 struct DXT45Texel : public DXT1Texel {
 	byte alpha_0;
 	byte alpha_1;
-	uint64 alphabl;
+	uint64_t alphabl;
 };
 
-static uint64 readUint48LE(Common::SeekableReadStream &src) {
-	uint64 output = src.readUint32LE();
-	return output | ((uint64)src.readUint16LE() << 32);
+static uint64_t readUint48LE(Common::SeekableReadStream &src) {
+	uint64_t output = src.readUint32LE();
+	return output | ((uint64_t)src.readUint16LE() << 32);
 }
 
 #define READ_DXT5_TEXEL(x) \
@@ -162,10 +162,10 @@ static uint64 readUint48LE(Common::SeekableReadStream &src) {
 	x.alphabl = readUint48LE(src); \
 	READ_DXT1_TEXEL(x)
 
-void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, uint32 height, uint32 pitch) {
-	for (int32 ty = height; ty > 0; ty -= 4) {
-		for (uint32 tx = 0; tx < width; tx += 4) {
-			uint32 blended[4];
+void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32_t width, uint32_t height, uint32_t pitch) {
+	for (int32_t ty = height; ty > 0; ty -= 4) {
+		for (uint32_t tx = 0; tx < width; tx += 4) {
+			uint32_t blended[4];
 			byte alphab[8];
 			DXT45Texel tex;
 			READ_DXT5_TEXEL(tex);
@@ -194,17 +194,17 @@ void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 			blended[2] = interpolate32(0.333333f, blended[0], blended[1]);
 			blended[3] = interpolate32(0.666666f, blended[0], blended[1]);
 
-			uint32 cpx = tex.pixels;
-			uint32 blockWidth = MIN<uint32>(width, 4);
-			uint32 blockHeight = MIN<uint32>(height, 4);
+			uint32_t cpx = tex.pixels;
+			uint32_t blockWidth = MIN<uint32_t>(width, 4);
+			uint32_t blockHeight = MIN<uint32_t>(height, 4);
 
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
-					const uint32 destX = tx + x;
-					const uint32 destY = height - 1 - (ty - blockHeight + y);
+					const uint32_t destX = tx + x;
+					const uint32_t destY = height - 1 - (ty - blockHeight + y);
 
-					const uint32 alpha = alphab[(tex.alphabl >> (3 * (4 * (3 - y) + x))) & 7];
-					const uint32 pixel = blended[cpx & 3] | alpha;
+					const uint32_t alpha = alphab[(tex.alphabl >> (3 * (4 * (3 - y) + x))) & 7];
+					const uint32_t pixel = blended[cpx & 3] | alpha;
 
 					cpx >>= 2;
 

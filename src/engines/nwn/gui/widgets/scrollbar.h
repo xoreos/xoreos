@@ -131,9 +131,9 @@ public:
 
 	float getBarPosition() const;
 
-	void mouseDown(uint8 state, float x, float y);
-	void mouseMove(uint8 state, float x, float y);
-	void mouseWheel(uint8 state, int x, int y);
+	void mouseDown(uint8_t state, float x, float y);
+	void mouseMove(uint8_t state, float x, float y);
+	void mouseWheel(uint8_t state, int x, int y);
 
 private:
 	Scrollbar::Type _type;

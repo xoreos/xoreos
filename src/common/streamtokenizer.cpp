@@ -33,44 +33,44 @@ namespace Common {
 StreamTokenizer::StreamTokenizer(ConsecutiveSeparatorRule conSepRule) : _conSepRule(conSepRule) {
 }
 
-bool StreamTokenizer::isIn(uint32 c, const std::list<uint32> &list) {
-	for (std::list<uint32>::const_iterator it = list.begin(); it != list.end(); ++it)
+bool StreamTokenizer::isIn(uint32_t c, const std::list<uint32_t> &list) {
+	for (std::list<uint32_t>::const_iterator it = list.begin(); it != list.end(); ++it)
 		if (*it == c)
 			return true;
 
 	return false;
 }
 
-void StreamTokenizer::addSeparator(uint32 c) {
+void StreamTokenizer::addSeparator(uint32_t c) {
 	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
 
 	_separators.push_back(c);
 }
 
-void StreamTokenizer::addQuote(uint32 c) {
+void StreamTokenizer::addQuote(uint32_t c) {
 	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
 
 	_quotes.push_back(c);
 }
 
-void StreamTokenizer::addChunkEnd(uint32 c) {
+void StreamTokenizer::addChunkEnd(uint32_t c) {
 	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
 
 	_chunkEnds.push_back(c);
 }
 
-void StreamTokenizer::addIgnore(uint32 c) {
+void StreamTokenizer::addIgnore(uint32_t c) {
 	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
 
 	_ignores.push_back(c);
 }
 
 UString StreamTokenizer::getToken(SeekableReadStream &stream) {
-	bool   chunkEnd  = false;
-	bool   inQuote   = false;
-	uint32 separator = 0xFFFFFFFF;
+	bool     chunkEnd  = false;
+	bool     inQuote   = false;
+	uint32_t separator = 0xFFFFFFFF;
 
-	uint32 c;
+	uint32_t c;
 	UString token;
 
 	/* Run through the stream, character by character, checking their
@@ -211,7 +211,7 @@ size_t StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<UStrin
 }
 
 void StreamTokenizer::findFirstToken(SeekableReadStream &stream) {
-	uint32 c;
+	uint32_t c;
 	while ((c = stream.readChar()) != ReadStream::kEOF) {
 		if (!isIn(c, _separators) && !(isIn(c, _ignores))) {
 			stream.seek(-1, SeekableReadStream::kOriginCurrent);
@@ -228,7 +228,7 @@ void StreamTokenizer::skipToken(SeekableReadStream &stream, size_t n) {
 void StreamTokenizer::skipChunk(SeekableReadStream &stream) {
 	assert(!_chunkEnds.empty());
 
-	uint32 c;
+	uint32_t c;
 	while ((c = stream.readChar()) != ReadStream::kEOF) {
 		if (isIn(c, _chunkEnds)) {
 			stream.seek(-1, SeekableReadStream::kOriginCurrent);
@@ -240,7 +240,7 @@ void StreamTokenizer::skipChunk(SeekableReadStream &stream) {
 void StreamTokenizer::nextChunk(SeekableReadStream &stream) {
 	skipChunk(stream);
 
-	uint32 c = stream.readChar();
+	uint32_t c = stream.readChar();
 	if (c == ReadStream::kEOF)
 		return;
 
@@ -249,7 +249,7 @@ void StreamTokenizer::nextChunk(SeekableReadStream &stream) {
 }
 
 bool StreamTokenizer::isChunkEnd(SeekableReadStream &stream) {
-	uint32 c = stream.readChar();
+	uint32_t c = stream.readChar();
 	if (c == ReadStream::kEOF)
 		return true;
 

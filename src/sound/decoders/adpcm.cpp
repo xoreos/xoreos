@@ -65,31 +65,31 @@ protected:
 	const size_t _startpos;
 	const size_t _endpos;
 	const int _channels;
-	const uint32 _blockAlign;
-	uint32 _blockPos[2];
+	const uint32_t _blockAlign;
+	uint32_t _blockPos[2];
 	const int _rate;
 
-	uint64 _length;
+	uint64_t _length;
 
 	struct {
 		// OKI/IMA
 		struct {
-			int32 last;
-			int32 stepIndex;
+			int32_t last;
+			int32_t stepIndex;
 		} ima_ch[2];
 	} _status;
 
 	virtual void reset();
-	int16 stepAdjust(byte);
+	int16_t stepAdjust(byte);
 
 public:
-	ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32 blockAlign);
+	ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32_t blockAlign);
 	~ADPCMStream();
 
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
 	virtual int getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
-	virtual uint64 getLength() const { return _length; }
+	virtual uint64_t getLength() const { return _length; }
 
 	virtual bool rewind();
 };
@@ -101,7 +101,7 @@ public:
 // In addition, also MS IMA ADPCM is supported. See
 //   <http://wiki.multimedia.cx/index.php?title=Microsoft_IMA_ADPCM>.
 
-ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32 blockAlign)
+ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32_t blockAlign)
 	: _stream(stream, disposeAfterUse),
 		_size(size),
 		_startpos(stream->pos()),
@@ -131,10 +131,10 @@ bool ADPCMStream::rewind() {
 
 class Ima_ADPCMStream : public ADPCMStream {
 protected:
-	int16 decodeIMA(byte code, int channel = 0); // Default to using the left channel/using one channel
+	int16_t decodeIMA(byte code, int channel = 0); // Default to using the left channel/using one channel
 
 public:
-	Ima_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	Ima_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		std::memset(&_status, 0, sizeof(_status));
 
@@ -142,10 +142,10 @@ public:
 		_length = _size * 2 / _channels;
 	}
 
-	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
+	virtual size_t readBuffer(int16_t *buffer, const size_t numSamples);
 };
 
-size_t Ima_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t Ima_ADPCMStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	size_t samples;
 	byte data;
 
@@ -163,8 +163,8 @@ class Apple_ADPCMStream : public Ima_ADPCMStream {
 protected:
 	// Apple QuickTime IMA ADPCM
 	size_t _streamPos[2];
-	int16 _buffer[2][2];
-	uint8 _chunkPos[2];
+	int16_t _buffer[2][2];
+	uint8_t _chunkPos[2];
 
 	void reset() {
 		Ima_ADPCMStream::reset();
@@ -175,7 +175,7 @@ protected:
 	}
 
 public:
-	Apple_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	Apple_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
 		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		_chunkPos[0] = 0;
 		_chunkPos[1] = 0;
@@ -186,11 +186,11 @@ public:
 		_length = ((_size / _blockAlign) * (_blockAlign - 2) * 2) / channels;
 	}
 
-	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
+	virtual size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 };
 
-size_t Apple_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t Apple_ADPCMStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	// Need to write at least one samples per channel
 	assert((numSamples % _channels) == 0);
 
@@ -209,15 +209,15 @@ size_t Apple_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 
 			if (_blockPos[i] == _blockAlign) {
 				// 2 byte header per block
-				uint16 temp = _stream->readUint16BE();
+				uint16_t temp = _stream->readUint16BE();
 
 				// First 9 bits are the upper bits of the predictor
-				_status.ima_ch[i].last      = (int16) (temp & 0xFF80);
+				_status.ima_ch[i].last      = (int16_t) (temp & 0xFF80);
 				// Lower 7 bits are the step index
 				_status.ima_ch[i].stepIndex =          temp & 0x007F;
 
 				// Clip the step index
-				_status.ima_ch[i].stepIndex = CLIP<int32>(_status.ima_ch[i].stepIndex, 0, 88);
+				_status.ima_ch[i].stepIndex = CLIP<int32_t>(_status.ima_ch[i].stepIndex, 0, 88);
 
 				_blockPos[i] = 2;
 			}
@@ -255,7 +255,7 @@ size_t Apple_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 
 class MSIma_ADPCMStream : public Ima_ADPCMStream {
 public:
-	MSIma_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	MSIma_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
 		: Ima_ADPCMStream(stream, disposeAfterUse, size - (size % ((blockAlign == 0) ? 1 : blockAlign)),
 		                  rate, channels, blockAlign) {
 
@@ -272,7 +272,7 @@ public:
 		_length = ((_size / _blockAlign) * (_blockAlign - (4 * channels)) * 2) / channels;
 	}
 
-	size_t readBuffer(int16 *buffer, const size_t numSamples);
+	size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 	void reset() {
 		Ima_ADPCMStream::reset();
@@ -281,11 +281,11 @@ public:
 	}
 
 private:
-	int16 _buffer[2][8];
+	int16_t _buffer[2][8];
 	int _samplesLeft[2];
 };
 
-size_t MSIma_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t MSIma_ADPCMStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	// Need to write at least one sample per channel
 	assert((numSamples % _channels) == 0);
 
@@ -347,11 +347,11 @@ class MS_ADPCMStream : public ADPCMStream {
 protected:
 	struct ADPCMChannelStatus {
 		byte predictor;
-		int16 delta;
-		int16 coeff1;
-		int16 coeff2;
-		int16 sample1;
-		int16 sample2;
+		int16_t delta;
+		int16_t coeff1;
+		int16_t coeff2;
+		int16_t sample1;
+		int16_t sample2;
 	};
 
 	struct {
@@ -365,7 +365,7 @@ protected:
 	}
 
 public:
-	MS_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	MS_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		if (blockAlign == 0)
 			error("MS_ADPCMStream(): blockAlign isn't specified for MS ADPCM");
@@ -375,19 +375,19 @@ public:
 		_length = ((_size / _blockAlign) * (_blockAlign - (7 * channels)) * 2) / channels;
 	}
 
-	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
+	virtual size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 protected:
-	int16 decodeMS(ADPCMChannelStatus *c, byte);
+	int16_t decodeMS(ADPCMChannelStatus *c, byte);
 };
 
-int16 MS_ADPCMStream::decodeMS(ADPCMChannelStatus *c, byte code) {
-	int32 predictor;
+int16_t MS_ADPCMStream::decodeMS(ADPCMChannelStatus *c, byte code) {
+	int32_t predictor;
 
 	predictor = (((c->sample1) * (c->coeff1)) + ((c->sample2) * (c->coeff2))) / 256;
 	predictor += (signed)((code & 0x08) ? (code - 0x10) : (code)) * c->delta;
 
-	predictor = CLIP<int32>(predictor, -32768, 32767);
+	predictor = CLIP<int32_t>(predictor, -32768, 32767);
 
 	c->sample2 = c->sample1;
 	c->sample1 = predictor;
@@ -396,10 +396,10 @@ int16 MS_ADPCMStream::decodeMS(ADPCMChannelStatus *c, byte code) {
 	if (c->delta < 16)
 		c->delta = 16;
 
-	return (int16)predictor;
+	return (int16_t)predictor;
 }
 
-size_t MS_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t MS_ADPCMStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	size_t samples;
 	byte data;
 	int i = 0;
@@ -442,13 +442,13 @@ size_t MS_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 }
 
 // adjust the step for use on the next sample.
-int16 ADPCMStream::stepAdjust(byte code) {
-	static const int16 adjusts[] = {-1, -1, -1, -1, 2, 4, 6, 8};
+int16_t ADPCMStream::stepAdjust(byte code) {
+	static const int16_t adjusts[] = {-1, -1, -1, -1, 2, 4, 6, 8};
 
 	return adjusts[code & 0x07];
 }
 
-static const uint16 imaStepTable[89] = {
+static const uint16_t imaStepTable[89] = {
 	    7,    8,    9,   10,   11,   12,   13,   14,
 	   16,   17,   19,   21,   23,   25,   28,   31,
 	   34,   37,   41,   45,   50,   55,   60,   66,
@@ -463,14 +463,14 @@ static const uint16 imaStepTable[89] = {
 	32767
 };
 
-int16 Ima_ADPCMStream::decodeIMA(byte code, int channel) {
-	int32 E = (2 * (code & 0x7) + 1) * imaStepTable[_status.ima_ch[channel].stepIndex] / 8;
-	int32 diff = (code & 0x08) ? -E : E;
-	int32 samp = CLIP<int32>(_status.ima_ch[channel].last + diff, -32768, 32767);
+int16_t Ima_ADPCMStream::decodeIMA(byte code, int channel) {
+	int32_t E = (2 * (code & 0x7) + 1) * imaStepTable[_status.ima_ch[channel].stepIndex] / 8;
+	int32_t diff = (code & 0x08) ? -E : E;
+	int32_t samp = CLIP<int32_t>(_status.ima_ch[channel].last + diff, -32768, 32767);
 
 	_status.ima_ch[channel].last = samp;
 	_status.ima_ch[channel].stepIndex += stepAdjust(code);
-	_status.ima_ch[channel].stepIndex = CLIP<int32>(_status.ima_ch[channel].stepIndex, 0, ARRAYSIZE(imaStepTable) - 1);
+	_status.ima_ch[channel].stepIndex = CLIP<int32_t>(_status.ima_ch[channel].stepIndex, 0, ARRAYSIZE(imaStepTable) - 1);
 
 	return samp;
 }
@@ -504,7 +504,7 @@ int16 Ima_ADPCMStream::decodeIMA(byte code, int channel) {
  */
 class Xbox_ADPCMStream : public ADPCMStream {
 public:
-	Xbox_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+	Xbox_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign == 0 ? 36 : blockAlign) {
 		std::memset(&_status, 0, sizeof(_status));
 
@@ -524,23 +524,23 @@ public:
 		 * If we have overhang, i.e. a non-full block at the end of the stream,
 		 * we need to add one for the header, and 8 for each 4 following bytes. */
 
-		const uint32 wholeBlocks = (_size / (channels * _blockAlign));
-		const uint32 overhang    = (_size % (channels * _blockAlign));
+		const uint32_t wholeBlocks = (_size / (channels * _blockAlign));
+		const uint32_t overhang    = (_size % (channels * _blockAlign));
 
 		if ((overhang % 4) != 0)
 			throw Common::Exception("Xbox_ADPCMStream(): unaligned input size");
 
 		const bool hasOverhang = overhang > 4;
 
-		const uint32 blockDataSize = wholeBlocks * (_blockAlign - 4) + (hasOverhang ? (overhang - 4) : 0);
-		const uint32 blockCount    = wholeBlocks + (hasOverhang ? 1 : 0);
+		const uint32_t blockDataSize = wholeBlocks * (_blockAlign - 4) + (hasOverhang ? (overhang - 4) : 0);
+		const uint32_t blockCount    = wholeBlocks + (hasOverhang ? 1 : 0);
 
 		_length = (blockDataSize / 4) * 8 + blockCount;
 
 		reset();
 	}
 
-	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
+	virtual size_t readBuffer(int16_t *buffer, const size_t numSamples);
 
 protected:
 	void reset() {
@@ -553,26 +553,26 @@ protected:
 
 private:
 	struct ADPCMChannelStatus {
-		int8 index;
-		int16 stepSize;
-		int16 predictor;
+		int8_t index;
+		int16_t stepSize;
+		int16_t predictor;
 
-		int16 buffer[8];
+		int16_t buffer[8];
 	};
 
 	struct {
 		ADPCMChannelStatus ch[2];
 	} _status;
 
-	int16 decodeXbox(int code, ADPCMChannelStatus &status);
+	int16_t decodeXbox(int code, ADPCMChannelStatus &status);
 };
 
-static const int8 kXboxIndexTable[16] = {
+static const int8_t kXboxIndexTable[16] = {
 	-1, -1, -1, -1, 2, 4, 6, 8,
 	-1, -1, -1, -1, 2, 4, 6, 8
 };
 
-int16 Xbox_ADPCMStream::decodeXbox(int code, ADPCMChannelStatus &status) {
+int16_t Xbox_ADPCMStream::decodeXbox(int code, ADPCMChannelStatus &status) {
 	int delta = status.stepSize >> 3;
 
 	if (code & 4)
@@ -584,7 +584,7 @@ int16 Xbox_ADPCMStream::decodeXbox(int code, ADPCMChannelStatus &status) {
 	if (code & 8)
 		delta = -delta;
 
-	const int16 result = CLIP<int>(status.predictor + delta, -32768, 32767);
+	const int16_t result = CLIP<int>(status.predictor + delta, -32768, 32767);
 
 	status.index     = CLIP<int>(status.index + kXboxIndexTable[code], 0, 88);
 	status.stepSize  = imaStepTable[status.index];
@@ -593,7 +593,7 @@ int16 Xbox_ADPCMStream::decodeXbox(int code, ADPCMChannelStatus &status) {
 	return result;
 }
 
-size_t Xbox_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+size_t Xbox_ADPCMStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	if (_channels == 2)
 		assert(numSamples % 2 == 0);
 
@@ -605,7 +605,7 @@ size_t Xbox_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 				_status.ch[c].predictor = _stream->readSint16LE();
 				_status.ch[c].index     = _stream->readSint16LE();
 
-				_status.ch[c].index    = CLIP<int16>(_status.ch[c].index, 0, 88);
+				_status.ch[c].index    = CLIP<int16_t>(_status.ch[c].index, 0, 88);
 				_status.ch[c].stepSize = imaStepTable[_status.ch[c].index];
 
 				buffer[samples++] = _status.ch[c].predictor;
@@ -617,7 +617,7 @@ size_t Xbox_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 
 		if (_blockPos[1] == 8) {
 			for (int c = 0; c < _channels; c++) {
-				uint32 code = _stream->readUint32LE();
+				uint32_t code = _stream->readUint32LE();
 				for (size_t j = 0; j < 8; j++) {
 					_status.ch[c].buffer[j] = decodeXbox(code & 0x0F, _status.ch[c]);
 					code >>= 4;
@@ -637,7 +637,7 @@ size_t Xbox_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 	return samples;
 }
 
-RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, ADPCMTypes type, int rate, int channels, uint32 blockAlign) {
+RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, ADPCMTypes type, int rate, int channels, uint32_t blockAlign) {
 	switch (type) {
 	case kADPCMMSIma:
 		return new MSIma_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
@@ -655,7 +655,7 @@ RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool 
 
 class PacketizedADPCMStream : public StatelessPacketizedAudioStream {
 public:
-	PacketizedADPCMStream(ADPCMTypes type, int rate, int channels, uint32 blockAlign) :
+	PacketizedADPCMStream(ADPCMTypes type, int rate, int channels, uint32_t blockAlign) :
 		StatelessPacketizedAudioStream(rate, channels), _type(type), _blockAlign(blockAlign) {}
 
 protected:
@@ -663,14 +663,14 @@ protected:
 
 private:
 	ADPCMTypes _type;
-	uint32 _blockAlign;
+	uint32_t _blockAlign;
 };
 
 AudioStream *PacketizedADPCMStream::makeStream(Common::SeekableReadStream *data) {
 	return makeADPCMStream(data, true, data->size(), _type, getRate(), getChannels(), _blockAlign);
 }
 
-PacketizedAudioStream *makePacketizedADPCMStream(ADPCMTypes type, int rate, int channels, uint32 blockAlign) {
+PacketizedAudioStream *makePacketizedADPCMStream(ADPCMTypes type, int rate, int channels, uint32_t blockAlign) {
 	return new PacketizedADPCMStream(type, rate, channels, blockAlign);
 }
 

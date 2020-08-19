@@ -62,7 +62,7 @@ void Functions::registerFunctions() {
 		const FunctionSignature &fSig = kFunctionSignatures[i];
 		const FunctionDefaults  &fDef = kFunctionDefaults[i];
 
-		const uint32 id = fPtr.id;
+		const uint32_t id = fPtr.id;
 
 		assert((fSig.id == id) && (fDef.id == id));
 

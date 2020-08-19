@@ -49,9 +49,9 @@ class ImageDecoder : boost::noncopyable {
 public:
 	/** A mip map. */
 	struct MipMap {
-		int    width;  ///< The mip map's width.
-		int    height; ///< The mip map's height.
-		uint32 size;   ///< The mip map's size in bytes.
+		int      width;  ///< The mip map's width.
+		int      height; ///< The mip map's height.
+		uint32_t size;   ///< The mip map's size in bytes.
 
 		std::unique_ptr<byte[]> data; ///< The mip map's data.
 

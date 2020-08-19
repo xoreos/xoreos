@@ -48,7 +48,7 @@ namespace Engines {
 namespace Sonic {
 
 Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Common::UString &nclr,
-                                         uint32 width, uint32 height, ...) {
+                                         uint32_t width, uint32_t height, ...) {
 
 	Graphics::Aurora::TextureHandle handle = TextureMan.getIfExist(name);
 	if (!handle.empty())
@@ -64,7 +64,7 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 	va_list va;
 	va_start(va, height);
 
-	for (uint32 i = 0; i < width * height; i++) {
+	for (uint32_t i = 0; i < width * height; i++) {
 		const char *str = va_arg(va, const char *);
 		if (!str)
 			continue;
