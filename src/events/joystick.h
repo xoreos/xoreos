@@ -32,7 +32,6 @@ STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include <boost/noncopyable.hpp>
 
-#include "src/common/deallocator.h"
 #include "src/common/ustring.h"
 
 namespace Events {
@@ -73,9 +72,6 @@ private:
 	int _index;
 	Common::UString _name;
 	SDL_Joystick *_sdlJoy;
-
-	template<typename T>
-	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 } // End of namespace Events

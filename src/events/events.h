@@ -27,9 +27,9 @@
 
 #include <list>
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
 
@@ -151,7 +151,7 @@ public:
 
 
 private:
-	typedef Common::PtrVector<Joystick> Joysticks;
+	typedef std::vector<std::unique_ptr<Joystick>> Joysticks;
 
 	typedef std::list<Event> EventQueue;
 	typedef void (EventsManager::*RequestHandler)(Request &);

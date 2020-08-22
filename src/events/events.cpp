@@ -55,7 +55,7 @@ DECLARE_SINGLETON(Events::EventsManager)
 namespace Events {
 
 const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX] = {
-	0,
+	nullptr,
 	&EventsManager::requestCallInMainThread,
 	&EventsManager::requestRebuildGLContainer,
 	&EventsManager::requestDestroyGLContainer
@@ -380,10 +380,10 @@ void EventsManager::initJoysticks() {
 	_joysticks.reserve(joyCount);
 	for (int i = 0; i < joyCount; i++) {
 		if (SDL_IsGameController(i)) {
-			_joysticks.push_back(new GameController(i));
+			_joysticks.emplace_back(std::make_unique<GameController>(i));
 			controllerFound = true;
 		} else {
-			_joysticks.push_back(new Joystick(i));
+			_joysticks.emplace_back(std::make_unique<Joystick>(i));
 		}
 	}
 
@@ -405,17 +405,17 @@ size_t EventsManager::getJoystickCount() const {
 
 Joystick *EventsManager::getJoystickByIndex(size_t index) const {
 	if (index >= _joysticks.size())
-		return 0;
+		return nullptr;
 
-	return _joysticks[index];
+	return _joysticks[index].get();
 }
 
 Joystick *EventsManager::getJoystickByName(const Common::UString &name) const {
-	for (Joysticks::const_iterator j = _joysticks.begin(); j != _joysticks.end(); ++j)
-		if ((*j)->getName() == name)
-			return *j;
+	for (auto &joystick : _joysticks)
+		if (joystick->getName() == name)
+			return joystick.get();
 
-	return 0;
+	return nullptr;
 }
 
 void EventsManager::requestCallInMainThread(Request &request) {
