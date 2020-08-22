@@ -22,8 +22,6 @@
  *  The global 2DA registry.
  */
 
-#include <memory>
-
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
@@ -56,13 +54,7 @@ const TwoDAFile &TwoDARegistry::get2DA(const Common::UString &name) {
 		return *twoda->second;
 
 	// Entry doesn't exist => load and add
-
-	TwoDAFile *newTwoDA = load2DA(name);
-
-	std::pair<TwoDAMap::iterator, bool> result;
-	result = _twodas.insert(std::make_pair(name, newTwoDA));
-
-	return *result.first->second;
+	return *(_twodas[name] = load2DA(name));
 }
 
 const GDAFile &TwoDARegistry::getGDA(const Common::UString &name) {
@@ -72,13 +64,7 @@ const GDAFile &TwoDARegistry::getGDA(const Common::UString &name) {
 		return *gda->second;
 
 	// Entry doesn't exist => load and add
-
-	GDAFile *newGDA = loadGDA(name);
-
-	std::pair<GDAMap::iterator, bool> result;
-	result = _gdas.insert(std::make_pair(name, newGDA));
-
-	return *result.first->second;
+	return *(_gdas[name] = loadGDA(name));
 }
 
 const GDAFile &TwoDARegistry::getMGDA(const Common::UString &prefix) {
@@ -88,13 +74,7 @@ const GDAFile &TwoDARegistry::getMGDA(const Common::UString &prefix) {
 		return *gda->second;
 
 	// Entry doesn't exist => load and add
-
-	GDAFile *newGDA = loadMGDA(prefix);
-
-	std::pair<GDAMap::iterator, bool> result;
-	result = _gdas.insert(std::make_pair(prefix, newGDA));
-
-	return *result.first->second;
+	return *(_gdas[prefix] = loadMGDA(prefix));
 }
 
 void TwoDARegistry::add2DA(const Common::UString &name) {
@@ -145,7 +125,7 @@ void TwoDARegistry::removeGDA(const Common::UString &name) {
 	_gdas.erase(gda);
 }
 
-TwoDAFile *TwoDARegistry::load2DA(const Common::UString &name) {
+std::unique_ptr<TwoDAFile> TwoDARegistry::load2DA(const Common::UString &name) {
 	std::unique_ptr<Common::SeekableReadStream> twodaFile;
 	std::unique_ptr<TwoDAFile> twoda;
 
@@ -161,10 +141,10 @@ TwoDAFile *TwoDARegistry::load2DA(const Common::UString &name) {
 		throw;
 	}
 
-	return twoda.release();
+	return twoda;
 }
 
-GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
+std::unique_ptr<GDAFile> TwoDARegistry::loadGDA(const Common::UString &name) {
 	std::unique_ptr<Common::SeekableReadStream> gdaFile;
 	std::unique_ptr<GDAFile> gda;
 
@@ -180,10 +160,10 @@ GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
 		throw;
 	}
 
-	return gda.release();
+	return gda;
 }
 
-GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
+std::unique_ptr<GDAFile> TwoDARegistry::loadMGDA(Common::UString prefix) {
 	/* Load multiple GDAs with the same prefix, and merge them together into a single GDA. */
 
 	if (prefix.empty())
@@ -223,7 +203,7 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 		throw;
 	}
 
-	return gda.release();
+	return gda;
 }
 
 } // End of namespace Aurora

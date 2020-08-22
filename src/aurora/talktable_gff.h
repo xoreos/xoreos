@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -75,12 +74,13 @@ private:
 	struct Entry {
 		Common::UString text;
 
-		const GFF4Struct *strct;
+		const GFF4Struct *strct { nullptr };
 
-		Entry(const GFF4Struct *s = 0) : strct(s) { }
+		Entry() = default;
+		Entry(const GFF4Struct *s) : strct(s) { }
 	};
 
-	typedef Common::PtrMap<uint32_t, Entry> Entries;
+	typedef std::map<uint32_t, std::unique_ptr<Entry>> Entries;
 
 
 	std::unique_ptr<GFF4File> _gff;

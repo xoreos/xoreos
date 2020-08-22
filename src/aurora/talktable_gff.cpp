@@ -112,11 +112,7 @@ void TalkTable_GFF::load02(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		std::unique_ptr<Entry> entry = std::make_unique<Entry>(*s);
-
-		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry.get()));
-		if (result.second)
-			entry.release();
+		_entries[strRef] = std::make_unique<Entry>(*s);
 	}
 }
 
@@ -136,11 +132,7 @@ void TalkTable_GFF::load05(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		std::unique_ptr<Entry> entry = std::make_unique<Entry>(*s);
-
-		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry.get()));
-		if (result.second)
-			entry.release();
+		_entries[strRef] = std::make_unique<Entry>(*s);
 	}
 }
 
