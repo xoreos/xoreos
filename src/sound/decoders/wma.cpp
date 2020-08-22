@@ -65,7 +65,6 @@
 #include "src/common/bitstream.h"
 #include "src/common/huffman.h"
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 
 #include "src/sound/audiostream.h"
 
@@ -217,8 +216,8 @@ private:
 	float _lspPowMTable2[(1 << kLSPPowBits)];
 
 	// MDCT
-	Common::PtrVector<Common::MDCT> _mdct;       ///< MDCT contexts.
-	std::vector<const float *>  _mdctWindow; ///< MDCT window functions.
+	std::vector<std::unique_ptr<Common::MDCT>> _mdct; ///< MDCT contexts.
+	std::vector<const float *> _mdctWindow;           ///< MDCT window functions.
 
 	/** Overhang from the last superframe. */
 	byte _lastSuperframe[kSuperframeSizeMax + 4];
@@ -669,7 +668,7 @@ void WMACodec::initCoefHuffman(float bps) {
 void WMACodec::initMDCT() {
 	_mdct.reserve(_blockSizeCount);
 	for (int i = 0; i < _blockSizeCount; i++)
-		_mdct.push_back(new Common::MDCT(_frameLenBits - i + 1, true, 1.0f));
+		_mdct.emplace_back(std::make_unique<Common::MDCT>(_frameLenBits - i + 1, true, 1.0f));
 
 	// Init MDCT windows (simple sine window)
 	_mdctWindow.reserve(_blockSizeCount);
