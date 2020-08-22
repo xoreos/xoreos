@@ -26,7 +26,6 @@
 
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
-#include "src/common/ptrvector.h"
 #include "src/common/strutil.h"
 #include "src/common/timestamp.h"
 
@@ -161,20 +160,20 @@ void XboxMediaVideo::load() {
 	}
 
 	// Initialize the audio tracks
-	Common::PtrVector<XMVAudioTrack> audioTracks;
+	std::vector<std::unique_ptr<XMVAudioTrack>> audioTracks;
 	audioTracks.resize(_audioTrackCount);
 	for (uint16_t i = 0; i < _audioTrackCount; i++) {
-		XMVAudioTrack *track;
+		std::unique_ptr<XMVAudioTrack> track;
 
 		// Try creating the track; if we can't, move on.
 		try {
-			track = new XMVAudioTrack(audioTrackInfo[i]);
+			track = std::make_unique<XMVAudioTrack>(audioTrackInfo[i]);
 		} catch (Common::Exception &e) {
 			warning("Failed to initialize audio track: %s", e.what());
 			continue;
 		}
 
-		audioTracks[i] = track;
+		audioTracks[i] = std::move(track);
 	}
 
 	// Initialize the packet data
@@ -202,22 +201,17 @@ void XboxMediaVideo::load() {
 		if ((audioTrackInfo[i].flags & kAudioFlagADPCM51) != 0 && (i + 2) < _audioTrackCount) {
 			// Make sure the other tracks are valid
 			if (audioTracks[i + 1] && audioTracks[i + 2]) {
-				_curPacket.audio[i].track = audioTracks[i];
-				_curPacket.audio[i + 1].track = audioTracks[i];
-				_curPacket.audio[i + 2].track = audioTracks[i];
+				_curPacket.audio[i].track = audioTracks[i].get();
+				_curPacket.audio[i + 1].track = audioTracks[i + 1].get();
+				_curPacket.audio[i + 2].track = audioTracks[i + 2].get();
 
-				addTrack(new XMVAudioTrack51(audioTracks[i], audioTracks[i + 1], audioTracks[i + 2]));
-
-				audioTracks[i] = 0;
-				audioTracks[i + 1] = 0;
-				audioTracks[i + 2] = 0;
+				addTrack(new XMVAudioTrack51(audioTracks[i].release(), audioTracks[i + 1].release(), audioTracks[i + 2].release()));
 			} else {
 				warning("Could not create 5.1 track");
 			}
 		} else {
-			_curPacket.audio[i].track = audioTracks[i];
-			addTrack(audioTracks[i]);
-			audioTracks[i] = 0;
+			_curPacket.audio[i].track = audioTracks[i].get();
+			addTrack(audioTracks[i].release());
 		}
 
 		break;

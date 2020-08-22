@@ -59,7 +59,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 #include "src/common/timestamp.h"
 
 #include "src/sound/audiostream.h"
@@ -188,7 +187,7 @@ private:
 		uint16_t height;
 		CodecType codecType;
 
-		Common::PtrVector<SampleDesc> sampleDescs;
+		std::vector<std::unique_ptr<SampleDesc>> sampleDescs;
 
 		uint32_t frameCount;
 		uint32_t duration;
@@ -274,12 +273,12 @@ private:
 	const ParseTable *_parseTable;
 	bool _foundMOOV;
 	uint32_t _timeScale;
-	Common::PtrVector<QuickTimeTrack> _tracks;
+	std::vector<std::unique_ptr<QuickTimeTrack>> _tracks;
 
 	void initParseTable();
 
 	void checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endTime);
-	Common::PtrVector<QuickTimeAudioTrack> _audioTracks;
+	std::vector<std::unique_ptr<QuickTimeAudioTrack>> _audioTracks;
 
 	Codec *findDefaultVideoCodec() const;
 	int _videoTrackIndex;
