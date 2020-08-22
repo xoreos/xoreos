@@ -50,7 +50,7 @@ IngameGUI::IngameGUI(Module &module, ::Engines::Console *console) :
 	_quickchat = std::make_unique<Quickchat>(_quickbar->getHeight() - 3.0f);
 	_compass   = std::make_unique<Compass>(_quickbar->getHeight() + _quickchat->getHeight() - 6.0f);
 
-	_party.push_back(new PartyLeader(module));
+	_party.emplace_back(std::make_unique<PartyLeader>(module));
 
 	_lastPartyMemberChange.resize(1);
 	_lastPartyMemberChange[0] = 0;
@@ -77,8 +77,8 @@ void IngameGUI::show() {
 	_quickchat->show();
 	_compass->show();
 
-	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->show();
+	for (auto &partyMember : _party)
+		partyMember->show();
 
 	if (_dialog)
 		_dialog->show();
@@ -88,8 +88,8 @@ void IngameGUI::hide() {
 	if (_dialog)
 		_dialog->hide();
 
-	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->hide();
+	for (auto &partyMember : _party)
+		partyMember->hide();
 
 	_compass->hide();
 	_quickchat->hide();
@@ -103,8 +103,8 @@ void IngameGUI::addEvent(const Events::Event &event) {
 		return;
 	}
 
-	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->addEvent(event);
+	for (auto &partyMember : _party)
+		partyMember->addEvent(event);
 
 	_compass->addEvent(event);
 	_quickchat->addEvent(event);
@@ -120,8 +120,8 @@ void IngameGUI::processEventQueue() {
 		return;
 	}
 
-	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->processEventQueue();
+	for (auto &partyMember : _party)
+		partyMember->processEventQueue();
 
 	_compass->processEventQueue();
 	_quickchat->processEventQueue();
@@ -141,8 +141,8 @@ void IngameGUI::setName(size_t partyMember, const Common::UString &name) {
 }
 
 void IngameGUI::setArea(const Common::UString &area) {
-	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
-		(*p)->setArea(area);
+	for (auto &partyMember : _party)
+		partyMember->setArea(area);
 }
 
 void IngameGUI::setHealthy(size_t partyMember) {

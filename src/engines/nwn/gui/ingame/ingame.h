@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 
 #include "src/events/types.h"
 
@@ -100,7 +99,7 @@ private:
 	/** The time that party member was changed last. */
 	std::vector<uint32_t> _lastPartyMemberChange;
 
-	Common::PtrVector<CharacterInfo> _party; ///< The party member character panels.
+	std::vector<std::unique_ptr<CharacterInfo>> _party; ///< The party member character panels.
 
 
 	/** Set the party member's portrait. */

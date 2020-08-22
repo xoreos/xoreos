@@ -26,8 +26,7 @@
 #define ENGINES_NWN_GUI_CHARGEN_CHARPACKAGE_H
 
 #include <vector>
-
-#include "src/common/ptrvector.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
@@ -53,7 +52,7 @@ protected:
 private:
 	WidgetListBox *_packageListBox;
 
-	Common::PtrVector<CharGenBase> _subGUIs;
+	std::vector<std::unique_ptr<CharGenBase>> _subGUIs;
 
 	std::vector<Common::UString> _packageNames;
 	std::vector<uint8_t>           _packageID;

@@ -28,7 +28,6 @@
 #include <vector>
 #include <memory>
 
-#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -117,7 +116,7 @@ private:
 	std::unique_ptr<Portrait> _portrait;
 
 	std::vector<Line> _lines;
-	Common::PtrVector<Graphics::Aurora::Text> _texts;
+	std::vector<std::unique_ptr<Graphics::Aurora::Text>> _texts;
 
 	bool _offscreen;
 

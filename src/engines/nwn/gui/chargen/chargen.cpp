@@ -60,11 +60,12 @@ CharGenMenu::~CharGenMenu() {
 void CharGenMenu::reset() {
 	_choices->reset();
 
-	for (Common::PtrVector<CharGenBase>::iterator g = _chargenGuis.begin(); g != _chargenGuis.end(); ++g)
-		(*g)->reset();
+	for (auto &gui : _chargenGuis)
+		gui->reset();
 
-	for (std::vector<WidgetButton *>::iterator b = ++_charButtons.begin(); b != _charButtons.end(); ++b)
-		(*b)->setDisabled(true);
+	for (auto &button : _charButtons)
+		button->setDisabled(true);
+	_charButtons.front()->setDisabled(false);
 }
 
 void CharGenMenu::callbackActive(Widget &widget) {
@@ -121,18 +122,18 @@ void CharGenMenu::init() {
 	_charButtons.push_back(getButton("PackagesButton", true));
 	_charButtons.push_back(getButton("CustomizeButton", true));
 
-	for (std::vector<WidgetButton *>::iterator b = ++_charButtons.begin(); b != _charButtons.end(); ++b)
-		(*b)->setDisabled(true);
+	for (auto &button : _charButtons)
+		button->setDisabled(true);
+	_charButtons.front()->setDisabled(false);
 
-
-	_chargenGuis.push_back(new CharSex(*_choices, _console));
-	_chargenGuis.push_back(new CharRace(*_choices, _console));
-	_chargenGuis.push_back(new CharPortrait(*_choices, _console));
-	_chargenGuis.push_back(new CharClass(*_choices, _console));
-	_chargenGuis.push_back(new CharAlignment(*_choices, _console));
-	_chargenGuis.push_back(new CharAttributes(*_choices, _console));
-	_chargenGuis.push_back(new CharPackage(*_choices, _console));
-	_chargenGuis.push_back(new CharAppearance(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharSex>(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharRace>(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharPortrait>(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharClass>(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharAlignment>(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharAttributes>(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharPackage>(*_choices, _console));
+	_chargenGuis.emplace_back(std::make_unique<CharAppearance>(*_choices, _console));
 }
 
 } // End of namespace NWN

@@ -162,7 +162,7 @@ NewGameFogs::NewGameFogs(size_t count) {
 	_fogs.reserve(count);
 
 	for (size_t i = 0; i < count; i++)
-		_fogs.push_back(createNewGameFog());
+		_fogs.emplace_back(createNewGameFog());
 }
 
 NewGameFogs::~NewGameFogs() {
@@ -170,13 +170,13 @@ NewGameFogs::~NewGameFogs() {
 }
 
 void NewGameFogs::show() {
-	for (Common::PtrVector<Graphics::Aurora::Model>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
-		(*f)->show();
+	for (auto &fog : _fogs)
+		fog->show();
 }
 
 void NewGameFogs::hide() {
-	for (Common::PtrVector<Graphics::Aurora::Model>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
-		(*f)->hide();
+	for (auto &fog : _fogs)
+		fog->hide();
 }
 
 

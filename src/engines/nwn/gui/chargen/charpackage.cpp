@@ -95,37 +95,29 @@ void CharPackage::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "ConfigurePckg") {
 		if (_subGUIs.size() == 0) {
-			CharSkills *charSkills = new CharSkills(*_choices, _console);
-			_subGUIs.push_back(charSkills);
-			// TODO Check if new feats are needed.
-			CharFeats *charFeats = new CharFeats(*_choices, _console);
-			_subGUIs.push_back(charFeats);
+			_subGUIs.emplace_back(std::make_unique<CharSkills>(*_choices, _console));
+			// TODO Check if new feats are needed
+			_subGUIs.emplace_back(std::make_unique<CharFeats>(*_choices, _console));
 
 			// Add spell GUI if needed
 			const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
 			const Aurora::TwoDARow &rowClass = twodaClasses.getRow(_choices->getClass());
 			if (rowClass.getInt("SpellCaster") > 0) {
-				if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ" &&
-				    _choices->getCharacter().getHitDice() == 0) {
-					CharSchool *charSchool = new CharSchool(*_choices, _console);
-					_subGUIs.push_back(charSchool);
-					CharSpells *charSpells = new CharSpells(*_choices, _console);
-					_subGUIs.push_back(charSpells);
-				} else if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER" &&
-				           _choices->getCharacter().getHitDice() == 0) {
-					CharDomain *charDomain = new CharDomain(*_choices, _console);
-					_subGUIs.push_back(charDomain);
+				if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ" && _choices->getCharacter().getHitDice() == 0) {
+					_subGUIs.emplace_back(std::make_unique<CharSchool>(*_choices, _console));
+					_subGUIs.emplace_back(std::make_unique<CharSpells>(*_choices, _console));
+				} else if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER" && _choices->getCharacter().getHitDice() == 0) {
+					_subGUIs.emplace_back(std::make_unique<CharDomain>(*_choices, _console));
 				} else if (!rowClass.empty("SpellKnownTable")) {
-					CharSpells *charSpells = new CharSpells(*_choices, _console);
-					_subGUIs.push_back(charSpells);
+					_subGUIs.emplace_back(std::make_unique<CharSpells>(*_choices, _console));
 				}
 			}
-			//TODO: Add animal companion/familiar GUI.
+			//TODO: Add animal companion/familiar GUI
 		}
 
 		uint32_t subReturnCode;
-		for (Common::PtrVector<CharGenBase>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
-			subReturnCode = sub(**g, 0, false);
+		for (auto &gui : _subGUIs) {
+			subReturnCode = sub(*gui, 0, false);
 			if (subReturnCode == 1) {
 				reset();
 				_returnCode = 1;

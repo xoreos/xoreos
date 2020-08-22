@@ -234,12 +234,12 @@ void Tooltip::updatePosition() {
 	const float textBottomZ = bubbleZ - 1.0f;
 
 	float textY = textBottomY;
-	for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t) {
-		const float textWidth   = (*t)->getWidth();
+	for (auto &text : _texts) {
+		const float textWidth   = text->getWidth();
 		const float textBorderX = (bubbleTextWidth - textWidth) * _align;
 		const float textX       = textBottomX + textBorderX;
-		const float lineY       = textY - (*t)->getHeight();
-		(*t)->setPosition(floorf(textX), floorf(lineY), floorf(textBottomZ));
+		const float lineY       = textY - text->getHeight();
+		text->setPosition(floorf(textX), floorf(lineY), floorf(textBottomZ));
 
 		textY -= (_lineHeight + _lineSpacing);
 	}
@@ -290,8 +290,8 @@ void Tooltip::hide() {
 
 void Tooltip::getSize(float &width, float &height) {
 	width = 0.0f;
-	for (Common::PtrVector<Graphics::Aurora::Text>::const_iterator t = _texts.begin(); t != _texts.end(); ++t)
-		width = MAX(width, (*t)->getWidth());
+	for (auto &text : _texts)
+		width = MAX(width, text->getWidth());
 
 	if (_portrait)
 		width += _portrait->getWidth() + 2.0f;
@@ -325,7 +325,7 @@ bool Tooltip::createTexts(float width, size_t maxLines) {
 		font.getFont().split(l->line, lineLines, maxWidth);
 
 		for (std::vector<Common::UString>::const_iterator i = lineLines.begin(); i != lineLines.end(); ++i) {
-			_texts.push_back(new Graphics::Aurora::Text(font, *i, l->r, l->g, l->b, l->a));
+			_texts.emplace_back(std::make_unique<Graphics::Aurora::Text>(font, *i, l->r, l->g, l->b, l->a));
 			_texts.back()->setTag("Tooltip#Text");
 		}
 	}
@@ -435,8 +435,8 @@ void Tooltip::doShow() {
 		_portrait->show();
 
 	if (_showText)
-		for (Common::PtrVector<Graphics::Aurora::Text>::iterator t = _texts.begin(); t != _texts.end(); ++t)
-			(*t)->show();
+		for (auto &text : _texts)
+			text->show();
 
 	GfxMan.unlockFrame();
 }
@@ -449,8 +449,8 @@ void Tooltip::doHide() {
 	if (_portrait)
 		_portrait->hide();
 
-	for (Common::PtrVector<Graphics::Aurora::Text>::iterator t = _texts.begin(); t != _texts.end(); ++t)
-		(*t)->hide();
+	for (auto &text : _texts)
+		text->hide();
 
 	GfxMan.unlockFrame();
 }

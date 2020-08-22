@@ -26,9 +26,9 @@
 #define ENGINES_NWN_GUI_MAIN_NEWGAMEFOG_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 
 #include "src/graphics/aurora/types.h"
 
@@ -45,7 +45,7 @@ public:
 	void hide();
 
 private:
-	Common::PtrVector<Graphics::Aurora::Model> _fogs;
+	std::vector<std::unique_ptr<Graphics::Aurora::Model>> _fogs;
 };
 
 } // End of namespace NWN

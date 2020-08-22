@@ -26,8 +26,7 @@
 #define ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
 
 #include <vector>
-
-#include "src/common/ptrvector.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
@@ -54,7 +53,7 @@ private:
 	Module *_module;
 	std::vector<WidgetButton *> _charButtons;
 
-	Common::PtrVector<CharGenBase> _chargenGuis;
+	std::vector<std::unique_ptr<CharGenBase>> _chargenGuis;
 };
 
 } // End of namespace NWN

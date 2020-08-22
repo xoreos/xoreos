@@ -366,7 +366,7 @@ void Creature::setHead(uint32_t headID) {
 }
 
 void Creature::addEquippedItem(Item *item) {
-	_equippedItems.push_back(item);
+	_equippedItems.emplace_back(item);
 }
 
 void Creature::setArea(Area *area) {
@@ -536,27 +536,26 @@ void Creature::getPartModels() {
 }
 
 void Creature::getArmorModels() {
-	for (Common::PtrVector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
-		const Item &item = **e;
-		if (!item.isArmor())
+	for (auto &item : _equippedItems) {
+		if (!item->isArmor())
 			continue;
 
-		status("Equipping armour \"%s\" on model \"%s\"", item.getName().c_str(), _tag.c_str());
+		status("Equipping armour \"%s\" on model \"%s\"", item->getName().c_str(), _tag.c_str());
 
 		// Set the body part models
 		for (size_t i = 0; i < kBodyPartMAX; i++) {
-			uint32_t id = item.getArmorPart(i);
+			uint32_t id = item->getArmorPart(i);
 			if (id != Aurora::kFieldIDInvalid)
 				_bodyParts[i].idArmor = id;
 		}
 
 		// Set the armour color channels
-		_colorMetal1   = item.getColor(Item::kColorMetal1);
-		_colorMetal2   = item.getColor(Item::kColorMetal2);
-		_colorLeather1 = item.getColor(Item::kColorLeather1);
-		_colorLeather2 = item.getColor(Item::kColorLeather2);
-		_colorCloth1   = item.getColor(Item::kColorCloth1);
-		_colorCloth2   = item.getColor(Item::kColorCloth2);
+		_colorMetal1   = item->getColor(Item::kColorMetal1);
+		_colorMetal2   = item->getColor(Item::kColorMetal2);
+		_colorLeather1 = item->getColor(Item::kColorLeather1);
+		_colorLeather2 = item->getColor(Item::kColorLeather2);
+		_colorCloth1   = item->getColor(Item::kColorCloth1);
+		_colorCloth2   = item->getColor(Item::kColorCloth2);
 	}
 }
 
@@ -888,7 +887,7 @@ void Creature::loadEquippedItems(const Aurora::GFF3Struct &gff) {
 
 	const Aurora::GFF3List &cEquipped = gff.getList("Equip_ItemList");
 	for (Aurora::GFF3List::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e)
-		_equippedItems.push_back(new Item(**e));
+		_equippedItems.emplace_back(std::make_unique<Item>(**e));
 }
 
 void Creature::loadClasses(const Aurora::GFF3Struct &gff,
