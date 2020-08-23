@@ -71,35 +71,35 @@ const Campaigns::AddinContent &Campaigns::getAddins() const {
 }
 
 const Campaign *Campaigns::findCampaign(const Common::UString &uid) const {
-	for (PlayableCampaigns::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
-		if ((*c)->getUID().equalsIgnoreCase(uid))
-			return *c;
+	for (auto &campaign : _campaigns)
+		if (campaign->getUID().equalsIgnoreCase(uid))
+			return campaign.get();
 
-	return 0;
+	return nullptr;
 }
 
 const Campaign *Campaigns::findAddin(const Common::UString &uid) const {
-	for (AddinContent::const_iterator a = _addins.begin(); a != _addins.end(); ++a)
-		if ((*a)->getUID().equalsIgnoreCase(uid))
-			return *a;
+	for (auto &addin : _addins)
+		if (addin->getUID().equalsIgnoreCase(uid))
+			return addin.get();
 
-	return 0;
+	return nullptr;
 }
 
 Campaign *Campaigns::getCampaign(const Common::UString &uid) {
-	for (PlayableCampaigns::iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
-		if ((*c)->getUID().equalsIgnoreCase(uid))
-			return *c;
+	for (auto &campaign : _campaigns)
+		if (campaign->getUID().equalsIgnoreCase(uid))
+			return campaign.get();
 
-	return 0;
+	return nullptr;
 }
 
 Campaign *Campaigns::getAddin(const Common::UString &uid) {
-	for (AddinContent::iterator a = _addins.begin(); a != _addins.end(); ++a)
-		if ((*a)->getUID().equalsIgnoreCase(uid))
-			return *a;
+	for (auto &addin : _addins)
+		if (addin->getUID().equalsIgnoreCase(uid))
+			return addin.get();
 
-	return 0;
+	return nullptr;
 }
 
 bool Campaigns::isLoaded() const {
@@ -148,9 +148,9 @@ void Campaigns::addCampaign(Campaign *campaign) {
 	}
 
 	if (campaign->getExtendsUID().empty())
-		_campaigns.push_back(campaign);
+		_campaigns.emplace_back(campaign);
 	else
-		_addins.push_back(campaign);
+		_addins.emplace_back(campaign);
 }
 
 Campaign *Campaigns::readCampaign(const Common::UString &cifPath, const Common::UString &manifestPath,

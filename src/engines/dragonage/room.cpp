@@ -147,7 +147,7 @@ void Room::loadLayout(const Common::UString &roomFile) {
 		if (!model)
 			continue;
 
-		_models.push_back(model);
+		_models.emplace_back(model);
 
 		glm::mat4 modelTransform(roomTransform);
 
@@ -176,13 +176,13 @@ void Room::loadLayout(const Common::UString &roomFile) {
 }
 
 void Room::show() {
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		(*m)->show();
+	for (auto &model : _models)
+		model->show();
 }
 
 void Room::hide() {
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		(*m)->hide();
+	for (auto &model : _models)
+		model->hide();
 }
 
 } // End of namespace DragonAge

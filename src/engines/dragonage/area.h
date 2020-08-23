@@ -28,9 +28,9 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <memory>
 
 #include "src/common/ptrlist.h"
-#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -93,7 +93,7 @@ protected:
 
 
 private:
-	typedef Common::PtrVector<Room> Rooms;
+	typedef std::vector<std::unique_ptr<Room>> Rooms;
 
 	typedef Common::PtrList<DragonAge::Object> Objects;
 	typedef std::map<uint32_t, DragonAge::Object *> ObjectMap;
