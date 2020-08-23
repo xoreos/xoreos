@@ -80,8 +80,8 @@ void Console::updateCampaigns() {
 	std::vector<Common::UString> campaignTags;
 
 	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
-	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
-		campaignTags.push_back((*c)->getUID());
+	for (auto &campaign : campaigns)
+		campaignTags.push_back(campaign->getUID());
 
 	std::sort(campaignTags.begin(), campaignTags.end(), Common::UString::iless());
 	setArguments("loadcampaign", campaignTags);
@@ -92,12 +92,10 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	if (!campaign)
 		return;
 
-	const std::vector<Common::UString> &areas = campaign->getAreas();
+	for (auto &area : campaign->getAreas()) {
+		const Common::UString &rim = campaign->getAreaRIM(area);
 
-	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a) {
-		const Common::UString &rim = campaign->getAreaRIM(*a);
-
-		printf("%s (\"%s\")", a->c_str(), Area::getName(*a, rim).c_str());
+		printf("%s (\"%s\")", area.c_str(), Area::getName(area, rim).c_str());
 	}
 }
 
@@ -111,12 +109,10 @@ void Console::cmdLoadArea(const CommandLine &cl) {
 	if (!campaign)
 		return;
 
-	const std::vector<Common::UString> &areas = campaign->getAreas();
-
-	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a) {
-		if (a->equalsIgnoreCase(cl.args)) {
+	for (auto &area : campaign->getAreas()) {
+		if (area.equalsIgnoreCase(cl.args)) {
 			hide();
-			campaign->movePC(*a);
+			campaign->movePC(area);
 			return;
 		}
 	}
@@ -129,8 +125,8 @@ void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 
 	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
 
-	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
-		printf("%s (\"%s\")", (*c)->getUID().c_str(), (*c)->getName().getString().c_str());
+	for (auto &campaign : campaigns)
+		printf("%s (\"%s\")", campaign->getUID().c_str(), campaign->getName().getString().c_str());
 }
 
 void Console::cmdLoadCampaign(const CommandLine &cl) {
@@ -142,10 +138,10 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 	Campaigns &campaignsCtx = _engine->getGame().getCampaigns();
 
 	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
-	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
-		if ((*c)->getUID().equalsIgnoreCase(cl.args)) {
+	for (auto &campaign : campaigns) {
+		if (campaign->getUID().equalsIgnoreCase(cl.args)) {
 			hide();
-			campaignsCtx.load(**c);
+			campaignsCtx.load(*campaign);
 			return;
 		}
 	}

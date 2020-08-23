@@ -26,8 +26,8 @@
 #define ENGINES_DRAGONAGE2_ROOM_H
 
 #include <vector>
+#include <memory>
 
-#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -51,7 +51,7 @@ public:
 	void hide();
 
 private:
-	typedef Common::PtrVector<Graphics::Aurora::Model> Models;
+	typedef std::vector<std::unique_ptr<Graphics::Aurora::Model>> Models;
 
 	int32_t _id;
 

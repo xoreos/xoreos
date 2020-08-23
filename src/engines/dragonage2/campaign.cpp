@@ -206,7 +206,7 @@ Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *par
 
 	for (GFF4List::const_iterator c = children.begin(); c != children.end(); ++c)
 		if (*c)
-			rim->children.push_back(readRIMs(**c, rim.get()));
+			rim->children.emplace_back(readRIMs(**c, rim.get()));
 
 	// If this node defines an area, remember it
 	if (!rim->area.empty()) {

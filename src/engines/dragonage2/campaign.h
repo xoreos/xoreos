@@ -30,7 +30,6 @@
 #include <map>
 #include <memory>
 
-#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/locstring.h"
@@ -53,6 +52,8 @@ class Creature;
 
 class Campaign : public DragonAge2::Object, public DragonAge2::ObjectContainer {
 public:
+	~Campaign();
+
 	// .--- Static information
 	/** Return the unique ID of this campaign. */
 	const Common::UString &getUID() const;
@@ -99,7 +100,7 @@ public:
 private:
 	/** A node in the RIM tree. */
 	struct RIMNode {
-		typedef Common::PtrVector<const RIMNode> Children;
+		typedef std::vector<std::unique_ptr<const RIMNode>> Children;
 
 		Common::UString tag;  ///< Name of the node itself, not unique.
 		Common::UString area; ///< ResRef of the area this node describes, if any.
@@ -170,7 +171,6 @@ private:
 
 	Campaign(Game &game, const Common::UString &cifPath = "",
 	         const Common::UString &manifestPath = "", const Common::UString &addinBase = "");
-	~Campaign();
 
 	// .--- Loader
 	void read(const Common::UString &cifPath, const Common::UString &manifestPath);
@@ -211,9 +211,6 @@ private:
 	// '---
 
 	friend class Campaigns;
-
-	template<typename T>
-	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 } // End of namespace DragonAge2

@@ -142,7 +142,7 @@ void Area::loadEnvironment(const Common::UString &resRef) {
 		if (!*r || ((*r)->getLabel() != kROOMID))
 			continue;
 
-		_rooms.push_back(new Room(**r));
+		_rooms.emplace_back(std::make_unique<Room>(**r));
 	}
 }
 
@@ -209,8 +209,8 @@ void Area::show() {
 
 	GfxMan.lockFrame();
 
-	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->show();
+	for (auto &room : _rooms)
+		room->show();
 	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->show();
 
@@ -224,8 +224,8 @@ void Area::hide() {
 
 	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->hide();
-	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->hide();
+	for (auto &room : _rooms)
+		room->hide();
 
 	GfxMan.unlockFrame();
 }

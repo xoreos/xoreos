@@ -29,7 +29,6 @@
 #include <list>
 #include <memory>
 
-#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/events/types.h"
@@ -50,8 +49,8 @@ public:
 	~Campaigns();
 
 	// .--- Available campaigns and addins
-	typedef Common::PtrVector<Campaign> PlayableCampaigns;
-	typedef Common::PtrVector<Campaign> AddinContent;
+	typedef std::vector<std::unique_ptr<Campaign>> PlayableCampaigns;
+	typedef std::vector<std::unique_ptr<Campaign>> AddinContent;
 
 	/** Return all playable campaigns. */
 	const PlayableCampaigns &getCampaigns() const;
