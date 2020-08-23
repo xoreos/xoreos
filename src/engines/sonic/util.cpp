@@ -27,7 +27,6 @@
 #include <vector>
 #include <memory>
 
-#include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
@@ -47,6 +46,17 @@ namespace Engines {
 
 namespace Sonic {
 
+template<typename T>
+std::vector<T *> static getRawPointers(std::vector<std::unique_ptr<T>> &vec) {
+	std::vector<T *> raw;
+	raw.reserve(vec.size());
+
+	for (auto &v : vec)
+		raw.push_back(v.get());
+
+	return raw;
+}
+
 Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Common::UString &nclr,
                                          uint32_t width, uint32_t height, ...) {
 
@@ -58,8 +68,8 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 	if (!nclrStream)
 		throw Common::Exception("No such NCLR \"%s\"", nclr.c_str());
 
-	Common::PtrVector<Common::SeekableReadStream> ncgrs;
-	ncgrs.resize(width * height, 0);
+	std::vector<std::unique_ptr<Common::SeekableReadStream>> ncgrs;
+	ncgrs.resize(width * height);
 
 	va_list va;
 	va_start(va, height);
@@ -69,14 +79,14 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 		if (!str)
 			continue;
 
-		ncgrs[i] = ResMan.getResource(name + Common::UString(str), ::Aurora::kFileTypeNCGR);
+		ncgrs[i].reset(ResMan.getResource(name + Common::UString(str), ::Aurora::kFileTypeNCGR));
 		if (!ncgrs[i])
 			throw Common::Exception("No such NCGR \"%s\"", (name + Common::UString(str)).c_str());
 	}
 
 	va_end(va);
 
-	std::unique_ptr<Graphics::NCGR> image = std::make_unique<Graphics::NCGR>(ncgrs, width, height, *nclrStream);
+	std::unique_ptr<Graphics::NCGR> image = std::make_unique<Graphics::NCGR>(getRawPointers(ncgrs), width, height, *nclrStream);
 
 	Graphics::Aurora::Texture *texture = Graphics::Aurora::Texture::create(image.get());
 	image.release();
