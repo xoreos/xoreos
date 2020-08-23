@@ -143,8 +143,8 @@ void FoxPro::loadFields(SeekableReadStream &dbf, uint32_t recordSize) {
 }
 
 void FoxPro::loadRecords(SeekableReadStream &dbf, uint32_t recordSize, uint32_t recordCount) {
-	_pool.push_back(new byte[recordSize * recordCount]);
-	byte *recordData = _pool.back();
+	_pool.emplace_back(std::make_unique<byte[]>(recordSize * recordCount));
+	byte *recordData = _pool.back().get();
 
 	if (dbf.read(recordData, recordSize * recordCount) != (recordSize * recordCount))
 		throw Exception(kReadError);
@@ -688,9 +688,9 @@ void FoxPro::addField(uint8_t size) {
 
 	size_t dataSize = size * _records.size();
 
-	_pool.push_back(new byte[dataSize]);
+	_pool.emplace_back(std::make_unique<byte[]>(dataSize));
 
-	byte *data = _pool.back();
+	byte *data = _pool.back().get();
 
 	for (std::vector<Record>::iterator it = _records.begin(); it != _records.end(); ++it) {
 		it->fields.push_back(data);
@@ -707,9 +707,9 @@ size_t FoxPro::addRecord() {
 	if (!_fields.empty()) {
 		size_t dataSize = _fields.back().offset + _fields.back().size;
 
-		_pool.push_back(new byte[dataSize]);
+		_pool.emplace_back(std::make_unique<byte[]>(dataSize));
 
-		byte *data = _pool.back();
+		byte *data = _pool.back().get();
 
 		record.fields.resize(_fields.size());
 		for (size_t i = 0; i < _fields.size(); i++) {

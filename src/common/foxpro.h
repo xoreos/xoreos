@@ -25,10 +25,13 @@
 #ifndef COMMON_FOXPRO_H
 #define COMMON_FOXPRO_H
 
+#include <list>
+#include <vector>
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 
 namespace Common {
@@ -136,7 +139,7 @@ private:
 	std::vector<Field>  _fields;
 	std::vector<Record> _records;
 
-	PtrList<byte, DeallocatorArray> _pool;
+	std::list<std::unique_ptr<byte[]>> _pool;
 
 	uint16_t _memoBlockSize;
 	std::vector<std::unique_ptr<byte[]>> _memos;

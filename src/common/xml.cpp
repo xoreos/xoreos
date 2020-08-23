@@ -172,9 +172,9 @@ void XMLNode::load(_xmlNode &node, bool makeLower) {
 	}
 
 	for (xmlNodePtr child = node.children; child; child = child->next) {
-		_children.push_back(new XMLNode(*child, makeLower, this));
+		_children.emplace_back(new XMLNode(*child, makeLower, this));
 
-		_childMap.insert(std::make_pair(_children.back()->getName(), _children.back()));
+		_childMap.insert(std::make_pair(_children.back()->getName(), _children.back().get()));
 	}
 }
 

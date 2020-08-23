@@ -234,15 +234,13 @@ void Campaign::readManifest(const Common::UString &path) {
 	if (!addinList)
 		throw Common::Exception("Manifest has no AddInList");
 
-	const Common::XMLNode *addinItem = 0;
-
-	const Common::XMLNode::Children &addinItems = addinList->getChildren();
-	for (Common::XMLNode::Children::const_iterator c = addinItems.begin(); c != addinItems.end(); ++c) {
-		if ((*c)->getName() == "addinitem") {
+	const Common::XMLNode *addinItem = nullptr;
+	for (auto &child : addinList->getChildren()) {
+		if (child->getName() == "addinitem") {
 			if (addinItem)
 				throw Common::Exception("Manifest has more than one AddInItem");
 
-			addinItem = *c;
+			addinItem = child.get();
 		}
 	}
 

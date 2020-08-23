@@ -415,7 +415,7 @@ void ConfigFile::addDomain(ConfigDomain *domain, int lineNumber) {
 		throw Exception("Duplicate domain \"%s\" (line %d)", domain->_name.c_str(), lineNumber);
 
 	// Add the domain to the list and map
-	_domainList.push_back(domain);
+	_domainList.emplace_back(domain);
 	_domainMap.insert(std::make_pair(domain->_name, domain));
 }
 
@@ -499,40 +499,40 @@ void ConfigFile::save(WriteStream &stream) const {
 	}
 
 	// Domains
-	for (DomainList::const_iterator domain = _domainList.begin(); domain != _domainList.end(); ++domain) {
+	for (const auto &domain : _domainList) {
 		// Write domain prologue
-		if (!(*domain)->_prologue.empty()) {
-			stream.writeString((*domain)->_prologue);
+		if (!domain->_prologue.empty()) {
+			stream.writeString(domain->_prologue);
 			stream.writeByte('\n');
 		}
 
 		// Write domain name
 		stream.writeByte('[');
-		stream.writeString((*domain)->_name);
+		stream.writeString(domain->_name);
 		stream.writeByte(']');
 
 		// Write domain comment
-		if (!(*domain)->_comment.empty()) {
+		if (!domain->_comment.empty()) {
 			stream.writeByte(' ');
-			stream.writeString((*domain)->_comment);
+			stream.writeString(domain->_comment);
 		}
 
 		stream.writeByte('\n');
 
 		// Lines
-		for (ConfigDomain::LineList::const_iterator line = (*domain)->_lines.begin(); line != (*domain)->_lines.end(); ++line) {
+		for (const auto &line : domain->_lines) {
 			// Write key
-			if (line->key != (*domain)->_keys.end()) {
-				stream.writeString(line->key->first);
+			if (line.key != domain->_keys.end()) {
+				stream.writeString(line.key->first);
 				stream.writeByte('=');
-				stream.writeString(line->key->second);
-				if (!line->comment.empty())
+				stream.writeString(line.key->second);
+				if (!line.comment.empty())
 					stream.writeByte(' ');
 			}
 
 			// Write comment
-			if (!line->comment.empty())
-				stream.writeString(line->comment);
+			if (!line.comment.empty())
+				stream.writeString(line.comment);
 
 			stream.writeByte('\n');
 		}
@@ -580,12 +580,10 @@ ConfigDomain *ConfigFile::addDomain(const UString &name) {
 		return domain;
 
 	// Create a new domain
-	domain = new ConfigDomain(name);
+	_domainList.emplace_back(std::make_unique<ConfigDomain>(name));
+	_domainMap.insert(std::make_pair(name, _domainList.back().get()));
 
-	_domainList.push_back(domain);
-	_domainMap.insert(std::make_pair(name, domain));
-
-	return domain;
+	return _domainList.back().get();
 }
 
 bool ConfigFile::removeDomain(const UString &name) {
@@ -594,7 +592,9 @@ bool ConfigFile::removeDomain(const UString &name) {
 		// Domain doesn't exist, can't remove
 		return false;
 
-	_domainList.remove(domain->second);
+	_domainList.remove_if([&domain](const std::unique_ptr<ConfigDomain> &d) {
+		return d.get() == domain->second;
+	});
 
 	// Remove the domain
 	_domainMap.erase(domain);
