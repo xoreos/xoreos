@@ -144,7 +144,7 @@ RequestID RequestManager::destroy(Graphics::GLContainer &glContainer) {
 RequestID RequestManager::newRequest(ITCEvent type) {
 	std::lock_guard<std::recursive_mutex> lock(_mutexUse);
 
-	_requests.push_back(new Request(type));
+	_requests.emplace_back(std::make_unique<Request>(type));
 
 	return --_requests.end();
 }
@@ -163,7 +163,7 @@ void RequestManager::clearList() {
 	_requests.clear();
 }
 
-static bool requestIsGarbage(const Request * const request) {
+static bool requestIsGarbage(std::unique_ptr<Request> &request) {
 	return !request || request->isGarbage();
 }
 

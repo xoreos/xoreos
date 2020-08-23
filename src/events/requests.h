@@ -26,10 +26,10 @@
 #define EVENTS_REQUESTS_H
 
 #include <list>
+#include <memory>
 #include <functional>
 
 #include "src/common/types.h"
-#include "src/common/ptrlist.h"
 #include "src/common/singleton.h"
 #include "src/common/thread.h"
 
@@ -43,7 +43,7 @@ namespace Graphics {
 
 namespace Events {
 
-typedef Common::PtrList<Request>  RequestList;
+typedef std::list<std::unique_ptr<Request>> RequestList;
 typedef RequestList::iterator RequestID;
 
 /** The request manager, handling all requests.
