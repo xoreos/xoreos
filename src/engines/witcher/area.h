@@ -30,7 +30,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -116,7 +115,7 @@ protected:
 
 
 private:
-	typedef Common::PtrList<Engines::Witcher::Object> ObjectList;
+	typedef std::list<std::unique_ptr<Engines::Witcher::Object>> ObjectList;
 	typedef std::map<uint32_t, Engines::Witcher::Object *> ObjectMap;
 
 
@@ -161,7 +160,7 @@ private:
 
 	void loadProperties(const Aurora::GFF3Struct &props);
 
-	void loadObject(Engines::Witcher::Object &object);
+	void loadObject(std::unique_ptr<Engines::Witcher::Object> &&object);
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadDoors     (const Aurora::GFF3List &list);

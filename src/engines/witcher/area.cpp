@@ -84,8 +84,8 @@ Area::~Area() {
 
 void Area::clear() {
 	// Delete objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		_module->removeObject(**o);
+	for (auto &object : _objects)
+		_module->removeObject(*object);
 
 	_objects.clear();
 
@@ -117,8 +117,8 @@ const Aurora::LocString &Area::getName() const {
 }
 
 void Area::refreshLocalized() {
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->refreshLocalized();
+	for (auto &object : _objects)
+		object->refreshLocalized();
 }
 
 uint32_t Area::getMusicDayTrack() const {
@@ -178,8 +178,8 @@ void Area::show() {
 		_model->show();
 
 	// Show objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->show();
+	for (auto &object : _objects)
+		object->show();
 
 	GfxMan.unlockFrame();
 
@@ -199,8 +199,8 @@ void Area::hide() {
 	GfxMan.lockFrame();
 
 	// Hide objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->hide();
+	for (auto &object : _objects)
+		object->hide();
 
 	// Hide area geometry model
 	if (_model)
@@ -259,25 +259,20 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 void Area::loadModels() {
 	loadAreaModel();
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
-		Engines::Witcher::Object &object = **o;
+	for (auto &object : _objects) {
+		object->loadModel();
 
-		object.loadModel();
-
-		if (!object.isStatic()) {
-			const std::list<uint32_t> &ids = object.getIDs();
-
-			for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, &object));
-		}
+		if (!object->isStatic())
+			for (auto &id : object->getIDs())
+				_objectMap.insert(std::make_pair(id, object.get()));
 	}
 }
 
 void Area::unloadModels() {
 	_objectMap.clear();
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->unloadModel();
+	for (auto &object : _objects)
+		object->unloadModel();
 
 	unloadAreaModel();
 }
@@ -297,35 +292,29 @@ void Area::unloadAreaModel() {
 	_model.reset();
 }
 
-void Area::loadObject(Engines::Witcher::Object &object) {
-	object.setArea(this);
+void Area::loadObject(std::unique_ptr<Engines::Witcher::Object> &&object) {
+	object->setArea(this);
 
-	_objects.push_back(&object);
-	_module->addObject(object);
+	_objects.push_back(std::move(object));
+	_module->addObject(*_objects.back());
 }
 
 void Area::loadWaypoints(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Waypoint *waypoint = new Waypoint(**d);
-
-		loadObject(*waypoint);
-	}
+	for (auto &waypoint : list)
+		if (waypoint)
+			loadObject(std::make_unique<Waypoint>(*waypoint));
 }
 
 void Area::loadPlaceables(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable(**p);
-
-		loadObject(*placeable);
-	}
+	for (auto &placeable : list)
+		if (placeable)
+			loadObject(std::make_unique<Placeable>(*placeable));
 }
 
 void Area::loadDoors(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Door *door = new Door(*_module, **d);
-
-		loadObject(*door);
-	}
+	for (auto &door : list)
+		if (door)
+			loadObject(std::make_unique<Door>(*_module, *door));
 }
 
 void Area::addEvent(const Events::Event &event) {
