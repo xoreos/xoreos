@@ -27,8 +27,8 @@
 
 #include <vector>
 #include <list>
+#include <memory>
 
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -102,7 +102,7 @@ private:
 	};
 	typedef std::vector<EquipItem> Items;
 
-	typedef Common::PtrList<Graphics::Aurora::Model> Models;
+	typedef std::list<std::unique_ptr<Graphics::Aurora::Model>> Models;
 
 
 	bool _isPC; ///< Is the creature a PC?
