@@ -31,7 +31,6 @@
 #include <set>
 #include <memory>
 
-#include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -59,8 +58,8 @@ class Journal;
 
 class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
-	Module(::Engines::Console &console);
 	Module();
+	Module(::Engines::Console &console);
 	~Module();
 
 	// .--- Module management
@@ -158,17 +157,17 @@ private:
 		bool operator<(const Action &s) const;
 	};
 
-	typedef Common::PtrMap<Common::UString, Area> AreaMap;
+	typedef std::map<Common::UString, std::unique_ptr<Area>> AreaMap;
 
 	typedef std::list<Events::Event> EventQueue;
 	typedef std::multiset<Action> ActionQueue;
 
 
-	::Engines::Console *_console;
+	::Engines::Console *_console { nullptr};
 
-	bool _hasModule; ///< Do we have a module?
-	bool _running;   ///< Are we currently running a module?
-	bool _exit;      ///< Should we exit the module?
+	bool _hasModule { false }; ///< Do we have a module?
+	bool _running   { false }; ///< Are we currently running a module?
+	bool _exit      { false }; ///< Should we exit the module?
 
 	/** Resources added by the module. */
 	Common::ChangeID _resModule;
@@ -181,11 +180,11 @@ private:
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
 	/** The player character we use. */
-	Creature *_pc;
+	Creature *_pc { nullptr };
 
-	AreaMap         _areas;       ///< The areas in the current module.
-	Common::UString _newArea;     ///< The new area to enter.
-	Area           *_currentArea; ///< The current area.
+	AreaMap _areas;                 ///< The areas in the current module.
+	Common::UString _newArea;       ///< The new area to enter.
+	Area *_currentArea { nullptr }; ///< The current area.
 
 	std::unique_ptr<Factions> _factions; ///< The factions in the current module.
 	std::unique_ptr<Roster>   _roster;   ///< The roster for the current module.
@@ -193,7 +192,7 @@ private:
 	std::unique_ptr<Journal> _moduleJournal;   ///< The current module's journal.
 	std::unique_ptr<Journal> _campaignJournal; ///< The campaign journal.
 
-	bool _ranPCSpawn; ///< Did we run the PC spawn script?
+	bool _ranPCSpawn { false }; ///< Did we run the PC spawn script?
 
 	Common::UString _newModule; ///< The module we should change to.
 

@@ -60,14 +60,10 @@ bool Module::Action::operator<(const Action &s) const {
 }
 
 
-Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console),
-	_hasModule(false), _running(false), _exit(false), _pc(0), _currentArea(0), _ranPCSpawn(false) {
-
+Module::Module() : Object(kObjectTypeModule) {
 }
 
-Module::Module() : Object(kObjectTypeModule), _console(nullptr), _hasModule(false),
-	_running(false), _exit(false), _pc(0), _currentArea(0), _ranPCSpawn(false) {
-
+Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console) {
 }
 
 Module::~Module() {
@@ -296,13 +292,13 @@ void Module::enterArea() {
 
 	if (_currentArea) {
 		_currentArea->runScript(kScriptExit, _currentArea, _pc);
-		_pc->setArea(0);
+		_pc->setArea(nullptr);
 
 		_pc->hide();
 
 		_currentArea->hide();
 
-		_currentArea = 0;
+		_currentArea = nullptr;
 	}
 
 	if (_newArea.empty()) {
@@ -317,7 +313,7 @@ void Module::enterArea() {
 		return;
 	}
 
-	_currentArea = area->second;
+	_currentArea = area->second.get();
 
 	_currentArea->show();
 	_pc->show();
@@ -459,14 +455,10 @@ void Module::loadAreas() {
 	for (size_t i = 0; i < areas.size(); i++) {
 		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), (int)i, (int)areas.size() - 1);
 
-		std::pair<AreaMap::iterator, bool> result;
-
-		result = _areas.insert(std::make_pair(areas[i], (Area *) 0));
-		if (!result.second)
-			throw Common::Exception("Area tag collision: \"%s\"", areas[i].c_str());
-
 		try {
-			result.first->second = new Area(*this, areas[i].c_str());
+			std::pair<AreaMap::iterator, bool> result = _areas.insert(std::make_pair(areas[i], std::make_unique<Area>(*this, areas[i])));
+			if (!result.second)
+				throw Common::Exception("Area tag collision");
 		} catch (Common::Exception &e) {
 			e.add("Can't load area \"%s\"", areas[i].c_str());
 			throw;
@@ -478,7 +470,7 @@ void Module::unloadAreas() {
 	_areas.clear();
 	_newArea.clear();
 
-	_currentArea = 0;
+	_currentArea = nullptr;
 }
 
 void Module::unloadPC() {
@@ -488,7 +480,7 @@ void Module::unloadPC() {
 	removeObject(*_pc);
 
 	_pc->hide();
-	_pc = 0;
+	_pc = nullptr;
 }
 
 void Module::unloadFactions() {
@@ -524,11 +516,11 @@ void Module::movePC(const Common::UString &area, float x, float y, float z) {
 	if (!_pc)
 		return;
 
-	Area *pcArea = 0;
+	Area *pcArea = nullptr;
 
 	AreaMap::iterator a = _areas.find(area);
 	if (a != _areas.end())
-		pcArea = a->second;
+		pcArea = a->second.get();
 
 	movePC(pcArea, x, y, z);
 }
