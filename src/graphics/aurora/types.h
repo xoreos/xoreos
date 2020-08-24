@@ -26,8 +26,8 @@
 #define GRAPHICS_AURORA_TYPES_H
 
 #include <map>
+#include <memory>
 
-#include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/types.h"
@@ -58,7 +58,7 @@ class ModelNode;
 class Text;
 class GUIQuad;
 
-typedef Common::PtrMap<Common::UString, class Model, Common::UString::iless> ModelCache;
+typedef std::map<Common::UString, std::unique_ptr<Model>, Common::UString::iless> ModelCache;
 
 } // End of namespace Aurora
 

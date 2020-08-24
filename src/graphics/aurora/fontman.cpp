@@ -80,13 +80,10 @@ bool FontManager::hasFont(const Common::UString &name, int height) {
 FontHandle FontManager::add(Font *font, const Common::UString &name) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
-	std::unique_ptr<ManagedFont> managedFont = std::make_unique<ManagedFont>(font);
-
-	std::pair<FontMap::iterator, bool> result = _fonts.insert(std::make_pair(name, managedFont.get()));
+	std::pair<FontMap::iterator, bool> result = _fonts.insert(std::make_pair(name, std::make_unique<ManagedFont>(font)));
 	if (!result.second)
 		throw Common::Exception("Font \"%s\" already exists", name.c_str());
 
-	managedFont.release();
 	FontMap::iterator fontIterator = result.first;
 
 	return FontHandle(fontIterator);
@@ -106,9 +103,7 @@ FontHandle FontManager::get(FontFormat format, const Common::UString &name, int 
 	if (font == _fonts.end()) {
 		std::pair<FontMap::iterator, bool> result;
 
-		ManagedFont *f = createFont(format, aliasName, height);
-
-		result = _fonts.insert(std::make_pair(indexName, f));
+		result = _fonts.insert(std::make_pair(indexName, std::unique_ptr<ManagedFont>(createFont(format, aliasName, height))));
 
 		font = result.first;
 	}

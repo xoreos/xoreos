@@ -336,7 +336,7 @@ void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2, bool xbox)
 		if (modelCache) {
 			ModelCache::iterator super = modelCache->find(_superModelName);
 			if (super != modelCache->end()) {
-				_superModel = super->second;
+				_superModel = super->second.get();
 
 				foundInCache = true;
 			}
@@ -346,7 +346,7 @@ void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2, bool xbox)
 			_superModel = new Model_KotOR(_superModelName, kotor2, xbox, _type, "", modelCache);
 
 		if (modelCache && !foundInCache)
-			modelCache->insert(std::make_pair(_superModelName, _superModel));
+			modelCache->insert(std::make_pair(_superModelName, std::unique_ptr<Model>(_superModel)));
 	}
 }
 

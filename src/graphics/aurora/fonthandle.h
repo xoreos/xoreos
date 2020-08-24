@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 
 namespace Graphics {
@@ -46,7 +45,7 @@ struct ManagedFont {
 	ManagedFont(Font *f);
 };
 
-typedef Common::PtrMap<Common::UString, ManagedFont> FontMap;
+typedef std::map<Common::UString, std::unique_ptr<ManagedFont>> FontMap;
 
 /** A handle to a font. */
 class FontHandle {
