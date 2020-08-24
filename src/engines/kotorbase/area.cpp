@@ -117,8 +117,8 @@ void Area::load() {
 }
 
 void Area::clear() {
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		_module->removeObject(**o);
+	for (auto &object : _objects)
+		_module->removeObject(*object);
 
 	_objects.clear();
 	_creatures.clear();
@@ -250,16 +250,16 @@ void Area::show() {
 	}
 
 	// Show objects
-	for (auto &o : _objects) {
-		Door *door = ObjectContainer::toDoor(o);
+	for (auto &object : _objects) {
+		Door *door = ObjectContainer::toDoor(object.get());
 		if (door) {
 			door->show();
 			continue;
 		}
 
-		const Room *room = o->getRoom();
+		const Room *room = object->getRoom();
 		if (room && room->isVisible())
-			o->show();
+			object->show();
 	}
 
 	// Show walkmesh
@@ -286,12 +286,12 @@ void Area::hide() {
 	GfxMan.lockFrame();
 
 	// Hide objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->hide();
+	for (auto &object : _objects)
+		object->hide();
 
 	// Hide rooms
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->hide();
+	for (auto &room : _rooms)
+		room->hide();
 
 	// Hide walkmesh
 	_pathfinding->showWalkmesh(false);
@@ -421,74 +421,71 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 void Area::loadRooms() {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	for (Aurora::LYTFile::RoomArray::const_iterator r = rooms.begin(); r != rooms.end(); ++r) {
-		Room *room = new Room(r->model, r->x, r->y, r->z);
-		_rooms.push_back(room);
-		_pathfinding->addRoom(room);
+		_rooms.emplace_back(std::make_unique<Room>(r->model, r->x, r->y, r->z));
+		_pathfinding->addRoom(_rooms.back().get());
 	}
 
 	_pathfinding->connectRooms();
 }
 
-void Area::loadObject(Object &object) {
-	_objects.push_back(&object);
-	_module->addObject(object);
+void Area::loadObject(std::unique_ptr<Object> &&object) {
+	_objects.push_back(std::move(object));
+	_module->addObject(*_objects.back());
 
-	if (!object.isStatic())
-		addToObjectMap(&object);
+	if (!_objects.back()->isStatic())
+		addToObjectMap(_objects.back().get());
 
-	notifyObjectMoved(object);
+	notifyObjectMoved(*_objects.back());
 }
 
 void Area::loadWaypoints(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator w = list.begin(); w != list.end(); ++w) {
-		Waypoint *waypoint = new Waypoint(**w);
-
-		loadObject(*waypoint);
-	}
+	for (auto &waypoint : list)
+		if (waypoint)
+			loadObject(std::make_unique<Waypoint>(*waypoint));
 }
 
 void Area::loadPlaceables(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable(**p);
+	for (auto &placeable : list) {
+		if (placeable) {
+			loadObject(std::make_unique<Placeable>(*placeable));
 
-		loadObject(*placeable);
-		_situatedObjects.push_back(placeable);
-		_localPathfinding->addStaticObjects(new ObjectWalkmesh(placeable));
+			_situatedObjects.push_back(static_cast<Placeable *>(_objects.back().get()));
+			_localPathfinding->addStaticObjects(new ObjectWalkmesh(static_cast<Placeable *>(_objects.back().get())));
+		}
 	}
 }
 
 void Area::loadDoors(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Door *door = new Door(*_module, **d);
+	for (auto &door : list) {
+		if (door) {
+			loadObject(std::make_unique<Door>(*_module, *door));
 
-		loadObject(*door);
-		_situatedObjects.push_back(door);
-		_localPathfinding->addStaticObjects(new DoorWalkmesh(door));
+			_situatedObjects.push_back(static_cast<Door *>(_objects.back().get()));
+			_localPathfinding->addStaticObjects(new DoorWalkmesh(static_cast<Door *>(_objects.back().get())));
+		}
 	}
 }
 
 void Area::loadCreatures(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Creature *creature = _module->createCreature(**c);
-		addCreature(creature);
-	}
+	for (auto &creature : list)
+		if (creature)
+			addCreature(_module->createCreature(*creature));
 }
 
 void Area::loadTriggers(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator t = list.begin(); t != list.end(); ++t) {
-		Trigger *trigger = new Trigger(**t);
+	for (auto &trigger : list) {
+		if (trigger) {
+			loadObject(std::make_unique<Trigger>(*trigger));
 
-		loadObject(*trigger);
-		_triggers.push_back(trigger);
+			_triggers.push_back(static_cast<Trigger *>(_objects.back().get()));
+		}
 	}
 }
 
 void Area::loadSounds(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
-		SoundObject *soundObject = new SoundObject(**c);
-
-		loadObject(*soundObject);
-	}
+	for (auto &soundObject : list)
+		if (soundObject)
+			loadObject(std::make_unique<SoundObject>(*soundObject));
 }
 
 void Area::addEvent(const Events::Event &event) {
@@ -763,12 +760,11 @@ Object *Area::getActiveObject() {
 }
 
 Object *Area::getObjectByTag(const Common::UString &tag) {
-	for (ObjectList::iterator o = _objects.begin();
-			o != _objects.end(); ++o) {
-		if ((*o)->getTag().stricmp(tag) == 0)
-			return *o;
-	}
-	return 0;
+	for (auto &object : _objects)
+		if (object->getTag().stricmp(tag) == 0)
+			return object.get();
+
+	return nullptr;
 }
 
 Creature *Area::getNearestCreature(const Object *target, int UNUSED(nth), const CreatureSearchCriteria &criteria) const {
@@ -830,7 +826,7 @@ void Area::handleCreaturesDeath() {
 }
 
 void Area::addCreature(Creature *creature) {
-	loadObject(*creature);
+	loadObject(std::unique_ptr<Creature>(creature));
 	_creatures.push_back(creature);
 }
 
@@ -870,7 +866,9 @@ void Area::removeObject(Object *object) {
 	}
 
 	_module->removeObject(*object);
-	_objects.remove(object);
+	_objects.remove_if([&object](std::unique_ptr<Object> &o) {
+		return o.get() == object;
+	});
 }
 
 } // End of namespace KotORBase

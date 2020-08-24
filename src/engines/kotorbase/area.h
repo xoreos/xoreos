@@ -30,7 +30,6 @@
 #include <map>
 #include <set>
 
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 #include <memory>
@@ -182,9 +181,9 @@ protected:
 	void notifyCameraMoved();
 
 private:
-	typedef Common::PtrList<Room> RoomList;
+	typedef std::list<std::unique_ptr<Room>> RoomList;
 
-	typedef Common::PtrList<Object> ObjectList;
+	typedef std::list<std::unique_ptr<Object>> ObjectList;
 	typedef std::map<uint32_t, Object *> ObjectMap;
 
 	std::unique_ptr<Aurora::GFF3File> _are;
@@ -268,7 +267,7 @@ private:
 
 	void loadProperties(const Aurora::GFF3Struct &props);
 
-	void loadObject(Object &object);
+	void loadObject(std::unique_ptr<Object> &&object);
 
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
