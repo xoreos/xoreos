@@ -194,11 +194,10 @@ void DialogBox::setPosition(float x, float y, float z) {
 	const float entryX = nameX;
 	      float entryY = nameY - 4.0f;
 
-	for (Common::PtrList<Graphics::Aurora::Text>::iterator e = _entryLines.begin();
-	     e != _entryLines.end(); ++e) {
+	for (auto &entryLine : _entryLines) {
 		entryY -= _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 
-		(*e)->setPosition(entryX, entryY, portraitZ);
+		entryLine->setPosition(entryX, entryY, portraitZ);
 	}
 
 	// PC Replies
@@ -208,19 +207,19 @@ void DialogBox::setPosition(float x, float y, float z) {
 
 	const float replyCountRight = replyX + _replyCountWidth;
 
-	for (std::list<ReplyLine>::iterator r = _replyLines.begin(); r != _replyLines.end(); ++r) {
+	for (auto &replyLine : _replyLines) {
 		replyY -= _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 
-		if (r->count) {
-			const float replyCountX = replyCountRight - r->count->getWidth();
+		if (replyLine.count) {
+			const float replyCountX = replyCountRight - replyLine.count->getWidth();
 
-			r->count->setPosition(replyCountX, replyY, portraitZ);
+			replyLine.count->setPosition(replyCountX, replyY, portraitZ);
 		}
 
 		const float replyLineX = replyCountRight;
 
-		if (r->line)
-			r->line->setPosition(replyLineX, replyY, portraitZ);
+		if (replyLine.line)
+			replyLine.line->setPosition(replyLineX, replyY, portraitZ);
 	}
 
 	resort();
@@ -247,15 +246,13 @@ void DialogBox::setName(const Common::UString &name) {
 }
 
 void DialogBox::showEntry() {
-	for (Common::PtrList<Graphics::Aurora::Text>::iterator e = _entryLines.begin();
-	     e != _entryLines.end(); ++e)
-		(*e)->show();
+	for (auto &entryLine : _entryLines)
+		entryLine->show();
 }
 
 void DialogBox::hideEntry() {
-	for (Common::PtrList<Graphics::Aurora::Text>::iterator e = _entryLines.begin();
-	     e != _entryLines.end(); ++e)
-		(*e)->hide();
+	for (auto &entryLine : _entryLines)
+		entryLine->hide();
 }
 
 void DialogBox::clearEntry() {
@@ -292,7 +289,7 @@ void DialogBox::setEntry(const Common::UString &entry) {
 	_font.getFont().split(_entry, lines, maxWidth);
 
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l)
-		_entryLines.push_back(new Graphics::Aurora::Text(_font, *l));
+		_entryLines.emplace_back(std::make_unique<Graphics::Aurora::Text>(_font, *l));
 
 	setPosition(_x, _y, _z);
 

@@ -28,8 +28,6 @@
 #include <list>
 #include <memory>
 
-#include "src/common/ptrlist.h"
-
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
@@ -172,7 +170,7 @@ private:
 	Common::UString _entry;    ///< The NPC entry.
 	std::list<Reply> _replies; ///< The PC replies.
 
-	Common::PtrList<Graphics::Aurora::Text> _entryLines; ///< The NPC text lines.
+	std::list<std::unique_ptr<Graphics::Aurora::Text>> _entryLines; ///< The NPC text lines.
 	std::list<ReplyLine> _replyLines; ///< The PC text lines.
 
 	uint32_t _replyCount;      ///< The number of replies.
