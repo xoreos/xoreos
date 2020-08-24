@@ -26,11 +26,11 @@
 #define ENGINES_KOTORBASE_CREATURE_H
 
 #include <set>
+#include <map>
+#include <memory>
 
 #include "src/common/types.h"
-#include <memory>
 #include "src/common/ustring.h"
-#include "src/common/ptrmap.h"
 
 #include "src/aurora/types.h"
 
@@ -260,7 +260,7 @@ private:
 
 	Common::UString _conversation;
 
-	Common::PtrMap<InventorySlot, Item> _equipment;
+	std::map<InventorySlot, std::unique_ptr<Item>> _equipment;
 
 	ActionQueue _actions;
 

@@ -372,7 +372,7 @@ void Creature::getModelState(uint32_t &state, uint8_t &textureVariation) {
 	textureVariation = 1;
 
 	if (_info.isInventorySlotEquipped(kInventorySlotBody)) {
-		Item *item = _equipment[kInventorySlotBody];
+		Item *item = _equipment[kInventorySlotBody].get();
 		state += item->getBodyVariation() - 1;
 		textureVariation = item->getTextureVariation();
 	}
@@ -523,7 +523,7 @@ void Creature::attachWeaponModel(InventorySlot slot) {
 	Graphics::Aurora::Model *weaponModel = 0;
 
 	if (_info.isInventorySlotEquipped(slot)) {
-		Item *item = _equipment[slot];
+		Item *item = _equipment[slot].get();
 		weaponModel = loadModelObject(item->getModelName());
 	}
 
@@ -658,7 +658,7 @@ Item *Creature::getEquipedItem(InventorySlot slot) const {
 	if (!_info.isInventorySlotEquipped(slot))
 		return nullptr;
 
-	return _equipment.find(slot)->second;
+	return _equipment.find(slot)->second.get();
 }
 
 float Creature::getMaxAttackRange() const {
@@ -977,14 +977,14 @@ void Creature::reloadEquipment() {
 
 bool Creature::addItemToEquipment(const Common::UString &tag, InventorySlot slot) {
 	try {
-		Item *item = new Item(tag);
-		_equipment.insert(std::make_pair(slot, item));
-		return true;
+		_equipment.insert(std::make_pair(slot, std::make_unique<Item>(tag)));
 	} catch (Common::Exception &e) {
 		e.add("Failed to load item \"%s\"", tag.c_str());
 		Common::printException(e, "WARNING: ");
 		return false;
 	}
+
+	return true;
 }
 
 int Creature::getWeaponAnimationNumber() const {
