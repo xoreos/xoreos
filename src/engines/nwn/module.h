@@ -30,7 +30,6 @@
 #include <set>
 #include <memory>
 
-#include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -172,18 +171,18 @@ private:
 		bool operator<(const Action &s) const;
 	};
 
-	typedef Common::PtrMap<Common::UString, Area> AreaMap;
+	typedef std::map<Common::UString, std::unique_ptr<Area>> AreaMap;
 
 	typedef std::list<Events::Event> EventQueue;
 	typedef std::multiset<Action> ActionQueue;
 
 
-	::Engines::Console *_console;
+	::Engines::Console *_console { nullptr };
 
 	const Version *_gameVersion;
 
-	bool _hasModule; ///< Do we have a module?
-	bool _running;   ///< Are we currently running a module?
+	bool _hasModule { false }; ///< Do we have a module?
+	bool _running   { false }; ///< Are we currently running a module?
 
 	std::unique_ptr<IngameGUI> _ingameGUI; ///< The ingame GUI elements.
 
@@ -200,14 +199,14 @@ private:
 	std::unique_ptr<Creature> _pc; ///< The player character we use.
 
 	// Texture pack
-	int _currentTexturePack;
+	int _currentTexturePack { -1 };
 	Common::ChangeID _resTP[4];
 
-	bool _exit; ///< Should we exit the module?
+	bool _exit { false }; ///< Should we exit the module?
 
-	AreaMap         _areas;           ///< The areas in the current module.
-	Common::UString _newArea;         ///< The new area to enter.
-	Area           *_currentArea;     ///< The current area.
+	AreaMap _areas;                 ///< The areas in the current module.
+	Common::UString _newArea;       ///< The new area to enter.
+	Area *_currentArea { nullptr }; ///< The current area.
 
 	Common::UString _newModule; ///< The module we should change to.
 
