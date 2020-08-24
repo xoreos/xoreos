@@ -24,8 +24,6 @@
 
 #include <cassert>
 
-#include <memory>
-
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -59,9 +57,7 @@ bool Module::Action::operator<(const Action &s) const {
 }
 
 
-Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console),
-	_hasModule(false), _running(false), _exit(false), _pc(0), _currentArea(0) {
-
+Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console) {
 }
 
 Module::~Module() {
@@ -221,11 +217,11 @@ bool Module::getObjectLocation(const Common::UString &object, Common::UString &a
 
 	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
 
-	Witcher::Object *witcherObject = 0;
+	Witcher::Object *witcherObject = nullptr;
 	while (!witcherObject && search->get()) {
 		witcherObject = Witcher::ObjectContainer::toObject(search->next());
 		if (!witcherObject || (witcherObject->getType() != kObjectTypeWaypoint))
-			witcherObject = 0;
+			witcherObject = nullptr;
 	}
 
 	if (!witcherObject)
@@ -291,13 +287,13 @@ void Module::enterArea() {
 
 	if (_currentArea) {
 		_currentArea->runScript(kScriptExit, _currentArea, _pc);
-		_pc->setArea(0);
+		_pc->setArea(nullptr);
 
 		_pc->hide();
 
 		_currentArea->hide();
 
-		_currentArea = 0;
+		_currentArea = nullptr;
 	}
 
 	if (_newArea.empty()) {
@@ -312,7 +308,7 @@ void Module::enterArea() {
 		return;
 	}
 
-	_currentArea = area->second;
+	_currentArea = area->second.get();
 
 	_currentArea->show();
 	_pc->show();
@@ -386,14 +382,10 @@ void Module::loadAreas() {
 	for (size_t i = 0; i < areas.size(); i++) {
 		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), (int)i, (int)areas.size() - 1);
 
-		std::pair<AreaMap::iterator, bool> result;
-
-		result = _areas.insert(std::make_pair(areas[i], (Area *) 0));
-		if (!result.second)
-			throw Common::Exception("Area tag collision: \"%s\"", areas[i].c_str());
-
 		try {
-			result.first->second = new Area(*this, areas[i].c_str());
+			std::pair<AreaMap::iterator, bool> result = _areas.insert(std::make_pair(areas[i], std::make_unique<Area>(*this, areas[i])));
+			if (!result.second)
+				throw Common::Exception("Area tag collision");
 		} catch (Common::Exception &e) {
 			e.add("Can't load area \"%s\"", areas[i].c_str());
 			throw;
@@ -405,7 +397,7 @@ void Module::unloadAreas() {
 	_areas.clear();
 	_newArea.clear();
 
-	_currentArea = 0;
+	_currentArea = nullptr;
 }
 
 void Module::unloadPC() {
@@ -415,7 +407,7 @@ void Module::unloadPC() {
 	removeObject(*_pc);
 
 	_pc->hide();
-	_pc = 0;
+	_pc = nullptr;
 }
 
 void Module::movePC(const Common::UString &area) {
@@ -439,11 +431,11 @@ void Module::movePC(const Common::UString &area, float x, float y, float z) {
 	if (!_pc)
 		return;
 
-	Area *pcArea = 0;
+	Area *pcArea = nullptr;
 
 	AreaMap::iterator a = _areas.find(area);
 	if (a != _areas.end())
-		pcArea = a->second;
+		pcArea = a->second.get();
 
 	movePC(pcArea, x, y, z);
 }
@@ -501,8 +493,8 @@ const Aurora::LocString &Module::getDescription() const {
 }
 
 void Module::refreshLocalized() {
-	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
-		a->second->refreshLocalized();
+	for (auto &area : _areas)
+		area.second->refreshLocalized();
 }
 
 void Module::delayScript(const Common::UString &script,
