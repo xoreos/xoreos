@@ -73,8 +73,8 @@ void AreaLayout::show() {
 	GfxMan.lockFrame();
 
 	// Show rooms
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->show();
+	for (auto &room : _rooms)
+		room->show();
 
 	updateCamera();
 
@@ -90,8 +90,8 @@ void AreaLayout::hide() {
 	GfxMan.lockFrame();
 
 	// Hide rooms
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->hide();
+	for (auto &room : _rooms)
+		room->hide();
 
 	GfxMan.unlockFrame();
 
@@ -213,25 +213,26 @@ void AreaLayout::loadART() {
 void AreaLayout::loadRooms() {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	for (size_t i = 0; i < rooms.size(); i++)
-		_rooms.push_back(new Room(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z, rooms[i].canWalk));
+		_rooms.emplace_back(std::make_unique<Room>(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z, rooms[i].canWalk));
 }
 
 Room *AreaLayout::currentRoom() const {
-	for (RoomList::const_iterator r = _rooms.begin(); r != _rooms.end(); ++r) {
-		if ((*r)->isWalkable()) {
-			const Common::ConfigDomain *roomProps = _art.getDomain((*r)->getResRef());
+	for (auto &room : _rooms) {
+		if (room->isWalkable()) {
+			const Common::ConfigDomain *roomProps = _art.getDomain(room->getResRef());
 			if (!roomProps)
 				continue;
 
 			// Prefer rooms with a stationary camera
 			// Only relevant for special areas the Player cannot normally enter
 			if (roomProps->getUint("CamStationary", 0) == 1)
-				return *r;
+				return room.get();
 		}
 	}
 	// TODO find the room with the player.
-	return NULL;
+	return nullptr;
 }
+
 } // End of namespace Jade
 
 } // End of namespace Engines

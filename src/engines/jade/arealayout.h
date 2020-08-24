@@ -26,8 +26,8 @@
 #define ENGINES_JADE_AREALAYOUT_H
 
 #include <list>
+#include <memory>
 
-#include "src/common/ptrlist.h"
 #include "src/common/configfile.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
@@ -80,7 +80,7 @@ protected:
 	virtual void loadResources();
 
 private:
-	typedef Common::PtrList<Room> RoomList;
+	typedef std::list<std::unique_ptr<Room>> RoomList;
 
 
 	RoomList _rooms; ///< All rooms in the area.

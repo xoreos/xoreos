@@ -94,8 +94,8 @@ void Area::load() {
 
 void Area::clear() {
 	// Delete objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		_module->removeObject(**o);
+	for (auto &object : _objects)
+		_module->removeObject(*object);
 
 	_objects.clear();
 
@@ -109,10 +109,10 @@ void Area::show() {
 	GfxMan.lockFrame();
 
 	// Show objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
-		if ((*o)->isActive()) {
-			(*o)->show();
-			(*o)->runScript(kScriptOnSpawn, *o, this);
+	for (auto &object : _objects) {
+		if (object->isActive()) {
+			object->show();
+			object->runScript(kScriptOnSpawn, object.get(), this);
 		}
 	}
 
@@ -134,8 +134,8 @@ void Area::hide() {
 	GfxMan.lockFrame();
 
 	// Hide objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->hide();
+	for (auto &object : _objects)
+		object->hide();
 
 	GfxMan.unlockFrame();
 
@@ -226,48 +226,37 @@ void Area::loadResources() {
 	indexMandatoryArchive(_resRef + "/" + _layout + "-a.rim", 1001, &_resources.back());
 }
 
-void Area::loadObject(Object &object) {
-	_objects.push_back(&object);
-	_module->addObject(object);
+void Area::loadObject(std::unique_ptr<Jade::Object> &&object) {
+	_objects.push_back(std::move(object));
+	_module->addObject(*_objects.back());
 
-	if (!object.isStatic()) {
-		const std::list<uint32_t> &ids = object.getIDs();
-
-		for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-			_objectMap.insert(std::make_pair(*id, &object));
-	}
+	if (!_objects.back()->isStatic())
+		for (auto &id : _objects.back()->getIDs())
+			_objectMap.insert(std::make_pair(id, _objects.back().get()));
 }
 
 void Area::loadWaypoints(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator w = list.begin(); w != list.end(); ++w) {
-		Waypoint *waypoint = new Waypoint(**w);
-
-		loadObject(*waypoint);
-	}
+	for (auto &waypoint : list)
+		if (waypoint)
+			loadObject(std::make_unique<Waypoint>(*waypoint));
 }
 
 void Area::loadCreatures(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Creature *creature = new Creature(**c);
-
-		loadObject(*creature);
-	}
+	for (auto &creature : list)
+		if (creature)
+			loadObject(std::make_unique<Creature>(*creature));
 }
 
 void Area::loadPlaceables(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Placeable *placeable = new Placeable(**c);
-
-		loadObject(*placeable);
-	}
+	for (auto &placeable : list)
+		if (placeable)
+			loadObject(std::make_unique<Placeable>(*placeable));
 }
 
 void Area::loadTriggers(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Trigger *trigger = new Trigger(**c);
-
-		loadObject(*trigger);
-	}
+	for (auto &trigger : list)
+		if (trigger)
+			loadObject(std::make_unique<Trigger>(*trigger));
 }
 
 void Area::addEvent(const Events::Event &event) {

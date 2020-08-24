@@ -29,7 +29,6 @@
 #include <map>
 
 #include <memory>
-#include "src/common/ptrlist.h"
 #include "src/common/mutex.h"
 
 #include "src/sound/types.h"
@@ -92,7 +91,7 @@ protected:
 
 
 private:
-	typedef Common::PtrList<Object> ObjectList;
+	typedef std::list<std::unique_ptr<Object>> ObjectList;
 	typedef std::map<uint32_t, Object *> ObjectMap;
 
 
@@ -126,7 +125,7 @@ private:
 
 	void loadResources();
 
-	void loadObject(Jade::Object &object);
+	void loadObject(std::unique_ptr<Jade::Object> &&object);
 
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadCreatures (const Aurora::GFF3List &list);
