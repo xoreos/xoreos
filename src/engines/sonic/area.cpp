@@ -72,8 +72,8 @@ Area::~Area() {
 
 	hide();
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		_module->removeObject(**o);
+	for (auto &object : _objects)
+		_module->removeObject(*object);
 }
 
 const Common::UString &Area::getName() {
@@ -130,8 +130,8 @@ void Area::show() {
 		_bgPanel->show();
 
 	// Show objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->show();
+	for (auto &object : _objects)
+		object->show();
 
 	GfxMan.unlockFrame();
 }
@@ -142,8 +142,8 @@ void Area::hide() {
 	removeFocus();
 
 	// Hide objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->hide();
+	for (auto &object : _objects)
+		object->hide();
 
 	if (_mmPanel)
 		_mmPanel->hide();
@@ -278,19 +278,17 @@ void Area::loadLayout() {
 		loadPlaceables(areTop.getList(40001));
 }
 
-void Area::loadObject(Object &object) {
-	_objects.push_back(&object);
+void Area::loadObject(std::unique_ptr<Object> &&object) {
+	_objects.push_back(std::move(object));
 
-	_objectMap.insert(std::make_pair(object.getModelID(), &object));
-	_module->addObject(object);
+	_objectMap.insert(std::make_pair(_objects.back()->getModelID(), _objects.back().get()));
+	_module->addObject(*_objects.back());
 }
 
 void Area::loadPlaceables(const Aurora::GFF4List &list) {
-	for (Aurora::GFF4List::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable(**p);
-
-		loadObject(*placeable);
-	}
+	for (auto &placeable : list)
+		if (placeable)
+			loadObject(std::make_unique<Placeable>(*placeable));
 }
 
 Object *Area::getObjectAt(int x, int y) {

@@ -30,7 +30,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -102,7 +101,7 @@ protected:
 
 
 private:
-	typedef Common::PtrList<Object> ObjectList;
+	typedef std::list<std::unique_ptr<Object>> ObjectList;
 	typedef std::map<uint32_t, Object *> ObjectMap;
 
 
@@ -156,7 +155,7 @@ private:
 	void loadMiniMap();
 	void loadLayout();
 
-	void loadObject(Object &object);
+	void loadObject(std::unique_ptr<Object> &&object);
 
 	void loadPlaceables(const Aurora::GFF4List &list);
 
