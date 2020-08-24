@@ -103,8 +103,8 @@ bool LocalPathfinding::findIntersection(const glm::vec3 &start, const glm::vec3 
                                         glm::vec3 &intersect) const {
 	glm::vec3 objIntersect;
 	float distance = FLT_MAX;
-	for (auto o = _staticObjects.begin(); o != _staticObjects.end(); ++o) {
-		if (!(*o)->findIntersection(start, end, objIntersect))
+	for (auto &object : _staticObjects) {
+		if (!object->findIntersection(start, end, objIntersect))
 			continue;
 
 		if (glm::distance(start, objIntersect) >= distance)
@@ -314,11 +314,11 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	}
 
 	// Add relevant static objects.
-	for (auto o = _staticObjects.begin(); o != _staticObjects.end(); ++o) {
-		if (!(*o)->in(_trueMin, _trueMax))
+	for (auto &object : _staticObjects) {
+		if (!object->in(_trueMin, _trueMax))
 			continue;
 
-		addObjects((*o)->getVertices(), (*o)->getFaces(), halfWidth);
+		addObjects(object->getVertices(), object->getFaces(), halfWidth);
 	}
 
 	if (walkmeshVisible) showWalkmesh(true);
@@ -861,7 +861,7 @@ void LocalPathfinding::addObjects(const std::vector<float> &vertices, const std:
 }
 
 void LocalPathfinding::addStaticObjects(ObjectWalkmesh *objectWalkmesh) {
-	_staticObjects.push_back(objectWalkmesh);
+	_staticObjects.emplace_back(objectWalkmesh);
 }
 
 glm::vec3 LocalPathfinding::toVirtualPlan(const glm::vec3 &vector) const {

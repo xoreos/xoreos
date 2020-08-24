@@ -25,7 +25,8 @@
 #ifndef ENGINES_LOCALPATHFINDING_H
 #define ENGINES_LOCALPATHFINDING_H
 
-#include "src/common/ptrlist.h"
+#include <list>
+#include <memory>
 
 #include "src/engines/aurora/astar.h"
 #include "src/engines/aurora/pathfinding.h"
@@ -87,7 +88,7 @@ private:
 	uint32_t diagonalJump(uint32_t startFace, uint32_t jumpDir) const;
 	Pathfinding *_globalPathfinding;
 
-	Common::PtrList<ObjectWalkmesh> _staticObjects;
+	std::list<std::unique_ptr<ObjectWalkmesh>> _staticObjects;
 
 	glm::vec3 _trueMin;
 	glm::vec3 _trueMax;
