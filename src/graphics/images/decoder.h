@@ -57,7 +57,7 @@ public:
 		const ImageDecoder *image { nullptr }; ///< The image the mip map belongs to.
 
 		MipMap() = default;
-		MipMap(const ImageDecoder *i = nullptr);
+		MipMap(const ImageDecoder *i);
 		MipMap(const MipMap &mipMap, const ImageDecoder *i = 0);
 		~MipMap() = default;
 
