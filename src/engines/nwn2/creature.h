@@ -27,9 +27,9 @@
 
 #include <vector>
 #include <list>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -178,7 +178,7 @@ public:
 	bool getIsSkillSuccessful(uint32_t skill, int DC);
 
 private:
-	typedef Common::PtrList<Graphics::Aurora::Model> ModelParts;
+	typedef std::list<std::unique_ptr<Graphics::Aurora::Model>> ModelParts;
 
 	/** A class. */
 	struct Class {

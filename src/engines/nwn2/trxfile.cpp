@@ -68,10 +68,10 @@ void TRXFile::show() {
 
 	GfxMan.lockFrame();
 
-	for (ObjectList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
-		(*t)->show();
-	for (ObjectList::iterator w = _water.begin(); w != _water.end(); ++w)
-		(*w)->show();
+	for (auto &terrain : _terrain)
+		terrain->show();
+	for (auto &water : _water)
+		water->show();
 
 	_visible = true;
 
@@ -84,10 +84,10 @@ void TRXFile::hide() {
 
 	GfxMan.lockFrame();
 
-	for (ObjectList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
-		(*t)->hide();
-	for (ObjectList::iterator w = _water.begin(); w != _water.end(); ++w)
-		(*w)->hide();
+	for (auto &water : _water)
+		water->hide();
+	for (auto &terrain : _terrain)
+		terrain->hide();
 
 	_visible = false;
 
@@ -240,7 +240,7 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	 *   - Grass    grass
 	 */
 
-	_terrain.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));
+	_terrain.emplace_back(std::make_unique<Graphics::Aurora::GeometryObject>(vBuf, iBuf));
 }
 
 void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
@@ -316,7 +316,7 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	 *   - uint32_t  tileY
 	 */
 
-	_water.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));
+	_water.emplace_back(std::make_unique<Graphics::Aurora::GeometryObject>(vBuf, iBuf));
 }
 
 void TRXFile::loadASWM(Common::SeekableReadStream &UNUSED(trx), Packet &UNUSED(packet)) {

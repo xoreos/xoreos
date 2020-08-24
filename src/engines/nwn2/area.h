@@ -31,7 +31,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -160,7 +159,7 @@ private:
 		Graphics::Aurora::Model *model;
 	};
 
-	typedef Common::PtrList<Engines::NWN2::Object> ObjectList;
+	typedef std::list<std::unique_ptr<NWN2::Object>> ObjectList;
 	typedef std::map<uint32_t, Engines::NWN2::Object *> ObjectMap;
 
 
@@ -228,7 +227,7 @@ private:
 	void loadTiles(const Aurora::GFF3List &tiles);
 	void loadTile(const Aurora::GFF3Struct &t, Tile &tile);
 
-	void loadObject(Engines::NWN2::Object &object);
+	void loadObject(std::unique_ptr<NWN2::Object> &&object);
 	void loadWaypoints  (const Aurora::GFF3List &list);
 	void loadPlaceables (const Aurora::GFF3List &list);
 	void loadEnvironment(const Aurora::GFF3List &list);

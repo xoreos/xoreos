@@ -91,14 +91,14 @@ Area::~Area() {
 
 void Area::clear() {
 	// Delete objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		_module->removeObject(**o);
+	for (auto &object : _objects)
+		_module->removeObject(*object);
 
 	_objects.clear();
 
 	// Delete tiles
-	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
-		delete t->model;
+	for (auto &tile : _tiles)
+		delete tile.model;
 
 	_tiles.clear();
 
@@ -247,17 +247,17 @@ void Area::show() {
 	GfxMan.lockFrame();
 
 	// Show tiles
-	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
-		if (t->model)
-			t->model->show();
+	for (auto &tile : _tiles)
+		if (tile.model)
+			tile.model->show();
 
 	// Show terrain
 	if (_terrain)
 		_terrain->show();
 
 	// Show objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->show();
+	for (auto &object : _objects)
+		object->show();
 
 	GfxMan.unlockFrame();
 
@@ -279,17 +279,17 @@ void Area::hide() {
 	GfxMan.lockFrame();
 
 	// Hide objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->hide();
+	for (auto &object : _objects)
+		object->hide();
 
 	// Hide terrain
 	if (_terrain)
 		_terrain->hide();
 
 	// Hide tiles
-	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
-		if (t->model)
-			t->model->hide();
+	for (auto &tile : _tiles)
+		if (tile.model)
+			tile.model->hide();
 
 	GfxMan.unlockFrame();
 
@@ -456,16 +456,14 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 void Area::loadModels() {
 	loadTileModels();
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
-		Engines::NWN2::Object &object = **o;
+	for (auto &object : _objects) {
+		object->loadModel();
 
-		object.loadModel();
-
-		if (!object.isStatic()) {
-			const std::list<uint32_t> &ids = object.getIDs();
+		if (!object->isStatic()) {
+			const std::list<uint32_t> &ids = object->getIDs();
 
 			for (std::list<uint32_t>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-				_objectMap.insert(std::make_pair(*id, &object));
+				_objectMap.insert(std::make_pair(*id, object.get()));
 		}
 	}
 }
@@ -473,8 +471,8 @@ void Area::loadModels() {
 void Area::unloadModels() {
 	_objectMap.clear();
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->unloadModel();
+	for (auto &object : _objects)
+		object->unloadModel();
 
 	unloadTileModels();
 }
@@ -517,59 +515,47 @@ void Area::unloadTileModels() {
 	}
 }
 
-void Area::loadObject(Engines::NWN2::Object &object) {
-	object.setArea(this);
+void Area::loadObject(std::unique_ptr<NWN2::Object> &&object) {
+	object->setArea(this);
 
-	_objects.push_back(&object);
-	_module->addObject(object);
+	_objects.push_back(std::move(object));
+	_module->addObject(*_objects.back());
 }
 
 void Area::loadWaypoints(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Waypoint *waypoint = new Waypoint(**d);
-
-		loadObject(*waypoint);
-	}
+	for (auto &waypoint : list)
+		if (waypoint)
+			loadObject(std::make_unique<Waypoint>(*waypoint));
 }
 
 void Area::loadPlaceables(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable(**p);
-
-		loadObject(*placeable);
-	}
+	for (auto &placeable : list)
+		if (placeable)
+			loadObject(std::make_unique<Placeable>(*placeable));
 }
 
 void Area::loadEnvironment(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable(**p);
-
-		loadObject(*placeable);
-	}
+	for (auto &placeable : list)
+		if (placeable)
+			loadObject(std::make_unique<Placeable>(*placeable));
 }
 
 void Area::loadDoors(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Door *door = new Door(*_module, **d);
-
-		loadObject(*door);
-	}
+	for (auto &door : list)
+		if (door)
+			loadObject(std::make_unique<Door>(*_module, *door));
 }
 
 void Area::loadCreatures(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Creature *creature = new Creature(**c);
-
-		loadObject(*creature);
-	}
+	for (auto &creature : list)
+		if (creature)
+			loadObject(std::make_unique<Creature>(*creature));
 }
 
 void Area::loadStores(const Aurora::GFF3List &list) {
-	for (Aurora::GFF3List::const_iterator s = list.begin(); s != list.end(); ++s) {
-		Store *store = new Store(**s);
-
-		loadObject(*store);
-	}
+	for (auto &store : list)
+		if (store)
+			loadObject(std::make_unique<Store>(*store));
 }
 
 void Area::addEvent(const Events::Event &event) {

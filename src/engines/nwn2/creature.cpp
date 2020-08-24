@@ -133,29 +133,29 @@ void Creature::init() {
 }
 
 void Creature::show() {
-	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		(*m)->show();
+	for (auto &model : _modelParts)
+		model->show();
 }
 
 void Creature::hide() {
-	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		(*m)->hide();
+	for (auto &model : _modelParts)
+		model->hide();
 }
 
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
 
-	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		(*m)->setPosition(x, y, z);
+	for (auto &model : _modelParts)
+		model->setPosition(x, y, z);
 }
 
 void Creature::setOrientation(float x, float y, float z, float angle) {
 	Object::setOrientation(x, y, z, angle);
 	Object::getOrientation(x, y, z, angle);
 
-	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		(*m)->setOrientation(x, y, z, angle);
+	for (auto &model : _modelParts)
+		model->setOrientation(x, y, z, angle);
 }
 
 void Creature::enter() {
@@ -187,8 +187,8 @@ void Creature::leave() {
 }
 
 void Creature::highlight(bool enabled) {
-	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		(*m)->drawBound(enabled);
+	for (auto &model : _modelParts)
+		model->drawBound(enabled);
 }
 
 bool Creature::click(Object *triggerer) {
@@ -382,7 +382,7 @@ bool Creature::loadArmorModel(const Common::UString &body,
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
 	if (model)
-		_modelParts.push_back(model);
+		_modelParts.emplace_back(model);
 
 	return model != 0;
 }
@@ -400,7 +400,7 @@ bool Creature::loadHeadModel(uint8_t appearance) {
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
 	if (model)
-		_modelParts.push_back(model);
+		_modelParts.emplace_back(model);
 
 	return model != 0;
 }
@@ -418,7 +418,7 @@ bool Creature::loadHairModel(uint8_t appearance) {
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
 	if (model)
-		_modelParts.push_back(model);
+		_modelParts.emplace_back(model);
 
 	return model != 0;
 }
@@ -464,11 +464,11 @@ void Creature::loadModel() {
 	getOrientation(x, y, z, angle);
 	setOrientation(x, y, z, angle);
 
-	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m) {
-		(*m)->setTag(_tag);
-		(*m)->setClickable(isClickable());
+	for (auto &model : _modelParts) {
+		model->setTag(_tag);
+		model->setClickable(isClickable());
 
-		_ids.push_back((*m)->getID());
+		_ids.push_back(model->getID());
 	}
 }
 
