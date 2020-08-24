@@ -140,6 +140,7 @@ void GraphicsManager::init() {
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 	ImGui::GetIO().Fonts->AddFontDefault();
 	ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
 
