@@ -30,7 +30,6 @@
 #include <map>
 #include <memory>
 
-#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -95,7 +94,7 @@ protected:
 private:
 	typedef std::vector<std::unique_ptr<Room>> Rooms;
 
-	typedef Common::PtrList<DragonAge::Object> Objects;
+	typedef std::list<std::unique_ptr<DragonAge::Object>> Objects;
 	typedef std::map<uint32_t, DragonAge::Object *> ObjectMap;
 
 
@@ -132,7 +131,7 @@ private:
 	void loadEnvironment(const Common::UString &resRef);
 	void loadARE(const Common::UString &resRef);
 
-	void loadObject(DragonAge::Object &object);
+	void loadObject(std::unique_ptr<DragonAge::Object> &&object);
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadCreatures (const Aurora::GFF3List &list);

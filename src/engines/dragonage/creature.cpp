@@ -22,8 +22,6 @@
  *  A creature in a Dragon Age: Origins area.
  */
 
-#include <memory>
-
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/maths.h"
@@ -92,26 +90,26 @@ void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
 
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		(*m)->setPosition(x, y, z);
+	for (auto &model : _models)
+		model->setPosition(x, y, z);
 }
 
 void Creature::setOrientation(float x, float y, float z, float angle) {
 	Object::setOrientation(x, y, z, angle);
 	Object::getOrientation(x, y, z, angle);
 
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		(*m)->setOrientation(x, y, z, angle);
+	for (auto &model : _models)
+		model->setOrientation(x, y, z, angle);
 }
 
 void Creature::show() {
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		(*m)->show();
+	for (auto &model : _models)
+		model->show();
 }
 
 void Creature::hide() {
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		(*m)->hide();
+	for (auto &model : _models)
+		model->hide();
 }
 
 bool Creature::isPC() const {
@@ -139,8 +137,8 @@ void Creature::leave() {
 }
 
 void Creature::highlight(bool enabled) {
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		(*m)->drawBound(enabled);
+	for (auto &model : _models)
+		model->drawBound(enabled);
 }
 
 bool Creature::click(Object *triggerer) {
@@ -195,7 +193,7 @@ void Creature::loadModelsSimple(const Aurora::GDAFile &gda, size_t row) {
 
 	Model *model = loadModelObject(gda.getString(row, "ModelName"));
 	if (model)
-		_models.push_back(model);
+		_models.emplace_back(model);
 }
 
 void Creature::loadModelsWelded(const Aurora::GDAFile &gda, size_t row) {
@@ -203,7 +201,7 @@ void Creature::loadModelsWelded(const Aurora::GDAFile &gda, size_t row) {
 
 	Model *model = loadModelObject(gda.getString(row, "ModelName"));
 	if (model)
-		_models.push_back(model);
+		_models.emplace_back(model);
 }
 
 void Creature::loadModelsHead(const Aurora::GDAFile &gda, size_t row) {
@@ -211,7 +209,7 @@ void Creature::loadModelsHead(const Aurora::GDAFile &gda, size_t row) {
 
 	Model *model = loadModelObject(gda.getString(row, "ModelName"));
 	if (model)
-		_models.push_back(model);
+		_models.emplace_back(model);
 
 	// Helm
 
@@ -221,7 +219,7 @@ void Creature::loadModelsHead(const Aurora::GDAFile &gda, size_t row) {
 	if ((model = loadModelObject(findEquipModel(kInventorySlotHead, prefix)))) {
 		haveHelm = true;
 
-		_models.push_back(model);
+		_models.emplace_back(model);
 	}
 
 	if (!_headMorph.empty())
@@ -247,7 +245,7 @@ void Creature::loadModelsHeadMorph(bool loadHair) {
 				continue;
 
 			if ((model = loadModelObject(parts[i])))
-				_models.push_back(model);
+				_models.emplace_back(model);
 		}
 
 	} catch (...) {
@@ -278,7 +276,7 @@ void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row, bool l
 
 		Model *model = loadModelObject(createModelPart(sheet, sheetRow, prefix));
 		if (model)
-			_models.push_back(model);
+			_models.emplace_back(model);
 	}
 }
 
@@ -305,7 +303,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 		model = loadModelObject(createModelPart(naked, naked.findRow(kNakedTorso), prefix));
 
 	if (model)
-		_models.push_back(model);
+		_models.emplace_back(model);
 
 	// Armor of type 5 (clothing) already includes hands and feet in the model...
 	if (armorType != 5) {
@@ -316,7 +314,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 			model = loadModelObject(createModelPart(naked, naked.findRow(kNakedGloves), prefix));
 
 		if (model)
-			_models.push_back(model);
+			_models.emplace_back(model);
 
 		// Boots: equipped boots item -> naked
 
@@ -325,7 +323,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 			model = loadModelObject(createModelPart(naked, naked.findRow(kNakedBoots), prefix));
 
 		if (model)
-			_models.push_back(model);
+			_models.emplace_back(model);
 	}
 
 	// Helm
@@ -334,7 +332,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 	if ((model = loadModelObject(findEquipModel(kInventorySlotHead, prefix)))) {
 		haveHelm = true;
 
-		_models.push_back(model);
+		_models.emplace_back(model);
 	}
 
 	// Head: morph -> part list
@@ -409,13 +407,13 @@ void Creature::load(const GFF3Struct &instance, const GFF3Struct *blueprint = 0)
 	const float scaleY = gda.getFloat(row, "ModelScaleY", 1.0f);
 	const float scaleZ = gda.getFloat(row, "ModelScaleZ", 1.0f);
 
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m) {
-		(*m)->setScale(scaleX, scaleY, scaleZ);
+	for (auto &model : _models) {
+		model->setScale(scaleX, scaleY, scaleZ);
 
-		(*m)->setTag(_tag);
-		(*m)->setClickable(isClickable());
+		model->setTag(_tag);
+		model->setClickable(isClickable());
 
-		_ids.push_back((*m)->getID());
+		_ids.push_back(model->getID());
 	}
 
 	syncPosition();
