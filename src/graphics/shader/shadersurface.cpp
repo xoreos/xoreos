@@ -21,6 +21,7 @@
 /** @file
  *  Shader surface, responsible for tracking data relating to a vertex shader.
  */
+#include <limits>
 
 #include "external/glm/gtc/type_ptr.hpp"
 
@@ -40,10 +41,10 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 		_flags(0),
 		_name(name),
 		_usageCount(0),
-		_objectModelviewIndex(0xFFFFFFFF),
-		_textureViewIndex(0xFFFFFFFF),
-		_bindPoseIndex(0xFFFFFFFF),
-		_boneTransformsIndex(0xFFFFFFFF) {
+		_objectModelviewIndex(std::numeric_limits<uint32_t>::max()),
+		_textureViewIndex(std::numeric_limits<uint32_t>::max()),
+		_bindPoseIndex(std::numeric_limits<uint32_t>::max()),
+		_boneTransformsIndex(std::numeric_limits<uint32_t>::max()) {
 
 	vertShader->usageCount++;
 
@@ -191,25 +192,25 @@ void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const glm::mat4 
 }
 
 void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	if (_objectModelviewIndex != 0xFFFFFFFF) {
+	if (_objectModelviewIndex != std::numeric_limits<uint32_t>::max()) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_objectModelviewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
 	}
 }
 
 void ShaderSurface::bindTextureView(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	if (_textureViewIndex != 0xFFFFFFFF) {
+	if (_textureViewIndex != std::numeric_limits<uint32_t>::max()) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_textureViewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
 	}
 }
 
 void ShaderSurface::bindBindPose(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	if (_bindPoseIndex != 0xFFFFFFFF) {
+	if (_bindPoseIndex != std::numeric_limits<uint32_t>::max()) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_bindPoseIndex], program->vertexVariableLocations[_bindPoseIndex], glm::value_ptr(*t));
 	}
 }
 
 void ShaderSurface::bindBoneTransforms(Shader::ShaderProgram *program, const float *t) {
-	if (_boneTransformsIndex != 0xFFFFFFFF) {
+	if (_boneTransformsIndex != std::numeric_limits<uint32_t>::max()) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_boneTransformsIndex], program->vertexVariableLocations[_boneTransformsIndex], t);
 	}
 }
