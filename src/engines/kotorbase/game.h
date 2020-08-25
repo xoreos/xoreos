@@ -66,7 +66,7 @@ public:
 	virtual void run() = 0;
 
 protected:
-	Console *_console;
+	Engines::Console *_console;
 	std::unique_ptr<KotORBase::Module> _module;
 	std::vector<Common::UString> _modules;
 	Sound::ChannelHandle _menuMusic;
