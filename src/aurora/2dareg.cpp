@@ -54,7 +54,8 @@ const TwoDAFile &TwoDARegistry::get2DA(const Common::UString &name) {
 		return *twoda->second;
 
 	// Entry doesn't exist => load and add
-	return *(_twodas[name] = load2DA(name));
+	std::unique_ptr<TwoDAFile> new2DA = load2DA(name);
+	return *(_twodas[name] = std::move(new2DA));
 }
 
 const GDAFile &TwoDARegistry::getGDA(const Common::UString &name) {
@@ -64,7 +65,8 @@ const GDAFile &TwoDARegistry::getGDA(const Common::UString &name) {
 		return *gda->second;
 
 	// Entry doesn't exist => load and add
-	return *(_gdas[name] = loadGDA(name));
+	std::unique_ptr<GDAFile> newGDA = loadGDA(name);
+	return *(_gdas[name] = std::move(newGDA));
 }
 
 const GDAFile &TwoDARegistry::getMGDA(const Common::UString &prefix) {
@@ -74,7 +76,8 @@ const GDAFile &TwoDARegistry::getMGDA(const Common::UString &prefix) {
 		return *gda->second;
 
 	// Entry doesn't exist => load and add
-	return *(_gdas[prefix] = loadMGDA(prefix));
+	std::unique_ptr<GDAFile> newGDA = loadMGDA(prefix);
+	return *(_gdas[prefix] = std::move(newGDA));
 }
 
 void TwoDARegistry::add2DA(const Common::UString &name) {
