@@ -78,6 +78,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 	Common::UString v_header, f_header;
 	Common::UString v_body, f_body;
 
+	bool hasLighting = true;
 
 	/**
 	 * @todo Declare required inputs here. For vertex shaders this means the camera
@@ -119,6 +120,35 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		           "	vec4 fraggle = vec4(1.0, 0.0, 0.0, 1.0);\n"
 		           "	vec4 froggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
 	}
+
+	if (hasLighting) {
+		f_header += "\n"
+		            "struct LightParameters {\n"
+		            "    vec4 ambient;\n"
+		            "    vec4 diffuse;\n"
+		            "    vec4 specular;\n"
+		            "    vec4 position;\n"
+		            "}\n\n"
+		            "uniform LightParameters _lights[8];\n"
+		            "uniform uint _activeLights;\n"; // bool is basically uint32_t for glsl
+
+		/**
+		 * Lights are basically a position, colour, and maybe strength (diffuse.w).
+		 * When calculating lights attaching to a surface however, then surface properties
+		 * need to be taken into account: albedo, specular, etc.
+		 *
+		 * To do this properly, the lighting will be some global variables. Lights are not modelnode
+		 * specific normally, but instead apply to an entire area, and so it makes sense for them to
+		 * be bound appropriately.
+		 * Modelnode data (albedo, specular, etc) will likely be modelnode specific, and iterate
+		 * over all enabled light sources.
+		 *
+		 * It makes most sense at the time of writing to apply lighting to fraggle just before it's
+		 * assigned alpha values and handed over to the output framebuffer. So a lighting function
+		 * might be best used.
+		 */
+	}
+
 
 	int boneCount = 0;
 
