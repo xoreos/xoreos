@@ -22,6 +22,8 @@
  *  Shader material, responsible for tracking data relating to a fragment shader.
  */
 
+#include <limits>
+
 #include "src/graphics/shader/shadermaterial.h"
 
 namespace Graphics {
@@ -33,7 +35,7 @@ namespace Shader {
 ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) :
 		_variableData(), _fragShader(fragShader), _flags(0), _blendEquationRGB(GL_FUNC_ADD), _blendEquationAlpha(GL_FUNC_ADD),
 		_blendSrcRGB(GL_SRC_ALPHA), _blendSrcAlpha(GL_SRC_ALPHA), _blendDstRGB(GL_ONE_MINUS_SRC_ALPHA), _blendDstAlpha(GL_ONE_MINUS_SRC_ALPHA),
-		_name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
+		_name(name), _usageCount(0), _alphaIndex(std::numeric_limits<uint32_t>::max()) {
 	fragShader->usageCount++;
 
 	uint32_t varCount = fragShader->variablesCombined.size();
@@ -255,7 +257,7 @@ void ShaderMaterial::bindProgram(Shader::ShaderProgram *program, float alpha) {
 }
 
 void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
-	if (_alphaIndex != 0xFFFFFFFF) {
+	if (_alphaIndex != std::numeric_limits<uint32_t>::max()) {
 		ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[_alphaIndex], program->fragmentVariableLocations[_alphaIndex], &alpha);
 	}
 }
