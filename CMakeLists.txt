@@ -133,6 +133,9 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
   # Disable warnings about unused local typedefs that came with GLM
   set_check_compiler_flag_cxx("-Wunused-local-typedefs" "-Wno-unused-local-typedefs")
+
+  # Disable warnings about unused static const variables
+  set_check_compiler_flag_cxx("-Wunused-const-variable" "-Wno-unused-const-variable")
 endif()
 
 # platform specific warning settings

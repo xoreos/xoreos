@@ -146,6 +146,9 @@ AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-private-field], [-Wno-unuse
 dnl Disable warnings about unused local typedefs that came with GLM
 AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-local-typedefs], [-Wno-unused-local-typedefs])
 
+dnl Disable warnings about unused static const variables
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-const-variable], [-Wno-unused-const-variable])
+
 AC_SUBST(WARN)
 
 dnl C++ dialect
