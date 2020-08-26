@@ -59,6 +59,7 @@ public:
 	NCGR(Common::SeekableReadStream &ncgr, Common::SeekableReadStream &nclr);
 	NCGR(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32_t width, uint32_t height,
 	     Common::SeekableReadStream &nclr);
+	NCGR(const NCGR &ncgr) = default;
 	~NCGR();
 
 private:
@@ -77,6 +78,7 @@ private:
 		uint32_t offsetY; ///< Y offset in pixels into the final image.
 
 		NCGRFile();
+		NCGRFile(const NCGRFile &ncgrFile) = default;
 		~NCGRFile();
 	};
 
