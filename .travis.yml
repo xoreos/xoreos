@@ -51,6 +51,10 @@ jobs:
       os: osx
 
 script:
+  # environment
+  - export CXXFLAGS="$CXXFLAGS -O2 -ggdb"
+  - export CXXFLAGS="$CXXFLAGS -isystem /usr/include/SDL2"
+  - if eval [ $is_valid_osx ]; then export CXXFLAGS="$CXXFLAGS -isystem /usr/local/include"; fi
   # autotools build system: ./autogen.sh && ./configure && make && make check
   - if eval [ $is_notcoverity_autot ]; then ./autogen.sh; fi
   - if eval [ $is_notcoverity_autot ]; then ./configure || (cat config.log; exit 1); fi
