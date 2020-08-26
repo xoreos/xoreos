@@ -22,6 +22,18 @@
  *  The global sound manager, handling all sound output.
  */
 
+/* macOS 10.15 has deprecated OpenAL in favour of Apple's own AVAudioEngine.
+ * AVAudioEngine is of course not portable, so that's not really an option
+ * for us. In the future, we might migrate xoreos to use OpenAL Soft on
+ * macOS, but that's currently blocked by an issue that hinders audio device
+ * enumeration (<https://github.com/kcat/openal-soft/issues/179>).
+ *
+ * So for now, let's just silence the deprecation warning and hope that the
+ * macOS OpenAL will not be removed this quickly. */
+#ifdef MACOSX
+	#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include <cassert>
 #include <cstring>
 
