@@ -149,6 +149,9 @@ AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-local-typedefs], [-Wno-unus
 dnl Disable warnings about unused static const variables
 AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-const-variable], [-Wno-unused-const-variable])
 
+dnl Disable warnings about >= 0 comparisons on enums
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wtautological-unsigned-enum-zero-compare], [-Wno-tautological-unsigned-enum-zero-compare])
+
 AC_SUBST(WARN)
 
 dnl C++ dialect

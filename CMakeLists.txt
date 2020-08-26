@@ -136,6 +136,9 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
   # Disable warnings about unused static const variables
   set_check_compiler_flag_cxx("-Wunused-const-variable" "-Wno-unused-const-variable")
+
+  # Disable warnings about >= 0 comparisons on enums
+  set_check_compiler_flag_cxx("-Wtautological-unsigned-enum-zero-compare" "-Wno-tautological-unsigned-enum-zero-compare")
 endif()
 
 # platform specific warning settings
