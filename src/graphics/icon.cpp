@@ -38,6 +38,7 @@
 
 namespace Graphics {
 
+#if !defined(MACOSX)
 /** Static version of the xoreos icon. */
 static const byte kStaticIcon[32 * 32 * 4] = {
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -326,6 +327,7 @@ static void setStaticIcon(SDL_Window &window) {
 
 	SDL_FreeSurface(icon);
 }
+#endif // MACOSX
 
 #if defined(WIN32)
 static bool setWindowsIcon(SDL_Window &window) {
@@ -356,6 +358,7 @@ void setWindowIcon(SDL_Window &window) {
 		setStaticIcon(window);
 
 #elif defined(MACOSX)
+	(void)window;
 	// Do nothing on Mac OS X. The external icon is pulled in by default already.
 
 #else
