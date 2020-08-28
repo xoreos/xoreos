@@ -810,7 +810,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 						                        "Invalid floor1 masterbook");
 				}
 
-				for (size_t k = 0; k < (1U << subClasses); k++) {
+				for (size_t k = 0; k < (size_t(1) << subClasses); k++) {
 					const int16_t subClassBook = static_cast<int16_t>(in.getBits(8)) - 1;
 					bits.putBits(static_cast<uint16_t>(subClassBook + 1), 8);
 
