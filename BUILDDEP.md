@@ -16,6 +16,7 @@ Build-time library dependencies
   - Boost.Smart_Ptr
   - Boost.ScopeExit
   - Boost.Locale
+  - Boost.TypeTraits
 
 - OpenGL (>= 2.1)
 - SDL2 (>= 2.0.4)
