@@ -210,10 +210,15 @@ void Thread::setCurrentThreadName(const Common::UString &name) {
 		FreeLibrary(kernel32);
 	} BOOST_SCOPE_EXIT_END;
 
+	DIAGNOSTICS_PUSH
+	IGNORE_FUNCTION_CAST
+
 	typedef HRESULT (WINAPI *SetThreadDescriptionFunc)(HANDLE hThread, PCWSTR lpThreadDescription);
 	SetThreadDescriptionFunc func = (SetThreadDescriptionFunc)GetProcAddress(kernel32, "SetThreadDescription");
 	if (!func)
 		return;
+
+	DIAGNOSTICS_POP
 
 	// Need to convert to a wide char string. First, query the size.
 	int result = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.c_str(), name.size(), nullptr, 0);
