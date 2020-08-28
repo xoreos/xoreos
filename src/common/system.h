@@ -158,6 +158,9 @@
 		#define IGNORE_UNUSED_VARIABLES _Pragma("GCC diagnostic ignored \"-Wunused-variable\"") \
 		                                _Pragma("GCC diagnostic ignored \"-Wunused-but-set-variable\"")
 	#endif
+	#if (__GNUC__ >= 8)
+		#define IGNORE_FUNCTION_CAST _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
+	#endif
 
 	#if !defined(FORCEINLINE) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 		#define FORCEINLINE inline __attribute__((__always_inline__))
@@ -436,6 +439,10 @@
 
 #ifndef IGNORE_UNUSED_VARIABLES
 	#define IGNORE_UNUSED_VARIABLES
+#endif
+
+#ifndef IGNORE_FUNCTION_CAST
+	#define IGNORE_FUNCTION_CAST
 #endif
 
 #endif // COMMON_SYSTEM_H
