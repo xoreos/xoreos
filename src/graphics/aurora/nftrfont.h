@@ -80,6 +80,7 @@ private:
 		uint32_t character;
 
 		Glyph();
+		Glyph(const Glyph &glyph) = default;
 		~Glyph();
 	};
 
