@@ -30,6 +30,7 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#include "src/common/system.h"
 
 #undef LOADLIB
 
@@ -110,6 +111,8 @@ static int loadlib(lua_State *L)
  HINSTANCE lib=LoadLibrary(path);
  if (lib!=NULL)
  {
+  DIAGNOSTICS_PUSH
+  IGNORE_FUNCTION_CAST
   lua_CFunction f=(lua_CFunction) GetProcAddress(lib,init);
   if (f!=NULL)
   {
@@ -117,6 +120,7 @@ static int loadlib(lua_State *L)
    lua_pushcclosure(L,f,1);
    return 1;
   }
+  DIAGNOSTICS_POP
  }
  lua_pushnil(L);
  pusherror(L);
