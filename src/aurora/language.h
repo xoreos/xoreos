@@ -43,7 +43,7 @@ namespace Common {
 
 namespace Aurora {
 
-enum Language {
+enum Language : uint32_t {
 	kLanguageEnglish,
 	kLanguageFrench,
 	kLanguageGerman,
@@ -64,7 +64,7 @@ enum Language {
 	kLanguageInvalid = 0xFFFFFFFF
 };
 
-enum LanguageGender {
+enum LanguageGender : uint16_t {
 	kLanguageGenderMale   = 0,
 	kLanguageGenderFemale = 1,
 
