@@ -110,6 +110,9 @@
 		#define WIN32
 	#endif
 
+	#define DIAGNOSTICS_PUSH __pragma(warning(push))
+	#define DIAGNOSTICS_POP __pragma(warning(pop))
+
 	#define IGNORE_UNUSED_VARIABLES __pragma(warning(disable : 4101))
 
 #elif defined(__MINGW32__)
@@ -146,6 +149,9 @@
 #if defined(__GNUC__)
 	#define PACKED_STRUCT __attribute__((__packed__))
 	#define GCC_PRINTF(x,y) __attribute__((__format__(printf, x, y)))
+
+	#define DIAGNOSTICS_PUSH _Pragma("GCC diagnostic push")
+	#define DIAGNOSTICS_POP _Pragma("GCC diagnostic pop")
 
 	#if (__GNUC__ >= 3)
 		// Macro to ignore several "unused variable" warnings produced by GCC
@@ -418,6 +424,14 @@
 
 #ifndef MAXPATHLEN
 	#define MAXPATHLEN 256
+#endif
+
+#ifndef DIAGNOSTICS_PUSH
+	#define DIAGNOSTICS_PUSH
+#endif
+
+#ifndef DIAGNOSTICS_POP
+	#define DIAGNOSTICS_POP
 #endif
 
 #ifndef IGNORE_UNUSED_VARIABLES
