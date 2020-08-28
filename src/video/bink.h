@@ -146,6 +146,7 @@ private:
 		Common::DCT  *dct;
 
 		AudioInfo();
+		AudioInfo(const AudioInfo &audioInfo) = default;
 		~AudioInfo();
 	};
 
@@ -159,6 +160,7 @@ private:
 		Common::BitStream *bits;
 
 		VideoFrame();
+		VideoFrame(const VideoFrame &videoFrame) = default;
 		~VideoFrame();
 	};
 
