@@ -22,6 +22,8 @@
  *  Classes for serializing and deserializing raw data.
  */
 
+#include <boost/type_traits.hpp>
+
 #include "src/common/serializationstream.h"
 #include "src/common/encoding.h"
 
@@ -81,76 +83,106 @@ void SerializationReadStream::readOrWriteSint16BE(int16_t &value) {
 	value = _stream.readSint16BE();
 }
 
+template<typename T>
+static UString toHexString(T value) {
+	using unsignedT = typename boost::make_unsigned<T>::type;
+	unsignedT v = static_cast<unsignedT>(value);
+
+	const size_t bits = sizeof(unsignedT) * 8;
+
+	UString str = "0x";
+	for (size_t i = 0; i < bits; i += 4) {
+		const uint nV = (v >> (bits - 4)) & 0xF;
+		v <<= 4;
+
+		str += Common::UString::format("%X", nV);
+	}
+
+	return str;
+}
+
 void SerializationReadStream::readOrWriteUint64LE(const uint64_t &value) {
 	uint64_t value2 = _stream.readUint64LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteUint32LE(const uint32_t &value) {
 	uint32_t value2 = _stream.readUint32LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint32LE(): Invalid uint32_t value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint32LE(): Invalid uint32_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteUint16LE(const uint16_t &value) {
 	uint16_t value2 = _stream.readUint16LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint16LE(): Invalid uint16_t value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint16LE(): Invalid uint16_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteUint64BE(const uint64_t &value) {
 	uint64_t value2 = _stream.readUint64BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint64BE(): Invalid uint64_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteUint32BE(const uint32_t &value) {
 	uint32_t value2 = _stream.readUint32BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint32LE(): Invalid uint32_t value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint32BE(): Invalid uint32_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteUint16BE(const uint16_t &value) {
 	uint16_t value2 = _stream.readUint16BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint16BE(): Invalid uint16_t value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteUint16BE(): Invalid uint16_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteSint64LE(const int64_t &value) {
 	int64_t value2 = _stream.readSint64LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteSint64LE(): Invalid int64_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteSint32LE(const int32_t &value) {
 	int32_t value2 = _stream.readSint32LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteSint32LE(): Invalid int32_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteSint16LE(const int16_t &value) {
 	int16_t value2 = _stream.readSint16LE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteSint16LE(): Invalid int16_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteSint64BE(const int64_t &value) {
 	int64_t value2 = _stream.readSint64BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#lX, should have been %#lX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteSint64BE(): Invalid int64_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteSint32BE(const int32_t &value) {
 	int32_t value2 = _stream.readSint32BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#X, should have been %#X", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteSint32BE(): Invalid int32_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteSint16BE(const int16_t &value) {
 	int16_t value2 = _stream.readSint16BE();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteUint64LE(): Invalid uint64_t value %#hX, should have been %#hX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteSint16BE(): Invalid int16_t toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteByte(byte &value) {
@@ -160,7 +192,8 @@ void SerializationReadStream::readOrWriteByte(byte &value) {
 void SerializationReadStream::readOrWriteByte(const byte &value) {
 	byte value2 = _stream.readByte();
 	if (value != value2)
-		throw Common::Exception("SerializationReadStream::readOrWriteByte(): Invalid byte value %#hhX, should have been %#hhX", value2, value);
+		throw Common::Exception("SerializationReadStream::readOrWriteByte(): Invalid byte toHexString(value).c_str() %s, should have been %s",
+		                        toHexString(value2).c_str(), toHexString(value).c_str());
 }
 
 void SerializationReadStream::readOrWriteChar(char &value) {
