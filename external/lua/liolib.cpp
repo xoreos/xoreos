@@ -67,6 +67,9 @@ typedef struct FileHandle {
 
 
 #if !USE_POPEN
+#ifdef pclose
+	#undef pclose
+#endif
 #define pclose(f)    (-1)
 #endif
 
