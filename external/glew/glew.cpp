@@ -57,6 +57,11 @@
 
 #include <stddef.h>  /* For size_t */
 
+#ifdef WIN32
+#include "src/common/system.h"
+IGNORE_FUNCTION_CAST
+#endif
+
 #if defined(GLEW_EGL)
 #elif defined(GLEW_REGAL)
 
