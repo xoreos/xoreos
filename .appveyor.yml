@@ -8,6 +8,10 @@ matrix:
 platform: x64
 configuration: Debug
 
+branches:
+  except:
+    - coverity_scan
+
 environment:
   global:
     BOOST_ROOT: C:\Libraries\boost_1_73_0
