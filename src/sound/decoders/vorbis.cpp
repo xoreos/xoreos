@@ -56,6 +56,8 @@
 
 #include <vorbis/vorbisfile.h>
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
@@ -375,6 +377,10 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 	}
 
 	for (int i = 0; i < 3; i++) {
+		BOOST_SCOPE_EXIT(&_packet) {
+			_packet.packet = nullptr;
+		} BOOST_SCOPE_EXIT_END
+
 		_packet.b_o_s = (i == 0);
 		_packet.bytes = headerSizes[i];
 		_packet.packet = headers[i].get();
@@ -412,6 +418,10 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &packet1,
 #undef READ_WHOLE_STREAM
 
 	for (int i = 0; i < 3; i++) {
+		BOOST_SCOPE_EXIT(&_packet) {
+			_packet.packet = nullptr;
+		} BOOST_SCOPE_EXIT_END
+
 		_packet.b_o_s = (i == 0);
 		_packet.bytes = headerSizes[i];
 		_packet.packet = headers[i].get();
@@ -455,6 +465,10 @@ size_t PacketizedVorbisStream::readBuffer(int16_t *buffer, const size_t numSampl
 			_queue.pop();
 			std::unique_ptr<byte[]> data = std::make_unique<byte[]>(stream->size());
 			stream->read(data.get(), stream->size());
+
+			BOOST_SCOPE_EXIT(&_packet) {
+				_packet.packet = nullptr;
+			} BOOST_SCOPE_EXIT_END
 
 			// Synthesize!
 			_packet.packet = data.get();
