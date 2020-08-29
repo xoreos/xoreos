@@ -42,9 +42,9 @@ namespace Aurora {
 struct Parameters;
 
 struct Decoder {
-	uint32_t numer;
-	uint32_t denom;
-	uint32_t nextDenom;
+	uint32_t numer { 0 };
+	uint32_t denom { 0x80 };
+	uint32_t nextDenom { 0 };
 	uint8_t *stream;
 
 	Decoder(uint8_t *stream);
@@ -104,10 +104,8 @@ struct Parameters {
 	uint8_t sizesCount[4];
 };
 
-Decoder::Decoder(uint8_t *s) {
-	numer  = s[0] >> 1;
-	denom  = 0x80;
-	stream = s;
+Decoder::Decoder(uint8_t *s) : stream(s) {
+	numer = stream[0] >> 1;
 }
 
 uint16_t Decoder::decode(uint16_t max) {
