@@ -49,6 +49,15 @@ jobs:
     # Do not compile for arm64 on osx yet.
     - arch: arm64
       os: osx
+    # Only build the Coverity Scan branch with the Linux amd64 gcc CMake VM
+    - if: branch = coverity_scan
+      os: osx
+    - if: branch = coverity_scan
+      arch: arm64
+    - if: branch = coverity_scan
+      env: USECMAKE=0
+    - if: branch = coverity_scan
+      compiler: clang
 
 script:
   # environment
