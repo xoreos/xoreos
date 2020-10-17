@@ -332,7 +332,7 @@ void decompress(uint32_t csize, uint8_t *cbuf, uint32_t step1, uint32_t step2, u
 
 	Parameters params[3];
 	for (auto &param : params) {
-		Common::BitStream8MSB paramStream(stream);
+		Common::BitStream8LSB paramStream(stream);
 
 		param.decodedValueMax = paramStream.getBits(9);
 		param.backrefValueMax = paramStream.getBits(23);
