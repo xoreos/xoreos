@@ -356,7 +356,11 @@ void decompress(uint32_t csize, uint8_t *cbuf, uint32_t step1, uint32_t step2, u
 	}
 }
 
-Common::ReadStream *decompressOodle1(byte *data, size_t compressedSize, size_t decompressedSize, uint32_t stop0, uint32_t stop1) {
+Common::SeekableReadStream *decompressOodle1(
+		byte *data,
+		size_t compressedSize,
+		size_t decompressedSize,
+		uint32_t stop0, uint32_t stop1) {
 	std::unique_ptr<byte[]> decompressedData = std::make_unique<byte[]>(decompressedSize);
 
 	std::memset(decompressedData.get(), 0, decompressedSize);
