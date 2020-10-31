@@ -216,6 +216,7 @@ AC_ARG_ENABLE([mad], [AS_HELP_STRING([--disable-mad], [Disable building with MP3
 AC_ARG_ENABLE([faad], [AS_HELP_STRING([--disable-faad], [Disable building with AAC support @<:@default=no@:>@])], [], [enable_faad=yes])
 AC_ARG_ENABLE([xvidcore], [AS_HELP_STRING([--disable-xvidcore], [Disable building with H.263 support @<:@default=no@:>@])], [], [enable_xvidcore=yes])
 AC_ARG_ENABLE([vpx], [AS_HELP_STRING([--disable-vpx], [Disabling building with VP8/VP9 support @<:@default=no@:>@])], [], [enable_vpx=yes])
+AC_ARG_ENABLE([cairo], [AS_HELP_STRING([--disable-cairo], [Disabling building with Cairo support @<:@default=no@:>@])], [], [enable_cairo=yes])
 AC_ARG_ENABLE([lzma], [AS_HELP_STRING([--disable-lzma], [Disable building with LZMA support @<:@default=no@:>@])], [], [enable_lzma=yes])
 AC_ARG_ENABLE([xml], [AS_HELP_STRING([--disable-xml], [Disable building with XML support @<:@default=no@:>@])], [], [enable_xml=yes])
 
@@ -306,6 +307,17 @@ else
 	VPX_CFLAGS=""
 	VPX_LIBS=""
 	AM_CONDITIONAL(ENABLE_VPX, false)
+fi
+if test "x$enable_cairo" = "xyes"; then
+	AX_CHECK_CAIRO([1.8.0], , [enable_cairo=no])
+fi
+if test "x$enable_cairo" = "xyes"; then
+	AC_DEFINE([ENABLE_CAIRO], 1, [Defined to 1 if we are using libcairo])
+	AM_CONDITIONAL(ENABLE_CAIRO, true)
+else
+	CAIRO_CFLAGS=""
+	CAIRO_LIBS=""
+	AM_CONDITIONAL(ENABLE_CAIRO, false)
 fi
 
 dnl Sound libraries
@@ -440,5 +452,6 @@ AS_ECHO(["	libvorbis: $enable_vorbis"])
 AS_ECHO(["	libfaad: $enable_faad"])
 AS_ECHO(["	xvidcore: $enable_xvidcore"])
 AS_ECHO(["	libvpx: $enable_vpx"])
+AS_ECHO(["	libcairo: $enable_cairo"])
 AS_ECHO(["	liblzma: $enable_lzma"])
 AS_ECHO(["	libxml2: $enable_xml"])
