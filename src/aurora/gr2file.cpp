@@ -249,7 +249,7 @@ void GR2File::loadArtToolInfo(GR2File::Section &section) {
 	_artToolInfo.back.y = section.stream->readIEEEFloatLE();
 	_artToolInfo.back.z = section.stream->readIEEEFloatLE();
 
-	assert(artToolNameRelocation.has_value());
+	assert(static_cast<bool>(artToolNameRelocation));
 
 	_artToolInfo.name = Common::readString(
 			*getRelocatedStream(*artToolNameRelocation).stream,
@@ -264,7 +264,7 @@ void GR2File::loadExporterInfo(GR2File::Section &section) {
 	_exporterInfo.customization = section.stream->readUint32LE();
 	_exporterInfo.buildNumber = section.stream->readUint32LE();
 
-	assert(exporterNameRelocation.has_value());
+	assert(static_cast<bool>(exporterNameRelocation));
 
 	_exporterInfo.name = Common::readString(
 			*getRelocatedStream(*exporterNameRelocation).stream,
@@ -274,7 +274,7 @@ void GR2File::loadExporterInfo(GR2File::Section &section) {
 
 void GR2File::loadSkeleton(GR2File::Section &section) {
 	boost::optional<Relocation> skeletonRelocation = readRelocation(section);
-	assert(skeletonRelocation.has_value());
+	assert(static_cast<bool>(skeletonRelocation));
 
 	section.pushPosition();
 
@@ -284,8 +284,8 @@ void GR2File::loadSkeleton(GR2File::Section &section) {
 	uint32_t numBones = skeletonSection.stream->readUint32LE();
 	boost::optional<Relocation> bonesRelocation = readRelocation(skeletonSection);
 
-	assert(nameRelocation.has_value());
-	assert(bonesRelocation.has_value());
+	assert(static_cast<bool>(nameRelocation));
+	assert(static_cast<bool>(bonesRelocation));
 
 	Skeleton skeleton;
 
@@ -342,9 +342,9 @@ void GR2File::loadSkeleton(GR2File::Section &section) {
 		boost::optional<Relocation> lightInfo = readRelocation(bonesSection);
 		boost::optional<Relocation> cameraInfo = readRelocation(bonesSection);
 
-		if (lightInfo.has_value())
+		if (static_cast<bool>(lightInfo))
 			warning("TODO: Add light info reading");
-		if (cameraInfo.has_value())
+		if (static_cast<bool>(cameraInfo))
 			warning("TODO: Add camera info reading");
 
 		// Extended data
@@ -360,8 +360,8 @@ void GR2File::loadModel(GR2File::Section &section) {
 	boost::optional<Relocation> nameRelocation = readRelocation(section);
 	boost::optional<Relocation> skeletonRelocation = readRelocation(section);
 
-	assert(nameRelocation.has_value());
-	assert(skeletonRelocation.has_value());
+	assert(static_cast<bool>(nameRelocation));
+	assert(static_cast<bool>(skeletonRelocation));
 
 	Common::UString name = Common::readString(
 			*getRelocatedStream(*nameRelocation).stream,
