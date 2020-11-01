@@ -61,7 +61,6 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/aurora/animationchannel.h \
     src/graphics/aurora/line.h \
     src/graphics/aurora/skeletalanimation.h \
-    src/graphics/aurora/flashfont.h \
     $(EMPTY)
 
 src_graphics_libgraphics_la_SOURCES += \
@@ -105,5 +104,15 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/aurora/animationchannel.cpp \
     src/graphics/aurora/line.cpp \
     src/graphics/aurora/skeletalanimation.cpp \
+    $(EMPTY)
+
+flashfont_source = \
+    src/graphics/aurora/flashfont.h \
     src/graphics/aurora/flashfont.cpp \
     $(EMPTY)
+
+if ENABLE_CAIRO
+src_graphics_libgraphics_la_SOURCES += $(flashfont_source)
+else
+EXTRA_DIST += $(flashfont_source)
+endif
