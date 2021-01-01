@@ -43,12 +43,12 @@ install:
 
   # Updating vcpkg, because 2020.06.15-nohash has broken zlib
   # (see https://github.com/microsoft/vcpkg/issues/12775)
-  - vcpkg version
-  - cd C:\Tools\vcpkg
-  - git pull
-  - .\bootstrap-vcpkg.bat -disableMetrics
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - vcpkg version
+#  - vcpkg version
+#  - cd C:\Tools\vcpkg
+#  - git pull
+#  - .\bootstrap-vcpkg.bat -disableMetrics
+#  - cd %APPVEYOR_BUILD_FOLDER%
+#  - vcpkg version
 
   # Build xvidcore, because it's not within vcpkg
   - set PROGRAMFILES=%PROGRAM_FILES_DIR%
