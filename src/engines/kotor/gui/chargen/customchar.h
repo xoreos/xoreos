@@ -41,6 +41,7 @@ private:
 	CharacterGenerationMenu *_charGen;
 
 	virtual void callbackActive(Widget &widget);
+	void updateButtons();
 };
 
 } // End of namespace KotOR

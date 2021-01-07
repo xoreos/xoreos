@@ -23,6 +23,7 @@
  */
 
 #include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/button.h"
 
 #include "src/engines/kotor/gui/chargen/customchar.h"
 
@@ -42,6 +43,15 @@ CustomCharPanel::CustomCharPanel(CharacterGenerationMenu *charGenMenu, Console *
 	float height = getLabel("LBL_BG")->getHeight();
 
 	getLabel("LBL_BG")->setScissor(5, 40, width - 5, height - 60);
+
+	getButton("BTN_STEPNAME1")->setDisableHoverSound(true);
+	getButton("BTN_STEPNAME2")->setDisableHoverSound(true);
+	getButton("BTN_STEPNAME3")->setDisableHoverSound(true);
+	getButton("BTN_STEPNAME4")->setDisableHoverSound(true);
+	getButton("BTN_STEPNAME5")->setDisableHoverSound(true);
+	getButton("BTN_STEPNAME6")->setDisableHoverSound(true);
+
+	updateButtons();
 }
 
 void CustomCharPanel::callbackActive(Widget &widget) {
@@ -52,15 +62,18 @@ void CustomCharPanel::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_BACK") {
 		_charGen->decStep();
+		updateButtons();
 		return;
 	}
 
 	if (widget.getTag() == "BTN_STEPNAME1") {
 		_charGen->showPortrait();
+		updateButtons();
 		return;
 	}
 	if (widget.getTag() == "BTN_STEPNAME5") {
 		_charGen->showName();
+		updateButtons();
 		return;
 	}
 	if (widget.getTag() == "BTN_STEPNAME6") {
@@ -70,6 +83,155 @@ void CustomCharPanel::callbackActive(Widget &widget) {
 		return;
 	}
 	// TODO implement the custom character generation
+}
+
+void CustomCharPanel::updateButtons() {
+	switch (_charGen->getStep()) {
+		case 0:
+			getButton("BTN_STEPNAME1")->setDisabled(false);
+			getButton("BTN_STEPNAME2")->setDisabled(true);
+			getButton("BTN_STEPNAME3")->setDisabled(true);
+			getButton("BTN_STEPNAME4")->setDisabled(true);
+			getButton("BTN_STEPNAME5")->setDisabled(true);
+			getButton("BTN_STEPNAME6")->setDisabled(true);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(true);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME4")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME5")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME6")->setPermanentHighlight(false);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(false);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME4")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME5")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME6")->setDisableHighlight(true);
+			break;
+
+		case 1:
+			getButton("BTN_STEPNAME1")->setDisabled(true);
+			getButton("BTN_STEPNAME2")->setDisabled(false);
+			getButton("BTN_STEPNAME3")->setDisabled(true);
+			getButton("BTN_STEPNAME4")->setDisabled(true);
+			getButton("BTN_STEPNAME5")->setDisabled(true);
+			getButton("BTN_STEPNAME6")->setDisabled(true);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(true);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME4")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME5")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME6")->setPermanentHighlight(false);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(false);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME4")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME5")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME6")->setDisableHighlight(true);
+			break;
+
+		case 2:
+			getButton("BTN_STEPNAME1")->setDisabled(true);
+			getButton("BTN_STEPNAME2")->setDisabled(true);
+			getButton("BTN_STEPNAME3")->setDisabled(false);
+			getButton("BTN_STEPNAME4")->setDisabled(true);
+			getButton("BTN_STEPNAME5")->setDisabled(true);
+			getButton("BTN_STEPNAME6")->setDisabled(true);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(true);
+			getButton("BTN_STEPNAME4")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME5")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME6")->setPermanentHighlight(false);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(false);
+			getButton("BTN_STEPNAME4")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME5")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME6")->setDisableHighlight(true);
+			break;
+
+		case 3:
+			getButton("BTN_STEPNAME1")->setDisabled(true);
+			getButton("BTN_STEPNAME2")->setDisabled(true);
+			getButton("BTN_STEPNAME3")->setDisabled(true);
+			getButton("BTN_STEPNAME4")->setDisabled(false);
+			getButton("BTN_STEPNAME5")->setDisabled(true);
+			getButton("BTN_STEPNAME6")->setDisabled(true);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME4")->setPermanentHighlight(true);
+			getButton("BTN_STEPNAME5")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME6")->setPermanentHighlight(false);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME4")->setDisableHighlight(false);
+			getButton("BTN_STEPNAME5")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME6")->setDisableHighlight(true);
+			break;
+
+		case 4:
+			getButton("BTN_STEPNAME1")->setDisabled(true);
+			getButton("BTN_STEPNAME2")->setDisabled(true);
+			getButton("BTN_STEPNAME3")->setDisabled(true);
+			getButton("BTN_STEPNAME4")->setDisabled(true);
+			getButton("BTN_STEPNAME5")->setDisabled(false);
+			getButton("BTN_STEPNAME6")->setDisabled(true);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME4")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME5")->setPermanentHighlight(true);
+			getButton("BTN_STEPNAME6")->setPermanentHighlight(false);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME4")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME5")->setDisableHighlight(false);
+			getButton("BTN_STEPNAME6")->setDisableHighlight(true);
+			break;
+
+		default:
+		case 5:
+			getButton("BTN_STEPNAME1")->setDisabled(true);
+			getButton("BTN_STEPNAME2")->setDisabled(true);
+			getButton("BTN_STEPNAME3")->setDisabled(true);
+			getButton("BTN_STEPNAME4")->setDisabled(true);
+			getButton("BTN_STEPNAME5")->setDisabled(true);
+			getButton("BTN_STEPNAME6")->setDisabled(false);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME4")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME5")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME6")->setPermanentHighlight(true);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME4")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME5")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME6")->setDisableHighlight(false);
+			break;
+	}
+
+	if (_charGen->getStep() == 0) {
+		getWidget("BTN_BACK")->setDisabled(true);
+	} else {
+		getWidget("BTN_BACK")->setDisabled(false);
+	}
 }
 
 } // End of namespace KotOR
