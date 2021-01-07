@@ -55,6 +55,20 @@ void CustomCharPanel::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "BTN_STEPNAME1") {
+		_charGen->showPortrait();
+		return;
+	}
+	if (widget.getTag() == "BTN_STEPNAME5") {
+		_charGen->showName();
+		return;
+	}
+	if (widget.getTag() == "BTN_STEPNAME6") {
+		_charGen->start();
+		GfxMan.lockFrame();
+		_returnCode = 2;
+		return;
+	}
 	// TODO implement the custom character generation
 }
 
