@@ -242,7 +242,30 @@ void CharacterGenerationMenu::showAbilities() {
 	if (_charGenMenu->isAccepted()) {
 		*_pc = info;
 
-		// TODO update display
+		Odyssey::WidgetLabel *lblStrength = getLabel("STR_AB_LBL");
+		if (lblStrength)
+			lblStrength->setText(Common::composeString(
+						info.getAbilities().strength));
+		Odyssey::WidgetLabel *lblDexterity = getLabel("DEX_AB_LBL");
+		if (lblDexterity)
+			lblDexterity->setText(Common::composeString(
+						info.getAbilities().dexterity));
+		Odyssey::WidgetLabel *lblConstitution = getLabel("CON_AB_LBL");
+		if (lblConstitution)
+			lblConstitution->setText(Common::composeString(
+						info.getAbilities().constitution));
+		Odyssey::WidgetLabel *lblWisdom = getLabel("WIS_AB_LBL");
+		if (lblWisdom)
+			lblWisdom->setText(Common::composeString(
+						info.getAbilities().wisdom));
+		Odyssey::WidgetLabel *lblIntelligence = getLabel("INT_AB_LBL");
+		if (lblIntelligence)
+			lblIntelligence->setText(Common::composeString(
+						info.getAbilities().intelligence));
+		Odyssey::WidgetLabel *lblCharisma = getLabel("CHA_AB_LBL");
+		if (lblCharisma)
+			lblCharisma->setText(Common::composeString(
+						info.getAbilities().charisma));
 
 		_step += 1;
 	}

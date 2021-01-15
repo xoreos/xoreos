@@ -48,7 +48,55 @@ private:
 	uint8_t _intelligence;
 	uint8_t _charisma;
 
+	Odyssey::WidgetLabel *_remainingSectionsLabel;
+	Odyssey::WidgetLabel *_costPointsLabel;
+	Odyssey::WidgetLabel *_abilityModLabel;
+
+	Odyssey::WidgetListBox *_descListBox;
+
+	Odyssey::WidgetLabel *_strengthLabel;
+	Odyssey::WidgetLabel *_dexterityLabel;
+	Odyssey::WidgetLabel *_constitutionLabel;
+	Odyssey::WidgetLabel *_wisdomLabel;
+	Odyssey::WidgetLabel *_intelligenceLabel;
+	Odyssey::WidgetLabel *_charismaLabel;
+
+	Odyssey::WidgetButton *_hoveredButton;
+
+	Odyssey::WidgetButton *_strengthButton;
+	Odyssey::WidgetButton *_dexterityButton;
+	Odyssey::WidgetButton *_constitutionButton;
+	Odyssey::WidgetButton *_wisdomButton;
+	Odyssey::WidgetButton *_intelligenceButton;
+	Odyssey::WidgetButton *_charismaButton;
+
+	Odyssey::WidgetButton *_strengthPlusButton;
+	Odyssey::WidgetButton *_dexterityPlusButton;
+	Odyssey::WidgetButton *_constitutionPlusButton;
+	Odyssey::WidgetButton *_wisdomPlusButton;
+	Odyssey::WidgetButton *_intelligencePlusButton;
+	Odyssey::WidgetButton *_charismaPlusButton;
+
+	Odyssey::WidgetButton *_strengthMinusButton;
+	Odyssey::WidgetButton *_dexterityMinusButton;
+	Odyssey::WidgetButton *_constitutionMinusButton;
+	Odyssey::WidgetButton *_wisdomMinusButton;
+	Odyssey::WidgetButton *_intelligenceMinusButton;
+	Odyssey::WidgetButton *_charismaMinusButton;
+
+	Common::UString _strengthDesc;
+	Common::UString _dexterityDesc;
+	Common::UString _constitutionDesc;
+	Common::UString _wisdomDesc;
+	Common::UString _intelligenceDesc;
+	Common::UString _charismaDesc;
+
 	void callbackActive(Widget &widget);
+	void callbackRun();
+	uint8_t getAbilityCost(uint8_t abilityPoints);
+	void updateCostModifier(uint8_t abilityPoints);
+	void disablePlusButtons();
+	void enablePlusButtons();
 };
 
 } // End of namespace KotOR
