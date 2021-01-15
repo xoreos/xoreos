@@ -39,6 +39,15 @@ public:
 	                            ::Engines::Console *console = 0);
 
 private:
+	uint8_t _remainingSections;
+
+	uint8_t _strength;
+	uint8_t _dexterity;
+	uint8_t _constitution;
+	uint8_t _wisdom;
+	uint8_t _intelligence;
+	uint8_t _charisma;
+
 	void callbackActive(Widget &widget);
 };
 
