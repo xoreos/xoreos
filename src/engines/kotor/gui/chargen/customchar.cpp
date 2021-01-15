@@ -71,6 +71,24 @@ void CustomCharPanel::callbackActive(Widget &widget) {
 		updateButtons();
 		return;
 	}
+	// Attributes / Abilities
+	if (widget.getTag() == "BTN_STEPNAME2") {
+		_charGen->showAbilities();
+		updateButtons();
+		return;
+	}
+	// Skills
+	if (widget.getTag() == "BTN_STEPNAME3") {
+		_charGen->showSkills();
+		updateButtons();
+		return;
+	}
+	// Feats
+	if (widget.getTag() == "BTN_STEPNAME4") {
+		_charGen->showFeats();
+		updateButtons();
+		return;
+	}
 	if (widget.getTag() == "BTN_STEPNAME5") {
 		_charGen->showName();
 		updateButtons();

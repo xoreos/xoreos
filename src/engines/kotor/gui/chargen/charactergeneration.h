@@ -54,6 +54,9 @@ public:
 
 	void showPortrait();
 	void showName();
+	void showAbilities();
+	void showSkills();
+	void showFeats();
 
 	int getStep();
 	void decStep();
