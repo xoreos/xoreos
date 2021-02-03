@@ -41,6 +41,12 @@ private:
 	CharacterGenerationMenu *_charGen;
 
 	virtual void callbackActive(Widget &widget);
+
+	/**
+	 * @brief Update the appearance of the buttons for the individual steps
+	 *
+	 * This function is called after each step (forwards or backwards)
+	 */
 	void updateButtons();
 };
 
