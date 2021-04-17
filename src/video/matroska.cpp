@@ -312,7 +312,7 @@ public:
 	EBMLSyntaxReader(const EBMLSyntaxReader &reader) :
 		_id(reader._id),
 		_mode(reader._mode),
-		_reader(_reader->clone()) {}
+		_reader(reader._reader->clone()) {}
 
 	EBMLID getID() const { return _id; }
 	EBMLParseMode getMode() const { return _mode; }
