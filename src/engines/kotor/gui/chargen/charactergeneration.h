@@ -55,6 +55,21 @@ public:
 	void showPortrait();
 	void showName();
 
+	/**
+	 * @brief Show the menu for ability selection
+	 */
+	void showAbilities();
+
+	/**
+	 * @brief Show the menu for skill selection
+	 */
+	void showSkills();
+
+	/**
+	 * @brief Show the menu for feat selection
+	 */
+	void showFeats();
+
 	int getStep();
 	void decStep();
 
