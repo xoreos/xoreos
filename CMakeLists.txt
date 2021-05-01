@@ -114,6 +114,7 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   set_check_compiler_flag_cxx("-Wdeprecated-copy")
   set_check_compiler_flag_cxx("-Wdeprecated-copy-dtor")
   set_check_compiler_flag_cxx("-Wredundant-move")
+  set_check_compiler_flag_cxx("-Wctad-maybe-unsupported")
 
   # Disable warnings about hiding virtual functions from a base class. We don't care
   set_check_compiler_flag_cxx("-Woverloaded-virtual" "-Wno-overloaded-virtual")
