@@ -163,4 +163,4 @@ Contact
 -------
 
 To contact us, please either write to [mailing list](https://xoreos.org/mailman/listinfo/xoreos-devel),
-or join our IRC channel #xoreos on Freenode.
+or join our IRC channel #xoreos on [Libera IRC](https://libera.chat/).
