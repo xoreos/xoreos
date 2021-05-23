@@ -118,7 +118,7 @@ addons:
 notifications:
   irc:
     channels:
-      - secure: "Q7G5gmVRO67LIAhic4NoeiPRtygiOqjEfPZMIHqgTcpd1OkD8u/Sv9zhfYORfCIqKX1TruL6to6O/4q0HdjQ4NL4GfiNB0iYc+JCinmg80ekPLjjxBIvHmrsvz8onTAmxyYFacXM0YNurCMVvuD0F/yUaiTWwVcRY7PId8T8KPk="
+      - secure: "rXeGjFf/QuNuxRawlKJ4DcSW/qwRsKcbOH9Z2RZBnJEWpRgIwizQ7BOGp/TWFUK5s8z+g334OK2Z8FyqaslJKtLGkOSsi+sDWGvyIQdJI4k0AbmV99u33FZ1UfdZlJph+cRCkm0a5jYS4fYVZKyU7azkAF5397CAzJXA0HV8zTM="
     on_success: change
     on_failure: always
     use_notice: true
