@@ -366,29 +366,40 @@ size_t GFF3Writer::createField(GFF3Struct::FieldType type, const Common::UString
 	return index;
 }
 
+GFF3WriterStructPtr GFF3WriterList::addStruct() {
+	return addStruct("", static_cast<uint32_t>(_parent->_structs.size()) - 1, true);
+}
+
+GFF3WriterStructPtr GFF3WriterList::addStruct(uint32_t id) {
+	return addStruct("", id, true);
+}
+
 GFF3WriterStructPtr GFF3WriterList::addStruct(const Common::UString &label) {
 	return addStruct(label, static_cast<uint32_t>(_parent->_structs.size()) - 1);
 }
 
-GFF3WriterStructPtr GFF3WriterList::addStruct(const Common::UString &label, uint32_t id) {
+GFF3WriterStructPtr GFF3WriterList::addStruct(const Common::UString &label, uint32_t id, bool inList) {
 	// Create the structure pointer
 	GFF3WriterStructPtr strct(
 			boost::make_shared<GFF3WriterStruct>(_parent, id));
 
 	// Create a field index
 	_strcts.push_back(_parent->_structs.size());
-	GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
-	field->value.type = GFF3Struct::kFieldTypeStruct;
-	field->value.data = static_cast<uint32_t>(_parent->_structs.size());
 
-	// Add the label
-	field->labelIndex = _parent->addLabel(label);
+	if (!inList) {
+		GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
+		field->value.type = GFF3Struct::kFieldTypeStruct;
+		field->value.data = static_cast<uint32_t>(_parent->_structs.size());
+
+		// Add the label
+		field->labelIndex = _parent->addLabel(label);
+
+		// Insert the struct to the field vector
+		_parent->_fields.push_back(field);
+	}
 
 	// Insert the newly created struct into the struct vector
 	_parent->_structs.push_back(strct);
-
-	// Insert the struct to the field vector
-	_parent->_fields.push_back(field);
 
 	return strct;
 }
