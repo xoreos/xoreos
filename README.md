@@ -24,7 +24,7 @@ The following games are valid targets for xoreos:
 - [Dragon Age II](https://en.wikipedia.org/wiki/Dragon_Age_II)
 
 
-Status [![Build Status (Travis CI)](https://travis-ci.org/xoreos/xoreos.svg?branch=master)](https://travis-ci.org/xoreos/xoreos) [![Build status (AppVeyor)](https://ci.appveyor.com/api/projects/status/nwgm9478a46b1fkh/branch/master?svg=true)](https://ci.appveyor.com/project/DrMcCoy/xoreos/branch/master) [![Coverity Status](https://scan.coverity.com/projects/544/badge.svg)](https://scan.coverity.com/projects/544)
+Status [![Build status (AppVeyor)](https://ci.appveyor.com/api/projects/status/nwgm9478a46b1fkh/branch/master?svg=true)](https://ci.appveyor.com/project/DrMcCoy/xoreos/branch/master) [![Coverity Status](https://scan.coverity.com/projects/544/badge.svg)](https://scan.coverity.com/projects/544)
 ------
 
 Currently, the "foundation" work of managing resources, reading many basic
