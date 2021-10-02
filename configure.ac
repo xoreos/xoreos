@@ -47,9 +47,6 @@ AC_LANG([C++])
 dnl We want a make install
 AC_PROG_INSTALL
 
-dnl Standard C++
-AC_HEADER_STDC
-
 dnl Endianness
 AC_C_BIGENDIAN
 
