@@ -33,7 +33,7 @@ GTEST_FLAGS += -isystem $(srcdir)/tests/googletest/include \
 # Use pthread, if we can (not supported with MinGW)
 if HAVE_PTHREAD
 if !WIN32
-GTEST_FLAGS += $(PTHREAD_CFLAGS) -DGTEST_HAS_PTHREAD=1
+GTEST_FLAGS += $(PTHREAD_CXXFLAGS) -DGTEST_HAS_PTHREAD=1
 GTEST_LIBS  += $(PTHREAD_LIBS)
 else
 GTEST_FLAGS += -DGTEST_HAS_PTHREAD=0
