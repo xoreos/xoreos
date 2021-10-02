@@ -364,8 +364,11 @@ private:
 		GFF4List structs;           ///< List of GFF4Struct (if kFieldTypeStruct).
 
 		Field() = default;
+		Field(const Field &) = default;
 		Field(uint32_t l, uint16_t t, uint16_t f, uint32_t o, bool g = false);
 		~Field() = default;
+
+		Field &operator=(const Field &) = default;
 	};
 
 	typedef std::map<uint32_t, Field> FieldMap;

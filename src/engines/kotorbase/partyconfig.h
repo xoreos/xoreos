@@ -40,6 +40,8 @@ struct PartyConfiguration {
 
 	PartyConfiguration() = default;
 	PartyConfiguration(const PartyConfiguration &config) = default;
+
+	PartyConfiguration &operator=(const PartyConfiguration &) = default;
 };
 
 } // End of namespace KotORBase

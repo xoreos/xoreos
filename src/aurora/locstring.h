@@ -52,6 +52,8 @@ public:
 	LocString(const LocString &) = default;
 	~LocString() = default;
 
+	LocString &operator=(const LocString &) = default;
+
 	void clear();
 
 	/** Is this localized string empty, without any strings whatsoever? */

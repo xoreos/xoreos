@@ -128,6 +128,8 @@ public:
 	TXI(Common::SeekableReadStream &stream);
 	~TXI() = default;
 
+	TXI &operator=(const TXI &) = default;
+
 	void load(Common::SeekableReadStream &stream);
 
 	bool empty() const;

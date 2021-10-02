@@ -36,6 +36,8 @@ public:
 	BoundingBox(const BoundingBox &) = default;
 	~BoundingBox() = default;
 
+	BoundingBox &operator=(const BoundingBox &) = default;
+
 	void clear();
 
 	bool empty() const;

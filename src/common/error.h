@@ -43,6 +43,8 @@ public:
 	StackException(const std::exception &e);
 	~StackException() = default;
 
+	StackException &operator=(const StackException &) = default;
+
 	void add(const char *s, ...) GCC_PRINTF(2, 3);
 	void add(const std::exception &e);
 

@@ -41,6 +41,8 @@ public:
 	VariableContainer(const VariableContainer &) = default;
 	virtual ~VariableContainer() = default;
 
+	VariableContainer &operator=(const VariableContainer &) = default;
+
 	bool hasVariable(const Common::UString &var) const;
 
 	Variable &getVariable(const Common::UString &var, Type type = kTypeVoid);
