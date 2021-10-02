@@ -71,7 +71,7 @@ void WriteStream::flush() {
 }
 
 size_t WriteStream::writeStream(ReadStream &stream, size_t n) {
-	size_t haveRead = 0, haveWritten = 0;
+	size_t haveWritten = 0;
 
 	byte buf[4096];
 	while (!stream.eos() && (n > 0)) {
@@ -81,7 +81,6 @@ size_t WriteStream::writeStream(ReadStream &stream, size_t n) {
 		const size_t bufWrite = write(buf, bufRead);
 
 		n           -= bufRead;
-		haveRead    += bufRead;
 		haveWritten += bufWrite;
 	}
 
