@@ -36,6 +36,7 @@ namespace NWN2 {
 class Journal {
 public:
 	Journal(const Aurora::GFF3Struct &journal);
+	Journal(const Journal &) = default;
 	~Journal() = default;
 
 	/** Get the XP awarded for completing the quest with the matching tag. */

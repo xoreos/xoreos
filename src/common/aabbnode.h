@@ -41,6 +41,7 @@ public:
 	 *  @param property  An integer value assigned to AABB.
 	 */
 	AABBNode(float min[3], float max[3], int32_t property = -1);
+	AABBNode(const AABBNode &) = default;
 	~AABBNode();
 
 	/** Has the AABB children? */

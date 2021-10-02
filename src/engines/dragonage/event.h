@@ -46,6 +46,7 @@ public:
 	Event(EventType type = kEventTypeInvalid,
 	      const Aurora::NWScript::ObjectReference creator = Aurora::NWScript::ObjectReference(),
 	      const Aurora::NWScript::ObjectReference target = Aurora::NWScript::ObjectReference());
+	Event(const Event &) = default;
 	~Event() = default;
 
 	Event *clone() const;

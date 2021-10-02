@@ -40,6 +40,7 @@ class ObjectReference {
 public:
 	ObjectReference() = default;
 	ObjectReference(const Object *object);
+	ObjectReference(const ObjectReference &) = default;
 	~ObjectReference() = default;
 
 	uint32_t getId() const;

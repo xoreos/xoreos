@@ -56,6 +56,7 @@ namespace Common {
 class Rational {
 public:
 	Rational() = default;
+	Rational(const Rational &) = default;
 	Rational(int num);
 	Rational(int num, int denom);
 

@@ -36,6 +36,7 @@ class Area;
 class Location : public Aurora::NWScript::EngineType {
 public:
 	Location() = default;
+	Location(const Location &) = default;
 	~Location() = default;
 
 	/** Clone factory method. */

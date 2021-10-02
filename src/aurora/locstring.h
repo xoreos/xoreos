@@ -49,6 +49,7 @@ public:
 	 * See https://stackoverflow.com/a/47368753 for details.
 	 */
 	LocString() { }
+	LocString(const LocString &) = default;
 	~LocString() = default;
 
 	void clear();

@@ -38,6 +38,7 @@ namespace NWScript {
 class VariableContainer {
 public:
 	VariableContainer() = default;
+	VariableContainer(const VariableContainer &) = default;
 	virtual ~VariableContainer() = default;
 
 	bool hasVariable(const Common::UString &var) const;
