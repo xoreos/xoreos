@@ -108,6 +108,7 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   set_check_compiler_flag_cxx("-Wimplicit-fallthrough")
   set_check_compiler_flag_cxx("-Wvla")
   set_check_compiler_flag_cxx("-Wcast-function-type")
+  set_check_compiler_flag_cxx("-Wnull-pointer-subtraction")
 
   # Extra warnings valid for C++
   set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
