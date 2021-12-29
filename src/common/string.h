@@ -112,7 +112,17 @@ uint32_t fromUTF16(uint16_t c);
 int compareIgnoreCase(const std::string &left, const std::string &right);
 
 /** Perform a case-insensitive comparison. */
+inline bool equalsIgnoreCase(const std::string &left, const std::string &right) {
+	return compareIgnoreCase(left, right) == 0;
+}
+
+/** Perform a case-insensitive comparison. */
 int compareIgnoreCase(const char *left, const char *right);
+
+/** Perform a case-insensitive comparison. */
+inline bool equalsIgnoreCase(const char *left, const char *right) {
+	return compareIgnoreCase(left, right) == 0;
+}
 
 } // End of namespace String
 } // End of namespace Common

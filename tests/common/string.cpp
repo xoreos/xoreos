@@ -87,3 +87,27 @@ GTEST_TEST(String, compareIgnoreCase) {
 		}
 	}
 }
+
+GTEST_TEST(String, equalsIgnoreCase) {
+	struct TestCase {
+		const char *left;
+		const char *right;
+		bool isEqual;
+	};
+
+	static const TestCase testCases[] = {
+		{ "abc", "abc", true },
+		{ "abc", "def", false },
+		{ "def", "abc", false },
+		{ "ABC", "def", false },
+		{ "abc", "DEF", false },
+		{ "QED", "qed", true },
+		{ "de", "defg", false },
+		{ "defg", "de", false }
+	};
+
+	for (const TestCase &testCase : testCases) {
+		bool result = Common::String::equalsIgnoreCase(testCase.left, testCase.right);
+		EXPECT_EQ(result, testCase.isEqual);
+	}
+}
