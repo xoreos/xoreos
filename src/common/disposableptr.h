@@ -51,6 +51,8 @@
 #ifndef COMMON_DISPOSABLEPTR_H
 #define COMMON_DISPOSABLEPTR_H
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/system.h"
@@ -135,6 +137,9 @@ class DisposableArray : public DisposablePtrBase<T, Deallocator> {
 public:
 	explicit DisposableArray(typename DisposablePtrBase<T, Deallocator>::PointerType o, bool d) :
 		DisposablePtrBase<T, Deallocator>(o, d) {
+	}
+
+	explicit DisposableArray(std::unique_ptr<T[]> ptr) : DisposablePtrBase<T, Deallocator>(ptr.release(), true) {
 	}
 
 	typename DisposablePtrBase<T, Deallocator>::ReferenceType operator[](size_t i) const {
