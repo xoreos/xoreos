@@ -104,7 +104,7 @@ public:
 		return convert(_contextFrom[encoding], data, n, kEncodingGrowthFrom[encoding], 1);
 	}
 
-	MemoryReadStream *convert(Encoding encoding, const UString &str, bool terminate = true) {
+	std::unique_ptr<SeekableReadStream> convert(Encoding encoding, const UString &str, bool terminate = true) {
 		if (((size_t) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
@@ -119,7 +119,7 @@ private:
 	iconv_t _contextFrom[kEncodingMAX];
 	iconv_t _contextTo  [kEncodingMAX];
 
-	byte *doConvert(iconv_t &ctx, byte *data, size_t nIn, size_t nOut, size_t &size) {
+	std::unique_ptr<byte[]> doConvert(iconv_t &ctx, byte *data, size_t nIn, size_t nOut, size_t &size) {
 		size_t inBytes  = nIn;
 		size_t outBytes = nOut;
 
@@ -135,12 +135,12 @@ private:
 		          reinterpret_cast<char **>(&outBuf), &outBytes) == ((size_t) -1)) {
 
 			warning("iconv() failed: %s", strerror(errno));
-			return 0;
+			return nullptr;
 		}
 
 		size = nOut - outBytes;
 
-		return convData.release();
+		return convData;
 	}
 
 	UString convert(iconv_t &ctx, byte *data, size_t n, size_t growth, size_t termSize) {
@@ -158,7 +158,7 @@ private:
 		return UString(reinterpret_cast<const char *>(dataOut.get()));
 	}
 
-	MemoryReadStream *convert(iconv_t &ctx, const UString &str, size_t growth, size_t termSize) {
+	std::unique_ptr<SeekableReadStream> convert(iconv_t &ctx, const UString &str, size_t growth, size_t termSize) {
 		if (ctx == ((iconv_t) -1))
 			return 0;
 
@@ -174,10 +174,10 @@ private:
 		while (termSize-- > 0)
 			dataOut[size++] = '\0';
 
-		return new MemoryReadStream(dataOut.release(), size, true);
+		return std::make_unique<MemoryReadStream>(std::move(dataOut), size);
 	}
 
-	MemoryReadStream *clean7bitASCII(const UString &str, bool terminate) {
+	std::unique_ptr<SeekableReadStream> clean7bitASCII(const UString &str, bool terminate) {
 		std::unique_ptr<byte[]> dataOut = std::make_unique<byte[]>(str.size() + (terminate ? 1 : 0));
 
 		size_t size = 0;
@@ -188,7 +188,7 @@ private:
 		if (terminate)
 			dataOut[size++] = '\0';
 
-		return new MemoryReadStream(dataOut.release(), size, true);
+		return std::make_unique<MemoryReadStream>(std::move(dataOut), size);
 	}
 };
 
@@ -354,7 +354,7 @@ UString readString(const byte *data, size_t size, Encoding encoding) {
 }
 
 size_t writeString(WriteStream &stream, const Common::UString &str, Encoding encoding, bool terminate) {
-	std::unique_ptr<MemoryReadStream> data(convertString(str, encoding, terminate));
+	std::unique_ptr<SeekableReadStream> data(convertString(str, encoding, terminate));
 
 	const size_t n = stream.writeStream(*data);
 
@@ -365,17 +365,18 @@ void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding 
 	if (length == 0)
 		return;
 
-	std::unique_ptr<MemoryReadStream> data(convertString(str, encoding, false));
+	std::unique_ptr<SeekableReadStream> data(convertString(str, encoding, false));
 
 	size_t n = stream.writeStream(*data, length);
 	while (n++ < length)
 		stream.writeByte(0);
 }
 
-MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString) {
+std::unique_ptr<SeekableReadStream> convertString(const UString &str, Encoding encoding, bool terminateString) {
 	if (encoding == kEncodingUTF8)
-		return new MemoryReadStream(reinterpret_cast<const byte *>(str.c_str()),
-		                            std::strlen(str.c_str()) + (terminateString ? 1 : 0));
+		return std::make_unique<MemoryReadStream>(
+			reinterpret_cast<const byte *>(str.c_str()),
+			std::strlen(str.c_str()) + (terminateString ? 1 : 0));
 
 	return ConvMan.convert(encoding, str, terminateString);
 }
