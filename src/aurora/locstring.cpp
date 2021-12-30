@@ -175,7 +175,7 @@ void LocString::readLocString(Common::SeekableReadStream &stream) {
 	readLocString(stream, id, count);
 }
 
-static Common::SeekableReadStream *convertString(const Common::UString &str, uint32_t languageID, bool terminateString) {
+static std::unique_ptr<Common::SeekableReadStream> convertString(const Common::UString &str, uint32_t languageID, bool terminateString) {
 	Common::Encoding encoding = LangMan.getEncodingLocString(LangMan.getLanguageGendered(languageID));
 	if (encoding == Common::kEncodingInvalid)
 		encoding = Common::kEncodingASCII;

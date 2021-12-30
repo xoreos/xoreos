@@ -80,23 +80,17 @@ static void compareData(const byte *data1, const byte *data2, size_t n, size_t t
 GTEST_TEST(XOREOS_ENCODINGNAME, convertString) {
 	testSupport(kEncoding);
 
-	Common::MemoryReadStream *stream = 0;
-
-	stream = convertString(stringUString, kEncoding, false);
-	ASSERT_NE(stream, static_cast<Common::MemoryReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> stream = convertString(stringUString, kEncoding, false);
+	ASSERT_NE(stream.get(), nullptr);
 
 	EXPECT_EQ(stream->size(), stringBytes);
 	compareData(*stream, stringData0, stringBytes, 0);
 
-	delete stream;
-
 	stream = convertString(stringUString, kEncoding, true);
-	ASSERT_NE(stream, static_cast<Common::MemoryReadStream *>(0));
+	ASSERT_NE(stream.get(), nullptr);
 
 	EXPECT_EQ(stream->size(), sizeof(stringData0));
 	compareData(*stream, stringData0, sizeof(stringData0), 1);
-
-	delete stream;
 }
 
 GTEST_TEST(XOREOS_ENCODINGNAME, writeString) {
