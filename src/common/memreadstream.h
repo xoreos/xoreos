@@ -52,6 +52,7 @@
 
 #include <cstring>
 #include <cstddef>
+#include <memory>
 
 #include <boost/noncopyable.hpp>
 
@@ -88,6 +89,11 @@ public:
 	MemoryReadStream(const byte (&array)[N]) :
 		_ptrOrig(array, false), _ptr(array), _size(N), _pos(0), _eos(false) {
 
+	}
+
+	/** Create a MemoryReadStream from a unique_ptr<byte[]>. */
+	MemoryReadStream(std::unique_ptr<byte[]> dataPtr, size_t dataSize) :
+		_ptrOrig(std::move(dataPtr)), _ptr(_ptrOrig.get()), _size(dataSize), _pos(0), _eos(false) {
 	}
 
 	~MemoryReadStream() { }
