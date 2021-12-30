@@ -51,6 +51,7 @@
 #define COMMON_WRITESTREAM_H
 
 #include <cstddef>
+#include <string>
 
 #include "src/common/types.h"
 #include "src/common/endianness.h"
@@ -209,9 +210,21 @@ public:
 	 */
 	size_t writeStream(ReadStream &stream);
 
+	/** Write the given string to the stream, encoded as-is.
+	 *  No terminating zero byte is written. */
+	void writeString(const char *str);
+
+	/** Write the given string to the stream, encoded as-is.
+	 *  No terminating zero byte is written. */
+	FORCEINLINE void writeString(const std::string &str) {
+		writeChecked(str.c_str(), str.size());
+	}
+
 	/** Write the given string to the stream, encoded as UTF-8.
 	 *  No terminating zero byte is written. */
-	void writeString(const UString &str);
+	FORCEINLINE void writeString(const UString &str) {
+		writeString(str.c_str());
+	}
 };
 
 class SeekableWriteStream : public WriteStream {
