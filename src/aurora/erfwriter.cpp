@@ -163,8 +163,14 @@ void ERFWriter::addV10(const Common::UString &resRef, FileType resType, Common::
 	// Write the key table entry
 	_stream.seek(_keyTableOffset + _currentFileCount * 24);
 
-	_stream.write(resRef.c_str(), MIN<size_t>(resRef.size(), 16));
-	_stream.writeZeros(16 - MIN<size_t>(resRef.size(), 16));
+	// Write the name
+	{
+		std::unique_ptr<Common::SeekableReadStream> encoded = convertString(resRef, Common::kEncodingASCII, false);
+		const size_t encodedSize = MIN<size_t>(encoded->size(), 16);
+		_stream.writeStream(*encoded, encodedSize);
+		_stream.writeZeros(16 - encodedSize);
+	}
+
 	_stream.writeUint32LE(_currentFileCount);
 	_stream.writeUint16LE(resType);
 	_stream.writeUint16LE(0); // Unused
