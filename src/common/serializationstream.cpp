@@ -354,23 +354,23 @@ void SerializationWriteStream::readOrWriteChar(const char &value) {
 }
 
 void SerializationWriteStream::readOrWriteBytePrefixedASCIIString(Common::UString &value) {
-	_stream.writeByte(value.size());
-	Common::writeString(_stream, value, Common::kEncodingASCII, false);
+	readOrWriteBytePrefixedASCIIString(static_cast<const Common::UString &>(value));
 }
 
 void SerializationWriteStream::readOrWriteUint32LEPrefixedASCIIString(Common::UString &value) {
-	_stream.writeUint32LE(value.size());
-	Common::writeString(_stream, value, Common::kEncodingASCII, false);
+	readOrWriteUint32LEPrefixedASCIIString(static_cast<const Common::UString &>(value));
 }
 
 void SerializationWriteStream::readOrWriteBytePrefixedASCIIString(const Common::UString &value) {
-	_stream.writeByte(value.size());
-	Common::writeString(_stream, value, Common::kEncodingASCII, false);
+	std::unique_ptr<SeekableReadStream> encoded = convertString(value, Common::kEncodingASCII, false);
+	_stream.writeByte(encoded->size());
+	_stream.writeStream(*encoded);
 }
 
 void SerializationWriteStream::readOrWriteUint32LEPrefixedASCIIString(const Common::UString &value) {
-	_stream.writeUint32LE(value.size());
-	Common::writeString(_stream, value, Common::kEncodingASCII, false);
+	std::unique_ptr<SeekableReadStream> encoded = convertString(value, Common::kEncodingASCII, false);
+	_stream.writeUint32LE(encoded->size());
+	_stream.writeStream(*encoded);
 }
 
 } // End of namespace Common
