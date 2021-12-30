@@ -91,8 +91,8 @@ size_t WriteStream::writeStream(ReadStream &stream) {
 	return writeStream(stream, 0xFFFFFFFF);
 }
 
-void WriteStream::writeString(const UString &str) {
-	writeChecked(str.c_str(), std::strlen(str.c_str()));
+void WriteStream::writeString(const char *str) {
+	writeChecked(str, std::strlen(str));
 }
 
 SeekableWriteStream::SeekableWriteStream() {
