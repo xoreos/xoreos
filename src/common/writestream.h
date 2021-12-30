@@ -77,6 +77,16 @@ public:
 	 */
 	virtual size_t write(const void *dataPtr, size_t dataSize) = 0;
 
+	/** Write data into the stream, throwing on error.
+	 *
+	 *  @param  dataPtr pointer to the data to be written.
+	 *  @param  dataSize number of bytes to be written.
+	 */
+	FORCEINLINE void writeChecked(const void *dataPtr, size_t dataSize) {
+		if (write(dataPtr, dataSize) != dataSize)
+			throw Exception(kWriteError);
+	}
+
 	/** Commit any buffered data to the underlying channel or
 	 *  storage medium; unbuffered streams can use the default
 	 *  implementation.
@@ -88,57 +98,47 @@ public:
 	// --- The following methods should generally not be overloaded ---
 
 	void writeByte(byte value) {
-		if (write(&value, 1) != 1)
-			throw Exception(kWriteError);
+		writeChecked(&value, 1);
 	}
 
 	void writeSByte(int8_t value) {
-		if (write(&value, 1) != 1)
-			throw Exception(kWriteError);
+		writeChecked(&value, 1);
 	}
 
 	void writeUint16LE(uint16_t value) {
 		value = TO_LE_16(value);
-		if (write(&value, 2) != 2)
-			throw Exception(kWriteError);
+		writeChecked(&value, 2);
 	}
 
 	void writeUint32LE(uint32_t value) {
 		value = TO_LE_32(value);
-		if (write(&value, 4) != 4)
-			throw Exception(kWriteError);
+		writeChecked(&value, 4);
 	}
 
 	void writeUint64LE(uint64_t value) {
 		value = TO_LE_64(value);
-		if (write(&value, 8) != 8)
-			throw Exception(kWriteError);
+		writeChecked(&value, 8);
 	}
 
 	void writeUint16BE(uint16_t value) {
 		value = TO_BE_16(value);
-		if (write(&value, 2) != 2)
-			throw Exception(kWriteError);
+		writeChecked(&value, 2);
 	}
 
 	void writeUint32BE(uint32_t value) {
 		value = TO_BE_32(value);
-		if (write(&value, 4) != 4)
-			throw Exception(kWriteError);
+		writeChecked(&value, 4);
 	}
 
 	void writeUint64BE(uint64_t value) {
 		value = TO_BE_64(value);
-		if (write(&value, 8) != 8)
-			throw Exception(kWriteError);
+		writeChecked(&value, 8);
 	}
 
 	/** Write n bytes of value to the stream. */
 	void writeBytes(byte value, size_t n) {
-		for (size_t i = 0; i < n; ++i) {
-			if (write(&value, 1) != 1)
-				throw Exception(kWriteError);
-		}
+		for (size_t i = 0; i < n; ++i)
+			writeChecked(&value, 1);
 	}
 
 	/** Write n zeros to the stream. */
