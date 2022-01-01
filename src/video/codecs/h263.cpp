@@ -114,6 +114,12 @@ void H263Codec::decodeInternal(Common::SeekableReadStream &dataStream, Graphics:
 	std::memset(&xvid_dec_stats, 0, sizeof(xvid_dec_stats_t));
 	xvid_dec_stats.version = XVID_VERSION;
 
+	// WORKAROUND: r2177 of libxvidcore broke XVID_CSP_INTERNAL output since it
+	// requires the first plane/stride to be set, despite XVID_CSP_INTERNAL just
+	// going to overwrite it.
+	xvid_dec_frame.output.plane[0] = (void *)1;
+	xvid_dec_frame.output.stride[0] = _width;
+
 	int result = xvid_decore(_decHandle, XVID_DEC_DECODE, &xvid_dec_frame, &xvid_dec_stats);
 	if (result < 0)
 		throw Common::Exception("H263Codec::decodeFrame(): Failed to decode frame: %d", result);
