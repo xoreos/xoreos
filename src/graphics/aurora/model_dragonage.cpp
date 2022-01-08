@@ -278,13 +278,13 @@ ModelNode_DragonAge::~ModelNode_DragonAge() {
 }
 
 // .--- Vertex value reading helpers
-void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType type, float *&f) {
+void ModelNode_DragonAge::read2Float32(Common::SeekableSubReadStreamEndian &stream, MeshDeclType type, float *&f) {
 	switch (type) {
 		case kMeshDeclTypeFloat32_2:
 		case kMeshDeclTypeFloat32_3:
 		case kMeshDeclTypeFloat32_4:
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
 			break;
 
 		case kMeshDeclTypeUint8_4:
@@ -294,8 +294,8 @@ void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclTypeSint16_2:
 		case kMeshDeclTypeSint16_4:
-			*f++ = (int16_t) stream.readUint16LE();
-			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16();
+			*f++ = (int16_t) stream.readUint16();
 			break;
 
 		case kMeshDeclTypeUint8_4n:
@@ -305,20 +305,20 @@ void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclTypeSint16_2n:
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_2n:
 		case kMeshDeclTypeUint16_4n:
-			*f++ = stream.readUint16LE() / 65535.0f;
-			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
 			break;
 
 		case kMeshDeclTypeFloat16_2:
 		case kMeshDeclTypeFloat16_4:
-			*f++ = readIEEEFloat16(stream.readUint16LE());
-			*f++ = readIEEEFloat16(stream.readUint16LE());
+			*f++ = readIEEEFloat16(stream.readUint16());
+			*f++ = readIEEEFloat16(stream.readUint16());
 			break;
 
 		default:
@@ -326,13 +326,13 @@ void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType 
 	}
 }
 
-void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType type, float *&f) {
+void ModelNode_DragonAge::read3Float32(Common::SeekableSubReadStreamEndian &stream, MeshDeclType type, float *&f) {
 	switch (type) {
 		case kMeshDeclTypeFloat32_3:
 		case kMeshDeclTypeFloat32_4:
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
 			break;
 
 		case kMeshDeclTypeColor:
@@ -348,9 +348,9 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4:
-			*f++ = (int16_t) stream.readUint16LE();
-			*f++ = (int16_t) stream.readUint16LE();
-			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16();
+			*f++ = (int16_t) stream.readUint16();
+			*f++ = (int16_t) stream.readUint16();
 			break;
 
 		case kMeshDeclTypeUint8_4n:
@@ -360,20 +360,20 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_4n:
-			*f++ = stream.readUint16LE() / 65535.0f;
-			*f++ = stream.readUint16LE() / 65535.0f;
-			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
 			break;
 
 		case kMeshDeclType1010102:
 			{
-				uint32_t data = stream.readUint32LE();
+				uint32_t data = stream.readUint32();
 
 				*f++ = (uint16_t) ((data >> 22) & 0x3FFF);
 				*f++ = (uint16_t) ((data >> 12) & 0x3FFF);
@@ -383,7 +383,7 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclType1010102n:
 			{
-				uint32_t data = stream.readUint32LE();
+				uint32_t data = stream.readUint32();
 
 				*f++ = (uint16_t) ((data >> 22) & 0x3FFF) / 511.0f;
 				*f++ = (uint16_t) ((data >> 12) & 0x3FFF) / 511.0f;
@@ -392,9 +392,9 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeFloat16_4:
-			*f++ = readIEEEFloat16(stream.readUint16LE());
-			*f++ = readIEEEFloat16(stream.readUint16LE());
-			*f++ = readIEEEFloat16(stream.readUint16LE());
+			*f++ = readIEEEFloat16(stream.readUint16());
+			*f++ = readIEEEFloat16(stream.readUint16());
+			*f++ = readIEEEFloat16(stream.readUint16());
 			break;
 
 		default:
@@ -402,20 +402,20 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 	}
 }
 
-void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType type, float *&f) {
+void ModelNode_DragonAge::read4Float32(Common::SeekableSubReadStreamEndian &stream, MeshDeclType type, float *&f) {
 	switch (type) {
 		case kMeshDeclTypeFloat32_3:
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
 			*f++ = 1.0f;
 			break;
 
 		case kMeshDeclTypeFloat32_4:
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
-			*f++ = stream.readIEEEFloatLE();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
+			*f++ = stream.readIEEEFloat();
 			break;
 
 		case kMeshDeclTypeColor:
@@ -433,10 +433,10 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4:
-			*f++ = (int16_t) stream.readUint16LE();
-			*f++ = (int16_t) stream.readUint16LE();
-			*f++ = (int16_t) stream.readUint16LE();
-			*f++ = (int16_t) stream.readUint16LE();
+			*f++ = (int16_t) stream.readUint16();
+			*f++ = (int16_t) stream.readUint16();
+			*f++ = (int16_t) stream.readUint16();
+			*f++ = (int16_t) stream.readUint16();
 			break;
 
 		case kMeshDeclTypeUint8_4n:
@@ -447,22 +447,22 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
-			*f++ = ((int16_t) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
+			*f++ = ((int16_t) stream.readUint16()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_4n:
-			*f++ = stream.readUint16LE() / 65535.0f;
-			*f++ = stream.readUint16LE() / 65535.0f;
-			*f++ = stream.readUint16LE() / 65535.0f;
-			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
+			*f++ = stream.readUint16() / 65535.0f;
 			break;
 
 		case kMeshDeclType1010102:
 			{
-				uint32_t data = stream.readUint32LE();
+				uint32_t data = stream.readUint32();
 
 				*f++ = (uint16_t) ((data >> 22) & 0x3FFF);
 				*f++ = (uint16_t) ((data >> 12) & 0x3FFF);
@@ -473,7 +473,7 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclType1010102n:
 			{
-				uint32_t data = stream.readUint32LE();
+				uint32_t data = stream.readUint32();
 
 				*f++ = (uint16_t) ((data >> 22) & 0x3FFF) / 511.0f;
 				*f++ = (uint16_t) ((data >> 12) & 0x3FFF) / 511.0f;
@@ -483,10 +483,10 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeFloat16_4:
-			*f++ = readIEEEFloat16(stream.readUint16LE());
-			*f++ = readIEEEFloat16(stream.readUint16LE());
-			*f++ = readIEEEFloat16(stream.readUint16LE());
-			*f++ = readIEEEFloat16(stream.readUint16LE());
+			*f++ = readIEEEFloat16(stream.readUint16());
+			*f++ = readIEEEFloat16(stream.readUint16());
+			*f++ = readIEEEFloat16(stream.readUint16());
+			*f++ = readIEEEFloat16(stream.readUint16());
 			break;
 
 		default:
@@ -643,7 +643,7 @@ void ModelNode_DragonAge::readMeshDecl(const GFF4Struct &meshChunk, MeshDeclarat
 }
 
 void ModelNode_DragonAge::createIndexBuffer(const GFF4Struct &meshChunk,
-		Common::SeekableReadStream &indexData) {
+		Common::SeekableSubReadStreamEndian &indexData) {
 
 	uint32_t indexCount = meshChunk.getUint(kGFF4MeshChunkIndexCount);
 	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16_t), GL_UNSIGNED_SHORT);
@@ -653,11 +653,11 @@ void ModelNode_DragonAge::createIndexBuffer(const GFF4Struct &meshChunk,
 
 	uint16_t *indices = reinterpret_cast<uint16_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	while (indexCount-- > 0)
-		*indices++ = indexData.readUint16LE();
+		*indices++ = indexData.readUint16();
 }
 
 void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
-		Common::SeekableReadStream &vertexData, const MeshDeclarations &meshDecl) {
+		Common::SeekableSubReadStreamEndian &vertexData, const MeshDeclarations &meshDecl) {
 
 	const size_t vertexPos    = vertexData.pos();
 	const uint32_t vertexSize   = meshChunk.getUint(kGFF4MeshChunkVertexSize);
@@ -986,8 +986,14 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 	_mesh->data = new MeshData();
 	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
-	createIndexBuffer (*meshChunk, *indexData);
-	createVertexBuffer(*meshChunk, *vertexData, meshDecl);
+	{
+		Common::SeekableSubReadStreamEndian indexDataEndian(indexData.get(), 0, indexData->size(), ctx.msh->isBigEndian());
+		createIndexBuffer (*meshChunk, indexDataEndian);
+	}
+	{
+		Common::SeekableSubReadStreamEndian vertexDataEndian(vertexData.get(), 0, vertexData->size(), ctx.msh->isBigEndian());
+		createVertexBuffer(*meshChunk, vertexDataEndian, meshDecl);
+	}
 
 	// Load the material object, grab the diffuse texture and load
 

@@ -174,8 +174,8 @@ private:
 	void sanityCheckMeshChunk(const ::Aurora::GFF4Struct &meshChunk);
 	void readMeshDecl(const ::Aurora::GFF4Struct &meshChunk, MeshDeclarations &meshDecl);
 
-	void createIndexBuffer (const ::Aurora::GFF4Struct &meshChunk, Common::SeekableReadStream &indexData);
-	void createVertexBuffer(const ::Aurora::GFF4Struct &meshChunk, Common::SeekableReadStream &vertexData,
+	void createIndexBuffer (const ::Aurora::GFF4Struct &meshChunk, Common::SeekableSubReadStreamEndian &indexData);
+	void createVertexBuffer(const ::Aurora::GFF4Struct &meshChunk, Common::SeekableSubReadStreamEndian &vertexData,
 	                        const MeshDeclarations &meshDecl);
 
 	void readMAO(const Common::UString &materialName, MaterialObject &material);
@@ -188,9 +188,9 @@ private:
 	void fixTexturesAlpha(const std::vector<Common::UString> &textures);
 	void fixTexturesHair (const std::vector<Common::UString> &textures);
 
-	static void read2Float32(Common::ReadStream &stream, MeshDeclType type, float *&f);
-	static void read3Float32(Common::ReadStream &stream, MeshDeclType type, float *&f);
-	static void read4Float32(Common::ReadStream &stream, MeshDeclType type, float *&f);
+	static void read2Float32(Common::SeekableSubReadStreamEndian &stream, MeshDeclType type, float *&f);
+	static void read3Float32(Common::SeekableSubReadStreamEndian &stream, MeshDeclType type, float *&f);
+	static void read4Float32(Common::SeekableSubReadStreamEndian &stream, MeshDeclType type, float *&f);
 };
 
 } // End of namespace Aurora
