@@ -92,12 +92,30 @@ public:
 	}
 };
 
+
+class EngineProbePS3 : public EngineProbe {
+public:
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformPS3;
+	}
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+		// Look for the PS3 binary (EBOOT.BIN) and a file from the game
+		if (rootFiles.contains("EBOOT.BIN", true) &&
+			Common::FileList(Common::FilePath::findSubDirectory(directory, "modules/single player", true)).contains("singleplayer.cif", true))
+			return true;
+
+		return false;
+	}
+};
+
 const Common::UString EngineProbe::kGameName = "Dragon Age: Origins";
 
 
 void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
 	probes.push_back(new EngineProbeWindows);
 	probes.push_back(new EngineProbeXbox360);
+	probes.push_back(new EngineProbePS3);
 }
 
 } // End of namespace DragonAge
