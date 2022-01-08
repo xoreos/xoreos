@@ -93,6 +93,8 @@ class GFF4Struct;
  */
 class GFF4File : boost::noncopyable, public AuroraFile {
 public:
+	/** Read a GFF4 file out of the stream. */
+	GFF4File(std::unique_ptr<Common::SeekableReadStream> gff4, uint32_t type = 0xFFFFFFFF);
 	/** Take over this stream and read a GFF4 file out of it. */
 	GFF4File(Common::SeekableReadStream *gff4, uint32_t type = 0xFFFFFFFF);
 	/** Request this resource from the ResourceManager and read a GFF4 file out of it. */
