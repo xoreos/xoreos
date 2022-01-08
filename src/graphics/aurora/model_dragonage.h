@@ -179,8 +179,8 @@ private:
 	                        const MeshDeclarations &meshDecl);
 
 	void readMAO(const Common::UString &materialName, MaterialObject &material);
-	void readMAOGFF(Common::SeekableReadStream *maoStream, MaterialObject &material);
-	void readMAOXML(Common::SeekableReadStream *maoStream, MaterialObject &material,
+	void readMAOGFF(std::unique_ptr<Common::SeekableReadStream> maoStream, MaterialObject &material);
+	void readMAOXML(std::unique_ptr<Common::SeekableReadStream> maoStream, MaterialObject &material,
 	                const Common::UString &fileName);
 
 	void loadTextures(const std::vector<Common::UString> &textures, const MaterialObject &material);

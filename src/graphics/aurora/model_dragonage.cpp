@@ -730,8 +730,8 @@ void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 }
 
 /** Read a MAO encoded in a GFF file. */
-void ModelNode_DragonAge::readMAOGFF(Common::SeekableReadStream *maoStream, MaterialObject &material) {
-	GFF4File mao(maoStream, kMAOID);
+void ModelNode_DragonAge::readMAOGFF(std::unique_ptr<Common::SeekableReadStream> maoStream, MaterialObject &material) {
+	GFF4File mao(std::move(maoStream), kMAOID);
 
 	const GFF4Struct &maoTop = mao.getTopLevel();
 
@@ -778,53 +778,45 @@ void ModelNode_DragonAge::readMAOGFF(Common::SeekableReadStream *maoStream, Mate
 
 #ifdef ENABLE_XML
 /** Read a MAO encoded in an XML file. */
-void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, MaterialObject &material,
+void ModelNode_DragonAge::readMAOXML(std::unique_ptr<Common::SeekableReadStream> maoStream, MaterialObject &material,
                                      const Common::UString &fileName) {
 
-	try {
-		XMLParser mao(*maoStream, true, fileName);
-		const XMLNode &maoRoot = mao.getRoot();
+	XMLParser mao(*maoStream, true, fileName);
+	const XMLNode &maoRoot = mao.getRoot();
 
-		if (maoRoot.getName() != "materialobject")
-			throw Common::Exception("Invalid XML MAO root element (\"%s\")", maoRoot.getName().c_str());
+	if (maoRoot.getName() != "materialobject")
+		throw Common::Exception("Invalid XML MAO root element (\"%s\")", maoRoot.getName().c_str());
 
-		const XMLNode::Children &maoNodes = maoRoot.getChildren();
-		for (XMLNode::Children::const_iterator n = maoNodes.begin(); n != maoNodes.end(); ++n) {
-			if        ((*n)->getName() == "material") {
+	const XMLNode::Children &maoNodes = maoRoot.getChildren();
+	for (XMLNode::Children::const_iterator n = maoNodes.begin(); n != maoNodes.end(); ++n) {
+		if        ((*n)->getName() == "material") {
 
-				material.material = (*n)->getProperty("name");
+			material.material = (*n)->getProperty("name");
 
-			} else if ((*n)->getName() == "defaultsemantic") {
+		} else if ((*n)->getName() == "defaultsemantic") {
 
-				material.defaultSemantic = (*n)->getProperty("name");
+			material.defaultSemantic = (*n)->getProperty("name");
 
-			} else if ((*n)->getName() == "float") {
+		} else if ((*n)->getName() == "float") {
 
-				float value = 0.0f;
-				std::sscanf((*n)->getProperty("value").c_str(), "%f", &value);
+			float value = 0.0f;
+			std::sscanf((*n)->getProperty("value").c_str(), "%f", &value);
 
-				material.floats[(*n)->getProperty("name")] = value;
+			material.floats[(*n)->getProperty("name")] = value;
 
-			} else if ((*n)->getName() == "vector4f") {
+		} else if ((*n)->getName() == "vector4f") {
 
-				float v1 = 0.0f, v2 = 0.0f, v3 = 0.0f, v4 = 0.0f;
-				std::sscanf((*n)->getProperty("value").c_str(), "%f %f %f %f", &v1, &v2, &v3, &v4);
+			float v1 = 0.0f, v2 = 0.0f, v3 = 0.0f, v4 = 0.0f;
+			std::sscanf((*n)->getProperty("value").c_str(), "%f %f %f %f", &v1, &v2, &v3, &v4);
 
-				material.vectors[(*n)->getProperty("name")] = glm::vec4(v1, v2, v3, v4);
+			material.vectors[(*n)->getProperty("name")] = glm::vec4(v1, v2, v3, v4);
 
-			} else if ((*n)->getName() == "texture") {
+		} else if ((*n)->getName() == "texture") {
 
-				material.textures[(*n)->getProperty("name")] = (*n)->getProperty("resname");
+			material.textures[(*n)->getProperty("name")] = (*n)->getProperty("resname");
 
-			}
 		}
-
-	} catch (...) {
-		delete maoStream;
-		throw;
 	}
-
-	delete maoStream;
 }
 #endif
 
@@ -832,7 +824,7 @@ void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, Mate
 void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialObject &material) {
 	try {
 
-		Common::SeekableReadStream *maoStream = ResMan.getResource(materialName, kFileTypeMAO);
+		std::unique_ptr<Common::SeekableReadStream> maoStream(ResMan.getResource(materialName, kFileTypeMAO));
 		if (!maoStream)
 			throw Common::Exception("No such MAO");
 
@@ -840,16 +832,14 @@ void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialO
 		maoStream->seek(0);
 
 		if        (tag == kGFFID) {
-			readMAOGFF(maoStream, material);
+			readMAOGFF(std::move(maoStream), material);
 		} else if (tag == kXMLID) {
 #ifdef ENABLE_XML
-			readMAOXML(maoStream, material, TypeMan.setFileType(materialName, kFileTypeMAO));
+			readMAOXML(std::move(maoStream), material, TypeMan.setFileType(materialName, kFileTypeMAO));
 #else
-			delete maoStream;
 			throw Common::Exception("XML parsing disabled when building without libxml2");
 #endif
 		} else {
-			delete maoStream;
 			throw Common::Exception("Invalid MAO type %s", Common::debugTag(tag).c_str());
 		}
 
@@ -983,50 +973,38 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 	if (meshDecl.empty())
 		return;
 
-	Common::SeekableReadStream *indexData = 0, *vertexData = 0;
-	try {
+	std::unique_ptr<Common::SeekableReadStream> indexData(ctx.mshTop->getData(kGFF4MeshIndexData));
+	if (!indexData)
+		throw Common::Exception("Mesh has mesh declaration but no index data");
 
-		indexData  = ctx.mshTop->getData(kGFF4MeshIndexData);
-		if (!indexData)
-			throw Common::Exception("Mesh has mesh declaration but no index data");
+	std::unique_ptr<Common::SeekableReadStream> vertexData(ctx.mshTop->getData(kGFF4MeshVertexData));
+	if (!vertexData)
+		throw Common::Exception("Mesh has mesh declaration but no vertex data");
 
-		vertexData = ctx.mshTop->getData(kGFF4MeshVertexData);
-		if (!vertexData)
-			throw Common::Exception("Mesh has mesh declaration but no vertex data");
+	_mesh = new Mesh();
+	_render =_mesh->render = true;
+	_mesh->data = new MeshData();
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
-		_mesh = new Mesh();
-		_render =_mesh->render = true;
-		_mesh->data = new MeshData();
-		_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
+	createIndexBuffer (*meshChunk, *indexData);
+	createVertexBuffer(*meshChunk, *vertexData, meshDecl);
 
-		createIndexBuffer (*meshChunk, *indexData);
-		createVertexBuffer(*meshChunk, *vertexData, meshDecl);
+	// Load the material object, grab the diffuse texture and load
 
-		// Load the material object, grab the diffuse texture and load
+	MaterialObject materialObject;
+	readMAO(materialName, materialObject);
 
-		MaterialObject materialObject;
-		readMAO(materialName, materialObject);
+	std::vector<Common::UString> textures;
+	textures.push_back(materialObject.textures["mml_tDiffuse"]);
+	if (textures.back().empty())
+		textures.back() = materialObject.textures["mml_tPackedTexture"];
+	if (textures.back().empty())
+		textures.back() = materialObject.textures["LowLodMap"];
 
-		std::vector<Common::UString> textures;
-		textures.push_back(materialObject.textures["mml_tDiffuse"]);
-		if (textures.back().empty())
-			textures.back() = materialObject.textures["mml_tPackedTexture"];
-		if (textures.back().empty())
-			textures.back() = materialObject.textures["LowLodMap"];
+	while (!textures.empty() && textures.back().empty())
+		textures.pop_back();
 
-		while (!textures.empty() && textures.back().empty())
-			textures.pop_back();
-
-		loadTextures(textures, materialObject);
-
-	} catch (...) {
-		delete indexData;
-		delete vertexData;
-		throw;
-	}
-
-	delete indexData;
-	delete vertexData;
+	loadTextures(textures, materialObject);
 }
 
 } // End of namespace Aurora
