@@ -76,6 +76,14 @@ bool GFF4File::Header::isBigEndian() const {
 }
 
 
+GFF4File::GFF4File(std::unique_ptr<Common::SeekableReadStream> gff4, uint32_t type) :
+	_origStream(std::move(gff4)), _topLevelStruct(0) {
+
+	assert(_origStream);
+
+	load(type);
+}
+
 GFF4File::GFF4File(Common::SeekableReadStream *gff4, uint32_t type) :
 	_origStream(gff4), _topLevelStruct(0) {
 
