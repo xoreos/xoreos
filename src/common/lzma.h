@@ -63,6 +63,18 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
  */
 SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker = false);
 
+/** Decompress using the ERF LZMA algorithm.
+ *
+ *  @param  input      The compressed input data.
+ *  @param  inputSize  The size of the input data to read in bytes.
+ *  @param  outputSize The size of the decompressed output data.
+ *                     It is assumed that this information is known and that
+ *                     the whole decompressed data will fit into a buffer of
+ *                     this size.
+ *  @return A stream of the decompressed data.
+ */
+std::unique_ptr<SeekableReadStream> decompressERFLZMA(ReadStream &input, size_t inputSize, size_t outputSize);
+
 } // End of namespace Common
 
 #endif // ENABLE_LZMA
