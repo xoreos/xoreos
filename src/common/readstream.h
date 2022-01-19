@@ -88,14 +88,22 @@ public:
 	 */
 	virtual size_t read(void *dataPtr, size_t dataSize) = 0;
 
+	/** Read data from the stream, throwing on error.
+	 *
+	 *  @param  dataPtr pointer to a buffer into which the data is read.
+	 *  @param  dataSize number of bytes to be read.
+	 */
+	FORCEINLINE void readChecked(void *dataPtr, size_t dataSize) {
+		if (read(dataPtr, dataSize) != dataSize)
+			throw Exception(kReadError);
+	}
+
 	// --- The following methods should generally not be overloaded ---
 
 	/** Read an unsigned byte from the stream and return it. */
 	byte readByte() {
 		byte b;
-		if (read(&b, 1) != 1)
-			throw Exception(kReadError);
-
+		readChecked(&b, 1);
 		return b;
 	}
 
@@ -123,9 +131,7 @@ public:
 	 */
 	uint16_t readUint16LE() {
 		uint16_t val;
-		if (read(&val, 2) != 2)
-			throw Exception(kReadError);
-
+		readChecked(&val, 2);
 		return FROM_LE_16(val);
 	}
 
@@ -134,9 +140,7 @@ public:
 	 */
 	uint32_t readUint32LE() {
 		uint32_t val;
-		if (read(&val, 4) != 4)
-			throw Exception(kReadError);
-
+		readChecked(&val, 4);
 		return FROM_LE_32(val);
 	}
 
@@ -145,9 +149,7 @@ public:
 	 */
 	uint64_t readUint64LE() {
 		uint64_t val;
-		if (read(&val, 8) != 8)
-			throw Exception(kReadError);
-
+		readChecked(&val, 8);
 		return FROM_LE_64(val);
 	}
 
@@ -156,9 +158,7 @@ public:
 	 */
 	uint16_t readUint16BE() {
 		uint16_t val;
-		if (read(&val, 2) != 2)
-			throw Exception(kReadError);
-
+		readChecked(&val, 2);
 		return FROM_BE_16(val);
 	}
 
@@ -167,9 +167,7 @@ public:
 	 */
 	uint32_t readUint32BE() {
 		uint32_t val;
-		if (read(&val, 4) != 4)
-			throw Exception(kReadError);
-
+		readChecked(&val, 4);
 		return FROM_BE_32(val);
 	}
 
@@ -178,9 +176,7 @@ public:
 	 */
 	uint64_t readUint64BE() {
 		uint64_t val;
-		if (read(&val, 8) != 8)
-			throw Exception(kReadError);
-
+		readChecked(&val, 8);
 		return FROM_BE_64(val);
 	}
 
