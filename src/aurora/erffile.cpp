@@ -28,6 +28,10 @@
 
 #include <cassert>
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
 #include "src/common/memreadstream.h"
 #include "src/common/readfile.h"
 #include "src/common/util.h"
@@ -37,6 +41,7 @@
 #include "src/common/md5.h"
 #include "src/common/blowfish.h"
 #include "src/common/deflate.h"
+#include "src/common/lzma.h"
 
 #include "src/aurora/erffile.h"
 #include "src/aurora/util.h"
@@ -775,6 +780,9 @@ Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packed
 
 			return new Common::SeekableSubReadStream(stream.release(), 0, unpackedSize, true);
 
+		case kCompressionLZMA:
+			return decompressLZMA(std::move(stream), unpackedSize).release();
+
 		case kCompressionBioWareZlib:
 			return decompressBiowareZlib(stream.release(), unpackedSize);
 
@@ -843,6 +851,15 @@ Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, 
 	const byte *data = Common::decompressDeflate(compressedData, packedSize, unpackedSize, -windowBits);
 
 	return new Common::MemoryReadStream(data, unpackedSize, true);
+}
+
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decompressLZMA(std::unique_ptr<Common::SeekableReadStream> packedStream,
+                                                                    uint32_t unpackedSize) const {
+#ifdef ENABLE_LZMA
+	return Common::decompressERFLZMA(*packedStream, packedStream->size(), unpackedSize);
+#else
+	throw Common::Exception("Found LZMA-compressed ERF, but no LZMA support compiled in");
+#endif
 }
 
 Common::HashAlgo ERFFile::getNameHashAlgo() const {
