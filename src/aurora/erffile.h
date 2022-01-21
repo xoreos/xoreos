@@ -156,6 +156,7 @@ private:
 		kCompressionNone           = 0, ///< No compression as all.
 		kCompressionBioWareZlib    = 1, ///< Compression using DEFLATE with an extra header byte.
 		kCompressionLZMA           = 2, ///< Compression using LZMA.
+		kCompressionXboxLZX        = 3, ///< Compression using Xbox 360 LZX.
 		kCompressionHeaderlessZlib = 7, ///< Compression using DEFLATE with default parameters.
 		kCompressionStandardZlib   = 8  ///< Compression using DEFLATE, standard zlib chunk.
 	};
@@ -306,6 +307,9 @@ private:
 
 	std::unique_ptr<Common::SeekableReadStream> decompressLZMA(std::unique_ptr<Common::SeekableReadStream> packedStream,
 	                                                           uint32_t unpackedSize) const;
+
+	std::unique_ptr<Common::SeekableReadStream> decompressXboxLZX(std::unique_ptr<Common::SeekableReadStream> packedStream,
+	                                                              uint32_t unpackedSize) const;
 	// '---
 
 	const IResource &getIResource(uint32_t index) const;
