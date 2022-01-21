@@ -204,6 +204,12 @@ libmspack
    For the full license text, see external/mspack/COPYING.LIB or
    <https://gnu.org/licenses/lgpl-2.1.html>.
 
+UEViewer
+********
+   xoreos includes code based on UEViewer (<https://www.gildor.org/en/projects/umodel>)
+   to handle the Xbox LZX decompression. UEViewer is licensed under the terms of the
+   MIT license. For the full license text, see <<https://opensource.org/licenses/MIT>.
+
 Libraries
 *********
    In addition to the above, xoreos is also only possible because of the people
