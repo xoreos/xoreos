@@ -194,6 +194,16 @@ Google Test
    BSD license. For the full license text, see tests/googletest/LICENSE or
    <https://github.com/google/googletest/blob/master/googletest/LICENSE>.
 
+libmspack
+*********
+   xoreos uses libmspack, a library for Microsoft compression formats
+   (<https://www.cabextract.org.uk/libmspack/>). This is needed to handle
+   Xbox LZX decoding. Since the library does not offer a direct API to
+   the LZX decoding, xoreos completely includes the library code. libmspack
+   is licensed under the GNU Lesser General Public License (LGPL) version 2.1.
+   For the full license text, see external/mspack/COPYING.LIB or
+   <https://gnu.org/licenses/lgpl-2.1.html>.
+
 Libraries
 *********
    In addition to the above, xoreos is also only possible because of the people
