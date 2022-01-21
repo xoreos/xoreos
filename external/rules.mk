@@ -30,3 +30,5 @@ include external/glm/rules.mk
 include external/mingw-std-threads/rules.mk
 
 include external/imgui/rules.mk
+
+include external/mspack/rules.mk
