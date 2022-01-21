@@ -87,6 +87,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/semaphore.h \
     src/common/serializationstream.h \
     src/common/string.h \
+    src/common/lzx.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -141,6 +142,11 @@ src_common_libcommon_la_SOURCES += \
     src/common/semaphore.cpp \
     src/common/serializationstream.cpp \
     src/common/string.cpp \
+    src/common/lzx.cpp \
+    $(EMPTY)
+
+src_common_libcommon_la_LIBADD = \
+    external/mspack/libmspack.la \
     $(EMPTY)
 
 lzma_sources = \
