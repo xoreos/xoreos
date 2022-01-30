@@ -441,6 +441,9 @@ list(APPEND XOREOS_LIBRARIES external_imgui)
 # use the opengl3 imgui renderer with glew.
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLEW)
 
+# libmspack
+parse_automake(external/mspack/rules.mk)
+
 function(add_engine ENGINE_NAME ENGINE_FULLNAME ENGINE_DEPS)
   option(ENABLE_${ENGINE_NAME} "Enable building with support for ${ENGINE_FULLNAME}" ON)
   if(ENABLE_${ENGINE_NAME} AND ENGINE_DEPS)
