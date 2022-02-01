@@ -74,5 +74,5 @@ external_mspack_libmspack_la_SOURCES += \
 
 EXTRA_DIST += \
     external/mspack/README.xoreos \
-    external/mspack/COPYRIGHT \
+    external/mspack/COPYING.LIB \
     $(EMPTY)
