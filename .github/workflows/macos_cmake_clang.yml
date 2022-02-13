@@ -1,0 +1,33 @@
+name: macos cmake clang
+
+on:
+  [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-10.15
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      id: install_dependencies
+      run: brew install ninja boost openal-soft faad2 sdl2 xvid libvpx
+
+    - name: Set clang as the compiler to use
+      id: set_clang
+      run: |
+        echo "CC=clang" >> $GITHUB_ENV
+        echo "CXX=clang++" >> $GITHUB_ENV
+
+    - name: Configure
+      id: configure
+      run: cmake -G Ninja .
+
+    - name: Compile
+      id: compile
+      run: cmake --build .
+
+    - name: Build and run unit tests
+      id: run_unit_tests
+      run: cmake --build . --target check

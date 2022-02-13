@@ -1,0 +1,27 @@
+name: linux cmake gcc
+
+on:
+  [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      id: install_dependencies
+      run: sudo apt-get update -qq && sudo apt-get -y install ninja-build libboost-all-dev libopenal-dev libmad0-dev libvorbis-dev libfaad-dev libsdl2-dev libgl-dev libglu-dev libxvidcore-dev libvpx-dev
+
+    - name: Configure
+      id: configure
+      run: cmake -G Ninja .
+
+    - name: Compile
+      id: compile
+      run: cmake --build .
+
+    - name: Build and run unit tests
+      id: run_unit_tests
+      run: cmake --build . --target check

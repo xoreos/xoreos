@@ -1,0 +1,34 @@
+name: macos autoconf clang
+
+on:
+  [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-10.15
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      id: install_dependencies
+      run: brew install automake boost openal-soft faad2 sdl2 xvid libvpx
+
+    - name: Set clang as the compiler to use
+      id: set_clang
+      run: |
+        echo "CC=clang" >> $GITHUB_ENV
+        echo "CXX=clang++" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=/usr/local/opt/qt5/lib/pkgconfig" >> $GITHUB_ENV
+
+    - name: Configure
+      id: configure
+      run: ( ./autogen.sh && ./configure ) || ( cat config.log; exit 1 )
+
+    - name: Compile
+      id: compile
+      run: make -j4
+
+    - name: Build and run unit tests
+      id: run_unit_tests
+      run: make -j4 check
