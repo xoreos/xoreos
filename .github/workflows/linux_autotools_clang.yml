@@ -1,4 +1,4 @@
-name: linux autoconf gcc
+name: linux autotools clang
 
 on:
   [push, pull_request]
@@ -13,6 +13,12 @@ jobs:
     - name: Install dependencies
       id: install_dependencies
       run: sudo apt-get update -qq && sudo apt-get -y install libboost-all-dev libopenal-dev libmad0-dev libvorbis-dev libfaad-dev libsdl2-dev libgl-dev libglu-dev libxvidcore-dev libvpx-dev
+
+    - name: Set clang as the compiler to use
+      id: set_clang
+      run: |
+        echo "CC=clang" >> $GITHUB_ENV
+        echo "CXX=clang++" >> $GITHUB_ENV
 
     - name: Configure
       id: configure

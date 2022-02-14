@@ -1,24 +1,25 @@
-name: linux autoconf clang
+name: macos autotools clang
 
 on:
   [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: macos-10.15
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Install dependencies
       id: install_dependencies
-      run: sudo apt-get update -qq && sudo apt-get -y install libboost-all-dev libopenal-dev libmad0-dev libvorbis-dev libfaad-dev libsdl2-dev libgl-dev libglu-dev libxvidcore-dev libvpx-dev
+      run: brew install automake boost openal-soft faad2 sdl2 xvid libvpx
 
     - name: Set clang as the compiler to use
       id: set_clang
       run: |
         echo "CC=clang" >> $GITHUB_ENV
         echo "CXX=clang++" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=/usr/local/opt/qt5/lib/pkgconfig" >> $GITHUB_ENV
 
     - name: Configure
       id: configure
