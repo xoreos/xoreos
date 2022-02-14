@@ -24,7 +24,7 @@ The following games are valid targets for xoreos:
 - [Dragon Age II](https://en.wikipedia.org/wiki/Dragon_Age_II)
 
 
-Status [![Build status (AppVeyor)](https://ci.appveyor.com/api/projects/status/nwgm9478a46b1fkh/branch/master?svg=true)](https://ci.appveyor.com/project/DrMcCoy/xoreos/branch/master) [![Coverity Status](https://scan.coverity.com/projects/544/badge.svg)](https://scan.coverity.com/projects/544)
+Status
 ------
 
 Currently, the "foundation" work of managing resources, reading many basic
@@ -42,6 +42,18 @@ Note: We are always looking for people to join our efforts in reimplementing
 those games. If you'd like to help, feel free to contact us!
 Please also read over our [CONTRIBUTING.md](CONTRIBUTING.md) for some
 guidelines. Thanks.
+
+
+CI Status
+---------
+
+- [![Build status (linux autoconf gcc)](https://github.com/xoreos/xoreos/actions/workflows/linux_autoconf_gcc.yml/badge.svg)](https://github.com/xoreos/xoreos/actions/workflows/linux_autoconf_gcc.yml/)
+- [![Build status (linux autoconf clang)](https://github.com/xoreos/xoreos/actions/workflows/linux_autoconf_clang.yml/badge.svg)](https://github.com/xoreos/xoreos/actions/workflows/linux_autoconf_clang.yml/)
+- [![Build status (linux cmake gcc)](https://github.com/xoreos/xoreos/actions/workflows/linux_cmake_gcc.yml/badge.svg)](https://github.com/xoreos/xoreos/actions/workflows/linux_cmake_gcc.yml/)
+- [![Build status (linux cmake clang)](https://github.com/xoreos/xoreos/actions/workflows/linux_cmake_clang.yml/badge.svg)](https://github.com/xoreos/xoreos/actions/workflows/linux_cmake_clang.yml/)
+- [![Build status (macos autoconf clang)](https://github.com/xoreos/xoreos/actions/workflows/macos_autoconf_clang.yml/badge.svg)](https://github.com/xoreos/xoreos/actions/workflows/macos_autoconf_clang.yml/)
+- [![Build status (macos cmake clang)](https://github.com/xoreos/xoreos/actions/workflows/macos_cmake_clang.yml/badge.svg)](https://github.com/xoreos/xoreos/actions/workflows/macos_cmake_clang.yml/)
+- [![Coverity Status](https://scan.coverity.com/projects/544/badge.svg)](https://scan.coverity.com/projects/544)
 
 
 Getting xoreos
