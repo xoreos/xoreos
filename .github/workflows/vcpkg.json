@@ -1,0 +1,30 @@
+{
+  "name": "xoreos",
+  "version-string": "latest",
+  "dependencies": [
+    "libiconv",
+    "zlib",
+    "liblzma",
+    "libxml2",
+    "libpng",
+    "libmad",
+    "libogg",
+    "libvorbis",
+    "faad2",
+    "openal-soft",
+    "freetype",
+    "sdl2",
+    "libvpx",
+    "boost-algorithm",
+    "boost-any",
+    "boost-date-time",
+    "boost-filesystem",
+    "boost-locale",
+    "boost-scope-exit",
+    "boost-smart-ptr",
+    "boost-system",
+    "boost-type-traits",
+    "boost-utility",
+    "boost-uuid"
+  ]
+}
