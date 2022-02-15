@@ -154,7 +154,7 @@ m4_pattern_allow([^BOOST_VERSION$])dnl
     # If the user provided a value to --with-boost, use it and only it.
     case $with_boost in #(
       ''|yes) set x '' /opt/local/include /usr/local/include /opt/include \
-                 /usr/include C:/Boost/include;; #(
+                 /usr/include /opt/homebrew/include C:/Boost/include;; #(
       *)      set x "$with_boost/include" "$with_boost";;
     esac
     shift
@@ -443,7 +443,7 @@ for boost_rtopt_ in $boost_rtopt '' -d; do
     boost_tmp_lib=$with_boost
     test x"$with_boost" = x && boost_tmp_lib=${boost_cv_inc_path%/include}
     for boost_ldpath in "$boost_tmp_lib/lib" '' \
-             /opt/local/lib* /usr/local/lib* /opt/lib* /usr/lib* \
+             /opt/local/lib* /opt/homebrew/lib /usr/local/lib* /opt/lib* /usr/lib* \
              "$with_boost" C:/Boost/lib /lib*
     do
       # Don't waste time with directories that don't exist.
