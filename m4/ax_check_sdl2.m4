@@ -35,7 +35,7 @@ AC_DEFUN([AX_CHECK_SDL2], [
 	LIBS="$LIBS $SDL2_LIBS"
 
 	AC_LINK_IFELSE([AC_LANG_SOURCE([[
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 int main(int argc, char **argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);
