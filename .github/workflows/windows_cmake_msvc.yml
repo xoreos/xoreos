@@ -48,7 +48,7 @@ jobs:
       uses: lukka/run-vcpkg@v10.1
       id: run_vcpkg
       with:
-        vcpkgGitCommitId: c64c0fdac572ca43ea5ae018fc408ddced50d5b1
+        vcpkgGitCommitId: af2287382b1991dbdcb7e5112d236f3323b9dd7a
         vcpkgJsonGlob: vcpkg.json
 
     - name: Add dll paths to PATH
