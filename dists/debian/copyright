@@ -246,6 +246,11 @@ Files: external/mingw-std-threads/mingw.invoke.h
 Copyright: 2018-2019 Nathaniel J. McClatchey
 License: BSD-2-clause
 
+Files: external/mspack/*.h
+       external/mspack/*.c
+Copyright: 2003-2020 Stuart Caie
+License: LGPL-2.1-only
+
 Files: src/common/system.h
        src/common/endianness.h
        src/common/util.h
@@ -541,6 +546,20 @@ License: GPL-3.0-or-later
  .
  On Debian systems, the complete text of the GNU General
  Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
+
+License: LGPL-2.1-only
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU Library General Public License
+ can be found in the file "/usr/share/common-licenses/LGPL-2.1".
 
 License: LGPL-2.1-or-later
  This library is free software; you can redistribute it and/or
