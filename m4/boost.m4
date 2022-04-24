@@ -1505,6 +1505,7 @@ if test x$boost_cv_inc_path != xno; then
     _BOOST_clang_test(13, 0) \
     _BOOST_clang_test(12, 0) \
     _BOOST_clang_test(11, 1) \
+    _BOOST_clang_test(11, 0) \
     _BOOST_clang_test(10, 0) \
     _BOOST_clang_test(9, 0) \
     _BOOST_clang_test(8, 0) \
