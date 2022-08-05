@@ -33,10 +33,19 @@ DECLARE_SINGLETON(Graphics::LightManager)
 namespace Graphics {
 
 LightManager::LightManager() : _maxLights(8), _activeLights(0) {
-	_lights.reserve(_maxLights);
+	_lights.resize(_maxLights);
 }
 
 LightManager::~LightManager() {
+}
+
+bool LightManager::addLight(const Light &light) {
+	if (_activeLights > _maxLights) {
+		return false;
+	}
+
+	_lights[_activeLights++] = light;
+	return true;
 }
 
 } // End of namespace Graphics

@@ -56,6 +56,7 @@
 #include "src/graphics/glcontainer.h"
 #include "src/graphics/renderable.h"
 #include "src/graphics/camera.h"
+#include "src/graphics/lightman.h"
 
 #include "src/graphics/images/decoder.h"
 #include "src/graphics/images/screenshot.h"
@@ -1345,6 +1346,8 @@ void GraphicsManager::renderScene() {
 	}
 
 	if (_rendererExperimental) {
+		LightMan.clear();  // Clear any visible lights; they'll be reset as necessary.
+
 		renderGUIBackShader();
 		renderWorldShader();
 		renderGUIFrontShader();

@@ -122,15 +122,22 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 	}
 
 	if (hasLighting) {
+		/**
+		 * Structs are not supported by the introspection code right now, so treat
+		 * lighting as an array of vec4 basic type and index into it appropriately.
+		 * It's not the best solution, but it will have to do until structs are
+		 * better supported.
+		 * struct LightParameters {
+		 *     vec4 position;
+		 *     vec4 ambient;
+		 *     vec4 diffuse;
+		 *     vec4 specular;
+		 * };
+		 * uniform LightParameters _lights[8];
+		 */
 		f_header += "\n"
-		            "struct LightParameters {\n"
-		            "    vec4 ambient;\n"
-		            "    vec4 diffuse;\n"
-		            "    vec4 specular;\n"
-		            "    vec4 position;\n"
-		            "}\n\n"
-		            "uniform LightParameters _lights[8];\n"
-		            "uniform uint _activeLights;\n"; // bool is basically uint32_t for glsl
+		            "uniform vec4 _lights[32];\n"
+		            "uniform int _activeLights;\n";
 
 		/**
 		 * Lights are basically a position, colour, and maybe strength (diffuse.w).
@@ -288,7 +295,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 				output_desc_string = "varying vec3 normal0;\n";
 				f_desc_string = "varying vec3 normal0;\n";
 			}
-			///< @todo This is always modified by something special.
+			///< @todo This should be modified by the rotation matrix in mo
 			body_desc_string = "normal0 = inputNormal0.xyz;\n";
 			break;
 		case INPUT_NORMAL1:
@@ -653,6 +660,29 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 
 		f_body += f_action_string;
 		f_body += f_blend_string;
+	}
+
+	if (hasLighting) {
+		/**
+		 * It's worth noting that lights always need a position to work on. This is assumed
+		 * to be position0, and declared as an in to the fragment shader. That's probably
+		 * a safe assumption to make; if it's not, then we'll find out pretty quickly because
+		 * the shader won't compile and the program will crash.
+		 *
+		 * Normals a bit tricker. If a normal vector is supplied by the mesh data, then
+		 * lighting still applies - just without the gradient associated with a normal.
+		 * @todo: check to see if the shader descriptor has normals or not.
+		 */
+		f_body +=
+			"for (int i = 0; i < _activeLights; ++i) {\n"
+			"    vec3 direction = normalize(_lights[4*i+3].xyz - position0);\n"
+			"    float distance = length(_lights[4*i+3i].xyz - position0);\n"
+			"    float grad = max(dot(normal0, direction), 0.0);\n"
+			"    float attenuation = 1.0 / distance;\n"
+			"    fraggle += _lights[4*i+1] * grad * attenuation; // diffuse\n"
+			"    fraggle += _lights[4*i+0] * attenuation; // ambient\n"
+			"}\n"
+			"\n";
 	}
 
 	/**
