@@ -24,6 +24,8 @@
 
 #include <limits>
 
+#include "src/graphics/lightman.h"
+
 #include "src/graphics/shader/shadermaterial.h"
 
 namespace Graphics {
@@ -42,7 +44,15 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 	_variableData.resize(varCount);
 	for (uint32_t i = 0; i < varCount; ++i) {
 		_variableData[i].flags = 0;
-		genMaterialVar(i);
+
+		// First see if some default material variables can be assigned.
+		if (fragShader->variablesCombined[i].name == "_lights") {
+			this->setVariableExternal(i, LightMan.getLightData(), false);
+		} else if (fragShader->variablesCombined[i].name == "_activeLights") {
+			this->setVariableExternal(i, LightMan.getActiveLightsData(), false);
+		} else {
+			genMaterialVar(i);
+		}
 
 		if (fragShader->variablesCombined[i].name == "_alpha") {
 			_alphaIndex = i;

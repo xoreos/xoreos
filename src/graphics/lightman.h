@@ -27,8 +27,6 @@
 
 #include <list>
 
-#include "glm/glm.hpp"
-
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
@@ -62,21 +60,33 @@ class LightHandle;
 
 class LightManager : public Common::Singleton<LightManager> {
 public:
+	struct Light {
+		GLfloat ambient  [4];
+		GLfloat diffuse  [4];
+		GLfloat specular [4];
+		GLfloat position [4];   ///< Position must be defined in camera view coordinates, i.e after modelview transform is applied.
+		// GLfloat coeffecients [4]; // linear, quadratic, constant, padding.
+	};
+
+
 	LightManager();
 	~LightManager();
 
+	///< Query pointer to actual light data.
+	///< @todo this should really be const, but shadermaterial doesn't take const pointers. Yet.
+	inline void *getLightData() { return _lights.data(); }
 
-	inline const GLfloat *getLightData() const { return _lights.data(); }
+	///< Query pointer to number of active lights. Used for shader binding.
+	///< @todo this should really be const, but shadermaterial doesn't take const pointers. Yet.
+	inline int32_t *getActiveLightsData() { return &_activeLights; }
 
-	inline const int32_t *getActiveLightsPointer() const { return &_activeLights; }
+	///< Clear active lights, effectively disabling lighting.
+	inline void clear() { _activeLights = 0; }
+
+	///< Add a light to the manager, if there is sufficient capacity.
+	bool addLight(const Light &light);
 
 private:
-	struct Light {
-		GLfloat ambient [4];
-		GLfloat diffuse [4];
-		GLfloat specular[4];
-		GLfloat position[4];
-	};
 
 	std::vector<Light> _lights; ///< Active light data. Capacity of _lights vector must be at least _maxLights.
 	int32_t _maxLights;         ///< Maximum number of active lights at any given time. Default is eight.
