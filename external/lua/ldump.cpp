@@ -55,7 +55,13 @@ static void DumpNumber(lua_Number x, DumpState* D)
 
 static void DumpString(TString* s, DumpState* D)
 {
- if (s==NULL || getstr(s)==NULL)
+ /*
+  Originally, the code read
+  if (s==NULL || getstr(s)==NULL)
+  but getstr(s) evaluates to (const char *)(s+1) and s+1 can't ever be NULL.
+ */
+
+ if (s==NULL)
   DumpSize(0,D);
  else
  {
