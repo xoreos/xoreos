@@ -1524,10 +1524,14 @@ if test x$boost_cv_inc_path != xno; then
     _BOOST_clang_test(3, 2) \
     _BOOST_clang_test(3, 1) \
     _BOOST_clang_test(3, 0) \
+    _BOOST_gcc_test(12, 2) \
+    _BOOST_gcc_test(12, 1) \
+    _BOOST_gcc_test(12, 0) \
     _BOOST_gcc_test(11, 3) \
     _BOOST_gcc_test(11, 2) \
     _BOOST_gcc_test(11, 1) \
     _BOOST_gcc_test(11, 0) \
+    _BOOST_gcc_test(10, 4) \
     _BOOST_gcc_test(10, 3) \
     _BOOST_gcc_test(10, 2) \
     _BOOST_gcc_test(10, 1) \
