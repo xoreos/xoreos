@@ -30,6 +30,9 @@
 #endif
 
 #ifdef ENABLE_LZMA
+
+#include <memory>
+
 #include "src/common/types.h"
 
 namespace Common {
