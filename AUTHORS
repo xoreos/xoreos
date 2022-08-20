@@ -116,9 +116,9 @@ tolua++
 UTF-8 CPP
 *********
    xoreos uses the lightweight header-only UTF-8 CPP library
-   (<http://utfcpp.sourceforge.net/>) for handling UTF-8 encoded strings.
+   (<https://github.com/nemtrif/utfcpp>) for handling UTF-8 encoded strings.
    UTF-8 CPP is licensed under the Boost Software License. See
-   external/utf8cpp/utf8.h or <https://www.boost.org/users/license.html>
+   external/utf8cpp/LICENSE or <https://www.boost.org/users/license.html>
    for details.
 
 mingw-std-threads

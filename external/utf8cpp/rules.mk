@@ -17,16 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# UTF8-CPP (<http://utfcpp.sourceforge.net/>).
+# UTF8-CPP (<https://github.com/nemtrif/utfcpp>).
 
 noinst_HEADERS += \
     external/utf8cpp/utf8.h \
     external/utf8cpp/utf8/checked.h \
     external/utf8cpp/utf8/core.h \
+    external/utf8cpp/utf8/cpp11.h \
+    external/utf8cpp/utf8/cpp17.h \
     external/utf8cpp/utf8/unchecked.h \
     $(EMPTY)
 
 EXTRA_DIST += \
+    external/utf8cpp/LICENSE \
     external/utf8cpp/README.xoreos \
-    external/utf8cpp/utf8cpp.patch \
     $(EMPTY)

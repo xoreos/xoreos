@@ -30,10 +30,31 @@ DEALINGS IN THE SOFTWARE.
 
 #include <iterator>
 
-#include "src/common/types.h"
+// Determine the C++ standard version.
+// If the user defines UTF_CPP_CPLUSPLUS, use that.
+// Otherwise, trust the unreliable predefined macro __cplusplus
+
+#if !defined UTF_CPP_CPLUSPLUS
+    #define UTF_CPP_CPLUSPLUS __cplusplus
+#endif
+
+#if UTF_CPP_CPLUSPLUS >= 201103L // C++ 11 or later
+    #define UTF_CPP_OVERRIDE override
+    #define UTF_CPP_NOEXCEPT noexcept
+#else // C++ 98/03
+    #define UTF_CPP_OVERRIDE
+    #define UTF_CPP_NOEXCEPT throw()
+#endif // C++ 11 or later
+
 
 namespace utf8
 {
+    // The typedefs for 8-bit, 16-bit and 32-bit unsigned integers
+    // You may need to change them to match your system.
+    // These typedefs have the same names as ones from cstdint, or boost/cstdint
+    typedef unsigned char   uint8_t;
+    typedef unsigned short  uint16_t;
+    typedef unsigned int    uint32_t;
 
 // Helper code - not intended to be directly called by the library users. May be changed at any time
 namespace internal
@@ -45,8 +66,8 @@ namespace internal
     const uint16_t LEAD_SURROGATE_MAX  = 0xdbffu;
     const uint16_t TRAIL_SURROGATE_MIN = 0xdc00u;
     const uint16_t TRAIL_SURROGATE_MAX = 0xdfffu;
-    const uint16_t LEAD_OFFSET         = LEAD_SURROGATE_MIN - (0x10000 >> 10);
-    const uint32_t SURROGATE_OFFSET    = 0x10000u - (LEAD_SURROGATE_MIN << 10) - TRAIL_SURROGATE_MIN;
+    const uint16_t LEAD_OFFSET         = 0xd7c0u;       // LEAD_SURROGATE_MIN - (0x10000 >> 10)
+    const uint32_t SURROGATE_OFFSET    = 0xfca02400u;   // 0x10000u - (LEAD_SURROGATE_MIN << 10) - TRAIL_SURROGATE_MIN
 
     // Maximum valid value for a Unicode code point
     const uint32_t CODE_POINT_MAX      = 0x0010ffffu;
@@ -218,6 +239,9 @@ namespace internal
     template <typename octet_iterator>
     utf_error validate_next(octet_iterator& it, octet_iterator end, uint32_t& code_point)
     {
+        if (it == end)
+            return NOT_ENOUGH_ROOM;
+
         // Save the original value of it so we can go back in case of failure
         // Of course, it does not make much sense with i.e. stream iterators
         octet_iterator original_it = it;
@@ -305,17 +329,6 @@ namespace internal
             ((it != end) && (utf8::internal::mask8(*it++)) == bom[0]) &&
             ((it != end) && (utf8::internal::mask8(*it++)) == bom[1]) &&
             ((it != end) && (utf8::internal::mask8(*it))   == bom[2])
-           );
-    }
-
-    //Deprecated in release 2.3
-    template <typename octet_iterator>
-    inline bool is_bom (octet_iterator it)
-    {
-        return (
-            (utf8::internal::mask8(*it++)) == bom[0] &&
-            (utf8::internal::mask8(*it++)) == bom[1] &&
-            (utf8::internal::mask8(*it))   == bom[2]
            );
     }
 } // namespace utf8
