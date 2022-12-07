@@ -33,7 +33,6 @@
 
 GITSTAMP_FILE = src/version/gitstamp
 
-.PHONY: gitstamp
 gitstamp:
 	@-$(eval $@_REVLINE := $(shell cd $(srcdir); git describe --long --match desc/\* 2>/dev/null | cut -d '/' -f 2- | sed -e 's/\(.*\)-\([^-]*\)-\([^-]*\)/\1+\2.\3/'))
 	@-$(eval $@_REVDIRT := $(shell cd $(srcdir); git update-index --refresh --unmerged 1>/dev/null 2>&1; git diff-index --quiet HEAD 2>/dev/null || echo ".dirty"))
@@ -47,6 +46,16 @@ CLEANFILES += $(GITSTAMP_FILE)
 # a hack and applies to all targets, including clean. There is
 # unfortunately no other way that guarantees that the file is
 # generated before any other rule is executed.
+#
+# This hack is based on https://stackoverflow.com/a/10727593/4416194
+# by exploiting
+# https://www.gnu.org/software/make/manual/make.html#Remaking-Makefiles .
+#
+# NOTE: GNU Make 4.4 breaks the trick somewhat: we can't declare
+# the gitstamp rule .PHONY anymore, because then GNU Make 4.4 will
+# not call anymore. Without making it .PHOHY, it works again.
+# What this, in effect, changes is that now, an aptly named file
+# would be included here and might influence the build process...
 -include gitstamp
 
 # Now get the information out of the gitstamp file again and store
