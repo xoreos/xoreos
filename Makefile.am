@@ -23,8 +23,6 @@
 
 # Use the m4 directory for extra m4 autoconf scripts.
 ACLOCAL_AMFLAGS = -I m4 --install
-# Build objects in the same directory as their source files.
-AUTOMAKE_OPTIONS = subdir-objects
 
 # Empty element to make the source lists easier editable.
 EMPTY =
