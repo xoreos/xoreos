@@ -79,6 +79,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 	Common::UString v_body, f_body;
 
 	bool hasLighting = true;
+	bool foundNormal0 = false;
 
 	/**
 	 * @todo Declare required inputs here. For vertex shaders this means the camera
@@ -297,6 +298,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			}
 			///< @todo This should be modified by the rotation matrix in mo
 			body_desc_string = "normal0 = inputNormal0.xyz;\n";
+			foundNormal0 = true;
 			break;
 		case INPUT_NORMAL1:
 			if (isGL3) {
@@ -495,6 +497,15 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 
 		f_header += sampler_descriptor_string;
 	}
+	
+	if (!foundNormal0) {
+		/**
+		 * Normal0 wasn't defined as an input, however some later code might be relying on it,
+		 * particularly lighting. The default GL value for a normal was (0,0,1), so it seems
+		 * reasonable to copy that if not otherwise found.
+		 */
+		 f_header += "vec3 normal0 = vec3(0, 0, 1);\n";
+	}
 
 	/**
 	 * Fragment shader sampler uv coordinate mapping.
@@ -676,7 +687,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		f_body +=
 			"for (int i = 0; i < _activeLights; ++i) {\n"
 			"    vec3 direction = normalize(_lights[4*i+3].xyz - position0);\n"
-			"    float distance = length(_lights[4*i+3i].xyz - position0);\n"
+			"    float distance = length(_lights[4*i+3].xyz - position0);\n"
 			"    float grad = max(dot(normal0, direction), 0.0);\n"
 			"    float attenuation = 1.0 / distance;\n"
 			"    fraggle += _lights[4*i+1] * grad * attenuation; // diffuse\n"
