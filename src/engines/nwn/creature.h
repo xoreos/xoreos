@@ -67,6 +67,8 @@ public:
 	void show(); ///< Show the creature's model.
 	void hide(); ///< Hide the creature's model.
 
+	virtual void renderImmediate(const glm::mat4 &parentTransform);
+
 	// Basic properties
 
 	/** Return the creature's first name. */

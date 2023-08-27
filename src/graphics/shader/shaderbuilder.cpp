@@ -497,7 +497,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 
 		f_header += sampler_descriptor_string;
 	}
-	
+
 	if (!foundNormal0) {
 		/**
 		 * Normal0 wasn't defined as an input, however some later code might be relying on it,
@@ -683,16 +683,24 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		 * Normals a bit tricker. If a normal vector is supplied by the mesh data, then
 		 * lighting still applies - just without the gradient associated with a normal.
 		 * @todo: check to see if the shader descriptor has normals or not.
+		 * @todo: the ambient hack is just until actual object ambient values are implemented.
 		 */
 		f_body +=
+			"vec4 laggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
+			"vec3 _ambient = vec3(1.0, 1.0, 1.0);\n"
 			"for (int i = 0; i < _activeLights; ++i) {\n"
 			"    vec3 direction = normalize(_lights[4*i+3].xyz - position0);\n"
 			"    float distance = length(_lights[4*i+3].xyz - position0);\n"
 			"    float grad = max(dot(normal0, direction), 0.0);\n"
 			"    float attenuation = 1.0 / distance;\n"
-			"    fraggle += _lights[4*i+1] * grad * attenuation; // diffuse\n"
-			"    fraggle += _lights[4*i+0] * attenuation; // ambient\n"
+			"    vec4 diffuse = _lights[4*i+1] * grad * attenuation; // diffuse\n"
+			"    vec4 ambient = _lights[4*i+0] * attenuation; // ambient\n"
+			"    laggle += fraggle * ambient;\n"
+			"    laggle += fraggle * diffuse;\n"
+			"    _ambient *= 0.8;\n"
 			"}\n"
+			"laggle.a = 0.0;  // TODO: light components should be just rgb, no a.\n"
+			"fraggle = (fraggle * vec4(_ambient, 1.0)) + laggle;\n"
 			"\n";
 	}
 

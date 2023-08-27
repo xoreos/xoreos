@@ -583,6 +583,17 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	if (flags & kNodeFlagHasLight) {
 		// TODO: Light
 		ctx.mdl->skip(0x5C);
+#if 0
+		printf("Node flags for %s indicate light:\n", _name.c_str());
+		printf("Scaling: %f, %f, %f\n", _scale[0], _scale[1], _scale[2]);
+		for (int i = 0; i < 23; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				auto b = ctx.mdl->readByte();
+				printf("%02X ", b);
+			}
+			printf("\n");
+		}
+#endif
 	}
 
 	if (flags & kNodeFlagHasEmitter) {
