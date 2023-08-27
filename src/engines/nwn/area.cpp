@@ -51,6 +51,43 @@
 #include "src/engines/nwn/door.h"
 #include "src/engines/nwn/creature.h"
 
+Engines::NWN::Area *test_area = nullptr;
+
+float tile_colour_array[][4] = {
+	{0.0f, 0.0f, 0.0f, 1.0f}, // 0, black
+	{0.8f, 0.8f, 0.8f, 1.0f}, // 1, white
+	{0.2f, 0.2f, 0.2f, 1.0f}, // 2, soft white
+	{1.0f, 1.0f, 1.0f, 1.0f}, // 3, bright white
+	{0.4f, 0.4f, 0.2f, 1.0f}, // 4, pale, dark yellow
+	{0.4f, 0.4f, 0.0f, 1.0f}, // 5, dark yellow
+	{0.8f, 0.8f, 0.5f, 1.0f}, // 6, pale yellow
+	{0.8f, 0.8f, 0.0f, 1.0f}, // 7, yellow
+	{0.2f, 0.4f, 0.2f, 1.0f}, // 8, pale, dark green
+	{0.0f, 0.4f, 0.0f, 1.0f}, // 9, dark green
+	{0.6f, 0.8f, 0.6f, 1.0f}, // 10, pale green
+	{0.0f, 0.8f, 0.0f, 1.0f}, // 11, green
+	{0.0f, 0.8f, 0.8f, 1.0f}, // 12, pale, dark aqua
+	{0.0f, 0.5f, 0.5f, 1.0f}, // 13, dark aqua
+	{0.6f, 0.9f, 0.9f, 1.0f}, // 14, pale aqua
+	{0.0f, 0.9f, 0.9f, 1.0f}, // 15, aqua
+	{0.2f, 0.5f, 0.7f, 1.0f}, // 16, pale, dark blue
+	{0.0f, 0.0f, 0.5f, 1.0f}, // 17, dark blue
+	{0.7f, 0.7f, 0.9f, 1.0f}, // 18, pale blue
+	{0.0f, 0.0f, 0.9f, 1.0f}, // 19, blue
+	{0.0f, 0.0f, 0.0f, 1.0f}, // 20, pale dark purple
+	{0.3f, 0.0f, 0.5f, 1.0f}, // 21, dark purple
+	{0.9f, 0.9f, 1.0f, 1.0f}, // 22, pale purple
+	{1.0f, 0.0f, 1.0f, 1.0f}, // 23, purple
+	{0.5f, 0.2f, 0.2f, 1.0f}, // 24, pale dark red
+	{0.5f, 0.0f, 0.0f, 1.0f}, // 25, dark red
+	{1.0f, 0.5f, 0.5f, 1.0f}, // 26, pale red
+	{1.0f, 0.0f, 0.0f, 1.0f}, // 27, red
+	{0.5f, 0.4f, 0.3f, 1.0f}, // 28, pale dark orange
+	{0.5f, 0.3f, 0.0f, 1.0f}, // 29, dark orange
+	{1.0f, 0.8f, 0.6f, 1.0f}, // 30, pale orange
+	{1.0f, 0.6f, 0.0f, 1.0f}, // 31, orange
+};
+
 namespace Engines {
 
 namespace NWN {
@@ -73,6 +110,8 @@ Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeAr
 
 	// Tell the module that we exist
 	_module->addObject(*this);
+
+	_dirtyLights = true;
 }
 
 Area::~Area() {
@@ -256,6 +295,8 @@ void Area::show() {
 	playAmbientMusic();
 
 	_visible = true;
+
+	test_area = this;
 }
 
 void Area::hide() {
@@ -285,6 +326,198 @@ void Area::hide() {
 	unloadModels();
 
 	_visible = false;
+}
+
+void Area::rebuildStaticLights() {
+	_staticLights.empty();
+	LightMan.deregister();
+	for (size_t i = 0; i < _tiles.size(); ++i) {
+		const auto &tile = _tiles[i];
+
+		float x, y, z;
+		tile.model->getAbsolutePosition(x, y, z);
+		glm::vec3 tilepos(x, y, z);
+
+		auto name = tile.model->getName();
+
+		if (tile.mainLight[0] > 0) {
+			auto lightname = name + "ml1";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				node->getAbsolutePosition(x, y, z);
+				glm::vec3 pos = tilepos + glm::vec3(x, y, z);
+				size_t index = tile.mainLight[0] & 0x1F;
+				Graphics::LightManager::Light light = {
+					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
+					{0.0f, 0.0f, 0.0f, 0.0f},
+					{0.0f, 0.0f, 0.0f, 0.0f},
+					{pos.x, pos.y, pos.z, 1.0f}
+				};
+				_staticLights.push_back(light);
+				LightMan.reg(light);
+			}
+		}
+
+		if (tile.mainLight[1] > 0) {
+			auto lightname = name + "ml2";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				node->getAbsolutePosition(x, y, z);
+				glm::vec3 pos = tilepos + glm::vec3(x, y, z);
+				size_t index = tile.mainLight[1] & 0x1F;
+				Graphics::LightManager::Light light = {
+					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
+					{0.0f, 0.0f, 0.0f, 0.0f},
+					{0.0f, 0.0f, 0.0f, 0.0f},
+					{pos.x, pos.y, pos.z, 1.0f}
+				};
+				_staticLights.push_back(light);
+				LightMan.reg(light);
+			}
+		}
+	}
+	_dirtyLights = false;
+}
+
+void Area::findLights(const glm::mat4 &modelview, const glm::vec4 &ref) {
+	LightMan.clear();
+
+	for (size_t j = 0; j < _staticLights.size(); ++j) {
+		const auto &licht = _staticLights[j];
+		glm::vec4 lpos(licht.position[0], licht.position[1], licht.position[2], 1.0f);
+		if (glm::distance(lpos, ref) < 14.0f) {
+			// Is this a horrible waste of copying? Yes. It is.
+			// @TODO: find a better way to avoid so many light copies.
+			Graphics::LightManager::Light light = licht;
+			glm::vec4 modified = modelview * lpos;
+			light.position[0] = modified.x;
+			light.position[1] = modified.y;
+			light.position[2] = modified.z;
+			light.position[3] = 1.0f;
+			LightMan.addLight(light);
+		}
+	}
+}
+
+
+void Area::renderImmediate(const glm::mat4 &parentTransform) {
+	if (!_visible) {
+		return;
+	}
+
+	// for (auto const &tile : tiles ) {
+	// ... render each tile.
+	// Clear lighting, use the tile information to setup lights.
+	// Render away!
+	// }
+
+	if (_dirtyLights) {
+		this->rebuildStaticLights();
+	}
+
+	glm::mat4 ident;
+
+	for (size_t i = 0; i < _tiles.size(); ++i) {
+		const auto &tile = _tiles[i];
+
+		float x, y, z;
+		tile.model->getAbsolutePosition(x, y, z);
+		glm::vec4 pos(x, y, z, 1.0f);
+		this->findLights(parentTransform, pos);
+#if 0
+		if (tile.srcLight[0] > 0) {
+			auto lightname = name + "sl1";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				node->getAbsolutePosition(x, y, z);
+				glm::vec4 sl1_pos = pos + glm::vec4(x, y, z, 0.0f);
+				modified = parentTransform * sl1_pos;
+				size_t index = tile.srcLight[0] & 0x1F;
+				Graphics::LightManager::Light light = {
+					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
+					{0.5f, 0.5f, 0.5f, 1.0f},
+					{0.0f, 0.0f, 0.0f, 0.0f},
+					{modified.x, modified.y, modified.z, 1.0f}
+				};
+				LightMan.addLight(light);
+			}
+		}
+
+		if (tile.srcLight[1] > 0) {
+			auto lightname = name + "sl2";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				node->getAbsolutePosition(x, y, z);
+				glm::vec4 sl2_pos = pos + glm::vec4(x, y, z, 0.0f);
+				modified = parentTransform * sl2_pos;
+				size_t index = tile.srcLight[1] & 0x1F;
+				Graphics::LightManager::Light light = {
+					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
+					{0.5f, 0.5f, 0.5f, 1.0f},
+					{0.0f, 0.0f, 0.0f, 0.0f},
+					{modified.x, modified.y, modified.z, 1.0f}
+				};
+				LightMan.addLight(light);
+			}
+		}
+#endif
+		tile.model->renderImmediate(ident);
+		LightMan.clear();
+	}
+
+	for (auto &object : _objects) {
+		float x, y, z;
+		object->getPosition(x, y, z);
+		glm::vec4 pos(x, y, z, 1.0f);
+		/**
+		 * Ideally finding lights wouldn't need to be done - just walk down a hierarchy
+		 * and enable any lights found at a particular level. This gets problematic if
+		 * there are too many lights by the time something should be rendered.
+		 * Alternatively, findLights can be made very efficient if the lighting information
+		 * is stored in a grid-like fashion. Build a list of lights, cull any low priority
+		 * lights if there are too many for rendering to handle.
+		 *
+		 * It's also worth noting that by finding all lights against a single object, it
+		 * will naturally mean all models and active modelnodes are also going to use that
+		 * list of lights. No need to recalculate it for each modelnode. The parent object
+		 * should know the bound box too, which eventually should be used to determine
+		 * which lights intersect with it.
+		 *
+		 * There is one catch to doing things this way: rendering is immediate, and does
+		 * not perform any kind of optimal sorting. There can be a lot of shader switching
+		 * going on, more than necessary. How much of an issue is this really? Unknown, but
+		 * most modern systems can probably brute force everything just fine.
+		 * Putting objects into a hierarchy (or even just a grid) will help with visibility
+		 * culling, and knowledge of objects could help the rendering order, e.g:
+		 *   render all (opaque) tile mesh data.
+		 *   render all placeables.
+		 *   render all creatures.
+		 *   render file mesh data that's transparent last.
+		 *
+		 * Does this possibly make RenderManager a bit of a waste of time? Maybe. Maybe not.
+		 * It's a little early to tell: all this is for NWN only right now, and other games
+		 * might have incompatible requirements. That alone lends some suggestion to a render
+		 * pipeline customised to each game, and then one day merge them together if they end
+		 * up being similar enough.
+		 *
+		 * .....and yes, right now "parentTransform" is actually the modelview matrix. That's
+		 * just to feed to the lighting, otherwise the fragment shader will need to perform a
+		 * lot of unnecessary mat4 math for every single fragment (pixel). A hierarchy would
+		 * take care of visibility culling and would need the modelview as one of the parameters
+		 * anyway, so that's not a worry. It's just a nasty hack right now.
+		 *
+		 * Going further down the rabbit hole - if every object has specific lights, specific
+		 * alpha, specific ambient scaling, specific diffuse, specific modelview, etc, then
+		 * that just kind of blows material management out of the water. There's no point to
+		 * trying to share materials - just create a material for every node and bind the node
+		 * specific data to it.
+		 * Alternatively ensure that everything has a common shared data block and create a UBO
+		 * that can be indexed into. This is probably the way forward eventually, but I'm not sure
+		 * OpenGL 2.1 would be too keen on it.
+		 */
+		this->findLights(parentTransform, pos);
+		object->renderImmediate(ident);
+	}
 }
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {

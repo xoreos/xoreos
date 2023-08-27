@@ -86,6 +86,11 @@ public:
 	///< Add a light to the manager, if there is sufficient capacity.
 	bool addLight(const Light &light);
 
+
+	std::vector<Light> _registered;  ///< All registered lights.
+	inline void deregister() { _registered.clear(); }
+	inline void reg(const Light &light) { _registered.push_back(light); }
+
 private:
 
 	std::vector<Light> _lights; ///< Active light data. Capacity of _lights vector must be at least _maxLights.
@@ -93,7 +98,8 @@ private:
 	int32_t _activeLights;      ///< The number of active lights. Must less than or equal to _maxLights.
 	/**
 	 * Please note that _activeLights is bound to shaders directly, and therefore needs an addressable location.
-	 * The value of _lights.size() cannot be used for two reasons: 1) the size of size_t might not be 32bit, and
+	 * The value of _lights.size() cannot be used for two reasons:
+	 * 1) the size of size_t might not be 32bit, and
 	 * 2) the return value is not an addressable location.
 	 */
 };

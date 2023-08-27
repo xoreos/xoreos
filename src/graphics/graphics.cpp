@@ -67,10 +67,12 @@
 #include "src/graphics/mesh/meshman.h"
 
 #include "src/graphics/render/renderman.h"
-
+#include "src/engines/nwn/area.h"
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 static glm::mat4 inverse(const glm::mat4 &m);
+
+extern Engines::NWN::Area *test_area;
 
 namespace Graphics {
 
@@ -1231,7 +1233,7 @@ bool GraphicsManager::renderWorldShader() {
 	buildNewTextures();
 
 	_animationThread.flush();
-
+/*
 	glm::mat4 ident;
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
@@ -1240,7 +1242,14 @@ bool GraphicsManager::renderWorldShader() {
 	}
 	RenderMan.sort();
 	RenderMan.render();
+*/
+	glm::mat4 ident;
+	if (test_area) {
+		// Hack modelview. Hack hack hack hack. It's done for the lights, as a hack.
+		test_area->renderImmediate(_modelview);
+	}
 
+	LightMan.clear();
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;
 }

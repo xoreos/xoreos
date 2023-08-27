@@ -30,6 +30,8 @@
 #include <map>
 #include <memory>
 
+#include "external/glm/mat4x4.hpp"
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
@@ -45,6 +47,9 @@
 
 #include "src/engines/nwn/tileset.h"
 #include "src/engines/nwn/object.h"
+
+// ------- TESTING IN PROGRESS ------------
+#include "src/graphics/lightman.h"
 
 namespace Engines {
 
@@ -85,6 +90,10 @@ public:
 	void show(); ///< Show the area.
 	void hide(); ///< Hide the area.
 
+	// Rendering
+
+	void renderImmediate(const glm::mat4 &parentTransform); ///< Render the area (static data).
+
 	// Music/Sound
 
 	uint32_t getMusicDayTrack   () const; ///< Return the music track ID playing by day.
@@ -122,10 +131,19 @@ public:
 	void toggleWalkmesh();
 
 
+	inline void checkStaticLights() {
+		if (_dirtyLights) {
+			this->rebuildStaticLights();
+		}
+	}
 protected:
 	/** Notify the area that the camera has been moved. */
 	void notifyCameraMoved();
 
+	std::vector<Graphics::LightManager::Light> _staticLights;
+	bool _dirtyLights;
+	void rebuildStaticLights();
+	void findLights(const glm::mat4 &modelview, const glm::vec4 &ref);
 
 private:
 	/** Tile orientation. */

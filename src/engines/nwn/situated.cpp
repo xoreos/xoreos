@@ -102,6 +102,10 @@ void Situated::hide() {
 		_model->hide();
 }
 
+void Situated::renderImmediate(const glm::mat4 &parentTransform) {
+	_model->renderImmediate(parentTransform);
+}
+
 void Situated::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
