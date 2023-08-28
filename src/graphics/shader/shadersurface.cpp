@@ -21,10 +21,6 @@
 /** @file
  *  Shader surface, responsible for tracking data relating to a vertex shader.
  */
-#include <limits>
-
-#include "external/glm/gtc/type_ptr.hpp"
-
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/shader/shadersurface.h"
@@ -39,24 +35,16 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 		_variableData(),
 		_vertShader(vertShader),
 		_flags(0),
-		_name(name),
-		_usageCount(0),
-		_objectModelviewIndex(std::numeric_limits<uint32_t>::max()),
-		_textureViewIndex(std::numeric_limits<uint32_t>::max()),
-		_bindPoseIndex(std::numeric_limits<uint32_t>::max()),
-		_boneTransformsIndex(std::numeric_limits<uint32_t>::max()) {
+		_name(name) {
 
 	vertShader->usageCount++;
 
 	uint32_t varCount = vertShader->variablesCombined.size();
 	_variableData.resize(varCount);
-	for (uint32_t i = 0; i < varCount; ++i) {
-		_variableData[i].flags = 0;
-		genSurfaceVar(i);
 
-		if (vertShader->variablesCombined[i].name == "_objectModelviewMatrix") {
-			_objectModelviewIndex = i;
-		} else if (vertShader->variablesCombined[i].name == "_textureViewMatrix") {
+	for (uint32_t i = 0; i < varCount; ++i) {
+		/*
+		if (vertShader->variablesCombined[i].name == "_textureViewMatrix") {
 			_textureViewIndex = i;
 		} else if (vertShader->variablesCombined[i].name == "_projectionMatrix") {
 			setVariableExternal(i, &(GfxMan.getProjectionMatrix()));
@@ -67,14 +55,18 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 		} else if (vertShader->variablesCombined[i].name == "_boneTransforms") {
 			_boneTransformsIndex = i;
 		}
+		*/
+		if (vertShader->variablesCombined[i].name == "_objectModelviewMatrix") {
+			setVariable(i, &_objectModelviewMatrix);
+		} else if (vertShader->variablesCombined[i].name == "_projectionMatrix") {
+			setVariable(i, &(GfxMan.getProjectionMatrix()));
+		} else if (vertShader->variablesCombined[i].name == "_modelviewMatrix") {
+			setVariable(i, &(GfxMan.getModelviewMatrix()));
+		}
 	}
 }
 
 ShaderSurface::~ShaderSurface() {
-	for (uint32_t i = 0; i < _variableData.size(); ++i) {
-		delSurfaceVar(i);
-	}
-	// The surface doesn't own UBO's in the _uboArray, and so does not delete them.
 }
 
 const Common::UString &ShaderSurface::getName() const {
@@ -102,16 +94,16 @@ Shader::ShaderVariableType ShaderSurface::getVariableType(uint32_t index) const 
 	return _vertShader->variablesCombined[index].type;
 }
 
-void *ShaderSurface::getVariableData(uint32_t index) const {
-	return _variableData[index].data;
+const void *ShaderSurface::getVariableData(uint32_t index) const {
+	return _variableData[index];
 }
 
-void *ShaderSurface::getVariableData(const Common::UString &name) const {
-	void *rval = 0;
+const void *ShaderSurface::getVariableData(const Common::UString &name) const {
+	const void *rval = nullptr;
 
 	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_vertShader->variablesCombined[i].name == name) {
-			rval = _variableData[i].data;
+			rval = _variableData[i];
 			break;
 		}
 	}
@@ -123,52 +115,17 @@ const Common::UString &ShaderSurface::getVariableName(uint32_t index) const {
 	return _vertShader->variablesCombined[index].name;
 }
 
-uint32_t ShaderSurface::getVariableFlags(uint32_t index) const {
-	return _variableData[index].flags;
+void ShaderSurface::setVariable(uint32_t index, const void *loc) {
+	_variableData[index] = loc;
 }
 
-void ShaderSurface::setVariableExternal(uint32_t index, void *loc) {
-	delSurfaceVar(index);
-	_variableData[index].data = loc;
-}
-
-void ShaderSurface::setVariableExternal(const Common::UString &name, void *loc) {
+void ShaderSurface::setVariable(const Common::UString &name, const void *loc) {
 	for (uint32_t i = 0; i < _variableData.size(); ++i) {
 		if (_vertShader->variablesCombined[i].name == name) {
-			delSurfaceVar(i);
-			_variableData[i].data = loc;
+			_variableData[i] = loc;
 			break;
 		}
 	}
-}
-
-void ShaderSurface::setVariableInternal(uint32_t index) {
-	genSurfaceVar(index);
-}
-
-void ShaderSurface::setVariableInternal(const Common::UString &name) {
-	for (uint32_t i = 0; i < _variableData.size(); ++i) {
-		if (_vertShader->variablesCombined[i].name == name) {
-			genSurfaceVar(i);
-			break;
-		}
-	}
-}
-
-bool ShaderSurface::isVariableOwned(uint32_t index) const {
-	return (_variableData[index].flags & SHADER_SURFACE_VARIABLE_OWNED) ? true : false;
-}
-
-bool ShaderSurface::isVariableOwned(const Common::UString &name) const {
-	bool rval = false;
-	for (uint32_t i = 0; i < _variableData.size(); ++i) {
-		if (_vertShader->variablesCombined[i].name == name) {
-			rval = (_variableData[i].flags & SHADER_SURFACE_VARIABLE_OWNED) ? true : false;
-			break;
-		}
-	}
-
-	return rval;
 }
 
 void ShaderSurface::addUBO(uint32_t index, GLuint glid) {
@@ -177,43 +134,15 @@ void ShaderSurface::addUBO(uint32_t index, GLuint glid) {
 
 void ShaderSurface::bindProgram(Shader::ShaderProgram *program) {
 	for (uint32_t i = 0; i < _variableData.size(); i++) {
-		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], _variableData[i].data);
+		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], _variableData[i]);
 	}
 }
 
-void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	for (uint32_t i = 0; i < _variableData.size(); i++) {
-		if (_objectModelviewIndex == i) {
-			ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], t);
-		} else {
-			ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], _variableData[i].data);
-		}
-	}
+void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const glm::mat4 &t) {
+	_objectModelviewMatrix = t;
+	this->bindProgram(program);
 }
 
-void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	if (_objectModelviewIndex != std::numeric_limits<uint32_t>::max()) {
-		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_objectModelviewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
-	}
-}
-
-void ShaderSurface::bindTextureView(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	if (_textureViewIndex != std::numeric_limits<uint32_t>::max()) {
-		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_textureViewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
-	}
-}
-
-void ShaderSurface::bindBindPose(Shader::ShaderProgram *program, const glm::mat4 *t) {
-	if (_bindPoseIndex != std::numeric_limits<uint32_t>::max()) {
-		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_bindPoseIndex], program->vertexVariableLocations[_bindPoseIndex], glm::value_ptr(*t));
-	}
-}
-
-void ShaderSurface::bindBoneTransforms(Shader::ShaderProgram *program, const float *t) {
-	if (_boneTransformsIndex != std::numeric_limits<uint32_t>::max()) {
-		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_boneTransformsIndex], program->vertexVariableLocations[_boneTransformsIndex], t);
-	}
-}
 
 void ShaderSurface::bindGLState() {
 	if (_flags & SHADER_SURFACE_NOCULL) {
@@ -234,138 +163,6 @@ void ShaderSurface::unbindGLState() {
 }
 
 void ShaderSurface::restoreGLState() {
-}
-
-void *ShaderSurface::genSurfaceVar(uint32_t index) {
-	if (_variableData[index].flags & SHADER_SURFACE_VARIABLE_OWNED)
-		return 0;
-
-	void *rval = 0;
-	uint32_t count = _vertShader->variablesCombined[index].count;
-
-	switch (_vertShader->variablesCombined[index].type) {
-		case SHADER_FLOAT: rval = new float[count];     break;
-		case SHADER_VEC2:  rval = new float[2 * count]; break;
-		case SHADER_VEC3:  rval = new float[3 * count]; break;
-		case SHADER_VEC4:  rval = new float[4 * count]; break;
-		case SHADER_INT:   rval = new int[count];       break;
-		case SHADER_IVEC2: rval = new int[2 * count];   break;
-		case SHADER_IVEC3: rval = new int[3 * count];   break;
-		case SHADER_IVEC4: rval = new int[4 * count];   break;
-//		case SHADER_UINT:            break;
-//		case SHADER_UVEC2:           break;
-//		case SHADER_UVEC3:           break;
-//		case SHADER_UVEC4:           break;
-//		case SHADER_BOOL:            break;
-//		case SHADER_BVEC2:           break;
-//		case SHADER_BVEC3:           break;
-//		case SHADER_BVEC4:           break;
-		case SHADER_MAT2: rval = new float[4 * count];  break;
-		case SHADER_MAT3: rval = new float[9 * count];  break;
-		case SHADER_MAT4: rval = new float[16 * count]; break;
-		case SHADER_SAMPLER1D:
-		case SHADER_SAMPLER2D:
-		case SHADER_SAMPLER3D:
-		case SHADER_SAMPLERCUBE: break;
-		case SHADER_SAMPLER1DSHADOW: break;
-		case SHADER_SAMPLER2DSHADOW: break;
-		case SHADER_SAMPLER1DARRAY:  break;
-		case SHADER_SAMPLER2DARRAY:  break;
-		case SHADER_SAMPLER1DARRAYSHADOW: break;
-		case SHADER_SAMPLER2DARRAYSHADOW: break;
-		case SHADER_SAMPLERBUFFER:   break;
-		case SHADER_ISAMPLER1D:      break;
-		case SHADER_ISAMPLER2D:      break;
-		case SHADER_ISAMPLER3D:      break;
-		case SHADER_ISAMPLERCUBE:    break;
-		case SHADER_ISAMPLER1DARRAY: break;
-		case SHADER_ISAMPLER2DARRAY: break;
-		case SHADER_USAMPLER1D:      break;
-		case SHADER_USAMPLER2D:      break;
-		case SHADER_USAMPLER3D:      break;
-		case SHADER_USAMPLERCUBE:    break;
-		case SHADER_USAMPLER1DARRAY: break;
-		case SHADER_USAMPLER2DARRAY: break;
-		case SHADER_UNIFORM_BUFFER:  rval = new Shader::ShaderUBO; break;
-		default: break;
-	}
-
-	_variableData[index].flags |= SHADER_SURFACE_VARIABLE_OWNED;
-	_variableData[index].data = rval;
-
-	return rval;
-}
-
-void ShaderSurface::delSurfaceVar(uint32_t index)
-{
-	if (!(_variableData[index].flags & SHADER_SURFACE_VARIABLE_OWNED))
-		return;
-
-	_variableData[index].flags &= ~(SHADER_SURFACE_VARIABLE_OWNED);
-
-	void *data = _variableData[index].data;
-	switch (_vertShader->variablesCombined[index].type) {
-		case SHADER_FLOAT:
-		case SHADER_VEC2:
-		case SHADER_VEC3:
-		case SHADER_VEC4: delete [] (static_cast<float *>(data)); break;
-		case SHADER_INT:
-		case SHADER_IVEC2:
-		case SHADER_IVEC3:
-		case SHADER_IVEC4: delete [] (static_cast<int *>(data)); break;
-//		case SHADER_UINT: break;
-//		case SHADER_UVEC2: break;
-//		case SHADER_UVEC3: break;
-//		case SHADER_UVEC4: break;
-//		case SHADER_BOOL: break;
-//		case SHADER_BVEC2: break;
-//		case SHADER_BVEC3: break;
-//		case SHADER_BVEC4: break;
-		case SHADER_MAT2:
-		case SHADER_MAT3:
-		case SHADER_MAT4: delete [] (static_cast<float *>(data)); break;
-		case SHADER_SAMPLER1D: break;
-		case SHADER_SAMPLER2D: break;
-		case SHADER_SAMPLER3D: break;
-		case SHADER_SAMPLERCUBE: break;
-		case SHADER_SAMPLER1DSHADOW: break;
-		case SHADER_SAMPLER2DSHADOW: break;
-		case SHADER_SAMPLER1DARRAY: break;
-		case SHADER_SAMPLER2DARRAY: break;
-		case SHADER_SAMPLER1DARRAYSHADOW: break;
-		case SHADER_SAMPLER2DARRAYSHADOW: break;
-		case SHADER_SAMPLERBUFFER: break;
-		case SHADER_ISAMPLER1D: break;
-		case SHADER_ISAMPLER2D: break;
-		case SHADER_ISAMPLER3D: break;
-		case SHADER_ISAMPLERCUBE: break;
-		case SHADER_ISAMPLER1DARRAY: break;
-		case SHADER_ISAMPLER2DARRAY: break;
-		case SHADER_USAMPLER1D: break;
-		case SHADER_USAMPLER2D: break;
-		case SHADER_USAMPLER3D: break;
-		case SHADER_USAMPLERCUBE: break;
-		case SHADER_USAMPLER1DARRAY: break;
-		case SHADER_USAMPLER2DARRAY: break;
-		case SHADER_UNIFORM_BUFFER: delete static_cast<ShaderUBO *>(data); break;
-		default: break;
-	}
-
-	_variableData[index].data = 0;
-}
-
-void ShaderSurface::useIncrement() {
-	++_usageCount;
-}
-
-void ShaderSurface::useDecrement() {
-	if (_usageCount) {
-		--_usageCount;
-	}
-}
-
-uint32_t ShaderSurface::useCount() const {
-	return _usageCount;
 }
 
 } // End of namespace Shader

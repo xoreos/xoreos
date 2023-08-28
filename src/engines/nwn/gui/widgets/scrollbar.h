@@ -97,6 +97,7 @@ private:
 	glm::mat4 _scrollMatrixBar;   ///< Relative transformation matrix for the bar.
 	glm::mat4 _scrollMatrixCapA;  ///< Relative transformation matrix (Captain America).
 	glm::mat4 _scrollMatrixCapB;  ///< Relative transformation matrix (cap bottom/right).
+	glm::mat4 _renderTransform;   ///< Render transform.
 
 	std::vector<Quad> _quads;
 

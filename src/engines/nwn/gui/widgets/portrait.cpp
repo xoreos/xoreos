@@ -51,12 +51,18 @@ namespace NWN {
 Portrait::Portrait(const Common::UString &name, Size size,
 		float border, float bR, float bG, float bB, float bA) :
 	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront),
-	_size(size), _border(border), _bR(bR), _bG(bG), _bB(bB), _bA(bA) {
+	_size(size), _border(border) {
+
+	_bColour[0] = bR;
+	_bColour[1] = bG;
+	_bColour[2] = bB;
+	_bColour[3] = bA;
 
 	assert((_size >= kSizeHuge) && (_size < kSizeMAX));
 
 	if (GfxMan.isRendererExperimental()) {
 		_surface = std::make_unique<Graphics::Shader::ShaderSurface>(ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait");
+		_surface->setVariable("_uv0Matrix", _textureMatrix);
 
 		_material = std::make_unique<Graphics::Shader::ShaderMaterial>(ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait");
 
@@ -64,6 +70,7 @@ Portrait::Portrait(const Common::UString &name, Size size,
 		_renderable = std::make_unique<Graphics::Shader::ShaderRenderable>(_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad"));
 
 		_borderMaterial = std::make_unique<Graphics::Shader::ShaderMaterial>(ShaderMan.getShaderObject("default/colour.frag", Graphics::Shader::SHADER_FRAGMENT), "portraitborder");
+		_borderMaterial->setVariable("_colour", _bColour);
 
 		_borderRenderable = std::make_unique<Graphics::Shader::ShaderRenderable>(SurfaceMan.getSurface("defaultSurface"), _borderMaterial.get(), MeshMan.getMesh("defaultMeshQuad"));
 	}
@@ -156,7 +163,7 @@ void Portrait::calculateDistance() {
 }
 
 void Portrait::render(Graphics::RenderPass pass) {
-	bool isTransparent = (_bA < 1.0f) ||
+	bool isTransparent = (_bColour[3] < 1.0f) ||
 	                     (!_texture.empty() && _texture.getTexture().hasAlpha());
 	if (((pass == Graphics::kRenderPassOpaque)      &&  isTransparent) ||
 			((pass == Graphics::kRenderPassTransparent) && !isTransparent))
@@ -166,7 +173,7 @@ void Portrait::render(Graphics::RenderPass pass) {
 	// Border
 
 	TextureMan.set();
-	glColor4f(_bR, _bG, _bB, _bA);
+	glColor4f(_bColour[0], _bColour[1], _bColour[2], _bColour[3]);
 
 	glBegin(GL_QUADS);
 	for (std::vector<Quad>::const_iterator b = _qBorder.begin(); b != _qBorder.end(); ++b)
@@ -199,12 +206,6 @@ void Portrait::renderImmediate(const glm::mat4 &parentTransform) {
 	 * used in many places other than the menu system.
 	 */
 	if (_border > 0.0f) {
-		float *color = static_cast<float *>(_borderMaterial->getVariableData("_colour"));
-		color[0] = _bR;
-		color[1] = _bG;
-		color[2] = _bB;
-		color[3] = _bA;
-
 		glm::mat4 btform = glm::translate(glm::mat4(), glm::vec3(_x - _border, _y - _border, -10.0f));
 		btform = glm::scale(btform, glm::vec3(_width + 2.0f * _border,
 		                                      _height + 2.0f * _border,
@@ -240,18 +241,16 @@ void Portrait::setPortrait(const Common::UString &name) {
 	}
 
 	if (GfxMan.isRendererExperimental()) {
-		Graphics::Shader::ShaderSampler *sampler;
-		sampler = (Graphics::Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
-		sampler->handle = _texture;
+		_material->setTexture("sampler_0_id", _texture);
 	}
 }
 
 void Portrait::setBorderColor(float bR, float bG, float bB, float bA) {
 	GfxMan.lockFrame();
-	_bR = bR;
-	_bG = bG;
-	_bB = bB;
-	_bA = bA;
+	_bColour[0] = bR;
+	_bColour[1] = bG;
+	_bColour[1] = bB;
+	_bColour[1] = bA;
 	GfxMan.unlockFrame();
 }
 
@@ -280,7 +279,7 @@ void Portrait::setSize() {
 	if (GfxMan.isRendererExperimental()) {
 		glm::mat4 tmatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, portraitCutRatio, 0.0f));
 		tmatrix = glm::scale(tmatrix, glm::vec3(1.0f, 1.0f - portraitCutRatio, 1.0f));
-		memcpy(_surface->getVariableData("_uv0Matrix"), &tmatrix[0], 16 * sizeof(float));
+		memcpy(_textureMatrix, &tmatrix, 16 * sizeof(float));
 	}
 }
 

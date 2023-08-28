@@ -119,11 +119,9 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 
 	_mesh = static_cast<Mesh::MeshFont *>(MeshMan.getMesh("defaultMeshFont"));
 	_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/text.frag", Shader::SHADER_FRAGMENT), "text");
-	Shader::ShaderSampler *sampler;
-	sampler = (Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
 	if (_pages.size() > 0) {
 		// At the moment this doesn't matter too much - just need a valid texture of some kind.
-		sampler->handle = _pages[0]->texture;
+		_material->setTexture("sampler_0_id", _pages[0]->texture);
 	}
 	_renderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material, _mesh);
 }
@@ -190,9 +188,9 @@ void TTFFont::buildChars(const Common::UString &str) {
 
 void TTFFont::renderBind(const glm::mat4 &transform) const {
 	glUseProgram(_renderable->getProgram()->glid);
-	_material->bindProgram(_renderable->getProgram(), 1.0f);
+	_material->bindProgram(_renderable->getProgram());
 	_material->bindGLState();
-	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &transform);
+	_renderable->getSurface()->bindProgram(_renderable->getProgram(), transform);
 	_renderable->getSurface()->bindGLState();
 	_mesh->renderBind();
 

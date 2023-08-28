@@ -861,6 +861,9 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 		 */
 		if (_renderableArray.size() == 0) {
 			if (_rootStateNode) {
+				// @todo: no longer doing this, need to be able to copy root state node
+				// renderables to this node, and locally override specific data directly.
+				printf("Fix me, modelnode.cpp in renderImmediate\n");
 				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
 					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
 				}
@@ -1177,14 +1180,23 @@ TextureHandle *ModelNode::getEnvironmentMap(EnvironmentMapMode &mode) {
 }
 
 void ModelNode::buildMaterial() {
+	/**
+	 * @TODO: is there any reason to not simply make the material and surface
+	 * part of the renderable? Not pointers, just variables - which does mean
+	 * that a material and surface need post-constructor setting of shader
+	 * objects and maybe some nice copy constructors, operators, etc, but it
+	 * might be worth the effort. Something to think about.
+	 */
+	for (auto &renderable: _renderableArray) {
+		delete renderable.getMaterial();
+		delete renderable.getSurface();
+	}
 	_renderableArray.clear();
 
 	/**
-	 * If there's no override of mesh, textures, or environment mapping, then don't bother
-	 * to create any new renderables. Just make sure _rootStateNode has some, and have the
-	 * render queuing use the renderables from there instead. This isn't really a problem,
-	 * as the per-modelnode data (modelview matrix in this case) is still supplied from
-	 * _this_ object.
+	 * Even if there's no override of mesh, textures, or environment mapping there still
+	 * needs to be the creation of renderables. This is to ensure that local data such as
+	 * modelview matrix, alpha, ambient, etc, are correctly bound when rendering.
 	 */
 
 	if (!_model->getState().empty()) {
@@ -1199,8 +1211,10 @@ void ModelNode::buildMaterial() {
 	_dirtyRender = false;
 
 	if (!_mesh || !_mesh->data ||
-			((_mesh->data->textures.size() == 0) && _mesh->data->envMap.empty() && !_mesh->data->rawMesh))
+	    ((_mesh->data->textures.size() == 0) && _mesh->data->envMap.empty() && !_mesh->data->rawMesh)) {
+		printf("Fixme: modelnode buildmaterial, still needs to get renderable copies from the root node.\n");
 		return;
+	}
 
 	MaterialConfiguration config;
 	config.pmesh = _mesh;
@@ -1247,13 +1261,6 @@ void ModelNode::buildMaterial() {
 
 	Shader::ShaderSurface *surface;
 
-	config.material = MaterialMan.getMaterial(config.materialName);
-	if (config.material) {
-		surface = SurfaceMan.getSurface(config.materialName);
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, _mesh->data->rawMesh));
-		return;
-	}
-
 	if (_mesh->alpha < 1.0f) {
 		config.materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
 		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
@@ -1292,10 +1299,11 @@ void ModelNode::buildMaterial() {
 		config.material->setBlendDstRGB(GL_ONE_MINUS_SRC_COLOR);
 		config.material->setBlendDstAlpha(GL_ONE_MINUS_SRC_ALPHA);
 	}
-	MaterialMan.addMaterial(config.material);
-	SurfaceMan.addSurface(surface);
 
 	bindTexturesToSamplers(config, cripter);
+
+	surface->setVariable("_objectModelviewMatrix", &_renderTransform);
+	config.material->setVariable("_alpha", &_alpha);
 
 	_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, _mesh->data->rawMesh));
 }
@@ -1446,26 +1454,20 @@ void ModelNode::addBlendedOverEnvMapPass(MaterialConfiguration &config, Shader::
 }
 
 void ModelNode::bindTexturesToSamplers(MaterialConfiguration &config, Shader::ShaderDescriptor &UNUSED(cripter)) {
-	Shader::ShaderSampler *sampler;
-
 	if (config.penvmap) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_7_id"));
-		sampler->handle = *config.penvmap;
+		config.material->setTexture("sampler_7_id", *config.penvmap);
 	}
 
 	if ((config.textureCount > 0) && !config.phandles[0].empty()) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_0_id"));
-		sampler->handle = config.phandles[0];
+		config.material->setTexture("sampler_0_id", config.phandles[0]);
 	}
 
 	if ((config.textureCount > 1) && !config.phandles[1].empty()) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_1_id"));
-		sampler->handle = config.phandles[1];
+		config.material->setTexture("sampler_1_id", config.phandles[1]);
 	}
 
 	if ((config.textureCount > 2) && !config.phandles[2].empty()) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_2_id"));
-		sampler->handle = config.phandles[2];
+		config.material->setTexture("sampler_2_id", config.phandles[2]);
 	}
 }
 
