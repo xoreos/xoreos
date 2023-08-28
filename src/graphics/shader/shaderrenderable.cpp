@@ -35,8 +35,6 @@ ShaderRenderable::ShaderRenderable() : _surface(0), _material(0), _program(0), _
 
 ShaderRenderable::ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh) : _surface(surface), _material(material), _program(0), _mesh(mesh) {
 	//_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
-	_surface->useIncrement();
-	_material->useIncrement();
 	_mesh->useIncrement();
 	updateProgram();
 }
@@ -51,12 +49,6 @@ ShaderRenderable::ShaderRenderable(Shader::ShaderRenderable *src) : _surface(0),
 }
 
 ShaderRenderable::ShaderRenderable(const Shader::ShaderRenderable &src) : _surface(src._surface), _material(src._material), _program(src._program), _mesh(src._mesh) {
-	if (_surface) {
-		_surface->useIncrement();
-	}
-	if (_material) {
-		_material->useIncrement();
-	}
 	if (_mesh) {
 		_mesh->useIncrement();
 	}
@@ -71,12 +63,6 @@ const ShaderRenderable &ShaderRenderable::operator=(const Shader::ShaderRenderab
 }
 
 ShaderRenderable::~ShaderRenderable() {
-	if (_surface) {
-		_surface->useDecrement();
-	}
-	if (_material) {
-		_material->useDecrement();
-	}
 	if (_mesh) {
 		_mesh->useDecrement();
 	}
@@ -99,27 +85,14 @@ Mesh::Mesh *ShaderRenderable::getMesh() {
 }
 
 void ShaderRenderable::setSurface(Shader::ShaderSurface *surface, bool rebuildProgram) {
-	// TODO: check old surface for usage count decrement.
-	if (_surface) {
-		_surface->useDecrement();
-	}
 	_surface = surface;
-	if (_surface) {
-		_surface->useIncrement();
-	}
 	if (rebuildProgram) {
 		updateProgram();
 	}
 }
 
 void ShaderRenderable::setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram) {
-	if (_material) {
-		_material->useDecrement();
-	}
 	_material = material;
-	if (_material) {
-		_material->useIncrement();
-	}
 	if (rebuildProgram) {
 		updateProgram();
 	}
@@ -154,7 +127,7 @@ void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
 	glUseProgram(_program->glid);
 	_material->bindProgram(_program, alpha);
 	_material->bindGLState();
-	_surface->bindProgram(_program, &tform);
+	_surface->bindProgram(_program, tform);
 	_surface->bindGLState();
 
 	_mesh->renderImmediate();

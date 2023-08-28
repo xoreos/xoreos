@@ -135,7 +135,7 @@ void RenderQueue::render() {
 				currentMaterial->unbindGLState();
 			}
 			currentMaterial = _nodeArray[i].material;
-			currentMaterial->bindProgramNoFade(currentProgram);
+			currentMaterial->bindProgram(currentProgram);
 			currentMaterial->bindGLState();
 		}
 
@@ -159,19 +159,20 @@ void RenderQueue::render() {
 		assert(currentSurface);
 		assert(currentMaterial);
 
-		currentSurface->bindProgram(currentProgram, _nodeArray[i].transform);
+		currentSurface->bindProgram(currentProgram, *_nodeArray[i].transform);
 		//currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
 		bindBoneUniforms(currentProgram, currentSurface, currentMesh);
-		currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
+		printf("%s:%u, binding whole program defeats purpose of this queue (muiltiple transgressions in this file).\n", __FILE__, __LINE__);
+		currentMaterial->bindProgram(currentProgram, _nodeArray[i].alpha);
 		currentMesh->render();
 
 		++i;  // Move to next object.
 		while ((i < limit) && (_nodeArray[i].mesh == currentMesh) && (_nodeArray[i].material == currentMaterial) && (_nodeArray[i].surface == currentSurface)) {
 			// Next object is basically the same, but will have a different object modelview transform. So rebind that, and render again.
 			assert(_nodeArray[i].transform);
-			currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+			currentSurface->bindProgram(currentProgram, *_nodeArray[i].transform);
 			bindBoneUniforms(currentProgram, currentSurface, currentMesh);
-			currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
+			currentMaterial->bindProgram(currentProgram, _nodeArray[i].alpha);
 			currentMesh->render();
 			++i;
 		}
@@ -194,11 +195,14 @@ void RenderQueue::clear() {
 }
 
 void RenderQueue::bindBoneUniforms(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Mesh::Mesh *mesh) {
+	printf("%s:%u, binding bone uniforms is not currently valid.\n", __FILE__, __LINE__);
+	/*
 	surface->bindBindPose(program, mesh->getBindPosePtr());
 
 	const std::vector<float> &boneTransforms = mesh->getBoneTransforms();
 	if (!boneTransforms.empty())
 		surface->bindBoneTransforms(program, boneTransforms.data());
+	*/
 }
 
 } // namespace Render

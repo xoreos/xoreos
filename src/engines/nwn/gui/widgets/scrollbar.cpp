@@ -45,12 +45,10 @@ Scrollbar::Scrollbar(Type type) : Graphics::GUIElement(Graphics::GUIElement::kGU
 
 	if (GfxMan.isRendererExperimental()) {
 		_surface = std::make_unique<Graphics::Shader::ShaderSurface>(ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait");
-		_surface->setVariableExternal("_uv0Matrix", &_textureMatrix);
+		_surface->setVariable("_uv0Matrix", &_textureMatrix);
 
 		_material = std::make_unique<Graphics::Shader::ShaderMaterial>(ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait");
-		Graphics::Shader::ShaderSampler *sampler;
-		sampler = (Graphics::Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
-		sampler->handle = _texture;
+		_material->setTexture("sampler_0_id", _texture);
 
 		_renderable = std::make_unique<Graphics::Shader::ShaderRenderable>(_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad"));
 	}
@@ -148,7 +146,7 @@ void Scrollbar::renderImmediate(const glm::mat4 &parentTransform) {
 	tform = glm::translate(glm::mat4(), glm::vec3(roundf(_x), roundf(_y), _z));
 
 	// CapA (top or left, depending on scrollbar orientation).
-	_textureMatrix = _textureMatrixCapA;
+	_textureMatrix = _textureMatrixCapA;;
 	_renderable->renderImmediate(parentTransform * tform * _scrollMatrixCapA);
 
 	// Render the scrollbar itself.

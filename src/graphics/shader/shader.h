@@ -174,11 +174,8 @@ struct ShaderUBO {
  *  must specify the unit to use.
  */
 struct ShaderSampler {
-	Texture *texture;
 	Graphics::Aurora::TextureHandle handle;
 	uint32_t unit;
-	ShaderSampler() : texture(0), unit(0) {}
-	ShaderSampler(Texture *t, uint32_t u) : texture(t), unit(u) {}
 };
 
 
