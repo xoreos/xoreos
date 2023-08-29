@@ -47,7 +47,7 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 	fragShader->usageCount++;
 
 	/**
-	 * For the sake of convenience, have samplers handled externally is a bit of a  pain.
+	 * For the sake of convenience, having samplers handled externally is a bit of a  pain.
 	 * It's much more friendly to just bind a texture handle directly - and so far at least
 	 * there's been no need to worry about the sampler unit. So to make a lot of other
 	 * code that much more manageable, deal with the samplers in the material and intercept
@@ -83,7 +83,51 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 		_samplers[i].unit = i;
 	}
 }
+#if 0
+ShaderMaterial::ShaderMaterial(const ShaderMaterial &src) :
+	_variableData(),
+	_fragShader(src._fragShader),
+	_flags(src._flags),
+	_blendEquationRGB(src._blendEquationRGB),
+	_blendEquationAlpha(src._blendEquationAlpha),
+	_blendSrcRGB(src._blendSrcRGB),
+	_blendSrcAlpha(src._blendSrcAlpha),
+	_blendDstRGB(src._blendDstRGB),
+	_blendDstAlpha(src._blendDstAlpha),
+	_alpha(src._alpha),
+	_name(src._name) {
 
+	_fragShader->usageCount++;
+
+	size_t samplerCount = 0;
+	_samplers.resize(src._samplers.size());
+	for (size_t i = 0; i < _samplers.size(); ++i) {
+		_samplers[i].unit = src._samplers[i].unit;
+		_samplers[i].handle = src._samplers[i].handle;
+	}
+
+	uint32_t varCount = _fragShader->variablesCombined.size();
+	_variableData.resize(varCount);
+	for (uint32_t i = 0; i < varCount; ++i) {
+		_variableData[i] = src._variableData[i];
+		if (_fragShader->variablesCombined[i].name == "_alpha") {
+			if (_variableData[i] == &(src._alpha)) {
+				this->setVariable(i, &_alpha);
+			}
+		} else {
+			switch (_fragShader->variablesCombined[i].type) {
+			case SHADER_SAMPLER1D:
+			case SHADER_SAMPLER2D:
+			case SHADER_SAMPLER3D:
+			case SHADER_SAMPLERCUBE:
+				_variableData[i] = &_samplers[samplerCount++];
+			break;
+			default: break;
+			}
+		}
+	}
+}
+#endif
 ShaderMaterial::~ShaderMaterial() {
 	_fragShader->usageCount--;
 }

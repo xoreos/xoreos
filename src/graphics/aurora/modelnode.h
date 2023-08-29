@@ -274,7 +274,7 @@ protected:
 	float _orientation[4]; ///< Orientation of the node.
 	float _scale      [3]; ///< Scale of the node.
 
-	float _alpha;          ///< Alpha of the node, used if no _mesh is present in this node.
+	float _alpha;     ///< Alpha of the node, used if no _mesh is present in this node.
 
 	std::vector<PositionKeyFrame> _positionFrames;      ///< Keyframes for position animation.
 	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation.
@@ -316,10 +316,6 @@ protected:
 	bool _orientationBuffered;
 	bool _vertexCoordsBuffered;
 
-
-	Shader::ShaderMaterial *_material;
-	Shader::ShaderRenderable *_shaderRenderable;
-
 	// Loading helpers
 	void loadTextures(const std::vector<Common::UString> &textures);
 	void createBound();
@@ -349,7 +345,6 @@ protected:
 	TextureHandle *getTextures(uint32_t &count);
 	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
 
-	void setMaterial(Shader::ShaderMaterial *material);
 	virtual void buildMaterial();
 
 	virtual void declareShaderInputs(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);

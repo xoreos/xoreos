@@ -69,14 +69,7 @@ public:
 
 	void bindProgram(Shader::ShaderProgram *program);
 	void bindProgram(Shader::ShaderProgram *program, const glm::mat4 &t);
-#if 0
-	/*
-	void bindObjectModelview(Shader::ShaderProgram *program, const glm::mat4 *t);
-	void bindTextureView(Shader::ShaderProgram *program, const glm::mat4 *t);
-	void bindBindPose(Shader::ShaderProgram *program, const glm::mat4 *t);
-	void bindBoneTransforms(Shader::ShaderProgram *program, const float *t);
-	*/
-#endif
+
 	void bindGLState();
 	void unbindGLState();
 	void restoreGLState();

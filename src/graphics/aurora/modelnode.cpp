@@ -139,6 +139,12 @@ ModelNode::~ModelNode() {
 
 	delete _attachedModel;
 	_attachedModel = 0;
+
+	for (auto &renderable: _renderableArray) {
+		delete renderable.getMaterial();
+		delete renderable.getSurface();
+	}
+	_renderableArray.clear();
 }
 
 ModelNode *ModelNode::getParent() {
@@ -416,13 +422,6 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	loadTextures(textures);
 
 	unlockFrameIfVisible();
-}
-
-void ModelNode::setMaterial(Shader::ShaderMaterial *material) {
-	_material = material;
-	if (_shaderRenderable) {
-		_shaderRenderable->setMaterial(_material);
-	}
 }
 
 float ModelNode::getAlpha() {
@@ -859,19 +858,24 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 		 * @todo Ideally there should be some kind of check in here to determine visibility.
 		 * if the node isn't (camera) visible, then don't bother trying to render it.
 		 */
+#if 0
 		if (_renderableArray.size() == 0) {
 			if (_rootStateNode) {
 				// @todo: no longer doing this, need to be able to copy root state node
 				// renderables to this node, and locally override specific data directly.
-				printf("Fix me, modelnode.cpp in renderImmediate\n");
+				//printf("Fix me, modelnode.cpp in renderImmediate\n");
 				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
+					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform);
 				}
 			}
 		} else {
 			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
+				_renderableArray[i].renderImmediate(_renderTransform);
 			}
+		}
+#endif
+		for (size_t i = 0; i < _renderableArray.size(); ++i) {
+			_renderableArray[i].renderImmediate(_renderTransform);
 		}
 	}
 
@@ -1210,18 +1214,16 @@ void ModelNode::buildMaterial() {
 
 	_dirtyRender = false;
 
-	if (!_mesh || !_mesh->data ||
-	    ((_mesh->data->textures.size() == 0) && _mesh->data->envMap.empty() && !_mesh->data->rawMesh)) {
-		printf("Fixme: modelnode buildmaterial, still needs to get renderable copies from the root node.\n");
-		return;
-	}
-
 	MaterialConfiguration config;
-	config.pmesh = _mesh;
+	config.pmesh = getMesh();
 	config.phandles = getTextures(config.textureCount);
 	config.penvmap = getEnvironmentMap(config.envmapmode);
 
-	if ((config.textureCount == 0) || !_render || !config.pmesh->data->rawMesh || config.phandles[0].empty())
+	if ((config.textureCount == 0) ||
+	    !config.pmesh ||
+	    !config.pmesh->data ||
+	    !config.pmesh->data->rawMesh ||
+	    config.phandles[0].empty())
 		return;
 
 	config.materialName = "xoreos.";
@@ -1261,7 +1263,7 @@ void ModelNode::buildMaterial() {
 
 	Shader::ShaderSurface *surface;
 
-	if (_mesh->alpha < 1.0f) {
+	if (config.pmesh->alpha < 1.0f) {
 		config.materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
 		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
@@ -1284,6 +1286,7 @@ void ModelNode::buildMaterial() {
 		Common::UString vertexStringFinal;
 		Common::UString fragmentStringFinal;
 
+		cripter.hasLights(true);
 		cripter.build(isGL3, vertexStringFinal, fragmentStringFinal);
 		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
 		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
@@ -1303,9 +1306,18 @@ void ModelNode::buildMaterial() {
 	bindTexturesToSamplers(config, cripter);
 
 	surface->setVariable("_objectModelviewMatrix", &_renderTransform);
+	surface->setVariable("_bindPose", config.pmesh->data->rawMesh->getBindPosePtr());
+	surface->setVariable("_boneTransforms", config.pmesh->data->rawMesh->getBoneTransforms().data());
 	config.material->setVariable("_alpha", &_alpha);
-
-	_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, _mesh->data->rawMesh));
+	config.material->setVariable("_ambient", config.pmesh->ambient);
+	/*
+	  @TODO: remove this later.
+	printf("ambient is: %f %f %f\n",
+	       config.pmesh->ambient[0],
+	       config.pmesh->ambient[1],
+	       config.pmesh->ambient[2]);
+	*/
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, config.pmesh->data->rawMesh));
 }
 
 void ModelNode::declareShaderInputs(MaterialConfiguration &UNUSED(config), Shader::ShaderDescriptor &cripter) {
