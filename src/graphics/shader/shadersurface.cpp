@@ -43,19 +43,6 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 	_variableData.resize(varCount);
 
 	for (uint32_t i = 0; i < varCount; ++i) {
-		/*
-		if (vertShader->variablesCombined[i].name == "_textureViewMatrix") {
-			_textureViewIndex = i;
-		} else if (vertShader->variablesCombined[i].name == "_projectionMatrix") {
-			setVariableExternal(i, &(GfxMan.getProjectionMatrix()));
-		} else if (vertShader->variablesCombined[i].name == "_modelviewMatrix") {
-			setVariableExternal(i, &(GfxMan.getModelviewMatrix()));
-		} else if (vertShader->variablesCombined[i].name == "_bindPose") {
-			_bindPoseIndex = i;
-		} else if (vertShader->variablesCombined[i].name == "_boneTransforms") {
-			_boneTransformsIndex = i;
-		}
-		*/
 		if (vertShader->variablesCombined[i].name == "_objectModelviewMatrix") {
 			setVariable(i, &_objectModelviewMatrix);
 		} else if (vertShader->variablesCombined[i].name == "_projectionMatrix") {
@@ -65,8 +52,31 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 		}
 	}
 }
+#if 0
+ShaderSurface::ShaderSurface(const ShaderSurface &src) :
+	_variableData(),
+	_vertShader(src._vertShader),
+	_flags(src._flags),
+	_objectModelviewMatrix(src._objectModelviewMatrix),
+	_name(src._name) {
 
+	_vertShader->usageCount++;
+	uint32_t varCount = _vertShader->variablesCombined.size();
+	_variableData.resize(varCount);
+	for (uint32_t i = 0; i < varCount; ++i) {
+		_variableData[i] = src._variableData[i];
+		if (_vertShader->variablesCombined[i].name == "_objectModelviewMatrix") {
+			if (src._variableData[i] == &(src._objectModelviewMatrix)) {
+				setVariable(i, &_objectModelviewMatrix);
+			}
+		}
+	}
+}
+#endif
 ShaderSurface::~ShaderSurface() {
+	if (_vertShader) {
+		_vertShader->usageCount--;
+	}
 }
 
 const Common::UString &ShaderSurface::getName() const {

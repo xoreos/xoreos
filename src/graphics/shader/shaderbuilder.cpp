@@ -78,7 +78,6 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 	Common::UString v_header, f_header;
 	Common::UString v_body, f_body;
 
-	bool hasLighting = true;
 	bool foundNormal0 = false;
 
 	/**
@@ -122,7 +121,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		           "	vec4 froggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
 	}
 
-	if (hasLighting) {
+	if (_hasLighting) {
 		/**
 		 * Structs are not supported by the introspection code right now, so treat
 		 * lighting as an array of vec4 basic type and index into it appropriately.
@@ -137,8 +136,9 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		 * uniform LightParameters _lights[8];
 		 */
 		f_header += "\n"
-		            "uniform vec4 _lights[32];\n"
-		            "uniform int _activeLights;\n";
+			"uniform vec4 _lights[32];\n"
+			"uniform int _activeLights;\n"
+			"uniform vec3 _ambient;\n";
 
 		/**
 		 * Lights are basically a position, colour, and maybe strength (diffuse.w).
@@ -673,7 +673,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		f_body += f_blend_string;
 	}
 
-	if (hasLighting) {
+	if (_hasLighting) {
 		/**
 		 * It's worth noting that lights always need a position to work on. This is assumed
 		 * to be position0, and declared as an in to the fragment shader. That's probably
@@ -687,7 +687,6 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		 */
 		f_body +=
 			"vec4 laggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
-			"vec3 _ambient = vec3(1.0, 1.0, 1.0);\n"
 			"for (int i = 0; i < _activeLights; ++i) {\n"
 			"    vec3 direction = normalize(_lights[4*i+3].xyz - position0);\n"
 			"    float distance = length(_lights[4*i+3].xyz - position0);\n"
@@ -697,7 +696,6 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			"    vec4 ambient = _lights[4*i+0] * attenuation; // ambient\n"
 			"    laggle += fraggle * ambient;\n"
 			"    laggle += fraggle * diffuse;\n"
-			"    _ambient *= 0.8;\n"
 			"}\n"
 			"laggle.a = 0.0;  // TODO: light components should be just rgb, no a.\n"
 			"fraggle = (fraggle * vec4(_ambient, 1.0)) + laggle;\n"
@@ -739,6 +737,7 @@ void ShaderDescriptor::clear() {
 	_uniformDescriptors.clear();
 	_connectors.clear();
 	_passes.clear();
+	_hasLighting = false;
 }
 
 void ShaderDescriptor::genName(Common::UString &n_string) {

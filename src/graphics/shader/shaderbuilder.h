@@ -143,6 +143,10 @@ public:
 
 	void addPass(ShaderDescriptor::Action action, ShaderDescriptor::Blend blend);
 
+	inline void hasLights(bool lights) {
+		_hasLighting = lights;
+	}
+
 	void build(bool isGL3, Common::UString &v_string, Common::UString &f_string);
 
 	/**
@@ -191,6 +195,8 @@ private:
 	std::vector<UniformDescriptor> _uniformDescriptors;
 	std::vector<Connector> _connectors;
 	std::vector<Pass> _passes;
+
+	bool _hasLighting = false;
 };
 
 } // End of namespace Shader
