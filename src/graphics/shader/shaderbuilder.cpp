@@ -683,7 +683,12 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		 * Normals a bit tricker. If a normal vector is supplied by the mesh data, then
 		 * lighting still applies - just without the gradient associated with a normal.
 		 * @todo: check to see if the shader descriptor has normals or not.
-		 * @todo: the ambient hack is just until actual object ambient values are implemented.
+		 *
+		 * d = distance
+		 * Ac = constant
+		 * Al = linear
+		 * Aq = quadratic
+		 * attenuation = 1.0 / (Ac + Al*d + Aq*d*d)
 		 */
 		f_body +=
 			"vec4 laggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
@@ -691,7 +696,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			"    vec3 direction = normalize(_lights[4*i+3].xyz - position0);\n"
 			"    float distance = length(_lights[4*i+3].xyz - position0);\n"
 			"    float grad = max(dot(normal0, direction), 0.0);\n"
-			"    float attenuation = 1.0 / distance;\n"
+			"    float attenuation = 1.0 / (1.0 + 1.2 * distance);\n"
 			"    vec4 diffuse = _lights[4*i+1] * grad * attenuation; // diffuse\n"
 			"    vec4 ambient = _lights[4*i+0] * attenuation; // ambient\n"
 			"    laggle += fraggle * ambient;\n"

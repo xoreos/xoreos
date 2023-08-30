@@ -1310,13 +1310,7 @@ void ModelNode::buildMaterial() {
 	surface->setVariable("_boneTransforms", config.pmesh->data->rawMesh->getBoneTransforms().data());
 	config.material->setVariable("_alpha", &_alpha);
 	config.material->setVariable("_ambient", config.pmesh->ambient);
-	/*
-	  @TODO: remove this later.
-	printf("ambient is: %f %f %f\n",
-	       config.pmesh->ambient[0],
-	       config.pmesh->ambient[1],
-	       config.pmesh->ambient[2]);
-	*/
+
 	_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, config.pmesh->data->rawMesh));
 }
 

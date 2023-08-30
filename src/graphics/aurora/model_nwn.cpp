@@ -194,6 +194,7 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 
 	_fileName = name;
 
+	printf("Loading model file %s\n", name.c_str());
 	ParserContext ctx(name, texture);
 
 	if (ctx.isASCII)
@@ -227,18 +228,23 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	debugC(kDebugGraphics, 4, "Loading NWN binary model \"%s\": \"%s\"", _fileName.c_str(),
 	       _name.c_str());
 	ctx.mdlName = _name;
+	printf("  Loading binary with mdlname %s\n", _name.c_str());
 
 	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32_t nodeCount       = ctx.mdl->readUint32LE();
+	printf("    node count: %u\n", nodeCount);
 
 	ctx.mdl->skip(24 + 4); // Unknown + Reference count
 
 	uint8_t type = ctx.mdl->readByte();
+	printf("    type: %u\n", type);
 
 	ctx.mdl->skip(3 + 2); // Padding + Unknown
 
 	uint8_t classification = ctx.mdl->readByte();
 	uint8_t fogged         = ctx.mdl->readByte();
+
+	printf("    classification: %u\n", classification);
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -258,10 +264,12 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
 	float radius = ctx.mdl->readIEEEFloatLE();
+	printf("    model radius: %f\n", radius);
 
 	_animationScale = ctx.mdl->readIEEEFloatLE();
 
 	_superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
+	printf("    supermodel name: %s\n", _superModelName.c_str());
 
 	newState(ctx);
 
@@ -279,10 +287,12 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	for (std::vector<uint32_t>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
 		newState(ctx);
 
+		printf("    ____Reading animations____\n");
 		readAnimBinary(ctx, ctx.offModelData + *offset);
 
 		addState(ctx);
 	}
+	printf("+++++++++++++++++++++++++\n");
 }
 
 void Model_NWN::loadASCII(ParserContext &ctx) {
@@ -290,6 +300,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 
 	newState(ctx);
 
+	printf("loading ascii file\n");
 	while (!ctx.mdl->eos()) {
 		std::vector<Common::UString> line;
 
@@ -303,7 +314,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 
 		line[0].makeLower();
 
-		if        (line[0] == "newmodel") {
+		if (line[0] == "newmodel") {
 			if (!_name.empty())
 				warning("Model_NWN_ASCII::load(): More than one model definition");
 
@@ -427,6 +438,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32_t offset) {
 	ctx.mdl->skip(8); // Function pointers
 
 	ctx.state->name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
+	printf("Reading animation %s\n", ctx.state->name.c_str());
 
 	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32_t nodeCount       = ctx.mdl->readUint32LE();
@@ -544,15 +556,19 @@ Common::UString ModelNode_NWN_Binary::loadName(Model_NWN::ParserContext &ctx) {
 
 	return name;
 }
-
+uint32_t indent = 0;
 void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(24); // Function pointers
 
+	printf("%*s%s", indent*2, "", "loading modelnode\n");
 	uint32_t inheritColorFlag = ctx.mdl->readUint32LE();
+	printf("%*s inherit colours: %u\n", indent*2, "", inheritColorFlag);
 
 	_nodeNumber = ctx.mdl->readUint32LE();
+	printf("%*s node number: %u\n", indent*2, "", _nodeNumber);
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	printf("%*s node name: %s\n", indent*2, "", _name.c_str());
 
 	debugC(kDebugGraphics, 5, "Node \"%s\" in state \"%s\"", _name.c_str(),
 	       ctx.state->name.c_str());
@@ -576,6 +592,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	                 controllerDataCount, controllerData);
 
 	uint32_t flags = ctx.mdl->readUint32LE();
+	printf("%*s flags: %08X\n", indent*2, "", flags);
 
 	if ((flags & 0xFFFFFC00) != 0)
 		throw Common::Exception("Unknown model node flags %08X", flags);
@@ -583,6 +600,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	if (flags & kNodeFlagHasLight) {
 		// TODO: Light
 		ctx.mdl->skip(0x5C);
+		printf("%*s    has flag light\n", indent*2, "");
 #if 0
 		printf("Node flags for %s indicate light:\n", _name.c_str());
 		printf("Scaling: %f, %f, %f\n", _scale[0], _scale[1], _scale[2]);
@@ -597,34 +615,41 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	}
 
 	if (flags & kNodeFlagHasEmitter) {
+		printf("%*s    has flag emitter\n", indent*2, "");
 		// TODO: Emitter
 		ctx.mdl->skip(0xD8);
 	}
 
 	if (flags & kNodeFlagHasReference) {
+		printf("%*s    has flag reference\n", indent*2, "");
 		// TODO: Reference
 		ctx.mdl->skip(0x44);
 	}
 
 	if (flags & kNodeFlagHasMesh) {
+		printf("%*s    has flag trimesh\n", indent*2, "");
 		readMesh(ctx);
 	}
 
 	if (flags & kNodeFlagHasSkin) {
+		printf("%*s    has flag skin\n", indent*2, "");
 		// TODO: Skin
 		ctx.mdl->skip(0x64);
 	}
 
 	if (flags & kNodeFlagHasAnim) {
+		printf("%*s    has flag animation\n", indent*2, "");
 		readAnim(ctx);
 	}
 
 	if (flags & kNodeFlagHasDangly) {
+		printf("%*s    has flag dangly\n", indent*2, "");
 		// TODO: Dangly
 		ctx.mdl->skip(0x18);
 	}
 
 	if (flags & kNodeFlagHasAABB) {
+		printf("%*s    has flag AABB\n", indent*2, "");
 		// TODO: AABB
 		ctx.mdl->skip(0x4);
 	}
@@ -645,7 +670,9 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 			node->inheritOrientation(*this);
 	}
 
+	printf("%*s ________\n", indent*2, "");
 
+	indent+=2;
 	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 
@@ -661,7 +688,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 		childNode->load(ctx);
 	}
-
+	indent-=2;
 }
 
 void ModelNode_NWN_Binary::checkDuplicateNode(Model_NWN::ParserContext &ctx, ModelNode_NWN_Binary *newNode) {
@@ -757,6 +784,12 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint = ctx.mdl->readUint32LE() == 1;
+
+	printf("%*s    (mesh render: %u, ambient: %f, %f, %f)\n", indent*2, "",
+	       _mesh->render,
+	       _mesh->ambient[0],
+	       _mesh->ambient[1],
+	       _mesh->ambient[2]);
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -1079,7 +1112,22 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 				if (data[dataIndex + 0] == 0.0f)
 					// TODO: Just disabled rendering if alpha == 0.0 for now
 					_render = false;
+		} else if (type == kControllerTypeRadius) {
+			if (columnCount != 1)
+				throw Common::Exception("Alpha controller with %d values", columnCount);
+
+			// Starting alpha
+			if (data[timeIndex + 0] == 0.0f)
+				printf("light radius controller value: %f\n", data[dataIndex + 0]);
+		} else if (type == kControllerTypeMultiplier) {
+			if (columnCount != 1)
+				throw Common::Exception("Alpha controller with %d values", columnCount);
+
+			// Starting alpha
+			if (data[timeIndex + 0] == 0.0f)
+				printf("light multiplier controller value: %f\n", data[dataIndex + 0]);
 		}
+
 
 	}
 
@@ -1136,7 +1184,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 		line[0].makeLower();
 
-		if        (line[0] == "endnode") {
+		if (line[0] == "endnode") {
 			end = true;
 			break;
 		} else if (skipNode) {
@@ -1156,6 +1204,8 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 			readFloats(line, _orientation, 4, 1);
 
 			_orientation[3] = Common::rad2deg(_orientation[3]);
+		} else if (line[0] == "ambient") {
+			readFloats(line, mesh.ambient, 3, 1);
 		} else if (line[0] == "render") {
 			Common::parseString(line[1], _mesh->render);
 		} else if (line[0] == "transparencyhint") {
@@ -1392,6 +1442,10 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
 	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
+
+	_mesh->ambient[0] = mesh.ambient[0];
+	_mesh->ambient[1] = mesh.ambient[1];
+	_mesh->ambient[2] = mesh.ambient[2];
 
 	loadTextures(mesh.textures);
 
