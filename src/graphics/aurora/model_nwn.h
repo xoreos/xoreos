@@ -130,6 +130,8 @@ private:
 		uint32_t tCount;
 		uint32_t faceCount;
 
+		float ambient[3];
+
 		std::vector<Common::UString> textures;
 
 		std::vector<float> vX, vY, vZ;
