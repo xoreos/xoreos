@@ -109,6 +109,7 @@ public:
 private:
 	void checkDuplicateNode(Model_NWN::ParserContext &ctx, ModelNode_NWN_Binary *newNode);
 
+	void readLight(Model_NWN::ParserContext &ctx);
 	void readMesh(Model_NWN::ParserContext &ctx);
 	void readAnim(Model_NWN::ParserContext &ctx);
 

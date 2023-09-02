@@ -91,6 +91,7 @@ ModelNode::ModelNode(Model &model) :
 		_alpha(1.0f),
 		_render(false),
 		_dirtyRender(true),
+		_light(0),
 		_mesh(0),
 		_rootStateNode(0),
 		_nodeNumber(0),
@@ -1123,6 +1124,10 @@ std::vector<const ModelNode *> ModelNode::getPath(const ModelNode *from, const M
 
 void ModelNode::notifyVertexCoordsBuffered() {
 	_vertexCoordsBuffered = true;
+}
+
+ModelNode::Light *ModelNode::getLight() const {
+	return _light;
 }
 
 ModelNode::Mesh *ModelNode::getMesh() const {

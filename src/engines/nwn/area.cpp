@@ -344,17 +344,21 @@ void Area::rebuildStaticLights() {
 			auto lightname = name + "ml1";
 			if (tile.model->hasNode(lightname)) {
 				auto node = tile.model->getNode(lightname);
-				node->getAbsolutePosition(x, y, z);
-				glm::vec3 pos = tilepos + glm::vec3(x, y, z);
-				size_t index = tile.mainLight[0] & 0x1F;
-				Graphics::LightManager::Light light = {
-					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
-					{0.0f, 0.0f, 0.0f, 0.0f},
-					{0.0f, 0.0f, 0.0f, 0.0f},
-					{pos.x, pos.y, pos.z, 1.0f}
-				};
-				_staticLights.push_back(light);
-				LightMan.reg(light);
+				auto *nodelight = node->getLight();
+				if (nodelight) {
+					// @TODO: nodelight doesn't yet exist for ASCII models. Need to implement that yet.
+					node->getAbsolutePosition(x, y, z);
+					glm::vec3 pos = tilepos + glm::vec3(x, y, z);
+					size_t index = tile.mainLight[0] & 0x1F;
+					Graphics::LightManager::Light light = {
+						{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
+						{0.0f, 0.0f, 0.0f, 0.0f},
+						{nodelight->multiplier, 1.0f / (nodelight->radius * nodelight->radius), 0.0f, 0.0f},
+						{pos.x, pos.y, pos.z, 1.0f}
+					};
+					_staticLights.push_back(light);
+					LightMan.reg(light);
+				}
 			}
 		}
 
@@ -362,17 +366,20 @@ void Area::rebuildStaticLights() {
 			auto lightname = name + "ml2";
 			if (tile.model->hasNode(lightname)) {
 				auto node = tile.model->getNode(lightname);
-				node->getAbsolutePosition(x, y, z);
-				glm::vec3 pos = tilepos + glm::vec3(x, y, z);
-				size_t index = tile.mainLight[1] & 0x1F;
-				Graphics::LightManager::Light light = {
-					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
-					{0.0f, 0.0f, 0.0f, 0.0f},
-					{0.0f, 0.0f, 0.0f, 0.0f},
-					{pos.x, pos.y, pos.z, 1.0f}
-				};
-				_staticLights.push_back(light);
-				LightMan.reg(light);
+				auto *nodelight = node->getLight();
+				if (nodelight) {
+					node->getAbsolutePosition(x, y, z);
+					glm::vec3 pos = tilepos + glm::vec3(x, y, z);
+					size_t index = tile.mainLight[1] & 0x1F;
+					Graphics::LightManager::Light light = {
+						{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
+						{0.0f, 0.0f, 0.0f, 0.0f},
+						{nodelight->multiplier, 1.0f / (nodelight->radius * nodelight->radius), 0.0f, 0.0f},
+						{pos.x, pos.y, pos.z, 1.0f}
+					};
+					_staticLights.push_back(light);
+					LightMan.reg(light);
+				}
 			}
 		}
 	}
