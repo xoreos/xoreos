@@ -599,19 +599,9 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 	if (flags & kNodeFlagHasLight) {
 		// TODO: Light
-		ctx.mdl->skip(0x5C);
+		//ctx.mdl->skip(0x5C);
+		readLight(ctx);
 		printf("%*s    has flag light\n", indent*2, "");
-#if 0
-		printf("Node flags for %s indicate light:\n", _name.c_str());
-		printf("Scaling: %f, %f, %f\n", _scale[0], _scale[1], _scale[2]);
-		for (int i = 0; i < 23; ++i) {
-			for (int j = 0; j < 4; ++j) {
-				auto b = ctx.mdl->readByte();
-				printf("%02X ", b);
-			}
-			printf("\n");
-		}
-#endif
 	}
 
 	if (flags & kNodeFlagHasEmitter) {
@@ -723,6 +713,32 @@ void ModelNode_NWN_Binary::checkDuplicateNode(Model_NWN::ParserContext &ctx, Mod
 
 	ctx.nodes.remove(oldChildNode);
 	delete oldChildNode;
+}
+
+void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
+	_light = new Light();
+
+	// Default to a bright white light.
+	_light->colour[0] = 1.0f;
+	_light->colour[1] = 1.0f;
+	_light->colour[2] = 1.0f;
+
+	ctx.mdl->skip(4);  // flare radius
+	ctx.mdl->skip(12); // Array unknown
+	ctx.mdl->skip(12); // Array of flare sizes.
+	ctx.mdl->skip(12); // Array of flare positions.
+	ctx.mdl->skip(12); // Array of flare colour shifts.
+	ctx.mdl->skip(12); // Array of flare texture names.
+
+	_light->priority = ctx.mdl->readUint32LE();
+
+	_light->ambient = ctx.mdl->readUint32LE();  // Ambient only flag.
+	ctx.mdl->skip(4);  // Dynamic only flag.
+	ctx.mdl->skip(4);  // Affect dynamic flag.
+	ctx.mdl->skip(4);  // Shadow flag.
+	ctx.mdl->skip(4);  // Generate flare flag.
+
+	_light->fading = ctx.mdl->readUint32LE();
 }
 
 struct Face {
@@ -990,15 +1006,35 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	ctx.mdl->seek(endPos);
 
-	Common::UString meshName = ctx.mdlName;
-	meshName += ".";
+	/**
+	 * If the mesh is going to be added to the mesh manager, then a name to uniquely
+	 * identify it will be needed. To do that, take into account the model and node
+	 * structure:
+	 *    model->state->node->node->(etc)->mesh
+	 * Actual mesh names could be duplicated, but by incorporating the entire node
+	 * hierarchy, current state, and model name, then this should represent something
+	 * unique for this particular node's mesh.
+	 *
+	 * @TODO: slight optimisation would be to check for this before processing any
+	 * of the above mesh data. If the mesh already exists, just skip past the data
+	 * instead of processing it.
+	 */
+
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
 	} else {
 		meshName += "xoreos.default";
 	}
-	meshName += ".";
-	meshName += _name;
+	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 	if (checkMesh) {
@@ -1114,20 +1150,37 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 					_render = false;
 		} else if (type == kControllerTypeRadius) {
 			if (columnCount != 1)
-				throw Common::Exception("Alpha controller with %d values", columnCount);
+				throw Common::Exception("Radius controller with %d values", columnCount);
 
-			// Starting alpha
-			if (data[timeIndex + 0] == 0.0f)
-				printf("light radius controller value: %f\n", data[dataIndex + 0]);
+			/**
+			 * Radius can apply to either a light or an emitter. Light will have priority
+			 * here, but there shouldn't be both light and emitter types on the same node.
+			 */
+			if (_light) {
+				// Starting radius
+				if (data[timeIndex + 0] == 0.0f)
+					_light->radius = data[dataIndex + 0];
+			}
 		} else if (type == kControllerTypeMultiplier) {
 			if (columnCount != 1)
-				throw Common::Exception("Alpha controller with %d values", columnCount);
+				throw Common::Exception("Multiplier controller with %d values", columnCount);
 
-			// Starting alpha
-			if (data[timeIndex + 0] == 0.0f)
-				printf("light multiplier controller value: %f\n", data[dataIndex + 0]);
+			if (_light) {
+				// Starting multiplier
+				if (data[timeIndex + 0] == 0.0f)
+					_light->multiplier = data[dataIndex + 0];
+			}
+		} else if (type == kControllerTypeColor) {
+			if (columnCount != 3)
+				throw Common::Exception("Color controller with %d values", columnCount);
+
+			if (_light) {
+				// Starting light value.
+				_light->colour[0] = data[dataIndex + 0];
+				_light->colour[1] = data[dataIndex + 1];
+				_light->colour[2] = data[dataIndex + 2];
+			}
 		}
-
 
 	}
 
@@ -1251,16 +1304,6 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	processMesh(mesh);
 
-	Common::UString meshName = ctx.mdlName;
-	meshName += ".";
-	if (ctx.state->name.size() != 0) {
-		meshName += ctx.state->name;
-	} else {
-		meshName += "xoreos.default";
-	}
-	meshName += ".";
-	meshName += _name;
-
 	if (!_mesh) {
 		return;
 	}
@@ -1273,12 +1316,31 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		return;
 	}
 
-	_mesh->data->rawMesh->setName(meshName);
-	_mesh->data->rawMesh->init();
-	if (MeshMan.getMesh(meshName)) {
-		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
 	}
-	MeshMan.addMesh(_mesh->data->rawMesh);
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ctx.mdlName;
+
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 
 	if (GfxMan.isRendererExperimental())
 		buildMaterial();
