@@ -85,6 +85,8 @@ public:
 	float getHeight() const;
 	/** Get the depth of the model's bounding box. */
 	float getDepth () const;
+	/** Get the radius of the model's bounding sphere. */
+	float getRadius() const;
 
 	/** Is that point within the model's bounding box? */
 	bool isIn(float x, float y) const;
@@ -261,6 +263,8 @@ protected:
 	Common::BoundingBox _boundBox;
 	/** The model's box after translate/rotate. */
 	Common::BoundingBox _absoluteBoundBox;
+
+	float _radius;
 
 	bool _hasSkinNodes;
 	bool _positionRelative;

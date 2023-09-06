@@ -140,10 +140,8 @@ protected:
 	/** Notify the area that the camera has been moved. */
 	void notifyCameraMoved();
 
-	std::vector<Graphics::LightManager::Light> _staticLights;
 	bool _dirtyLights;
 	void rebuildStaticLights();
-	void findLights(const glm::mat4 &modelview, const glm::vec4 &ref);
 
 private:
 	/** Tile orientation. */

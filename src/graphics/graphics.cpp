@@ -74,6 +74,7 @@ static glm::mat4 inverse(const glm::mat4 &m);
 
 extern Engines::NWN::Area *test_area;
 
+
 namespace Graphics {
 
 PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
@@ -1215,17 +1216,7 @@ bool GraphicsManager::renderWorldShader() {
 	_projection = _perspective;
 	_projectionInv = _perspectiveInv;
 
-	float cPos[3];
-	float cOrient[3];
-
-	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
-	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
-
-	_modelview = glm::mat4();
-	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
-	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[1]), glm::vec3(0.0f, 1.0f, 0.0f));
-	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[2]), glm::vec3(0.0f, 0.0f, 1.0f));
-	_modelview = glm::translate(_modelview, glm::vec3(-cPos[0], -cPos[1], -cPos[2]));
+	_modelview = CameraMan.getModelview();
 
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
 	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
@@ -1233,8 +1224,19 @@ bool GraphicsManager::renderWorldShader() {
 	buildNewTextures();
 
 	_animationThread.flush();
-/*
+
+
 	glm::mat4 ident;
+	if (test_area) {
+		// Hack modelview. Hack hack hack hack. It's done for the lights, as a hack.
+		test_area->renderImmediate(_modelview);
+	}
+	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+	     o != objects.rend(); ++o) {
+		static_cast<Renderable *>(*o)->renderImmediate(ident);
+	}
+
+/*
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -1243,11 +1245,6 @@ bool GraphicsManager::renderWorldShader() {
 	RenderMan.sort();
 	RenderMan.render();
 */
-	glm::mat4 ident;
-	if (test_area) {
-		// Hack modelview. Hack hack hack hack. It's done for the lights, as a hack.
-		test_area->renderImmediate(_modelview);
-	}
 
 	LightMan.clear();
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);

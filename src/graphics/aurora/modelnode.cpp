@@ -135,6 +135,11 @@ ModelNode::~ModelNode() {
 		}
 	}
 
+	if (_light) {
+		LightMan.deregisterLight(_light);
+		delete _light;
+	}
+
 	delete _mesh;
 	_mesh = 0;
 
@@ -855,26 +860,16 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 		 */
 		buildMaterial();
 	} else {
-		/**
-		 * @todo Ideally there should be some kind of check in here to determine visibility.
-		 * if the node isn't (camera) visible, then don't bother trying to render it.
-		 */
-#if 0
-		if (_renderableArray.size() == 0) {
-			if (_rootStateNode) {
-				// @todo: no longer doing this, need to be able to copy root state node
-				// renderables to this node, and locally override specific data directly.
-				//printf("Fix me, modelnode.cpp in renderImmediate\n");
-				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform);
-				}
-			}
-		} else {
-			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				_renderableArray[i].renderImmediate(_renderTransform);
-			}
+		if (_light) {
+			/*
+			float x, y, z;
+			this->getAbsolutePosition(x, y, z);
+			glm::vec3 pos(x, y, z);
+			_model->getAbsolutePosition(x, y, z);
+			pos += glm::vec3(x, y, z);
+			_light->position = pos;
+			*/
 		}
-#endif
 		for (size_t i = 0; i < _renderableArray.size(); ++i) {
 			_renderableArray[i].renderImmediate(_renderTransform);
 		}
@@ -1126,7 +1121,7 @@ void ModelNode::notifyVertexCoordsBuffered() {
 	_vertexCoordsBuffered = true;
 }
 
-ModelNode::Light *ModelNode::getLight() const {
+Graphics::LightManager::LightNode *ModelNode::getLight() const {
 	return _light;
 }
 

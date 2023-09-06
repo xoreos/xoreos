@@ -192,6 +192,8 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 		_scale[2] = 1.0f;
 	}
 
+	_radius = 7.0f;
+
 	_fileName = name;
 
 	ParserContext ctx(name, texture);
@@ -257,7 +259,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	float radius = ctx.mdl->readIEEEFloatLE();
+	_radius = ctx.mdl->readIEEEFloatLE();
 
 	_animationScale = ctx.mdl->readIEEEFloatLE();
 
@@ -687,12 +689,17 @@ void ModelNode_NWN_Binary::checkDuplicateNode(Model_NWN::ParserContext &ctx, Mod
 }
 
 void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
-	_light = new Light();
+	_light = new Graphics::LightManager::LightNode();
 
-	// Default to a bright white light.
+	/**
+	 * Default to a bright white light. Give sensible values to anything
+	 * that might not be set by the controllers.
+	 */
 	_light->colour[0] = 1.0f;
 	_light->colour[1] = 1.0f;
 	_light->colour[2] = 1.0f;
+	_light->multiplier = 0.0f;
+	_light->radius = 1.0f;
 
 	ctx.mdl->skip(4);  // flare radius
 	ctx.mdl->skip(12); // Array unknown
@@ -710,6 +717,9 @@ void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(4);  // Generate flare flag.
 
 	_light->fading = ctx.mdl->readUint32LE();
+
+	// Register the light, but be aware that the position needs updating.
+	LightMan.registerLight(_light);
 }
 
 struct Face {
@@ -1134,8 +1144,9 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 
 			if (_light) {
 				// Starting multiplier
-				if (data[timeIndex + 0] == 0.0f)
+				if (data[timeIndex + 0] == 0.0f) {
 					_light->multiplier = data[dataIndex + 0];
+				}
 			}
 		} else if (type == kControllerTypeColor) {
 			if (columnCount != 3)

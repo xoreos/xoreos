@@ -329,8 +329,6 @@ void Area::hide() {
 }
 
 void Area::rebuildStaticLights() {
-	_staticLights.empty();
-	LightMan.deregister();
 	for (size_t i = 0; i < _tiles.size(); ++i) {
 		const auto &tile = _tiles[i];
 
@@ -347,17 +345,19 @@ void Area::rebuildStaticLights() {
 				auto *nodelight = node->getLight();
 				if (nodelight) {
 					// @TODO: nodelight doesn't yet exist for ASCII models. Need to implement that yet.
+					size_t index = tile.mainLight[0] & 0x1F;
 					node->getAbsolutePosition(x, y, z);
 					glm::vec3 pos = tilepos + glm::vec3(x, y, z);
-					size_t index = tile.mainLight[0] & 0x1F;
-					Graphics::LightManager::Light light = {
-						{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
-						{0.0f, 0.0f, 0.0f, 0.0f},
-						{nodelight->multiplier, 1.0f / (nodelight->radius * nodelight->radius), 0.0f, 0.0f},
-						{pos.x, pos.y, pos.z, 1.0f}
-					};
-					_staticLights.push_back(light);
-					LightMan.reg(light);
+
+					nodelight->colour[0] = tile_colour_array[index][0];
+					nodelight->colour[1] = tile_colour_array[index][1];
+					nodelight->colour[2] = tile_colour_array[index][2];
+					nodelight->position = pos;
+					//LightMan.registerLight(nodelight);
+					printf("tile %s, radius %f, has ml1 radius %f\n",
+					       name.c_str(),
+					       tile.model->getRadius(),
+					       nodelight->radius);
 				}
 			}
 		}
@@ -371,14 +371,15 @@ void Area::rebuildStaticLights() {
 					node->getAbsolutePosition(x, y, z);
 					glm::vec3 pos = tilepos + glm::vec3(x, y, z);
 					size_t index = tile.mainLight[1] & 0x1F;
-					Graphics::LightManager::Light light = {
-						{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
-						{0.0f, 0.0f, 0.0f, 0.0f},
-						{nodelight->multiplier, 1.0f / (nodelight->radius * nodelight->radius), 0.0f, 0.0f},
-						{pos.x, pos.y, pos.z, 1.0f}
-					};
-					_staticLights.push_back(light);
-					LightMan.reg(light);
+					nodelight->colour[0] = tile_colour_array[index][0];
+					nodelight->colour[1] = tile_colour_array[index][1];
+					nodelight->colour[2] = tile_colour_array[index][2];
+					nodelight->position = pos;
+					//LightMan.registerLight(nodelight);
+					printf("tile %s, radius %f, has ml2 radius %f\n",
+					       name.c_str(),
+					       tile.model->getRadius(),
+					       nodelight->radius);
 				}
 			}
 		}
@@ -386,6 +387,7 @@ void Area::rebuildStaticLights() {
 	_dirtyLights = false;
 }
 
+#if 0
 void Area::findLights(const glm::mat4 &modelview, const glm::vec4 &ref) {
 	LightMan.clear();
 
@@ -405,23 +407,14 @@ void Area::findLights(const glm::mat4 &modelview, const glm::vec4 &ref) {
 		}
 	}
 }
-
+#endif
 
 void Area::renderImmediate(const glm::mat4 &parentTransform) {
 	if (!_visible) {
 		return;
 	}
 
-	// for (auto const &tile : tiles ) {
-	// ... render each tile.
-	// Clear lighting, use the tile information to setup lights.
-	// Render away!
-	// }
-
-	if (_dirtyLights) {
-		this->rebuildStaticLights();
-	}
-
+#if 0
 	glm::mat4 ident;
 
 	for (size_t i = 0; i < _tiles.size(); ++i) {
@@ -430,44 +423,7 @@ void Area::renderImmediate(const glm::mat4 &parentTransform) {
 		float x, y, z;
 		tile.model->getAbsolutePosition(x, y, z);
 		glm::vec4 pos(x, y, z, 1.0f);
-		this->findLights(parentTransform, pos);
-#if 0
-		if (tile.srcLight[0] > 0) {
-			auto lightname = name + "sl1";
-			if (tile.model->hasNode(lightname)) {
-				auto node = tile.model->getNode(lightname);
-				node->getAbsolutePosition(x, y, z);
-				glm::vec4 sl1_pos = pos + glm::vec4(x, y, z, 0.0f);
-				modified = parentTransform * sl1_pos;
-				size_t index = tile.srcLight[0] & 0x1F;
-				Graphics::LightManager::Light light = {
-					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
-					{0.5f, 0.5f, 0.5f, 1.0f},
-					{0.0f, 0.0f, 0.0f, 0.0f},
-					{modified.x, modified.y, modified.z, 1.0f}
-				};
-				LightMan.addLight(light);
-			}
-		}
-
-		if (tile.srcLight[1] > 0) {
-			auto lightname = name + "sl2";
-			if (tile.model->hasNode(lightname)) {
-				auto node = tile.model->getNode(lightname);
-				node->getAbsolutePosition(x, y, z);
-				glm::vec4 sl2_pos = pos + glm::vec4(x, y, z, 0.0f);
-				modified = parentTransform * sl2_pos;
-				size_t index = tile.srcLight[1] & 0x1F;
-				Graphics::LightManager::Light light = {
-					{tile_colour_array[index][0], tile_colour_array[index][1], tile_colour_array[index][2], 1.0f},
-					{0.5f, 0.5f, 0.5f, 1.0f},
-					{0.0f, 0.0f, 0.0f, 0.0f},
-					{modified.x, modified.y, modified.z, 1.0f}
-				};
-				LightMan.addLight(light);
-			}
-		}
-#endif
+		LightMan.buildActiveLights(parentTransform, pos, tile.model->getRadius());
 		tile.model->renderImmediate(ident);
 		LightMan.clear();
 	}
@@ -525,6 +481,7 @@ void Area::renderImmediate(const glm::mat4 &parentTransform) {
 		this->findLights(parentTransform, pos);
 		object->renderImmediate(ident);
 	}
+#endif
 }
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {
@@ -659,6 +616,8 @@ void Area::loadModels() {
 				_objectMap.insert(std::make_pair(*id, object.get()));
 		}
 	}
+
+	rebuildStaticLights();
 }
 
 void Area::unloadModels() {

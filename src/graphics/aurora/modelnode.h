@@ -43,6 +43,8 @@
 #include "src/graphics/mesh/meshman.h"
 #include "src/graphics/shader/shaderrenderable.h"
 
+#include "src/graphics/lightman.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -254,15 +256,6 @@ public:
 		MaterialConfiguration();
 	};
 
-	struct Light {
-		float radius;      ///< Light radius (maybe 1/(r*r) for quadratic attenuation coefficient)
-		float multiplier;  ///< Light multiplier (maybe linear attenuation coefficient)
-		float colour[3];   ///< Light colour. Tile main lights do not use this.
-		uint32_t priority; ///< 1 to 5, 5 being lowest priority.
-		uint32_t fading;   ///< 0 for always on, 1 for fades in as character approaches.
-		uint32_t ambient;  ///< 1 for ambient light, 0 for diffuse.
-	};
-
 protected:
 	Model *_model; ///< The model this node belongs to.
 
@@ -295,7 +288,7 @@ protected:
 	bool _render; ///< Render the node?
 	bool _dirtyRender; ///< Rendering information needs updating.
 
-	Light *_light;
+	Graphics::LightManager::LightNode *_light;
 
 	Mesh *_mesh;
 	ModelNode *_rootStateNode;
@@ -393,7 +386,7 @@ public:
 
 	std::list<ModelNode *> &getChildren(); ///< Get the node's children.
 
-	Light *getLight() const;
+	Graphics::LightManager::LightNode *getLight() const;
 
 	Mesh *getMesh() const;
 
