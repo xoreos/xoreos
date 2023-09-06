@@ -27,6 +27,8 @@
 
 #include <list>
 
+#include "external/glm/vec3.hpp"
+
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
@@ -34,8 +36,6 @@
 #include "src/graphics/types.h"
 
 namespace Graphics {
-
-class LightHandle;
 
 /** The light manager.
  * The light manager is used to apply forward rendering lighting data to shaders.
@@ -60,6 +60,40 @@ class LightHandle;
 
 class LightManager : public Common::Singleton<LightManager> {
 public:
+
+	/**
+	 * Current lighting model is determined by:
+	 * vec3 _ambient;   // src colour.
+	 * float gradient;  // Calculated from normal vector.
+	 * float d;         // distance to light position.
+	 *
+	 * float attenuation = 1.0 / (1.0 + c[0]*d + c[1]*d*d);
+	 * float factor = (c[2] + gradient*c[3])
+	 * output = _ambient.xyz * colour.rgb * factor * attenuation;
+	 */
+	struct LightGL {
+		GLfloat colour[4];
+		GLfloat position[4];
+		GLfloat coefficients[4];
+	};
+
+	/**
+	 * Basic light information that's more useful for CPU side
+	 * handling. Converted to GL data when building light lists.
+	 * @TODO: more functionality should be added here in time, e.g
+	 * flags to say if it's ambient, diffuse, etc.
+	 */
+	struct LightNode {
+		glm::vec3 position;
+
+		float radius;      ///< Light radius (maybe 1/(r*r) for quadratic attenuation coefficient)
+		float multiplier;  ///< Light multiplier (maybe linear attenuation coefficient)
+		float colour[3];   ///< Light colour. Tile main lights overwrite this directly.
+		uint32_t priority; ///< 1 to 5, 5 being lowest priority.
+		uint32_t fading;   ///< 0 for always on, 1 for fades in as character approaches.
+		uint32_t ambient;  ///< 1 for ambient light, 0 for diffuse.
+	};
+
 	struct Light {
 		GLfloat ambient  [4];
 		GLfloat diffuse  [4];
@@ -67,7 +101,6 @@ public:
 		GLfloat position [4];   ///< Position must be defined in camera view coordinates, i.e after modelview transform is applied.
 		// GLfloat coeffecients [4]; // linear, quadratic, constant, padding.
 	};
-
 
 	LightManager();
 	~LightManager();
@@ -87,9 +120,13 @@ public:
 	bool addLight(const Light &light);
 
 
-	std::vector<Light> _registered;  ///< All registered lights.
-	inline void deregister() { _registered.clear(); }
-	inline void reg(const Light &light) { _registered.push_back(light); }
+
+	void registerLight(const LightNode *light);
+	void deregisterLight(const LightNode *light);
+	bool isLightRegistered(const LightNode *light);  ///< @TODO: make this private?
+
+	void buildActiveLights(const glm::vec3 &pos, float radius);
+
 
 private:
 
@@ -102,6 +139,13 @@ private:
 	 * 1) the size of size_t might not be 32bit, and
 	 * 2) the return value is not an addressable location.
 	 */
+
+	/**
+	 * @TODO this is a stop-gap measure only for now. Eventually it would be preferred to have
+	 * separate static and dynamic light lists placed into appropriate hierarchies for fast
+	 * building of light intersections with query volumes.
+	 */
+	std::vector<const LightNode *> _registered;  ///< All registered lights.
 };
 
 } // End of namespace Graphics

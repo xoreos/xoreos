@@ -171,6 +171,10 @@ float Model::getDepth() const {
 	return _boundBox.getDepth() * _scale[2];
 }
 
+float Model::getRadius() const {
+	return _radius;
+}
+
 void Model::drawBound(bool enabled) {
 	_drawBound = enabled;
 }
@@ -690,7 +694,15 @@ void Model::renderImmediate(const glm::mat4 &parentTransform) {
 	}
 
 	glm::mat4 transform = parentTransform * _absolutePosition;
-	queueDrawBound();
+	//queueDrawBound();
+	/**
+	 * @TODO: CameraMan.modelview() would be very useful to have here. Could
+	 * grab modelview for light manager - or better yet, light manager could
+	 * directly use it instead of passing things in as a parameter.
+	 * CameraMan should ideally provide some visibility testing as well, to
+	 * skip rendering if the model simply isn't visible.
+	 */
+	LightMan.buildActiveLights(glm::vec3(transform[3]), _radius);
 
 	// Queue the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
