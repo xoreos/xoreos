@@ -94,14 +94,6 @@ public:
 		uint32_t ambient;  ///< 1 for ambient light, 0 for diffuse.
 	};
 
-	struct Light {
-		GLfloat ambient  [4];
-		GLfloat diffuse  [4];
-		GLfloat specular [4];
-		GLfloat position [4];   ///< Position must be defined in camera view coordinates, i.e after modelview transform is applied.
-		// GLfloat coeffecients [4]; // linear, quadratic, constant, padding.
-	};
-
 	LightManager();
 	~LightManager();
 
@@ -116,10 +108,6 @@ public:
 	///< Clear active lights, effectively disabling lighting.
 	inline void clear() { _activeLights = 0; }
 
-	///< Add a light to the manager, if there is sufficient capacity.
-	bool addLight(const Light &light);
-
-
 
 	void registerLight(const LightNode *light);
 	void deregisterLight(const LightNode *light);
@@ -130,7 +118,7 @@ public:
 
 private:
 
-	std::vector<Light> _lights; ///< Active light data. Capacity of _lights vector must be at least _maxLights.
+	std::vector<LightGL> _lights; ///< Active light data. Capacity of _lights vector must be at least _maxLights.
 	int32_t _maxLights;         ///< Maximum number of active lights at any given time. Default is eight.
 	int32_t _activeLights;      ///< The number of active lights. Must less than or equal to _maxLights.
 	/**

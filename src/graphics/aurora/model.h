@@ -105,6 +105,8 @@ public:
 	void getPosition(float &x, float &y, float &z) const;
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
+	/** Get the current absolute transform of the model. */
+	const glm::mat4 &getAbsoluteTransform() const;
 
 	/** Set the current scale of the model. */
 	void setScale   (float x, float y, float z);

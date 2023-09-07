@@ -220,6 +220,8 @@ public:
 
 		int tilefade;
 
+		float radius;
+
 		bool render; ///< Render this mesh?
 		bool shadow; ///< Does the node have a shadow?
 

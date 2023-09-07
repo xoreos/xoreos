@@ -220,6 +220,10 @@ void Model::getAbsolutePosition(float &x, float &y, float &z) const {
 	z = _absolutePosition[3][2];
 }
 
+const glm::mat4 &Model::getAbsoluteTransform() const {
+	return _absolutePosition;
+}
+
 void Model::setScale(float x, float y, float z) {
 	lockFrameIfVisible();
 

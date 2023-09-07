@@ -128,15 +128,14 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		 * It's not the best solution, but it will have to do until structs are
 		 * better supported.
 		 * struct LightParameters {
+		 *     vec4 colour;
 		 *     vec4 position;
-		 *     vec4 ambient;
-		 *     vec4 diffuse;
-		 *     vec4 specular;
+		 *     vec4 coefficients;
 		 * };
 		 * uniform LightParameters _lights[8];
 		 */
 		f_header += "\n"
-			"uniform vec4 _lights[32];\n"
+			"uniform vec4 _lights[24];\n"
 			"uniform int _activeLights;\n"
 			"uniform vec3 _ambient;\n";
 
@@ -297,7 +296,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 				f_desc_string = "varying vec3 normal0;\n";
 			}
 			///< @todo This should be modified by the rotation matrix in mo
-			body_desc_string = "normal0 = inputNormal0.xyz;\n";
+			body_desc_string = "normal0 = mat3(mo) * inputNormal0.xyz;\n";
 			foundNormal0 = true;
 			break;
 		case INPUT_NORMAL1:
@@ -691,20 +690,18 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		 * attenuation = 1.0 / (Ac + Al*d + Aq*d*d)
 		 */
 		f_body +=
-			"vec4 laggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
+			"vec3 laggle = vec3(0.0, 0.0, 0.0);\n"
 			"for (int i = 0; i < _activeLights; ++i) {\n"
-			"    vec3 diff = _lights[4*i+3].xyz - position0;\n"
+			"    vec4 coeff = _lights[3*i+2];\n"
+			"    vec3 diff = _lights[3*i+1].xyz - position0;\n"
 			"    vec3 direction = normalize(diff);\n"
 			"    float distance = length(diff);\n"
 			"    float grad = max(dot(normal0, direction), 0.0);\n"
-			"    float attenuation = 1.0 / (1.0 + (_lights[4*i+2].x * distance) + (_lights[4*i+2].y * distance * distance));\n"
-			"    vec4 diffuse = _lights[4*i+1] * grad * attenuation; // diffuse\n"
-			"    vec4 ambient = _lights[4*i+0] * attenuation; // ambient\n"
-			"    laggle += fraggle * ambient;\n"
-			"    laggle += fraggle * diffuse;\n"
+			"    float attenuation = 1.0 / (1.0 + (coeff.x * distance) + (coeff.y * distance * distance));\n"
+			"    vec3 ambient = _lights[3*i+0].xyz * attenuation * (coeff.z + coeff.w * grad);\n"
+			"    laggle += fraggle.xyz * ambient;\n"
 			"}\n"
-			"laggle.a = 0.0;  // TODO: light components should be just rgb, no a.\n"
-			"fraggle = (fraggle * vec4(_ambient, 1.0)) + laggle;\n"
+			"fraggle = (fraggle * vec4(_ambient, 1.0)) + vec4(laggle, 0.0);\n"
 			"\n";
 	}
 
