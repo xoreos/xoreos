@@ -167,6 +167,9 @@ private:
 		const Tileset::Tile *tile; ///< The actual tile within the tileset.
 
 		Graphics::Aurora::Model *model; ///< The tile's model.
+
+		Graphics::Aurora::Model *sl1_light;
+		Graphics::Aurora::Model *sl2_light;
 	};
 
 	typedef std::list<std::unique_ptr<NWN::Object>> ObjectList;

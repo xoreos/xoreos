@@ -623,7 +623,35 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
 	                    controllerKeyCount, controllerData);
+#if 0
+	if (_light) {
+		Common::UString nodeName = _name;
+		ModelNode *hnode = this;
+		ModelNode *parent = hnode->getParent();
+		while (parent && (parent != hnode)) {
+			nodeName += ".";
+			nodeName += parent->getName();
+			hnode = parent;
+			parent = hnode->getParent();
+		}
+		nodeName += ".";
+		if (ctx.state->name.size() != 0) {
+			nodeName += ctx.state->name;
+		} else {
+			nodeName += "xoreos.default";
+		}
+		nodeName += ".";
+		nodeName += ctx.mdlName;
 
+		printf("light loaded for %s, radius %f, multiplier %f, colour %f %f %f\n",
+		       nodeName.c_str(),
+		       _light->radius,
+		       _light->multiplier,
+		       _light->colour[0],
+		       _light->colour[1],
+		       _light->colour[2]);
+	}
+#endif
 	// If the node has no own position controller, inherit the position from the root state
 	if (!ctx.hasPosition) {
 		ModelNode *node = _model->getNode(_name);
@@ -692,14 +720,26 @@ void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
 	_light = new Graphics::LightManager::LightNode();
 
 	/**
-	 * Default to a bright white light. Give sensible values to anything
-	 * that might not be set by the controllers.
+	 * Provide some sensible defaults for the light, which can overridden
+	 * by the root node values (if any) and then controllers in the current
+	 * state (if any).
 	 */
 	_light->colour[0] = 1.0f;
 	_light->colour[1] = 1.0f;
 	_light->colour[2] = 1.0f;
-	_light->multiplier = 0.0f;
-	_light->radius = 1.0f;
+	_light->multiplier = 1.0f;
+	_light->radius = 7.0f;
+
+	if (ctx.state->name.size() == 0) {
+		// Get the root state node and see if it has a light.
+		ModelNode *node = _model->getNode(_name);
+		if (node) {
+			const auto *rootLight = node->getLight();
+			if (rootLight) {
+				memcpy(_light, rootLight, sizeof(Graphics::LightManager::LightNode));
+			}
+		}
+	}
 
 	ctx.mdl->skip(4);  // flare radius
 	ctx.mdl->skip(12); // Array unknown
@@ -719,7 +759,7 @@ void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
 	_light->fading = ctx.mdl->readUint32LE();
 
 	// Register the light, but be aware that the position needs updating.
-	LightMan.registerLight(_light);
+	//LightMan.registerLight(_light);
 }
 
 struct Face {
@@ -754,7 +794,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	float radius = ctx.mdl->readIEEEFloatLE();
+	_mesh->radius = ctx.mdl->readIEEEFloatLE();
 
 	float pointsAverage[3];
 	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();

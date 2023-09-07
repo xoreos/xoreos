@@ -860,15 +860,19 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 		 */
 		buildMaterial();
 	} else {
+		/*
+		  // No, not yet: area doesn't set the source light locations properly right now.
 		if (_light) {
-			/*
 			float x, y, z;
 			this->getAbsolutePosition(x, y, z);
 			glm::vec3 pos(x, y, z);
 			_model->getAbsolutePosition(x, y, z);
 			pos += glm::vec3(x, y, z);
 			_light->position = pos;
-			*/
+		}
+		*/
+		if (_mesh) {
+			LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), _mesh->radius);
 		}
 		for (size_t i = 0; i < _renderableArray.size(); ++i) {
 			_renderableArray[i].renderImmediate(_renderTransform);

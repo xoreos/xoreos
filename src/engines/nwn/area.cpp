@@ -337,6 +337,55 @@ void Area::rebuildStaticLights() {
 		glm::vec3 tilepos(x, y, z);
 
 		auto name = tile.model->getName();
+		tile.model->computeNodeTransforms();
+
+		{
+			auto lightname = name + "sl1";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				if (node) {
+					auto flame = loadModelObject("fx_flame01.mdl");
+					if (tile.srcLight[0] > 0) {
+						flame->setState(std::to_string(tile.srcLight[0]));
+					}
+					auto subnode = flame->getNode("AuroraLight01");
+					auto nodelight = subnode->getLight();
+
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					glm::vec3 pos = glm::vec3(tform[3]);
+					nodelight->position = pos;
+					//nodelight->radius = 5.0f;
+					//nodelight->multiplier = 1.0f;
+					LightMan.registerLight(nodelight);
+
+					_tiles[i].sl1_light = flame;
+				}
+			}
+		}
+
+		{
+			auto lightname = name + "sl2";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				if (node) {
+					auto flame = loadModelObject("fx_flame01.mdl");
+					if (tile.srcLight[1] > 0) {
+						flame->setState(std::to_string(tile.srcLight[1]));
+					}
+					auto subnode = flame->getNode("AuroraLight01");
+					auto nodelight = subnode->getLight();
+
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					glm::vec3 pos = glm::vec3(tform[3]);
+					nodelight->position = pos;
+					//nodelight->radius = 5.0f;
+					//nodelight->multiplier = 1.0f;
+					LightMan.registerLight(nodelight);
+
+					_tiles[i].sl2_light = flame;
+				}
+			}
+		}
 
 		if (tile.mainLight[0] > 0) {
 			auto lightname = name + "ml1";
@@ -346,18 +395,19 @@ void Area::rebuildStaticLights() {
 				if (nodelight) {
 					// @TODO: nodelight doesn't yet exist for ASCII models. Need to implement that yet.
 					size_t index = tile.mainLight[0] & 0x1F;
-					node->getAbsolutePosition(x, y, z);
-					glm::vec3 pos = tilepos + glm::vec3(x, y, z);
-
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					glm::vec3 pos = glm::vec3(tform[3]);
 					nodelight->colour[0] = tile_colour_array[index][0];
 					nodelight->colour[1] = tile_colour_array[index][1];
 					nodelight->colour[2] = tile_colour_array[index][2];
 					nodelight->position = pos;
-					//LightMan.registerLight(nodelight);
+					LightMan.registerLight(nodelight);
+					/*
 					printf("tile %s, radius %f, has ml1 radius %f\n",
 					       name.c_str(),
 					       tile.model->getRadius(),
 					       nodelight->radius);
+					*/
 				}
 			}
 		}
@@ -368,18 +418,20 @@ void Area::rebuildStaticLights() {
 				auto node = tile.model->getNode(lightname);
 				auto *nodelight = node->getLight();
 				if (nodelight) {
-					node->getAbsolutePosition(x, y, z);
-					glm::vec3 pos = tilepos + glm::vec3(x, y, z);
 					size_t index = tile.mainLight[1] & 0x1F;
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					glm::vec3 pos = glm::vec3(tform[3]);
 					nodelight->colour[0] = tile_colour_array[index][0];
 					nodelight->colour[1] = tile_colour_array[index][1];
 					nodelight->colour[2] = tile_colour_array[index][2];
 					nodelight->position = pos;
-					//LightMan.registerLight(nodelight);
+					LightMan.registerLight(nodelight);
+					/*
 					printf("tile %s, radius %f, has ml2 radius %f\n",
 					       name.c_str(),
 					       tile.model->getRadius(),
 					       nodelight->radius);
+					*/
 				}
 			}
 		}
@@ -387,101 +439,10 @@ void Area::rebuildStaticLights() {
 	_dirtyLights = false;
 }
 
-#if 0
-void Area::findLights(const glm::mat4 &modelview, const glm::vec4 &ref) {
-	LightMan.clear();
-
-	for (size_t j = 0; j < _staticLights.size(); ++j) {
-		const auto &licht = _staticLights[j];
-		glm::vec4 lpos(licht.position[0], licht.position[1], licht.position[2], 1.0f);
-		if (glm::distance(lpos, ref) < 14.0f) {
-			// Is this a horrible waste of copying? Yes. It is.
-			// @TODO: find a better way to avoid so many light copies.
-			Graphics::LightManager::Light light = licht;
-			glm::vec4 modified = modelview * lpos;
-			light.position[0] = modified.x;
-			light.position[1] = modified.y;
-			light.position[2] = modified.z;
-			light.position[3] = 1.0f;
-			LightMan.addLight(light);
-		}
-	}
-}
-#endif
-
 void Area::renderImmediate(const glm::mat4 &parentTransform) {
 	if (!_visible) {
 		return;
 	}
-
-#if 0
-	glm::mat4 ident;
-
-	for (size_t i = 0; i < _tiles.size(); ++i) {
-		const auto &tile = _tiles[i];
-
-		float x, y, z;
-		tile.model->getAbsolutePosition(x, y, z);
-		glm::vec4 pos(x, y, z, 1.0f);
-		LightMan.buildActiveLights(parentTransform, pos, tile.model->getRadius());
-		tile.model->renderImmediate(ident);
-		LightMan.clear();
-	}
-
-	for (auto &object : _objects) {
-		float x, y, z;
-		object->getPosition(x, y, z);
-		glm::vec4 pos(x, y, z, 1.0f);
-		/**
-		 * Ideally finding lights wouldn't need to be done - just walk down a hierarchy
-		 * and enable any lights found at a particular level. This gets problematic if
-		 * there are too many lights by the time something should be rendered.
-		 * Alternatively, findLights can be made very efficient if the lighting information
-		 * is stored in a grid-like fashion. Build a list of lights, cull any low priority
-		 * lights if there are too many for rendering to handle.
-		 *
-		 * It's also worth noting that by finding all lights against a single object, it
-		 * will naturally mean all models and active modelnodes are also going to use that
-		 * list of lights. No need to recalculate it for each modelnode. The parent object
-		 * should know the bound box too, which eventually should be used to determine
-		 * which lights intersect with it.
-		 *
-		 * There is one catch to doing things this way: rendering is immediate, and does
-		 * not perform any kind of optimal sorting. There can be a lot of shader switching
-		 * going on, more than necessary. How much of an issue is this really? Unknown, but
-		 * most modern systems can probably brute force everything just fine.
-		 * Putting objects into a hierarchy (or even just a grid) will help with visibility
-		 * culling, and knowledge of objects could help the rendering order, e.g:
-		 *   render all (opaque) tile mesh data.
-		 *   render all placeables.
-		 *   render all creatures.
-		 *   render file mesh data that's transparent last.
-		 *
-		 * Does this possibly make RenderManager a bit of a waste of time? Maybe. Maybe not.
-		 * It's a little early to tell: all this is for NWN only right now, and other games
-		 * might have incompatible requirements. That alone lends some suggestion to a render
-		 * pipeline customised to each game, and then one day merge them together if they end
-		 * up being similar enough.
-		 *
-		 * .....and yes, right now "parentTransform" is actually the modelview matrix. That's
-		 * just to feed to the lighting, otherwise the fragment shader will need to perform a
-		 * lot of unnecessary mat4 math for every single fragment (pixel). A hierarchy would
-		 * take care of visibility culling and would need the modelview as one of the parameters
-		 * anyway, so that's not a worry. It's just a nasty hack right now.
-		 *
-		 * Going further down the rabbit hole - if every object has specific lights, specific
-		 * alpha, specific ambient scaling, specific diffuse, specific modelview, etc, then
-		 * that just kind of blows material management out of the water. There's no point to
-		 * trying to share materials - just create a material for every node and bind the node
-		 * specific data to it.
-		 * Alternatively ensure that everything has a common shared data block and create a UBO
-		 * that can be indexed into. This is probably the way forward eventually, but I'm not sure
-		 * OpenGL 2.1 would be too keen on it.
-		 */
-		this->findLights(parentTransform, pos);
-		object->renderImmediate(ident);
-	}
-#endif
 }
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {
@@ -601,6 +562,8 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 
 	tile.tile  = 0;
 	tile.model = 0;
+	tile.sl1_light = 0;
+	tile.sl2_light = 0;
 }
 
 void Area::loadModels() {
@@ -704,6 +667,11 @@ void Area::unloadTiles() {
 
 			delete t.model;
 			t.model = 0;
+
+			delete t.sl1_light;
+			t.sl1_light = 0;
+			delete t.sl2_light;
+			t.sl2_light = 0;
 		}
 	}
 }

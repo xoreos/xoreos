@@ -40,15 +40,6 @@ LightManager::LightManager() : _maxLights(8), _activeLights(0) {
 LightManager::~LightManager() {
 }
 
-bool LightManager::addLight(const Light &light) {
-	if (_activeLights > _maxLights) {
-		return false;
-	}
-
-	_lights[_activeLights++] = light;
-	return true;
-}
-
 void LightManager::registerLight(const LightNode *light) {
 	if (!isLightRegistered(light)) {
 		_registered.push_back(light);
@@ -80,7 +71,6 @@ void LightManager::buildActiveLights(const glm::vec3 &pos, float radius) {
 
 	glm::mat4 modelview = CameraMan.getModelview();
 	_activeLights = 0;
-	//radius = 0;
 	for (const auto *licht : _registered) {
 		if (glm::distance(pos, licht->position) < (licht->radius + radius)) {
 			auto &light = _lights[_activeLights];
@@ -90,20 +80,15 @@ void LightManager::buildActiveLights(const glm::vec3 &pos, float radius) {
 			light.position[2] = modified.z;
 			light.position[3] = 1.0f;
 
-			light.ambient[0] = licht->colour[0];
-			light.ambient[1] = licht->colour[1];
-			light.ambient[2] = licht->colour[2];
-			light.ambient[3] = 1.0f;
+			light.colour[0] = licht->colour[0];
+			light.colour[1] = licht->colour[1];
+			light.colour[2] = licht->colour[2];
+			light.colour[3] = 1.0f;
 
-			light.diffuse[0] = 0.0f;
-			light.diffuse[1] = 0.0f;
-			light.diffuse[2] = 0.0f;
-			light.diffuse[3] = 0.0f;
-
-			light.specular[0] = licht->multiplier;
-			light.specular[1] = 1.0f / (licht->radius * licht->radius);
-			light.specular[2] = 0.0f;
-			light.specular[3] = 0.0f;
+			light.coefficients[0] = licht->multiplier;
+			light.coefficients[1] = 1.0f / (licht->radius * licht->radius * 0.25f);
+			light.coefficients[2] = licht->ambient ? 1.0f : 0.0f;
+			light.coefficients[3] = licht->ambient ? 0.0f : 1.0f;
 
 			if (++_activeLights >= _maxLights) {
 				break;
