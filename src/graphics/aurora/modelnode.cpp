@@ -860,17 +860,6 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 		 */
 		buildMaterial();
 	} else {
-		/*
-		  // No, not yet: area doesn't set the source light locations properly right now.
-		if (_light) {
-			float x, y, z;
-			this->getAbsolutePosition(x, y, z);
-			glm::vec3 pos(x, y, z);
-			_model->getAbsolutePosition(x, y, z);
-			pos += glm::vec3(x, y, z);
-			_light->position = pos;
-		}
-		*/
 		if (_mesh) {
 			LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), _mesh->radius);
 		}
@@ -885,6 +874,29 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 	// Render the node's children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
 		(*c)->renderImmediate(_renderTransform);
+	}
+}
+
+void ModelNode::renderImmediate() {
+	/**
+	 * The intent is for this function to be called from the render queues. To be in
+	 * one of those queues, this node should have been through queueRender, itself which
+	 * will take care of any _dirtyRender check. There is therefore no need to be perform
+	 * that check again here.
+	 */
+	if (_mesh) {
+		LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), _mesh->radius);
+	}
+	for (size_t i = 0; i < _renderableArray.size(); ++i) {
+		_renderableArray[i].renderImmediate();
+	}
+
+	if (_attachedModel) {
+		_attachedModel->renderImmediate();
+	}
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		(*c)->renderImmediate();
 	}
 }
 
@@ -907,23 +919,15 @@ void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 		 * @todo Ideally there should be some kind of check in here to determine visibility.
 		 * if the node isn't (camera) visible, then don't bother trying to render it.
 		 */
-		if (_renderableArray.size() == 0) {
-			if (_rootStateNode) {
-				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, this->getAlpha());
-				}
-			}
-		} else {
-			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, this->getAlpha());
-			}
+		for (size_t i = 0; i < _renderableArray.size(); ++i) {
+			RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, this->getAlpha());
 		}
 	}
 
 	if (_attachedModel) {
 		_attachedModel->queueRender(_renderTransform);
 	}
-	// Render the node's children
+	// Queue the node's children for rendering.
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
 		(*c)->queueRender(_renderTransform);
 	}

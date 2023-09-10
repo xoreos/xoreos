@@ -72,9 +72,6 @@ DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 static glm::mat4 inverse(const glm::mat4 &m);
 
-extern Engines::NWN::Area *test_area;
-
-
 namespace Graphics {
 
 PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
@@ -1226,11 +1223,14 @@ bool GraphicsManager::renderWorldShader() {
 	_animationThread.flush();
 
 
+	/**
+	 * @TODO: for now each object is being immediately rendered without thought to the
+	 * order of rendering. This will have transparency problems; far better to sort by
+	 * depth and type of mesh (which might have flags to help here).
+	 * The render manager can be of benefit here, but might need some tweaking to inspect
+	 * mesh information and decide on the proper sorting order.
+	 */
 	glm::mat4 ident;
-	if (test_area) {
-		// Hack modelview. Hack hack hack hack. It's done for the lights, as a hack.
-		test_area->renderImmediate(_modelview);
-	}
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
 		static_cast<Renderable *>(*o)->renderImmediate(ident);

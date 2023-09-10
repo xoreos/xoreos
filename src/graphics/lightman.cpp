@@ -66,13 +66,41 @@ bool LightManager::isLightRegistered(const LightNode *light) {
 }
 
 void LightManager::buildActiveLights(const glm::vec3 &pos, float radius) {
-	// linear = multiplier;
-	// quadratic = 1.0f / (radius * radius);
+	/**
+	 * This is about the most inefficient way possible to build a list of lights
+	 * that are applied to a mesh. There's no static/dynamic difference: this
+	 * is done every single frame, for every single active modelnode with a mesh.
+	 *
+	 * There's no sorting of lights by distance, no priority checking when the
+	 * list is filled.
+	 *
+	 * This gets much slower on larger levels with hundreds of lights. A lot of
+	 * time can be wasted on just this step. There is however one glimmer (pun
+	 * intended) of hope: levels fade in out of view around the player character.
+	 * This means lights can be activated when a tile comes into view, and
+	 * deactivated when it goes out of view. Not every mesh is rendered every
+	 * frame, and not every light is in the global list to check against. That's
+	 * the theory anyway, but this kind of behaviour is not yet implemented.
+	 *
+	 * Another approach to build on the above, if needed, is to store active
+	 * lighting in a quadtree or similar. That will allow lists of lights to be
+	 * built very quickly, especially if the lights are mostly static. Or keep
+	 * a combination of the two: hierarchy for static lights (e.g tile main lights)
+	 * and just a normal list for dynamic lights (e.g torches held by characters).
+	 */
 
 	glm::mat4 modelview = CameraMan.getModelview();
 	_activeLights = 0;
 	for (const auto *licht : _registered) {
-		if (glm::distance(pos, licht->position) < (licht->radius + radius)) {
+		/**
+		 * For comparing distances, it's just as easy to compare distance squared
+		 * instead, which will avoid the use of sqrt.
+		 */
+		glm::vec3 d = pos - licht->position;
+		float dsquared = glm::dot(d, d);
+		float rsquared = (licht->radius + radius);
+		rsquared *= rsquared;
+		if (dsquared < rsquared) {
 			auto &light = _lights[_activeLights];
 			glm::vec4 modified = modelview * glm::vec4(licht->position, 1.0f);
 			light.position[0] = modified.x;
@@ -85,6 +113,12 @@ void LightManager::buildActiveLights(const glm::vec3 &pos, float radius) {
 			light.colour[2] = licht->colour[2];
 			light.colour[3] = 1.0f;
 
+			/**
+			 * @TODO: Some of the coefficients here could be pre-calculated as a performance
+			 * benefit. How much benefit is a matter up for debate, but either way it's
+			 * recommended to wait until later down the line to implement: get it all
+			 * working first, then optimise and increase performance.
+			 */
 			light.coefficients[0] = licht->multiplier;
 			light.coefficients[1] = 1.0f / (licht->radius * licht->radius * 0.25f);
 			light.coefficients[2] = licht->ambient ? 1.0f : 0.0f;

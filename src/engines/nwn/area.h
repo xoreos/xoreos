@@ -90,10 +90,6 @@ public:
 	void show(); ///< Show the area.
 	void hide(); ///< Hide the area.
 
-	// Rendering
-
-	void renderImmediate(const glm::mat4 &parentTransform); ///< Render the area (static data).
-
 	// Music/Sound
 
 	uint32_t getMusicDayTrack   () const; ///< Return the music track ID playing by day.
