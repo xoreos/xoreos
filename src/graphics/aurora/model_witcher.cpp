@@ -297,7 +297,15 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 	}
 
 	if (_mesh && _mesh->data && _mesh->data->rawMesh) {
-		Common::UString meshName = ctx.mdlName;
+		Common::UString meshName = _name;
+		ModelNode *hnode = this;
+		ModelNode *parent = hnode->getParent();
+		while (parent && (parent != hnode)) {
+			meshName += ".";
+			meshName += parent->getName();
+			hnode = parent;
+			parent = hnode->getParent();
+		}
 		meshName += ".";
 		if (ctx.state->name.size() != 0) {
 			meshName += ctx.state->name;
@@ -305,7 +313,7 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 			meshName += "xoreos.default";
 		}
 		meshName += ".";
-		meshName += _name;
+		meshName += ctx.mdlName;
 
 		Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 		if (checkMesh) {

@@ -554,23 +554,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	}
 
 	if (_mesh && _mesh->data) {
-		Common::UString meshName = _name;
-		ModelNode *hnode = this;
-		ModelNode *parent = hnode->getParent();
-		while (parent && (parent != hnode)) {
-			meshName += ".";
-			meshName += parent->getName();
-			hnode = parent;
-			parent = hnode->getParent();
-		}
-		meshName += ".";
-		if (ctx.state->name.size() != 0) {
-			meshName += ctx.state->name;
-		} else {
-			meshName += "xoreos.default";
-		}
-		meshName += ".";
-		meshName += ctx.mdlName;
+		meshName = generateMeshName();
 
 		if (GfxMan.isRendererExperimental()) {
 			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
@@ -583,8 +567,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 				MeshMan.addMesh(_mesh->data->rawMesh);
 			}
 
-			buildMaterial();
-
+			_dirtyRender = true;
 		} else {
 			/**
 			 * Because meshes need to be unique right now, at least until animation can use

@@ -51,8 +51,6 @@
 #include "src/engines/nwn/door.h"
 #include "src/engines/nwn/creature.h"
 
-Engines::NWN::Area *test_area = nullptr;
-
 float tile_colour_array[][4] = {
 	{0.0f, 0.0f, 0.0f, 1.0f}, // 0, black
 	{0.8f, 0.8f, 0.8f, 1.0f}, // 1, white
@@ -295,8 +293,6 @@ void Area::show() {
 	playAmbientMusic();
 
 	_visible = true;
-
-	test_area = this;
 }
 
 void Area::hide() {
@@ -329,6 +325,15 @@ void Area::hide() {
 }
 
 void Area::rebuildStaticLights() {
+	/**
+	 * @TODO: this doesn't so much rebuild, and build. There's no removal
+	 * of older lights.
+	 * It could be useful for each tile to better keep track of all the
+	 * lights that belong to it. This would make activating/deactivating
+	 * lights when the tile fades in & out of view easier to perform.
+	 * The models can be referenced, but the lights need to be accessed
+	 * within the modelnodes.
+	 */
 	for (size_t i = 0; i < _tiles.size(); ++i) {
 		const auto &tile = _tiles[i];
 
@@ -337,6 +342,8 @@ void Area::rebuildStaticLights() {
 		glm::vec3 tilepos(x, y, z);
 
 		auto name = tile.model->getName();
+
+		// Really make sure all the node transforms are up to date and correct.
 		tile.model->computeNodeTransforms();
 
 		{
@@ -352,10 +359,7 @@ void Area::rebuildStaticLights() {
 					auto nodelight = subnode->getLight();
 
 					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
-					glm::vec3 pos = glm::vec3(tform[3]);
-					nodelight->position = pos;
-					//nodelight->radius = 5.0f;
-					//nodelight->multiplier = 1.0f;
+					nodelight->position = glm::vec3(tform[3]);
 					LightMan.registerLight(nodelight);
 
 					_tiles[i].sl1_light = flame;
@@ -376,10 +380,7 @@ void Area::rebuildStaticLights() {
 					auto nodelight = subnode->getLight();
 
 					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
-					glm::vec3 pos = glm::vec3(tform[3]);
-					nodelight->position = pos;
-					//nodelight->radius = 5.0f;
-					//nodelight->multiplier = 1.0f;
+					nodelight->position = glm::vec3(tform[3]);
 					LightMan.registerLight(nodelight);
 
 					_tiles[i].sl2_light = flame;
@@ -395,19 +396,12 @@ void Area::rebuildStaticLights() {
 				if (nodelight) {
 					// @TODO: nodelight doesn't yet exist for ASCII models. Need to implement that yet.
 					size_t index = tile.mainLight[0] & 0x1F;
-					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
-					glm::vec3 pos = glm::vec3(tform[3]);
 					nodelight->colour[0] = tile_colour_array[index][0];
 					nodelight->colour[1] = tile_colour_array[index][1];
 					nodelight->colour[2] = tile_colour_array[index][2];
-					nodelight->position = pos;
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					nodelight->position = glm::vec3(tform[3]);
 					LightMan.registerLight(nodelight);
-					/*
-					printf("tile %s, radius %f, has ml1 radius %f\n",
-					       name.c_str(),
-					       tile.model->getRadius(),
-					       nodelight->radius);
-					*/
 				}
 			}
 		}
@@ -419,30 +413,17 @@ void Area::rebuildStaticLights() {
 				auto *nodelight = node->getLight();
 				if (nodelight) {
 					size_t index = tile.mainLight[1] & 0x1F;
-					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
-					glm::vec3 pos = glm::vec3(tform[3]);
 					nodelight->colour[0] = tile_colour_array[index][0];
 					nodelight->colour[1] = tile_colour_array[index][1];
 					nodelight->colour[2] = tile_colour_array[index][2];
-					nodelight->position = pos;
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					nodelight->position = glm::vec3(tform[3]);
 					LightMan.registerLight(nodelight);
-					/*
-					printf("tile %s, radius %f, has ml2 radius %f\n",
-					       name.c_str(),
-					       tile.model->getRadius(),
-					       nodelight->radius);
-					*/
 				}
 			}
 		}
 	}
 	_dirtyLights = false;
-}
-
-void Area::renderImmediate(const glm::mat4 &parentTransform) {
-	if (!_visible) {
-		return;
-	}
 }
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {

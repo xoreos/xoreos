@@ -336,6 +336,7 @@ protected:
 	/** Calculate the transform used for rendering. */
 	void calcRenderTransform(const glm::mat4 &parentTransform);
 	void renderImmediate(const glm::mat4 &parentTransform);
+	void renderImmediate();  ///< Assumes _renderTransform is already calculated.
 	void queueRender(const glm::mat4 &parentTransform);
 
 	void lockFrame();
