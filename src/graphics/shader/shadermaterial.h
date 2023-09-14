@@ -35,10 +35,11 @@ class ShaderMaterial {
 public:
 	enum {
 		MATERIAL_OPAQUE        = 0x0001,  ///< Render hint; material has no transparency.
-		MATERIAL_TRANSPARENT   = 0x0002,  ///< Material definitely has transparency.
-		MATERIAL_TRANSPARENT_B = 0x0004,  ///< Material definitely has transparency.
-		MATERIAL_DECAL         = 0x0008,  ///< Material is a decal.
-		MATERIAL_CUSTOM_BLEND  = 0x0010,  ///< Different blending is being used, see _blend* variables.
+		MATERIAL_OPAQUE_B      = 0x0002,  ///< Render hint: no transparency, likely a simple wall or gui panel.
+		MATERIAL_TRANSPARENT   = 0x0004,  ///< Material definitely has transparency.
+		MATERIAL_TRANSPARENT_B = 0x0008,  ///< Material definitely has transparency, likely a window.
+		MATERIAL_DECAL         = 0x0010,  ///< Material is a decal.
+		MATERIAL_CUSTOM_BLEND  = 0x0020,  ///< Different blending is being used, see _blend* variables.
 	};
 
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");

@@ -1231,12 +1231,14 @@ bool GraphicsManager::renderWorldShader() {
 	 * mesh information and decide on the proper sorting order.
 	 */
 	glm::mat4 ident;
+/*
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
 		static_cast<Renderable *>(*o)->renderImmediate(ident);
 	}
+*/
 
-/*
+
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -1244,7 +1246,7 @@ bool GraphicsManager::renderWorldShader() {
 	}
 	RenderMan.sort();
 	RenderMan.render();
-*/
+
 
 	LightMan.clear();
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);

@@ -141,6 +141,7 @@ public:
 	const glm::mat4 &getAbsoluteTransform() const { return _absoluteTransform; }
 	const glm::mat4 &getBoneTransform() const { return _boneTransform; }
 	const glm::mat4 &getAbsoluteBaseTransformInverse() const { return _absoluteBaseTransformInv; }
+	const glm::mat4 &getRenderTransform() const { return _renderTransform; }
 
 	void computeTransforms();
 
@@ -336,7 +337,6 @@ protected:
 	/** Calculate the transform used for rendering. */
 	void calcRenderTransform(const glm::mat4 &parentTransform);
 	void renderImmediate(const glm::mat4 &parentTransform);
-	void renderImmediate();  ///< Assumes _renderTransform is already calculated.
 	void queueRender(const glm::mat4 &parentTransform);
 
 	void lockFrame();
@@ -398,6 +398,8 @@ public:
 
 	void inheritPosition(ModelNode &node) const;
 	void inheritOrientation(ModelNode &node) const;
+
+	void renderImmediate() const;  ///< Assumes _renderTransform is already calculated.
 
 	friend class Model;
 	friend class Animation;

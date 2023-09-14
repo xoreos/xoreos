@@ -137,6 +137,22 @@ void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
 	glUseProgram(0);
 }
 
+void ShaderRenderable::renderImmediate() const {
+	if (!_program->glid)
+		return;
+	glUseProgram(_program->glid);
+	_material->bindProgram(_program);
+	_material->bindGLState();
+	_surface->bindProgram(_program);
+	_surface->bindGLState();
+
+	_mesh->renderImmediate();
+
+	_surface->unbindGLState();
+	_material->unbindGLState();
+	glUseProgram(0);
+}
+
 void ShaderRenderable::updateProgram() {
 	if ((_surface != 0) && (_material != 0)) {
 		ShaderMan.registerShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());

@@ -747,7 +747,8 @@ void Model::queueDrawBound() {
 	_boundTransform *= glm::translate(glm::mat4(), glm::vec3((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f));
 	_boundTransform *= glm::scale(glm::mat4(), glm::vec3((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f));
 
-	RenderMan.queueRenderable(&_boundRenderable, &_boundTransform, 1.0f);
+	//RenderMan.queueRenderable(&_boundRenderable, &_boundTransform, 1.0f);
+	doDrawBound();
 }
 
 void Model::doDrawBound() {
