@@ -453,8 +453,12 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 
 	_nodeNumber = ctx.mdl->readUint16LE();
 
-	if (_nodeNumber < ctx.names.size())
+	if (_nodeNumber < ctx.names.size()) {
 		_name = ctx.names[_nodeNumber];
+		printf("node name: %s\n", _name.c_str());
+	} else {
+		printf("node name: [blank]\n");
+	}
 
 	ctx.mdl->skip(6 + 4); // Unknown + parent pointer
 
@@ -554,7 +558,23 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	}
 
 	if (_mesh && _mesh->data) {
-		meshName = generateMeshName();
+		Common::UString meshName = _name;
+		ModelNode *hnode = this;
+		ModelNode *parent = hnode->getParent();
+		while (parent && (parent != hnode)) {
+			meshName += ".";
+			meshName += parent->getName();
+			hnode = parent;
+			parent = hnode->getParent();
+		}
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += ctx.mdlName;
 
 		if (GfxMan.isRendererExperimental()) {
 			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);

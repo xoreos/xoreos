@@ -49,9 +49,19 @@ public:
 
 	void setSortingHint(SortingHints hint);
 
+	/**
+	 * Not required? Can pull the modelview directly from CameraMan, unless
+	 * the reference point for some reason shouldn't match.
+	 */
 	void setCameraReference(const glm::vec3 &reference);
 
-	void queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha);
+	/**
+	 * Queue a modelnode for rendering, with provided hints to determine which queue
+	 * the node should be placed into.
+	 * @param node  The modelnode to queue for rendering.
+	 * @param flags  Rendering hints, see ShaderMaterial for these.
+	 */
+	void queueNode(const Graphics::Aurora::ModelNode *node, uint32_t flags = 0);
 
 	void sort();
 
@@ -72,8 +82,6 @@ private:
 	RenderQueue _queueLast;
 
 	SortingHints _sortingHints;
-
-	//std::vector<GLContainer *> _queueColorImmediate; // For anything special outside the normal render path.
 };
 
 } // namespace Render

@@ -50,23 +50,24 @@ void RenderManager::setCameraReference(const glm::vec3 &reference) {
 	_queueColorTransparentSecondary.setCameraReference(reference);
 }
 
-void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha) {
-	uint32_t flags = renderable->getMaterial()->getFlags();
+void RenderManager::queueNode(const Graphics::Aurora::ModelNode *node, uint32_t flags) {
 	if (flags & Shader::ShaderMaterial::MATERIAL_DECAL) {
-		_queueColorSolidDecal.queueItem(renderable, transform, alpha);
+		_queueColorSolidDecal.queueNode(node);
 	} else if (flags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
 		if (flags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B) {
-			_queueColorTransparentSecondary.queueItem(renderable, transform, alpha);
+			_queueColorTransparentSecondary.queueNode(node);
 		} else {
-			_queueColorTransparentPrimary.queueItem(renderable, transform, alpha);
+			_queueColorTransparentPrimary.queueNode(node);
 		}
 	} else {
-		if (renderable->getMaterial()->getFlags() & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
-			_queueColorSolidPrimary.queueItem(renderable, transform, alpha);
-		} else if (renderable->getMesh()->getVertexBuffer()->getCount() > 6) {
-			_queueColorSolidSecondary.queueItem(renderable, transform, alpha);
+		if (flags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
+			if (flags & Shader::ShaderMaterial::MATERIAL_OPAQUE_B) {
+				_queueColorSolidSecondary.queueNode(node);
+			} else {
+				_queueColorSolidPrimary.queueNode(node);
+			}
 		} else {
-			_queueColorSolidDecal.queueItem(renderable, transform, alpha);
+			_queueColorSolidDecal.queueNode(node);
 		}
 	}
 }

@@ -877,7 +877,7 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 	}
 }
 
-void ModelNode::renderImmediate() {
+void ModelNode::renderImmediate() const {
 	/**
 	 * The intent is for this function to be called from the render queues. To be in
 	 * one of those queues, this node should have been through queueRender, itself which
@@ -890,7 +890,7 @@ void ModelNode::renderImmediate() {
 	for (size_t i = 0; i < _renderableArray.size(); ++i) {
 		_renderableArray[i].renderImmediate();
 	}
-
+#if 0
 	if (_attachedModel) {
 		_attachedModel->renderImmediate();
 	}
@@ -898,6 +898,8 @@ void ModelNode::renderImmediate() {
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
 		(*c)->renderImmediate();
 	}
+#endif
+
 }
 
 void ModelNode::queueRender(const glm::mat4 &parentTransform) {
@@ -920,7 +922,15 @@ void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 		 * if the node isn't (camera) visible, then don't bother trying to render it.
 		 */
 		for (size_t i = 0; i < _renderableArray.size(); ++i) {
-			RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, this->getAlpha());
+			/**
+			 * @todo: the render hints are a bit hacky right now, and could (should) be pre-calculated
+			 * into appropriate rendering queues. Also, the node on the renderImmediate callback does
+			 * know currentluy know which renderable is intended - so it will render them all.
+			 * Maybe go with a node/hint/index combo in future, and provide the index as a parameter
+			 * to the callback function (renderImmediate renamed to renderSingle or something).
+			 */
+			RenderMan.queueNode(this, _renderableArray[i].getMaterial()->getFlags());
+			//RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, this->getAlpha());
 		}
 	}
 

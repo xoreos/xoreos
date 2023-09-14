@@ -60,6 +60,7 @@ public:
 	void copyRenderable(Shader::ShaderRenderable *src);
 
 	void renderImmediate(const glm::mat4 &tform, float alpha = 1.0f);
+	void renderImmediate() const;
 
 private:
 	ShaderSurface *_surface;
