@@ -36,7 +36,10 @@ namespace Graphics {
 namespace Render {
 
 bool compareDepth(const RenderQueue::RenderQueueNode &a, const RenderQueue::RenderQueueNode &b) {
-	return (a.reference <= b.reference);
+	uint32_t hint_a = a.node->getMesh()->transparencyHint;
+	uint32_t hint_b = b.node->getMesh()->transparencyHint;
+	return (hint_a < hint_b);
+	//return (a.reference <= b.reference);
 	//return (a.reference.lengthSquared() <= b.reference.lengthSquared());
 }
 

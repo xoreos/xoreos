@@ -385,8 +385,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	_mesh->beaming = ctx.mdb->readUint32LE() == 1;
 	_mesh->render  = ctx.mdb->readUint32LE() == 1;
 
-	_mesh->hasTransparencyHint = true;
-	_mesh->transparencyHint    = ctx.mdb->readUint32LE() == 1;
+	_mesh->transparencyHint = ctx.mdb->readUint32LE() == 1;
 
 	ctx.mdb->skip(4); // Unknown
 
@@ -398,7 +397,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 			texture[t].clear();
 	}
 
-	bool tileFade = ctx.mdb->readUint32LE() == 1;
+	_mesh->tilefade = ctx.mdb->readUint32LE() == 1;
 
 	bool controlFade   = ctx.mdb->readByte() == 1;
 	bool lightMapped   = ctx.mdb->readByte() == 1;
