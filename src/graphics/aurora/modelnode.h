@@ -232,9 +232,7 @@ public:
 
 		bool isTransparent;
 
-		bool hasTransparencyHint;
-		bool transparencyHint;
-		uint32_t transparencyHintFull;
+		uint32_t transparencyHint;
 
 		bool isBackgroundGeometry;
 

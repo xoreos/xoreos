@@ -69,8 +69,7 @@ ModelNode::MeshData::MeshData() : rawMesh(0), envMapMode(kModeEnvironmentBlended
 
 ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(false),
 	shadow(false), beaming(false), inheritcolor(false), rotatetexture(false),
-	isTransparent(false), hasTransparencyHint(false), transparencyHint(false),
-	data(0), dangly(0), skin(0) {
+	transparencyHint(0), data(0), dangly(0), skin(0) {
 }
 
 ModelNode::MaterialConfiguration::MaterialConfiguration() :
@@ -501,14 +500,18 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 			Common::exceptionDispatcherWarning();
 		}
 	}
-
-	if (_mesh->hasTransparencyHint) {
-		_mesh->isTransparent = _mesh->transparencyHint;
+	/**
+	 * @TODO: if the texture has an alpha channel, it's not necessarily used.
+	 * Need to know a bit more about how this impacts the rendering order of things.
+	 */
+	/*
+	if (_mesh->transparencyHint) {
 		if (isDecal)
 			_mesh->isTransparent = true;
 	} else {
 		_mesh->isTransparent = hasAlpha;
 	}
+	*/
 
 	_dirtyRender = true;
 	// If the node has no actual texture, we just assume
@@ -1403,7 +1406,7 @@ void ModelNode::setupShaderTexture(MaterialConfiguration &config, int textureInd
 		if (config.phandles[0].getTexture().getTXI().getFeatures().blending) {
 			config.materialFlags |= Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND;
 			// For KotOR2, this is required to get some windows showing up properly.
-			if (config.pmesh->hasTransparencyHint &&
+			if (config.pmesh->transparencyHint &&
 					!(config.materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 				config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 			}

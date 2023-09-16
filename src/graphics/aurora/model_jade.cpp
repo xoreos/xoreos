@@ -409,7 +409,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	_mesh = new Mesh();
 
-	uint32_t transparencyHint = ctx.mdl->readUint32LE();
+	_mesh->transparencyHint = ctx.mdl->readUint32LE();
 	uint16_t flags            = ctx.mdl->readUint16LE();
 
 	_mesh->shadow = ctx.mdl->readUint16LE() != 0;
@@ -417,10 +417,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	_mesh->render  = (flags & kNodeFlagsRender) != 0;
 	_mesh->beaming = (flags & kNodeFlagsBeaming) != 0;
 	_mesh->isBackgroundGeometry = (flags & kNodeFlagsBackgroundGeometry) != 0;
-
-	_mesh->hasTransparencyHint = true;
-	_mesh->transparencyHint    = (transparencyHint == 1);
-	_mesh->transparencyHintFull = transparencyHint;
 
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 

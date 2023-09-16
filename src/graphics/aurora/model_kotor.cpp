@@ -180,11 +180,12 @@ Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, bool xbox, Mo
 
 Model_KotOR::~Model_KotOR() {
 }
-
+uint32_t indent = 0;
 void Model_KotOR::load(ParserContext &ctx) {
 	if (ctx.mdl->readUint32LE() != 0)
 		throw Common::Exception("Unsupported KotOR ASCII MDL");
 
+	printf("Loading kotor model\n");
 	uint32_t sizeModelData = ctx.mdl->readUint32LE();
 	uint32_t sizeRawData   = ctx.mdl->readUint32LE();
 
@@ -195,9 +196,11 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 	ctx.mdlName = _name;
+	printf("model name: %s\n", _name.c_str());
 
 	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32_t nodeCount       = ctx.mdl->readUint32LE();
+	printf("node count: %u\n", nodeCount);
 
 	ctx.mdl->skip(24 + 4); // Unknown + Reference count
 
@@ -207,6 +210,8 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	uint8_t classification = ctx.mdl->readByte();
 	uint8_t fogged         = ctx.mdl->readByte();
+	printf("classification: %u\n", classification);
+	printf("fogged: %u\n", fogged);
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -226,10 +231,13 @@ void Model_KotOR::load(ParserContext &ctx) {
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
 	float radius = ctx.mdl->readIEEEFloatLE();
+	printf("model radius: %f\n", radius);
 
 	float modelScale = ctx.mdl->readIEEEFloatLE();
+	printf("model scale: %f\n", modelScale);
 
 	_superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	printf("supermodel name: %s\n", _superModelName.c_str());
 
 	ctx.mdl->skip(4); // Root node pointer again
 
@@ -245,11 +253,13 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	newState(ctx);
 
+	indent += 4;
 	ModelNode_KotOR *rootNode = new ModelNode_KotOR(*this);
 	ctx.nodes.push_back(rootNode);
 
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
+	indent -= 4;
 
 	addState(ctx);
 
@@ -257,12 +267,14 @@ void Model_KotOR::load(ParserContext &ctx) {
 	readArray(*ctx.mdl, ctx.offModelData + animOffset, animCount, animOffsets);
 
 	for (std::vector<uint32_t>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
+		indent += 4;
 		newState(ctx);
 
 		if (readAnim(ctx, ctx.offModelData + *offset))
 			addState(ctx);
 
 		ctx.clear();
+		indent -= 4;
 	}
 }
 
@@ -455,9 +467,9 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 
 	if (_nodeNumber < ctx.names.size()) {
 		_name = ctx.names[_nodeNumber];
-		printf("node name: %s\n", _name.c_str());
+		printf("%*s node name: %s\n", indent, "", _name.c_str());
 	} else {
-		printf("node name: [blank]\n");
+		printf("%*s node name: [blank]\n", indent, "");
 	}
 
 	ctx.mdl->skip(6 + 4); // Unknown + parent pointer
@@ -484,6 +496,8 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 
 	std::vector<uint32_t> children;
 	Model::readArray(*ctx.mdl, ctx.offModelData + childrenOffset, childrenCount, children);
+	printf("%*s child count: %u\n", indent, "", childrenCount);
+
 
 	uint32_t controllerKeyOffset, controllerKeyCount;
 	Model::readArrayDef(*ctx.mdl, controllerKeyOffset, controllerKeyCount);
@@ -505,48 +519,60 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	if ((ctx.flags & 0xF400) != 0)
 		throw Common::Exception("Unknown node flags %04X", ctx.flags);
 
+	printf("%*s node flags: %08X\n", indent, "", ctx.flags);
+
 	if (ctx.flags & kNodeFlagHasLight) {
 		// TODO: Light
+		printf("%*s node has light flag\n", indent, "");
 		ctx.mdl->skip(0x5C);
 	}
 
 	if (ctx.flags & kNodeFlagHasEmitter) {
+		printf("%*s node has emitter flag\n", indent, "");
 		readEmitter(ctx);
 	}
 
 	if (ctx.flags & kNodeFlagHasReference) {
+		printf("%*s node has reference flag\n", indent, "");
 		// TODO: Reference
 		ctx.mdl->skip(0x44);
 	}
 
 	if (ctx.flags & kNodeFlagHasMesh) {
+		printf("%*s node has mesh flag\n", indent, "");
 		readMesh(ctx);
 	}
 
 	if (ctx.flags & kNodeFlagHasSkin) {
+		printf("%*s node has skin flag\n", indent, "");
 		readSkin(ctx);
 		_model->notifyHasSkinNodes();
 	}
 
 	if (ctx.flags & kNodeFlagHasAnim) {
 		// TODO: Anim
+		printf("%*s node has anim flag\n", indent, "");
 		ctx.mdl->skip(0x38);
 	}
 
 	if (ctx.flags & kNodeFlagHasDangly) {
+		printf("%*s node has dangly flag\n", indent, "");
 		// TODO: Dangly
 		ctx.mdl->skip(0x18);
 	}
 
 	if (ctx.flags & kNodeFlagHasAABB) {
+		printf("%*s node has aabb flag\n", indent, "");
 		// TODO: AABB
 		ctx.mdl->skip(0x4);
 	}
 
 	if (ctx.flags & kNodeFlagHasSaber) {
+		printf("%*s node has saber flag\n", indent, "");
 		readSaber(ctx);
 	}
 
+	indent += 4;
 	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_KotOR *childNode = new ModelNode_KotOR(*_model);
 		ctx.nodes.push_back(childNode);
@@ -556,6 +582,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
+	indent -= 4;
 
 	if (_mesh && _mesh->data) {
 		Common::UString meshName = _name;
@@ -575,6 +602,8 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		}
 		meshName += ".";
 		meshName += ctx.mdlName;
+		printf("%*s mesh name: %s\n", indent, "", meshName.c_str());
+
 
 		if (GfxMan.isRendererExperimental()) {
 			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
@@ -615,6 +644,7 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 		uint16_t dataIndex = ctx.mdl->readUint16LE();
 		uint8_t columnCount = ctx.mdl->readByte();
 		ctx.mdl->skip(3);
+		printf("%*s node controller type: %u\n", indent, "", type);
 		switch (type) {
 			case kControllerTypePosition:
 				readPositionController(columnCount, rowCount, timeIndex, dataIndex, dataFloat);
@@ -752,6 +782,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
 	float radius = ctx.mdl->readIEEEFloatLE();
+	printf("%*s mesh radius: %f\n", indent, "", radius);
 
 	float pointsAverage[3];
 	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
@@ -760,22 +791,23 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	_mesh = new Mesh();
 
-	_mesh->diffuse[0] = ctx.mdl->readIEEEFloatLE();
-	_mesh->diffuse[1] = ctx.mdl->readIEEEFloatLE();
-	_mesh->diffuse[2] = ctx.mdl->readIEEEFloatLE();
-
 	_mesh->ambient[0] = ctx.mdl->readIEEEFloatLE();
 	_mesh->ambient[1] = ctx.mdl->readIEEEFloatLE();
 	_mesh->ambient[2] = ctx.mdl->readIEEEFloatLE();
+	printf("%*s mesh ambient: %f %f %f\n", indent, "", _mesh->ambient[0], _mesh->ambient[1], _mesh->ambient[2]);
+
+	_mesh->diffuse[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[2] = ctx.mdl->readIEEEFloatLE();
+	printf("%*s mesh diffuse: %f %f %f\n", indent, "", _mesh->diffuse[0], _mesh->diffuse[1], _mesh->diffuse[2]);
 
 	_mesh->specular[0] = 0;
 	_mesh->specular[1] = 0;
 	_mesh->specular[2] = 0;
+	printf("%*s mesh specular: %f %f %f\n", indent, "", _mesh->specular[0], _mesh->specular[1], _mesh->specular[2]);
 
-	uint32_t transparencyHint = ctx.mdl->readUint32LE();
-
-	_mesh->hasTransparencyHint = true;
-	_mesh->transparencyHint    = (transparencyHint != 0);
+	_mesh->transparencyHint = ctx.mdl->readUint32LE();
+	printf("%*s mesh transparency hint: %u\n", indent, "", _mesh->transparencyHint);
 
 	ctx.textures.clear();
 	ctx.textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
@@ -811,6 +843,8 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.vertexCount  = ctx.mdl->readUint16LE();
 	ctx.textureCount = ctx.mdl->readUint16LE();
+	printf("%*s mesh vertex count: %u\n", indent, "", ctx.vertexCount);
+
 
 	ctx.mdl->skip(2);
 

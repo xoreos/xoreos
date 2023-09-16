@@ -623,35 +623,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
 	                    controllerKeyCount, controllerData);
-#if 0
-	if (_light) {
-		Common::UString nodeName = _name;
-		ModelNode *hnode = this;
-		ModelNode *parent = hnode->getParent();
-		while (parent && (parent != hnode)) {
-			nodeName += ".";
-			nodeName += parent->getName();
-			hnode = parent;
-			parent = hnode->getParent();
-		}
-		nodeName += ".";
-		if (ctx.state->name.size() != 0) {
-			nodeName += ctx.state->name;
-		} else {
-			nodeName += "xoreos.default";
-		}
-		nodeName += ".";
-		nodeName += ctx.mdlName;
 
-		printf("light loaded for %s, radius %f, multiplier %f, colour %f %f %f\n",
-		       nodeName.c_str(),
-		       _light->radius,
-		       _light->multiplier,
-		       _light->colour[0],
-		       _light->colour[1],
-		       _light->colour[2]);
-	}
-#endif
 	// If the node has no own position controller, inherit the position from the root state
 	if (!ctx.hasPosition) {
 		ModelNode *node = _model->getNode(_name);
@@ -736,7 +708,7 @@ void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
 		if (node) {
 			const auto *rootLight = node->getLight();
 			if (rootLight) {
-				memcpy(_light, rootLight, sizeof(Graphics::LightManager::LightNode));
+				*_light = *rootLight;
 			}
 		}
 	}
@@ -819,7 +791,6 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	_mesh->beaming = ctx.mdl->readUint32LE() == 1;
 	_mesh->render  = ctx.mdl->readUint32LE() == 1;
 
-	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint = ctx.mdl->readUint32LE() == 1;
 
 	ctx.mdl->skip(4); // Unknown
@@ -1229,7 +1200,6 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin")) {
 		_mesh = new ModelNode::Mesh();
-		_mesh->hasTransparencyHint = true;
 		_mesh->render = true;
 		if (type == "danglymesh")
 			_mesh->dangly = new Dangly();
