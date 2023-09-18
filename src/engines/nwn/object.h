@@ -75,8 +75,6 @@ public:
 	virtual void show(); ///< Show the object's model(s).
 	virtual void hide(); ///< Hide the object's model(s).
 
-	virtual void renderImmediate(const glm::mat4 &parentTransform) {}
-
 	/** Return the object's model IDs. */
 	const std::list<uint32_t> &getIDs() const;
 

@@ -61,6 +61,7 @@ public:
 
 	void sortShader(); ///< Sort queue elements by shader program.
 	void sortDepth();  ///< Sort queue elements by depth.
+	void sortHints();  ///< Sort queue by hints provided from the data files.
 
 	void render();  ///< Render all queued items.
 

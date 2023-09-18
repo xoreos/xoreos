@@ -236,6 +236,8 @@ public:
 
 		bool isBackgroundGeometry;
 
+		uint32_t renderHints;  ///< Rendering hints, used to help determine rendering order.
+
 		MeshData *data;
 		Dangly   *dangly;
 		Skin     *skin;
@@ -281,6 +283,8 @@ protected:
 
 	std::vector<PositionKeyFrame> _positionFrames;      ///< Keyframes for position animation.
 	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation.
+
+	std::vector<float> _displacement;
 
 	/** Position of the node after translate/rotate. */
 	glm::mat4 _absolutePosition;
