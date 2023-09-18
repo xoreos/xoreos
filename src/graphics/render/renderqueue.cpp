@@ -36,11 +36,14 @@ namespace Graphics {
 namespace Render {
 
 bool compareDepth(const RenderQueue::RenderQueueNode &a, const RenderQueue::RenderQueueNode &b) {
+	return (a.reference <= b.reference);
+	//return (a.reference.lengthSquared() <= b.reference.lengthSquared());
+}
+
+bool compareHints(const RenderQueue::RenderQueueNode &a, const RenderQueue::RenderQueueNode &b) {
 	uint32_t hint_a = a.node->getMesh()->transparencyHint;
 	uint32_t hint_b = b.node->getMesh()->transparencyHint;
 	return (hint_a < hint_b);
-	//return (a.reference <= b.reference);
-	//return (a.reference.lengthSquared() <= b.reference.lengthSquared());
 }
 
 RenderQueue::RenderQueue(uint32_t precache) : _nodeArray(precache), _cameraReference(0.0f, 0.0f, 0.0f) {
@@ -69,6 +72,12 @@ void RenderQueue::sortShader() {
 void RenderQueue::sortDepth() {
 	if (_nodeArray.size() > 1) {
 		std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
+	}
+}
+
+void RenderQueue::sortHints() {
+	if (_nodeArray.size() > 1) {
+		std::sort(_nodeArray.begin(), _nodeArray.end(), compareHints);
 	}
 }
 

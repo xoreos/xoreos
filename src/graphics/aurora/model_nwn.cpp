@@ -582,8 +582,6 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 		throw Common::Exception("Unknown model node flags %08X", flags);
 
 	if (flags & kNodeFlagHasLight) {
-		// TODO: Light
-		//ctx.mdl->skip(0x5C);
 		readLight(ctx);
 	}
 
@@ -729,7 +727,10 @@ void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
 
 	_light->fading = ctx.mdl->readUint32LE();
 
-	// Register the light, but be aware that the position needs updating.
+	/**
+	 * Don't register the light yet, because NWN might change the position or
+	 * other parameters first. This is done e.g with tile source lights.
+	 */
 	//LightMan.registerLight(_light);
 }
 
@@ -1330,6 +1331,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		_mesh->data->rawMesh->init();
 		MeshMan.addMesh(_mesh->data->rawMesh);
 	}
+	_mesh->data->rawMesh->useIncrement();
 
 	if (GfxMan.isRendererExperimental())
 		buildMaterial();

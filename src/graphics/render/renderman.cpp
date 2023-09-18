@@ -75,11 +75,11 @@ void RenderManager::queueNode(const Graphics::Aurora::ModelNode *node, uint32_t 
 void RenderManager::sort() {
 	switch (_sortingHints) {
 	case SORT_HINT_NORMAL:
-		_queueColorSolidPrimary.sortShader();
-		_queueColorSolidSecondary.sortShader();
-		_queueColorSolidDecal.sortShader();
-		_queueColorTransparentPrimary.sortDepth();
-		_queueColorTransparentSecondary.sortDepth();
+		//_queueColorSolidPrimary.sortShader();
+		//_queueColorSolidSecondary.sortShader();
+		//_queueColorSolidDecal.sortShader();
+		_queueColorTransparentPrimary.sortHints();
+		_queueColorTransparentSecondary.sortHints();
 		break;
 	case SORT_HINT_ALLDEPTH:
 		_queueColorSolidPrimary.sortDepth();
@@ -93,8 +93,10 @@ void RenderManager::sort() {
 }
 
 void RenderManager::render() {
+	//glDisable(GL_BLEND);
 	_queueColorSolidPrimary.render();
 	_queueColorSolidSecondary.render();
+	//glEnable(GL_BLEND);
 	_queueColorSolidDecal.render();
 	_queueColorTransparentPrimary.render();
 	_queueColorTransparentSecondary.render();

@@ -326,7 +326,7 @@ void Area::hide() {
 
 void Area::rebuildStaticLights() {
 	/**
-	 * @TODO: this doesn't so much rebuild, and build. There's no removal
+	 * @TODO: this doesn't so much rebuild, as build. There's no removal
 	 * of older lights.
 	 * It could be useful for each tile to better keep track of all the
 	 * lights that belong to it. This would make activating/deactivating

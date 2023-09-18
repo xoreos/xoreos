@@ -821,7 +821,7 @@ void GraphicsManager::recalculateObjectDistances() {
 	for (std::list<Queueable *>::const_iterator o = objects.begin(); o != objects.end(); ++o)
 		static_cast<Renderable *>(*o)->calculateDistance();
 
-	QueueMan.sortQueue(kQueueVisibleWorldObject);
+	//QueueMan.sortQueue(kQueueVisibleWorldObject);
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 
 	// GUI front objects
@@ -1237,7 +1237,6 @@ bool GraphicsManager::renderWorldShader() {
 		static_cast<Renderable *>(*o)->renderImmediate(ident);
 	}
 */
-
 
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
