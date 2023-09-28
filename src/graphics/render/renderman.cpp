@@ -43,71 +43,44 @@ void RenderManager::setSortingHint(SortingHints hint) {
 }
 
 void RenderManager::setCameraReference(const glm::vec3 &reference) {
-	_queueColorSolidPrimary.setCameraReference(reference);
-	_queueColorSolidSecondary.setCameraReference(reference);
-	_queueColorSolidDecal.setCameraReference(reference);
-	_queueColorTransparentPrimary.setCameraReference(reference);
-	_queueColorTransparentSecondary.setCameraReference(reference);
+	_queueDecal.setCameraReference(reference);
+	_queueTransparent.setCameraReference(reference);
 }
 
 void RenderManager::queueNode(const Graphics::Aurora::ModelNode *node, uint32_t flags) {
-	if (flags & Shader::ShaderMaterial::MATERIAL_DECAL) {
-		_queueColorSolidDecal.queueNode(node);
-	} else if (flags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
-		if (flags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B) {
-			_queueColorTransparentSecondary.queueNode(node);
-		} else {
-			_queueColorTransparentPrimary.queueNode(node);
+	if (flags) {
+		if (flags & Graphics::Aurora::ModelNode::RENDER_HINT_TRANSPARENT) {
+			_queueTransparent.queueNode(node);
+		} else if (flags & Graphics::Aurora::ModelNode::RENDER_HINT_DECAL) {
+			_queueDecal.queueNode(node);
 		}
 	} else {
-		if (flags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
-			if (flags & Shader::ShaderMaterial::MATERIAL_OPAQUE_B) {
-				_queueColorSolidSecondary.queueNode(node);
-			} else {
-				_queueColorSolidPrimary.queueNode(node);
-			}
-		} else {
-			_queueColorSolidDecal.queueNode(node);
-		}
+		node->renderImmediate();
 	}
 }
 
 void RenderManager::sort() {
 	switch (_sortingHints) {
 	case SORT_HINT_NORMAL:
-		//_queueColorSolidPrimary.sortShader();
-		//_queueColorSolidSecondary.sortShader();
-		//_queueColorSolidDecal.sortShader();
-		_queueColorTransparentPrimary.sortHints();
-		_queueColorTransparentSecondary.sortHints();
+		_queueDecal.sortHints();
+		_queueTransparent.sortHints();
 		break;
 	case SORT_HINT_ALLDEPTH:
-		_queueColorSolidPrimary.sortDepth();
-		_queueColorSolidSecondary.sortDepth();
-		_queueColorSolidDecal.sortDepth();
-		_queueColorTransparentPrimary.sortDepth();
-		_queueColorTransparentSecondary.sortDepth();
+		_queueDecal.sortDepth();
+		_queueTransparent.sortDepth();
 		break;
 	default: break;
 	}
 }
 
 void RenderManager::render() {
-	//glDisable(GL_BLEND);
-	_queueColorSolidPrimary.render();
-	_queueColorSolidSecondary.render();
-	//glEnable(GL_BLEND);
-	_queueColorSolidDecal.render();
-	_queueColorTransparentPrimary.render();
-	_queueColorTransparentSecondary.render();
+	_queueTransparent.render();
+	_queueDecal.render();
 }
 
 void RenderManager::clear() {
-	_queueColorSolidPrimary.clear();
-	_queueColorSolidSecondary.clear();
-	_queueColorSolidDecal.clear();
-	_queueColorTransparentPrimary.clear();
-	_queueColorTransparentSecondary.clear();
+	_queueDecal.clear();
+	_queueTransparent.clear();
 }
 
 } // namespace Render

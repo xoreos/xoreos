@@ -1331,7 +1331,6 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		_mesh->data->rawMesh->init();
 		MeshMan.addMesh(_mesh->data->rawMesh);
 	}
-	_mesh->data->rawMesh->useIncrement();
 
 	if (GfxMan.isRendererExperimental())
 		buildMaterial();
