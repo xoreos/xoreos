@@ -73,9 +73,16 @@ void Queueable::unlockQueue(QueueType queue) {
 }
 
 void Queueable::sortQueue(QueueType queue) {
-	QueueMan.lockQueue(queue);
-	QueueMan.sortQueue(queue);
-	QueueMan.unlockQueue(queue);
+	/**
+	 * The order of visible world objects is very important to rendering,
+	 * so it's the one queue that should never be sorted. Generally the
+	 * order that models are loaded, is the order they should be rendered.
+	 */
+	if (queue != kQueueVisibleWorldObject) {
+		QueueMan.lockQueue(queue);
+		QueueMan.sortQueue(queue);
+		QueueMan.unlockQueue(queue);
+	}
 }
 
 void Queueable::removeFromAll() {

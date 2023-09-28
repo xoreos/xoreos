@@ -74,12 +74,8 @@ public:
 	void cleanup() {}
 
 private:
-	RenderQueue _queueColorSolidPrimary;
-	RenderQueue _queueColorSolidSecondary;
-	RenderQueue _queueColorSolidDecal;
-	RenderQueue _queueColorTransparentPrimary;
-	RenderQueue _queueColorTransparentSecondary;
-	RenderQueue _queueLast;
+	RenderQueue _queueDecal;
+	RenderQueue _queueTransparent;
 
 	SortingHints _sortingHints;
 };

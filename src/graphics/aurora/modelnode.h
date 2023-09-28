@@ -236,8 +236,6 @@ public:
 
 		bool isBackgroundGeometry;
 
-		uint32_t renderHints;  ///< Rendering hints, used to help determine rendering order.
-
 		MeshData *data;
 		Dangly   *dangly;
 		Skin     *skin;
@@ -257,6 +255,12 @@ public:
 		uint32_t materialFlags;
 
 		MaterialConfiguration();
+	};
+
+	enum {
+		RENDER_HINT_NORMAL      = 0x0001,  ///< Node can be rendered immediately.
+		RENDER_HINT_TRANSPARENT = 0x0002,  ///< Node is transparent, subject to changed rendering order.
+		RENDER_HINT_DECAL       = 0x0004,  ///< Node renders as a decal, subject to changed rendering order.
 	};
 
 protected:
@@ -292,6 +296,7 @@ protected:
 
 	bool _render; ///< Render the node?
 	bool _dirtyRender; ///< Rendering information needs updating.
+	uint32_t _renderHints;  ///< Hints to know when and how to render the node.
 
 	Graphics::LightManager::LightNode *_light;
 

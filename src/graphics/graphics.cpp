@@ -1223,21 +1223,18 @@ bool GraphicsManager::renderWorldShader() {
 	_animationThread.flush();
 
 
-	/**
-	 * @TODO: for now each object is being immediately rendered without thought to the
-	 * order of rendering. This will have transparency problems; far better to sort by
-	 * depth and type of mesh (which might have flags to help here).
-	 * The render manager can be of benefit here, but might need some tweaking to inspect
-	 * mesh information and decide on the proper sorting order.
-	 */
 	glm::mat4 ident;
-/*
+#if 0
+	/**
+	 * Enable this bit of code to render without sorting through the render queue
+	 * system. This might or might not work, depending on the game and some
+	 * transparency issues.
+	 */
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
 		static_cast<Renderable *>(*o)->renderImmediate(ident);
 	}
-*/
-
+#endif
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
