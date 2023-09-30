@@ -1028,11 +1028,13 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		hnode = parent;
 		parent = hnode->getParent();
 	}
+	meshName += ".";
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
 	} else {
 		meshName += "xoreos.default";
 	}
+	meshName += ".";
 	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
@@ -1324,11 +1326,13 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		hnode = parent;
 		parent = hnode->getParent();
 	}
+	meshName += ".";
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
 	} else {
 		meshName += "xoreos.default";
 	}
+	meshName += ".";
 	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
