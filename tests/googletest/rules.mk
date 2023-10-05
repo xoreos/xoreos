@@ -59,7 +59,9 @@ check_LTLIBRARIES += tests/googletest/libgtest.la
 tests_googletest_libgtest_la_SOURCES =
 
 tests_googletest_libgtest_la_SOURCES += \
+    tests/googletest/include/gtest/gtest-assertion-result.h \
     tests/googletest/include/gtest/gtest-death-test.h \
+    tests/googletest/include/gtest/gtest-matchers.h \
     tests/googletest/include/gtest/gtest-message.h \
     tests/googletest/include/gtest/gtest-param-test.h \
     tests/googletest/include/gtest/gtest-printers.h \
@@ -72,17 +74,11 @@ tests_googletest_libgtest_la_SOURCES += \
     tests/googletest/include/gtest/internal/gtest-death-test-internal.h \
     tests/googletest/include/gtest/internal/gtest-filepath.h \
     tests/googletest/include/gtest/internal/gtest-internal.h \
-    tests/googletest/include/gtest/internal/gtest-linked_ptr.h \
-    tests/googletest/include/gtest/internal/gtest-param-util-generated.h \
     tests/googletest/include/gtest/internal/gtest-param-util.h \
     tests/googletest/include/gtest/internal/gtest-port-arch.h \
     tests/googletest/include/gtest/internal/gtest-port.h \
     tests/googletest/include/gtest/internal/gtest-string.h \
-    tests/googletest/include/gtest/internal/gtest-tuple.h \
     tests/googletest/include/gtest/internal/gtest-type-util.h \
-    tests/googletest/include/gtest/internal/custom/gtest-port.h \
-    tests/googletest/include/gtest/internal/custom/gtest-printers.h \
-    tests/googletest/include/gtest/internal/custom/gtest.h \
     $(EMPTY)
 
 tests_googletest_libgtest_la_SOURCES += \
@@ -110,9 +106,11 @@ tests_googletest_libgtest_main_la_LIBADD = \
 tests_googletest_libgtest_main_la_CXXFLAGS = $(GTEST_FLAGS) $(AM_CXXFLAGS)
 
 EXTRA_DIST += \
+    tests/googletest/src/gtest-assertion-result.cc \
     tests/googletest/src/gtest-death-test.cc \
     tests/googletest/src/gtest-filepath.cc \
     tests/googletest/src/gtest-internal-inl.h \
+    tests/googletest/src/gtest-matchers.cc \
     tests/googletest/src/gtest-port.cc \
     tests/googletest/src/gtest-printers.cc \
     tests/googletest/src/gtest-test-part.cc \

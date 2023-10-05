@@ -1,10 +1,3 @@
-This is a stripped-down version of Google Test 1.8.0
+This is a stripped-down version of Google Test 1.14.0
 (<https://github.com/google/googletest>), based on the git
-revision 5e7fd50e17b6edf1cadff973d0ec68966cf3265e.
-This file will list changes applied to it:
-
-Changes:
-========
-
-- Add #define GTEST_DONT_DEFINE_TEST_F to not alias GTEST_TEST_F to
-  TEST_F, for symmetry with GTEST_DONT_DEFINE_TEST
+revision beb552fb47e9e8a6ddab20526663c2dddd601ec6.
