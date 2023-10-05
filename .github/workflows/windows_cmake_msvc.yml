@@ -14,7 +14,7 @@ jobs:
       VCPKG_BIN_PATH: ${{ github.workspace }}/builds/ninja-multi-vcpkg/vcpkg_installed/x64-windows/bin
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: lukka/get-cmake@v3.21.2
 
     - name: Download xvid
