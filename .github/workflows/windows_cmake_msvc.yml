@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: lukka/get-cmake@v3.21.2
+    - uses: lukka/get-cmake@v3.27.6
 
     - name: Download xvid
       id: download_xvid
@@ -45,7 +45,7 @@ jobs:
         cp -v "${GITHUB_WORKSPACE}"/.github/workflows/CMakePresets.json "${GITHUB_WORKSPACE}"/
 
     - name: Restore artifacts and set up vcpkg
-      uses: lukka/run-vcpkg@v10.1
+      uses: lukka/run-vcpkg@v11
       id: run_vcpkg
       with:
         vcpkgGitCommitId: accd79817981f1ce00c6a4164aecf2b2ac699823
