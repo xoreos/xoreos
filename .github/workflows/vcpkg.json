@@ -25,6 +25,7 @@
     "boost-system",
     "boost-type-traits",
     "boost-utility",
-    "boost-uuid"
+    "boost-uuid",
+    "boost-variant"
   ]
 }
