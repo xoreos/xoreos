@@ -278,8 +278,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(XOREOS_LIBRARIES "")
 
 find_package(Iconv REQUIRED)
-include_directories(${ICONV_INCLUDE_DIR})
-list(APPEND XOREOS_LIBRARIES ${ICONV_LIBRARIES})
+include_directories(${Iconv_INCLUDE_DIRS})
+list(APPEND XOREOS_LIBRARIES ${Iconv_LIBRARIES})
 
 find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
