@@ -330,11 +330,6 @@ static void deinit() {
 	} catch (...) {
 	}
 
-#ifdef ENABLE_XML
-	// Deinit libxml2
-	Common::deinitXML();
-#endif
-
 	// Destroy global singletons
 	Graphics::Aurora::FontManager::destroy();
 	Graphics::Aurora::CursorManager::destroy();
@@ -376,4 +371,9 @@ static void deinit() {
 	Common::DebugManager::destroy();
 	Common::ConfigManager::destroy();
 	Common::Random::destroy();
+
+#ifdef ENABLE_XML
+	// Deinit libxml2
+	Common::deinitXML();
+#endif
 }
