@@ -48,8 +48,8 @@ namespace Graphics {
  * the number is changed, then it will need to be matched in the shaders as well.
  *
  * All forward lighting capable shaders (assumed to be fragment shaders) will
- * use the light manager _lights data. All lighting for a particular scene will need
- * to be registered for rendering; _lights contains data for enabled light points
+ * use the light manager _lightsGL data. All lighting for a particular scene will need
+ * to be registered for rendering; _lightsGL contains data for enabled light points
  * applied to a given tile, up to _activeLights in count.
  *
  * LightHandle provides a simple method of interfacing with the light without
@@ -99,7 +99,7 @@ public:
 
 	///< Query pointer to actual light data.
 	///< @todo this should really be const, but shadermaterial doesn't take const pointers. Yet.
-	inline void *getLightData() { return _lights.data(); }
+	inline void *getLightData() { return _lightsGL.data(); }
 
 	///< Query pointer to number of active lights. Used for shader binding.
 	///< @todo this should really be const, but shadermaterial doesn't take const pointers. Yet.
@@ -108,22 +108,50 @@ public:
 	///< Clear active lights, effectively disabling lighting.
 	inline void clear() { _activeLights = 0; }
 
-
+	///< Register a light with the manager, may flag a static tree rebuild.
 	void registerLight(const LightNode *light);
+
+	///< Deregister (but don't delete) a light from the manager, may flag a static tree rebuild.
 	void deregisterLight(const LightNode *light);
-	bool isLightRegistered(const LightNode *light);  ///< @TODO: make this private?
 
+	///< TODO: function name is bad, maybe activateLightsGL, or searchLightsGL.
 	void buildActiveLights(const glm::vec3 &pos, float radius);
-
 
 private:
 
-	std::vector<LightGL> _lights; ///< Active light data. Capacity of _lights vector must be at least _maxLights.
-	int32_t _maxLights;         ///< Maximum number of active lights at any given time. Default is eight.
-	int32_t _activeLights;      ///< The number of active lights. Must less than or equal to _maxLights.
+	/**
+	 * Static lights are organised into a b-tree based on their distance from each other.
+	 * This should help limit the traversal required when determining volume intersection.
+	 * Depending on the spatial coherency of nodes, it can be beneficial to also calculate
+	 * an AABB of the left/right nodes. This can give a tighter volume and help exclude those
+	 * branches that shouldn't be taken. Note that the AABB calculations been that the AABB
+	 * centre point might be different from the spherical centre.
+	 */
+	struct StaticLightNode {
+		glm::vec3 aabb_min;  ///< AABB min extents, absolute (i.e not relative to centre).
+		glm::vec3 aabb_max;  ///< AABB max extents, absolute (i.e not relative to centre).
+		glm::vec3 centre;
+		float radius;
+		StaticLightNode *left;
+		StaticLightNode *right;
+		const LightNode *light;  ///< Any node can potentially contain a light, not just leaf nodes.
+	};
+
+	/**
+	 * It's probably better for caching if static nodes are all put into one array with offsets
+	 * instead of pointers, but that's something for another day. Getting it just plain working
+	 * first is the priority.
+	 */
+	StaticLightNode *_staticRootNode;
+	bool _staticDirty;
+	std::vector<const StaticLightNode *> _staticSearchStack;
+
+	std::vector<LightGL> _lightsGL;  ///< Active light data. Capacity of _lightsGL vector must be at least _maxLights.
+	int32_t _maxLights;  ///< Maximum number of active lights at any given time. Default is eight.
+	int32_t _activeLights;  ///< The number of active lights. Must less than or equal to _maxLights.
 	/**
 	 * Please note that _activeLights is bound to shaders directly, and therefore needs an addressable location.
-	 * The value of _lights.size() cannot be used for two reasons:
+	 * The value of _lightsGL.size() cannot be used for two reasons:
 	 * 1) the size of size_t might not be 32bit, and
 	 * 2) the return value is not an addressable location.
 	 */
@@ -134,6 +162,27 @@ private:
 	 * building of light intersections with query volumes.
 	 */
 	std::vector<const LightNode *> _registered;  ///< All registered lights.
+
+	///< Check if a light is actually registered or not. Used to prevent double-registration.
+	bool isLightRegistered(const LightNode *light);
+
+	///< Build a balanced tree of static lights. Assumes light position and radius are static.
+	void buildStaticTree();
+
+	///< Delete the current static tree.
+	void deleteStaticTree();
+
+	///< Recursive function to delete static tree nodes.
+	void deleteStaticTree(StaticLightNode *node);
+
+	///< Search the static tree and activate GL lights within the volume. Faster, but not thread safe.
+	void searchStaticTree(const glm::vec3 &pos, const float radius);
+
+	///< Search the static tree recursively. Slower, but thread safe.
+	void searchStaticTree(const glm::vec3 &pos, const float radius, const StaticLightNode *node);
+
+	///< Activate a light in GL.
+	void activateLight(const LightNode *light);
 };
 
 } // End of namespace Graphics
