@@ -837,7 +837,11 @@ void ModelNode::calcRenderTransform(const glm::mat4 &parentTransform) {
 void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 	calcRenderTransform(parentTransform);
 	/**
-	 * Ignoring _render for now because it's being falsely set to false.
+	 * Ignoring _render for now because it's being falsely set to false. Later it would be nice
+	 * to make some function that checks for all the "don't render" scenarios and only update
+	 * them when there's a change - not run the checks every single frame.
+	 * One example is if there's some kind of animation that changes the alpha value of a node,
+	 * then the "render or not" check is only needed when the animation updates - not every frame.
 	 */
 	/* if (_render) {} */
 
@@ -849,10 +853,8 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 		 */
 		buildMaterial();
 	} else {
-		if (_mesh) {
-			LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), _mesh->radius);
-		}
 		for (size_t i = 0; i < _renderableArray.size(); ++i) {
+			LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), getMesh()->radius);
 			_renderableArray[i].renderImmediate(_renderTransform);
 		}
 	}
@@ -873,10 +875,8 @@ void ModelNode::renderImmediate() const {
 	 * will take care of any _dirtyRender check. There is therefore no need to be perform
 	 * that check again here.
 	 */
-	if (_mesh) {
-		LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), _mesh->radius);
-	}
 	for (size_t i = 0; i < _renderableArray.size(); ++i) {
+		LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), getMesh()->radius);
 		_renderableArray[i].renderImmediate();
 	}
 }

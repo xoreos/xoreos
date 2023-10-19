@@ -792,7 +792,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	_mesh->beaming = ctx.mdl->readUint32LE() == 1;
 	_mesh->render  = ctx.mdl->readUint32LE() == 1;
 
-	_mesh->transparencyHint = ctx.mdl->readUint32LE() == 1;
+	_mesh->transparencyHint = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -1133,10 +1133,12 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 				throw Common::Exception("Alpha controller with %d values", columnCount);
 
 			// Starting alpha
-			if (data[timeIndex + 0] == 0.0f)
+			if (data[timeIndex + 0] == 0.0f) {
+				_alpha = data[dataIndex + 0];
 				if (data[dataIndex + 0] == 0.0f)
 					// TODO: Just disabled rendering if alpha == 0.0 for now
 					_render = false;
+			}
 		} else if (type == kControllerTypeRadius) {
 			if (columnCount != 1)
 				throw Common::Exception("Radius controller with %d values", columnCount);

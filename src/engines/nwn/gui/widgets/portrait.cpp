@@ -249,8 +249,8 @@ void Portrait::setBorderColor(float bR, float bG, float bB, float bA) {
 	GfxMan.lockFrame();
 	_bColour[0] = bR;
 	_bColour[1] = bG;
-	_bColour[1] = bB;
-	_bColour[1] = bA;
+	_bColour[2] = bB;
+	_bColour[3] = bA;
 	GfxMan.unlockFrame();
 }
 
