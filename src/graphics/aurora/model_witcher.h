@@ -87,7 +87,7 @@ public:
 	ModelNode_Witcher(Model &model);
 	~ModelNode_Witcher();
 
-	void load(Model_Witcher::ParserContext &ctx);
+	void load(Model_Witcher::ParserContext &ctx, uint32_t id = 0);
 
 private:
 	struct TexturePaintLayer {
