@@ -1238,18 +1238,12 @@ void ModelNode::buildMaterial() {
 
 	config.materialName = "xoreos.";
 	Shader::ShaderDescriptor cripter;
-	_renderableArray.clear();
 	declareShaderInputs(config, cripter);
 
 	if (config.penvmap) {
 		setupEnvMapSampler(config, cripter);
 		if (config.envmapmode == kModeEnvironmentBlendedUnder)
 			addBlendedUnderEnvMapPass(config, cripter);
-	}
-
-	if (config.pmesh->isTransparent &&
-			!(config.materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
-		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
 	if (config.pmesh->transparencyHint) {
@@ -1265,18 +1259,6 @@ void ModelNode::buildMaterial() {
 	if (config.materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
 		cripter.addPass(Shader::ShaderDescriptor::FORCE_OPAQUE,
 		                Shader::ShaderDescriptor::BLEND_IGNORED);
-	}
-
-	if ((config.materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) &&
-			(config.pmesh->data->rawMesh->getVertexBuffer()->getCount() <= 6)) {
-		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B;
-	}
-
-	Shader::ShaderSurface *surface;
-
-	if (config.pmesh->alpha < 1.0f) {
-		config.materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
-		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
 	Common::UString vertexShaderName;
@@ -1304,7 +1286,7 @@ void ModelNode::buildMaterial() {
 	}
 
 	// Shader objects should now exist, so go ahead and make the material and surface.
-	surface = new Shader::ShaderSurface(vertexObject, config.materialName);
+	Shader::ShaderSurface *surface = new Shader::ShaderSurface(vertexObject, config.materialName);
 	config.material = new Shader::ShaderMaterial(fragmentObject, config.materialName);
 	config.material->setFlags(config.materialFlags);
 	if (config.materialFlags & Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND) {
@@ -1487,6 +1469,10 @@ void ModelNode::bindTexturesToSamplers(MaterialConfiguration &config, Shader::Sh
 
 	if ((config.textureCount > 2) && !config.phandles[2].empty()) {
 		config.material->setTexture("sampler_2_id", config.phandles[2]);
+	}
+
+	if ((config.textureCount > 3) && !config.phandles[3].empty()) {
+		config.material->setTexture("sampler_3_id", config.phandles[3]);
 	}
 }
 

@@ -112,6 +112,7 @@ private:
 
 protected:
 	void buildMaterial();
+	void declareShaderInputs(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
 };
 
 } // End of namespace Aurora
