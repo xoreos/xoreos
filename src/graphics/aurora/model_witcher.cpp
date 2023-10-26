@@ -124,7 +124,7 @@ Model_Witcher::Model_Witcher(const Common::UString &name, ModelType type) : Mode
 
 Model_Witcher::~Model_Witcher() {
 }
-	unsigned int indent = 0;
+
 void Model_Witcher::load(ParserContext &ctx) {
 	if (ctx.mdb->readByte() != 0) {
 		ctx.mdb->seek(0);
@@ -170,15 +170,12 @@ void Model_Witcher::load(ParserContext &ctx) {
 
 	_name = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
 	ctx.mdlName = _name;
-	printf("++++++++++++++++\n");
-	printf("loading model %s\n", _name.c_str());
 
 	uint32_t offsetRootNode = ctx.mdb->readUint32LE();
 
 	ctx.mdb->skip(32);
 
 	byte type = ctx.mdb->readByte();
-	printf("type: %u\n", type);
 
 	ctx.mdb->skip(3);
 
@@ -186,31 +183,24 @@ void Model_Witcher::load(ParserContext &ctx) {
 
 	float firstLOD = ctx.mdb->readIEEEFloatLE();
 	float lastLOD  = ctx.mdb->readIEEEFloatLE();
-	printf("first lod: %f\n", firstLOD);
-	printf("last lod: %f\n", lastLOD);
 	ctx.mdb->skip(16);
 
 	Common::UString detailMap = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	printf("detail map: %s\n", detailMap.c_str());
 	ctx.mdb->skip(4);
 
 	float modelScale = ctx.mdb->readIEEEFloatLE();
-	printf("scale: %f\n", modelScale);
 
 	Common::UString superModel = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	printf("supermodel: %s\n", superModel.c_str());
 
 	ctx.mdb->skip(16);
 
 	newState(ctx);
 
-	indent += 4;
 	ModelNode_Witcher *rootNode = new ModelNode_Witcher(*this);
 	ctx.nodes.push_back(rootNode);
 
 	ctx.mdb->seek(ctx.offModelData + offsetRootNode);
 	rootNode->load(ctx);
-	indent -= 4;
 
 	addState(ctx);
 }
@@ -262,9 +252,6 @@ ModelNode_Witcher::~ModelNode_Witcher() {
 	uint32_t nodeNumber   = ctx.mdb->readUint32LE();
 
 	_name = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	printf("%*s loading node %s\n", indent, "", _name.c_str());
-	printf("%*s inherit colour: %u\n", indent, "", inheritColor);
-	printf("%*s node number: %u\n", indent, "", nodeNumber);
 
 	ctx.mdb->skip(8); // Parent pointers
 
@@ -291,26 +278,17 @@ ModelNode_Witcher::~ModelNode_Witcher() {
 
 	uint32_t imposterGroup = ctx.mdb->readUint32LE();
 	uint32_t fixedRot      = ctx.mdb->readUint32LE();
-	printf("%*s imposter group: %u\n", indent, "", imposterGroup);
-	printf("%*s fixed rot: %u\n", indent, "", fixedRot);
 
-	uint32_t minLOD = ctx.mdb->readUint32LE();
-	uint32_t maxLOD = ctx.mdb->readUint32LE();
-	printf("%*s min lod: %u\n", indent, "", minLOD);
-	printf("%*s max lod: %u\n", indent, "", maxLOD);
+	int32_t minLOD = ctx.mdb->readUint32LE();
+	int32_t maxLOD = ctx.mdb->readUint32LE();
 
 	NodeType type = (NodeType) ctx.mdb->readUint32LE();
-	printf("%*s node type: 0x%08X\n", indent, "", type);
 	switch (type) {
 		case kNodeTypeTrimesh:
-			printf("%*s has mesh\n", indent, "");
-			indent += 4;
 			readMesh(ctx);
-			indent -= 4;
 			break;
 
 		case kNodeTypeTexturePaint:
-			printf("%*s has texture paint\n", indent, "");
 			readTexturePaint(ctx);
 			break;
 
@@ -353,22 +331,16 @@ ModelNode_Witcher::~ModelNode_Witcher() {
 	// Only render the highest LOD (0), or if the node is not LODing (-1)
 	if ((minLOD != -1) && (maxLOD != -1) && (minLOD > 0))
 		_render = false;
-	printf("%*s ________\n", indent, "");
 
-	indent += 4;
-	int i = 0;
 	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
-		printf("%*s loading child %d with id %u\n", indent, "", i, children[i]);
-		i++;
 		ModelNode_Witcher *childNode = new ModelNode_Witcher(*_model);
 		ctx.nodes.push_back(childNode);
 
 		childNode->setParent(this);
 
 		ctx.mdb->seek(ctx.offModelData + *child);
-		childNode->load(ctx, children[i]);
+		childNode->load(ctx, *child);
 	}
-	indent -= 4;
 }
 
 void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
@@ -388,13 +360,10 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	boundingMax[0] = ctx.mdb->readIEEEFloatLE();
 	boundingMax[1] = ctx.mdb->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s bounding min: %f, %f, %f\n", indent, "", boundingMin[0], boundingMin[1], boundingMin[2]);
-	printf("%*s bounding max: %f, %f, %f\n", indent, "", boundingMax[0], boundingMax[1], boundingMax[2]);
 
 	ctx.mdb->skip(28); // Unknown
 
 	float volFogScale = ctx.mdb->readIEEEFloatLE();
-	printf("%*s volumetric fog scale: %f\n", indent, "", volFogScale);
 
 	ctx.mdb->skip(16); // Unknown
 
@@ -406,17 +375,13 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	_mesh->ambient[0] = ctx.mdb->readIEEEFloatLE();
 	_mesh->ambient[1] = ctx.mdb->readIEEEFloatLE();
 	_mesh->ambient[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s diffuse: %f, %f, %f\n", indent, "", _mesh->diffuse[0], _mesh->diffuse[1], _mesh->diffuse[2]);
-	printf("%*s ambient: %f, %f, %f\n", indent, "", _mesh->ambient[0], _mesh->ambient[1], _mesh->ambient[2]);
 
 	float textureTransRot[3];
 	textureTransRot[0] = ctx.mdb->readIEEEFloatLE();
 	textureTransRot[1] = ctx.mdb->readIEEEFloatLE();
 	textureTransRot[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s texture trans rot: %f, %f, %f\n", indent, "", textureTransRot[0], textureTransRot[1], textureTransRot[2]);
 
 	_mesh->shininess = ctx.mdb->readIEEEFloatLE();
-	printf("%*s shininess: %f\n", indent, "", _mesh->shininess);
 
 	uint32_t shadow = ctx.mdb->readUint32LE();
 	uint32_t beaming = ctx.mdb->readUint32LE();
@@ -424,116 +389,79 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	_mesh->shadow  = shadow == 1;
 	_mesh->beaming = beaming == 1;
 	_mesh->render  = render == 1;
-	printf("%*s shadow: 0x%04X\n", indent, "", shadow);
-	printf("%*s beaming: 0x%04X\n", indent, "", beaming);
-	printf("%*s render: 0x%04X\n", indent, "", render);
 
 	_mesh->transparencyHint = ctx.mdb->readUint32LE();
-	printf("%*s transparency hint: %u\n", indent, "", _mesh->transparencyHint);
 
 	ctx.mdb->skip(4); // Unknown
 
 	Common::UString texture[4];
 	for (int t = 0; t < 4; t++) {
 		texture[t] = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-		printf("%*s texture %d: %s\n", indent, "", t, texture[t].c_str());
 
 		if (texture[t] == "NULL")
 			texture[t].clear();
 	}
 
 	_mesh->tilefade = ctx.mdb->readUint32LE() == 1;
-	printf("%*s tilefade: %u\n", indent, "", _mesh->tilefade);
 
 	bool controlFade   = ctx.mdb->readByte() == 1;
 	bool lightMapped   = ctx.mdb->readByte() == 1;
 	bool rotateTexture = ctx.mdb->readByte() == 1;
-	printf("%*s control fade: %u\n", indent, "", controlFade);
-	printf("%*s light mapped: %u\n", indent, "", lightMapped);
-	printf("%*s rotate texture: %u\n", indent, "", rotateTexture);
 
 	ctx.mdb->skip(1); // Unknown
 
 	float transparencyShift = ctx.mdb->readIEEEFloatLE();
-	printf("%*s transparency shift: %f\n", indent, "", transparencyShift);
 
 	uint32_t defaultRenderList = ctx.mdb->readUint32LE();
 	uint32_t preserveVColors   = ctx.mdb->readUint32LE();
-	printf("%*s default render list: %u\n", indent, "", defaultRenderList);
-	printf("%*s preseserve vertex colours: %u\n", indent, "", preserveVColors);
 
 	uint32_t fourCC = ctx.mdb->readUint32BE();
-	printf("%*s fourCC: %u\n", indent, "", fourCC);
 
 	ctx.mdb->skip(4); // Unknown
 
 	float depthOffset       = ctx.mdb->readIEEEFloatLE();
 	float coronaCenterMult  = ctx.mdb->readIEEEFloatLE();
 	float fadeStartDistance = ctx.mdb->readIEEEFloatLE();
-	printf("%*s depth offset: %f\n", indent, "", depthOffset);
-	printf("%*s corona centre multiplier: %f\n", indent, "", coronaCenterMult);
-	printf("%*s fade start distance: %f\n", indent, "", fadeStartDistance);
 
 	bool distFromScreenCenterFace = ctx.mdb->readByte() == 1;
 	ctx.mdb->skip(3); // Unknown
-	printf("%*s dist from screen centre face: %u\n", indent, "", distFromScreenCenterFace);
-
 
 	float enlargeStartDistance = ctx.mdb->readIEEEFloatLE();
-	printf("%*s enlarge start distance: %f\n", indent, "", enlargeStartDistance);
 
 	bool affectedByWind = ctx.mdb->readByte() == 1;
 	ctx.mdb->skip(3); // Unknown
-	printf("%*s affected by wind: %u\n", indent, "", affectedByWind);
 
 	float dampFactor = ctx.mdb->readIEEEFloatLE();
-	printf("%*s dampening factor: %f\n", indent, "", dampFactor);
 
 	uint32_t blendGroup = ctx.mdb->readUint32LE();
-	printf("%*s blend group: %u\n", indent, "", blendGroup);
 
 	bool dayNightLightMaps = ctx.mdb->readByte() == 1;
-	printf("%*s day/night light maps: %u\n", indent, "", dayNightLightMaps);
 
 	Common::UString dayNightTransition = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 200);
-	printf("%*s day/nnight transition: %s\n", indent, "", dayNightTransition.c_str());
 
 	bool ignoreHitCheck  = ctx.mdb->readByte() == 1;
 	bool needsReflection = ctx.mdb->readByte() == 1;
 	ctx.mdb->skip(1); // Unknown
-	printf("%*s ignore hit check: %u\n", indent, "", ignoreHitCheck);
-	printf("%*s needs reflection: %u\n", indent, "", needsReflection);
 
 	float reflectionPlaneNormal[3];
 	reflectionPlaneNormal[0] = ctx.mdb->readIEEEFloatLE();
 	reflectionPlaneNormal[1] = ctx.mdb->readIEEEFloatLE();
 	reflectionPlaneNormal[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s reflection plane normal: %f, %f, %f\n", indent, "", reflectionPlaneNormal[0], reflectionPlaneNormal[1], reflectionPlaneNormal[2]);
 	float reflectionPlaneDistance = ctx.mdb->readIEEEFloatLE();
-	printf("%*s reflection plane distance: %f\n", indent, "", reflectionPlaneDistance);
 
 	bool fadeOnCameraCollision = ctx.mdb->readByte() == 1;
 	bool noSelfShadow          = ctx.mdb->readByte() == 1;
 	bool isReflected           = ctx.mdb->readByte() == 1;
 	bool onlyReflected         = ctx.mdb->readByte() == 1;
-	printf("%*s fade on camera collision: %u\n", indent, "", fadeOnCameraCollision);
-	printf("%*s no self shadow: %u\n", indent, "", noSelfShadow);
-	printf("%*s is reflected: %u\n", indent, "", isReflected);
-	printf("%*s only reflected: %u\n", indent, "", onlyReflected);
 
 	Common::UString lightMapName = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	printf("%*s lightmap name: %s\n", indent, "", lightMapName.c_str());
 
 	bool canDecal            = ctx.mdb->readByte() == 1;
 	bool multiBillBoard      = ctx.mdb->readByte() == 1;
 	bool ignoreLODReflection = ctx.mdb->readByte() == 1;
 	ctx.mdb->skip(1); // Unknown
-	printf("%*s can decal: %u\n", indent, "", canDecal);
-	printf("%*s multi-billboard: %u\n", indent, "", multiBillBoard);
-	printf("%*s ignore lod reflection: %u\n", indent, "", ignoreLODReflection);
 
 	float detailMapScape = ctx.mdb->readIEEEFloatLE();
-	printf("%*s detail map scape: %f\n", indent, "", detailMapScape);
 
 	ctx.offTextureInfo = ctx.mdb->readUint32LE();
 
@@ -543,7 +471,6 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	uint32_t vertexOffset, vertexCount;
 	Model::readArrayDef(*ctx.mdb, vertexOffset, vertexCount);
-	printf("%*s vertex count: %u\n", indent, "", vertexCount);
 
 	uint32_t normalsOffset, normalsCount;
 	Model::readArrayDef(*ctx.mdb, normalsOffset, normalsCount);
@@ -579,9 +506,6 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	std::vector<Common::UString> textures;
 	readTextures(ctx, textures);
-	for (int t = 0; t < textures.size(); t++) {
-		printf("%*s read texture %d: %s\n", indent, "", t, textures[t].c_str());
-	}
 	evaluateTextures(4, textures, texture, tVertsCount, dayNightLightMaps, lightMapName);
 
 	loadTextures(textures);
@@ -666,8 +590,6 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	uint32_t layersOffset, layersCount;
 	Model::readArrayDef(*ctx.mdb, layersOffset, layersCount);
-	printf("%*s reading texture paint\n", indent, "");
-	printf("%*s layer count: %u\n", indent, "", layersCount);
 
 	ctx.mdb->skip(28); // Unknown
 
@@ -677,10 +599,6 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	uint32_t sectorID1 = ctx.mdb->readUint32LE();
 	uint32_t sectorID2 = ctx.mdb->readUint32LE();
 	uint32_t sectorID3 = ctx.mdb->readUint32LE();
-	printf("%*s sector ID0: %u\n", indent, "", sectorID0);
-	printf("%*s sector ID1: %u\n", indent, "", sectorID1);
-	printf("%*s sector ID2: %u\n", indent, "", sectorID2);
-	printf("%*s sector ID3: %u\n", indent, "", sectorID3);
 
 	float boundingMin[3], boundingMax[3];
 
@@ -691,8 +609,6 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	boundingMax[0] = ctx.mdb->readIEEEFloatLE();
 	boundingMax[1] = ctx.mdb->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s bounding min: %f, %f, %f\n", indent, "", boundingMin[0], boundingMin[1], boundingMin[2]);
-	printf("%*s bounding max: %f, %f, %f\n", indent, "", boundingMax[0], boundingMax[1], boundingMax[2]);
 
 	_mesh = new Mesh();
 
@@ -702,92 +618,62 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	_mesh->ambient[0] = ctx.mdb->readIEEEFloatLE();
 	_mesh->ambient[1] = ctx.mdb->readIEEEFloatLE();
 	_mesh->ambient[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s diffuse: %f, %f, %f\n", indent, "", _mesh->diffuse[0], _mesh->diffuse[1], _mesh->diffuse[2]);
-	printf("%*s ambient: %f, %f, %f\n", indent, "", _mesh->ambient[0], _mesh->ambient[1], _mesh->ambient[2]);
 
 	float textureTransRot[3];
 	textureTransRot[0] = ctx.mdb->readIEEEFloatLE();
 	textureTransRot[1] = ctx.mdb->readIEEEFloatLE();
 	textureTransRot[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s texture trans rot: %f, %f, %f\n", indent, "", textureTransRot[0], textureTransRot[1], textureTransRot[2]);
 
 	_mesh->shadow = ctx.mdb->readUint32LE() == 1;
 	_mesh->render = ctx.mdb->readUint32LE() == 1;
-	printf("%*s shadow: %u\n", indent, "", _mesh->shadow);
-	printf("%*s render: %u\n", indent, "", _mesh->render);
 
 	bool tileFade = ctx.mdb->readUint32LE() == 1;
-	printf("%*s tile fade: %u\n", indent, "", tileFade);
 
 	bool controlFade   = ctx.mdb->readByte() == 1;
 	bool lightMapped   = ctx.mdb->readByte() == 1;
 	bool rotateTexture = ctx.mdb->readByte() == 1;
 	ctx.mdb->skip(1); // Unknown
-	printf("%*s control fade: %u\n", indent, "", controlFade);
-	printf("%*s light mapped: %u\n", indent, "", lightMapped);
-	printf("%*s rotate texture: %u\n", indent, "", rotateTexture);
 
 	float transparencyShift = ctx.mdb->readIEEEFloatLE();
-	printf("%*s transparency shift: %f\n", indent, "", transparencyShift);
 
 	uint32_t defaultRenderList = ctx.mdb->readUint32LE();
 	uint32_t fourCC            = ctx.mdb->readUint32BE();
-	printf("%*s default render list: %u\n", indent, "", defaultRenderList);
-	printf("%*s fourCC: %u\n", indent, "", fourCC);
 
 	ctx.mdb->skip(4); // Unknown
 
 	float depthOffset = ctx.mdb->readIEEEFloatLE();
-	printf("%*s depth offset: %f\n", indent, "", depthOffset);
 
 	uint32_t blendGroup = ctx.mdb->readUint32LE();
-	printf("%*s blend group: %u\n", indent, "", blendGroup);
 
 	bool dayNightLightMaps = ctx.mdb->readByte() == 1;
-	printf("%*s day/night light maps: %u\n", indent, "", dayNightLightMaps);
 
 	Common::UString dayNightTransition = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 200);
-	printf("%*s day/night transition: %s\n", indent, "", dayNightTransition.c_str());
 
 	bool ignoreHitCheck  = ctx.mdb->readByte() == 1;
 	bool needsReflection = ctx.mdb->readByte() == 1;
 	ctx.mdb->skip(1); // Unknown
-	printf("%*s ignore hit check: %u\n", indent, "", ignoreHitCheck);
-	printf("%*s needs reflection: %u\n", indent, "", needsReflection);
 
 	float reflectionPlaneNormal[3];
 	reflectionPlaneNormal[0] = ctx.mdb->readIEEEFloatLE();
 	reflectionPlaneNormal[1] = ctx.mdb->readIEEEFloatLE();
 	reflectionPlaneNormal[2] = ctx.mdb->readIEEEFloatLE();
-	printf("%*s reflection plane normal: %f, %f, %f\n", indent, "", reflectionPlaneNormal[0], reflectionPlaneNormal[1], reflectionPlaneNormal[2]);
 
 	float reflectionPlaneDistance = ctx.mdb->readIEEEFloatLE();
-	printf("%*s reflection plane distance: %f\n", indent, "", reflectionPlaneDistance);
 
 	bool fadeOnCameraCollision = ctx.mdb->readByte() == 1;
 	bool noSelfShadow          = ctx.mdb->readByte() == 1;
 	bool isReflected           = ctx.mdb->readByte() == 1;
 	ctx.mdb->skip(1); // Unknown
-	printf("%*s fade on camera collision: %u\n", indent, "", fadeOnCameraCollision);
-	printf("%*s no self shadow: %u\n", indent, "", noSelfShadow);
-	printf("%*s is reflected: %u\n", indent, "", isReflected);
 
 	float detailMapScape = ctx.mdb->readIEEEFloatLE();
-	printf("%*s detail map scape: %f\n", indent, "", detailMapScape);
 
 	bool onlyReflected = ctx.mdb->readByte() == 1;
-	printf("%*s only reflected: %u\n", indent, "", onlyReflected);
 
 	Common::UString lightMapName = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
-	printf("%*s lightmap name: %s\n", indent, "", lightMapName.c_str());
 
 	bool canDecal            = ctx.mdb->readByte() == 1;
 	bool ignoreLODReflection = ctx.mdb->readByte() == 1;
 	bool enableSpecular      = ctx.mdb->readByte() == 1;
-	printf("%*s can decal: %u\n", indent, "", canDecal);
-	printf("%*s ignore lod reflection: %u\n", indent, "", ignoreLODReflection);
-	printf("%*s enable specular: %u\n", indent, "", enableSpecular);
-
 
 	uint32_t endPos = ctx.mdb->seek(ctx.offRawData + offMeshArrays);
 
@@ -795,7 +681,6 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	uint32_t vertexOffset, vertexCount;
 	Model::readArrayDef(*ctx.mdb, vertexOffset, vertexCount);
-	printf("%*s vertex count: %u\n", indent, "", vertexCount);
 
 	uint32_t normalsOffset, normalsCount;
 	Model::readArrayDef(*ctx.mdb, normalsOffset, normalsCount);
@@ -983,7 +868,6 @@ void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
 			hasShaderTex = true;
 
 			Common::UString shader = line->substr(line->getPosition(7), line->end());
-			printf("%*s Texture line indicates shader: %s\n", indent, "", shader.c_str());
 			if ((shader == "dadd_al_mul_alp") ||
 			    (shader == "corona") ||
 			    (shader == "normalmap") ||
@@ -1054,17 +938,11 @@ void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
 		uint16_t dataIndex   = ctx.mdb->readUint16LE();
 		uint8_t  columnCount = ctx.mdb->readByte();
 		ctx.mdb->skip(1);
-		printf("%*s Found controller type: 0x%04X\n", indent, "", type);
 
 		if (rowCount == 0xFFFF)
 			// TODO: Controller row count = 0xFFFF
 			continue;
 
-		printf("%*s columns: %u, ", indent, "", columnCount);
-		for (uint32_t c = 0; c < columnCount; ++c) {
-			printf("%f ", data[dataIndex + c]);
-		}
-		printf("\n");
 		if        (type == kNodeControllerTypePosition) {
 			if (columnCount != 3)
 				throw Common::Exception("Position controller with %d values", columnCount);
