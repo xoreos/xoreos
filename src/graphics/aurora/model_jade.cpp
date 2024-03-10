@@ -152,6 +152,7 @@ Model_Jade::Model_Jade(const Common::UString &name, ModelType type, const Common
 Model_Jade::~Model_Jade() {
 }
 
+int indent = 0;
 void Model_Jade::load(ParserContext &ctx) {
 	/* Magic and version number:
 	 *
@@ -166,6 +167,7 @@ void Model_Jade::load(ParserContext &ctx) {
 	if (version != 0x00008700)
 		throw Common::Exception("Unsupported MDL: 0x%08X", version);
 
+	printf("Loading model %s\n", _fileName.c_str());
 	ctx.offModelData = 20;
 
 	// Size of the MDL file, without the 20 byte header
@@ -185,6 +187,7 @@ void Model_Jade::load(ParserContext &ctx) {
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 	ctx.mdlName = _name;
+	printf("name: %s\n", _name.c_str());
 
 	uint32_t nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32_t nodeCount       = ctx.mdl->readUint32LE();
@@ -193,6 +196,7 @@ void Model_Jade::load(ParserContext &ctx) {
 	ctx.mdl->skip( 4); // Pointer to the MDL file
 
 	uint8_t type = ctx.mdl->readByte();
+	printf("type: %u\n", type);
 
 	ctx.mdl->skip(3); // Padding
 	ctx.mdl->skip(4); // Unknown
@@ -212,11 +216,15 @@ void Model_Jade::load(ParserContext &ctx) {
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
+	printf("bounding min: %f %f %f\n", boundingMin[0], boundingMin[1], boundingMin[2]);
+	printf("bounding max: %f %f %f\n", boundingMax[0], boundingMax[1], boundingMax[2]);
 	float radius = ctx.mdl->readIEEEFloatLE();
+	printf("radius: %f\n", radius);
 
 	ctx.mdl->skip(4); // Unknown
 
 	float modelScale = ctx.mdl->readIEEEFloatLE();
+	printf("model scale: %f\n", modelScale);
 
 	Common::UString superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
@@ -237,9 +245,10 @@ void Model_Jade::load(ParserContext &ctx) {
 	ModelNode_Jade *rootNode = new ModelNode_Jade(*this);
 	ctx.nodes.push_back(rootNode);
 
+	indent += 4;
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
-
+	indent -= 4;
 	addState(ctx);
 }
 
@@ -301,15 +310,19 @@ ModelNode_Jade::~ModelNode_Jade() {
 
 void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	uint32_t type = ctx.mdl->readUint32LE();
+	printf("%*s type: 0x%04X\n", indent, "", type);
 
 	// Node number in tree order
 	uint16_t nodeNumber1 = ctx.mdl->readUint16LE();
+	printf("%*s node number 1: %u\n", indent, "", nodeNumber1);
 
 	// Sequentially node number as found in the file
 	uint16_t nodeNumber2 = ctx.mdl->readUint16LE();
+	printf("%*s node number 2: %u\n", indent, "", nodeNumber2);
 
 	if (nodeNumber2 < ctx.names.size())
 		_name = ctx.names[nodeNumber2];
+	printf("%*s node name: %s\n", indent, "", _name.c_str());
 
 	ctx.mdl->skip(4); // Pointer to the MDL file
 	ctx.mdl->skip(4); // Pointer to the parent Model
@@ -321,21 +334,29 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	_orientation[0] = ctx.mdl->readIEEEFloatLE();
 	_orientation[1] = ctx.mdl->readIEEEFloatLE();
 	_orientation[2] = ctx.mdl->readIEEEFloatLE();
+	printf("%*s position: %f %f %f\n", indent, "", _position[0], _position[1], _position[2]);
+	printf("%*s orientation: %f %f %f | %f\n", indent, "", _orientation[0], _orientation[1], _orientation[2], _orientation[3]);
 
 	uint32_t childrenOffset = ctx.mdl->readUint32LE();
 	uint32_t childrenCount  = ctx.mdl->readUint32LE();
+	printf("%*s children count: %u\n", indent, "", childrenCount);
 
 	float nodeScale       = ctx.mdl->readIEEEFloatLE();
 	float maxAnimDistance = ctx.mdl->readIEEEFloatLE();
+	printf("%*s node scale: %f\n", indent, "", nodeScale);
+	printf("%*s max anim distance: %f\n", indent, "", maxAnimDistance);
 
 	std::vector<uint32_t> children;
 	Model::readArray(*ctx.mdl, ctx.offModelData + childrenOffset, childrenCount, children);
 
 	if (type & kNodeTypeHasMesh) {
+		printf("%*s node type has mesh\n", indent, "");
 		readMesh(ctx);
 		createMesh(ctx);
 	}
 
+	printf("%*s ________\n", indent, "");
+	indent += 4;
 	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_Jade *childNode = new ModelNode_Jade(*_model);
 		ctx.nodes.push_back(childNode);
@@ -346,29 +367,8 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
-
-	Common::UString meshName = ctx.mdlName;
-	meshName += ".";
-	if (ctx.state->name.size() != 0) {
-		meshName += ctx.state->name;
-	} else {
-		meshName += "xoreos.default";
-	}
-	meshName += ".";
-	meshName += _name;
-
-	if (!_mesh) {
-		return;
-	}
-
-	if (!_mesh->data) {
-		return;
-	}
-
-	if (!_mesh->data->rawMesh) {
-		return;
-	}
-
+	indent -= 4;
+	/*
 	_mesh->data->rawMesh->init();
 	if (MeshMan.getMesh(meshName)) {
 		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
@@ -378,7 +378,7 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	}
 	_mesh->data->rawMesh->setName(meshName);
 	MeshMan.addMesh(_mesh->data->rawMesh);
-
+	*/
 	if (GfxMan.isRendererExperimental())
 		buildMaterial();
 }
@@ -389,6 +389,7 @@ void ModelNode_Jade::buildMaterial() {
 
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	ctx.mdl->skip(12); // Unknown
+	indent += 2;
 
 	float boundingMin[3], boundingMax[3];
 
@@ -399,26 +400,34 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	boundingMax[0] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
+	printf("%*s bounding min: %f %f %f\n", indent, "", boundingMin[0], boundingMin[1], boundingMin[2]);
+	printf("%*s bounding max: %f %f %f\n", indent, "", boundingMax[0], boundingMax[1], boundingMax[2]);
 
 	float radius = ctx.mdl->readIEEEFloatLE();
+	printf("%*s radius: %f\n", indent, "", radius);
 
 	float pointsAverage[3];
 	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
+	printf("%*s points average: %f %f %f\n", indent, "", pointsAverage[0], pointsAverage[1], pointsAverage[2]);
 
 	_mesh = new Mesh();
 
 	_mesh->transparencyHint = ctx.mdl->readUint32LE();
 	uint16_t flags            = ctx.mdl->readUint16LE();
+	printf("%*s transparency hint: %u\n", indent, "", _mesh->transparencyHint);
+	printf("%*s flags: 0x%04X\n", indent, "", flags);
 
 	_mesh->shadow = ctx.mdl->readUint16LE() != 0;
+	printf("%*s shadow: %u\n", indent, "", _mesh->shadow);
 
 	_mesh->render  = (flags & kNodeFlagsRender) != 0;
 	_mesh->beaming = (flags & kNodeFlagsBeaming) != 0;
 	_mesh->isBackgroundGeometry = (flags & kNodeFlagsBackgroundGeometry) != 0;
 
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	printf("%*s texture: %s\n", indent, "", texture.c_str());
 
 	uint32_t indexCount = ctx.mdl->readUint32LE();
 
@@ -436,6 +445,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	// - 5: Triangle fan
 	// - 6: ???
 	uint32_t meshType = ctx.mdl->readUint32LE();
+	printf("%*s mesh type: %u\n", indent, "", meshType);
 
 	ctx.mdl->skip(12); // Unknown
 
@@ -462,17 +472,22 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	ctx.mdl->skip(4); // Unknown
 
 	uint32_t materialID = ctx.mdl->readUint32LE();
+	printf("%*s material id: %u\n", indent, "", materialID);
 
 	// Group id is likely used to select an appropriate shader.
 	uint32_t materialGroupID = ctx.mdl->readUint32LE();
+	printf("%*s material group id: %u\n", indent, "", materialGroupID);
 
 	_mesh->selfIllum[0] = ctx.mdl->readIEEEFloatLE();
 	_mesh->selfIllum[1] = ctx.mdl->readIEEEFloatLE();
 	_mesh->selfIllum[2] = ctx.mdl->readIEEEFloatLE();
+	printf("%*s self illum: %f %f %f\n", indent, "", _mesh->selfIllum[0], _mesh->selfIllum[1], _mesh->selfIllum[2]);
 
 	_mesh->alpha = ctx.mdl->readIEEEFloatLE();
+	printf("%*s alpha: %f\n", indent, "", _mesh->alpha);
 
 	float textureWCoords = ctx.mdl->readIEEEFloatLE();
+	printf("%*s texture w coords: %f\n", indent, "", textureWCoords);
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -524,7 +539,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 		}
 	}
 
-
 	// Read face indices
 
 	if      (faceOffsetMDL != 0)
@@ -533,6 +547,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 		readChunkedIndices(*ctx.mdx, ctx.indices, faceOffsetMDX, indexCount);
 
 	unfoldFaces(ctx.indices, meshType);
+	indent -= 2;
 }
 
 void ModelNode_Jade::readPlainIndices(Common::SeekableReadStream &stream, std::vector<uint16_t> &indices,
@@ -689,6 +704,35 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16_t));
 
 	createBound();
+
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += ctx.mdlName;
+	printf("%*s mesh name: %s\n", indent, "", meshName.c_str());
+
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 }
 
 /** Opens the resource for the materialID and parses it to return the 4 normal textures.
@@ -701,35 +745,48 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 		return;
 	}
 
+	indent += 2;
 	Common::UString mabFile = Common::String::format("%d", materialID);
 	Common::SeekableReadStream *mab = ResMan.getResource(mabFile, ::Aurora::kFileTypeMAB);
 	if (!mab) {
 		textures.clear();
 		return;
 	}
+	printf("%*s mab file: %s\n", indent, "", mabFile.c_str());
 
 	textures.reserve(4);
 
 	try {
 		uint32_t size = mab->readUint32LE();
+		printf("%*s texture size: %u\n", indent, "", size);
 		if (size != 292)
 			throw Common::Exception("Invalid size in binary material %s.mab", mabFile.c_str());
 
 		_jadeMaterialData.renderPathID = mab->readUint32LE();
+		printf("%*s render path id: %u\n", indent, "", _jadeMaterialData.renderPathID);
 
 		_jadeMaterialData.opacity1 = mab->readUint32LE();
 		_jadeMaterialData.opacity2 = mab->readUint32LE();
+		printf("%*s opacity 1: %u\n", indent, "", _jadeMaterialData.opacity1);
+		printf("%*s opacity 2: %u\n", indent, "", _jadeMaterialData.opacity2);
 
 		_jadeMaterialData.cubeMultiplier         = mab->readIEEEFloatLE();
 		_jadeMaterialData.bumpCoordMultiplier    = mab->readIEEEFloatLE();
 		_jadeMaterialData.terrainCoordMultiplier = mab->readIEEEFloatLE();
+		printf("%*s cube multiplier: %f\n", indent, "", _jadeMaterialData.cubeMultiplier);
+		printf("%*s bump coord multiplier: %f\n", indent, "", _jadeMaterialData.bumpCoordMultiplier);
+		printf("%*s terrain doord multiplier %f\n", indent, "", _jadeMaterialData.terrainCoordMultiplier);
 
 		_jadeMaterialData.falloff = mab->readIEEEFloatLE();
+		printf("%*s falloff: %f\n", indent, "", _jadeMaterialData.falloff);
 
 		_jadeMaterialData.waterAlpha = mab->readIEEEFloatLE();
+		printf("%*s water alpha: %f\n", indent, "", _jadeMaterialData.waterAlpha);
 
 		_jadeMaterialData.bumpMapIsSpecular = mab->readByte();
 		_jadeMaterialData.doubleSided       = mab->readByte();
+		printf("%*s bumpmap is specular: %u\n", indent, "", _jadeMaterialData.bumpMapIsSpecular);
+		printf("%*s double sided: %u\n", indent, "", _jadeMaterialData.doubleSided);
 
 		mab->skip(2); // Unknown, padding?
 
@@ -739,16 +796,24 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 		_jadeMaterialData.ambientColor[0] = mab->readIEEEFloatLE();
 		_jadeMaterialData.ambientColor[1] = mab->readIEEEFloatLE();
 		_jadeMaterialData.ambientColor[2] = mab->readIEEEFloatLE();
+		printf("%*s diffuse: %f %f %f\n", indent, "", _jadeMaterialData.diffuseColor[0], _jadeMaterialData.diffuseColor[1], _jadeMaterialData.diffuseColor[2]);
+		printf("%*s ambient: %f %f %f\n", indent, "", _jadeMaterialData.ambientColor[0], _jadeMaterialData.ambientColor[1], _jadeMaterialData.ambientColor[2]);
+		_mesh->ambient[0] = _jadeMaterialData.ambientColor[0];
+		_mesh->ambient[1] = _jadeMaterialData.ambientColor[1];
+		_mesh->ambient[2] = _jadeMaterialData.ambientColor[2];
 
 		mab->skip(24); // Unknown
 
 		_jadeMaterialData.blending1 = mab->readUint32LE();
 		_jadeMaterialData.blending2 = mab->readUint32LE();
+		printf("%*s blending1: %u\n", indent, "", _jadeMaterialData.blending1);
+		printf("%*s blending2: %u\n", indent, "", _jadeMaterialData.blending2);
 
 		mab->skip(4); // Unknown
 
 		for (int i = 0; i < 4; i++) {
 			textures.push_back(Common::readStringFixed(*mab, Common::kEncodingASCII, 32));
+			printf("%*s textures %d: %s\n", indent, "", i, textures.back().c_str());
 
 			if (textures.back() == "NULL")
 				textures.back().clear();
@@ -766,6 +831,8 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 
 	while (!textures.empty() && textures.back().empty())
 		textures.pop_back();
+
+	indent -= 2;
 }
 
 } // End of namespace Aurora

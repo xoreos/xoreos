@@ -52,6 +52,15 @@ static const uint32_t kMDBID = MKTAG('N', 'W', 'N', '2');
 
 static const uint32_t kRigidID = MKTAG('R', 'I', 'G', 'D');
 static const uint32_t kSkinID  = MKTAG('S', 'K', 'I', 'N');
+/**
+ * Other ID values that have been observed include:
+ *    H A I R
+ *    C O L S
+ *    C O L 2
+ *    C O L 3
+ *    W A L K
+ *    H O O K
+ */
 
 namespace Graphics {
 
@@ -225,9 +234,9 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	_mesh = new Mesh();
 
-	_mesh->diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [2] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[0] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[1] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[2] = ctx.mdb->readIEEEFloatLE();
@@ -302,7 +311,15 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	for (uint32_t i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
-	Common::UString meshName = ctx.mdlName;
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
 	meshName += ".";
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
@@ -310,11 +327,11 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 		meshName += "xoreos.default";
 	}
 	meshName += ".";
-	meshName += _name;
+	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 	if (checkMesh) {
-		warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+		warning("Warning: probable rigid mesh duplication of: %s, attempting to correct", meshName.c_str());
 		delete _mesh->data->rawMesh;
 		_mesh->data->rawMesh = checkMesh;
 	} else {
@@ -350,9 +367,9 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	_mesh = new Mesh();
 
-	_mesh->diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [2] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[0] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[1] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[2] = ctx.mdb->readIEEEFloatLE();
@@ -432,7 +449,15 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	createBound();
 
-	Common::UString meshName = ctx.mdlName;
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
 	meshName += ".";
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
@@ -440,11 +465,11 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 		meshName += "xoreos.default";
 	}
 	meshName += ".";
-	meshName += _name;
+	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 	if (checkMesh) {
-		warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+		warning("Warning: probable skin mesh duplication of: %s, attempting to correct", meshName.c_str());
 		delete _mesh->data->rawMesh;
 		_mesh->data->rawMesh = checkMesh;
 	} else {

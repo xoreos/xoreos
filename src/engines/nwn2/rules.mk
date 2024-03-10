@@ -53,6 +53,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/inventory.h \
     src/engines/nwn2/store.h \
     src/engines/nwn2/journal.h \
+    src/engines/nwn2/light.h \
     $(EMPTY)
 
 src_engines_nwn2_libnwn2_la_SOURCES += \
@@ -85,6 +86,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/inventory.cpp \
     src/engines/nwn2/store.cpp \
     src/engines/nwn2/journal.cpp \
+    src/engines/nwn2/light.cpp \
     $(EMPTY)
 
 include src/engines/nwn2/script/rules.mk
