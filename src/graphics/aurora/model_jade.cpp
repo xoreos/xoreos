@@ -237,10 +237,8 @@ void Model_Jade::load(ParserContext &ctx) {
 	ModelNode_Jade *rootNode = new ModelNode_Jade(*this);
 	ctx.nodes.push_back(rootNode);
 
-	indent += 4;
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
-	indent -= 4;
 	addState(ctx);
 }
 
@@ -357,7 +355,6 @@ void ModelNode_Jade::buildMaterial() {
 
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	ctx.mdl->skip(12); // Unknown
-	indent += 2;
 
 	float boundingMin[3], boundingMax[3];
 
@@ -501,7 +498,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 		readChunkedIndices(*ctx.mdx, ctx.indices, faceOffsetMDX, indexCount);
 
 	unfoldFaces(ctx.indices, meshType);
-	indent -= 2;
 }
 
 void ModelNode_Jade::readPlainIndices(Common::SeekableReadStream &stream, std::vector<uint16_t> &indices,
@@ -698,7 +694,6 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 		return;
 	}
 
-	indent += 2;
 	Common::UString mabFile = Common::String::format("%d", materialID);
 	Common::SeekableReadStream *mab = ResMan.getResource(mabFile, ::Aurora::kFileTypeMAB);
 	if (!mab) {
@@ -767,8 +762,6 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 
 	while (!textures.empty() && textures.back().empty())
 		textures.pop_back();
-
-	indent -= 2;
 }
 
 } // End of namespace Aurora

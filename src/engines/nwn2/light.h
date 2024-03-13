@@ -49,7 +49,6 @@ protected:
 
 	void load(const Aurora::GFF3Struct &light);
 
-	Graphics::LightManager::LightNode _lightAmbient;
 	Graphics::LightManager::LightNode _lightDiffuse;
 };
 
