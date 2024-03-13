@@ -1298,11 +1298,7 @@ void ModelNode::buildMaterial() {
 
 	bindTexturesToSamplers(config, cripter);
 
-	surface->setVariable("_objectModelviewMatrix", &_renderTransform);
-	surface->setVariable("_bindPose", &_absoluteBaseTransform);
-	surface->setVariable("_boneTransforms", config.pmesh->data->rawMesh->getBoneTransforms().data());
-	config.material->setVariable("_alpha", &_alpha);
-	config.material->setVariable("_ambient", config.pmesh->ambient);
+	bindShaderVariables(surface, config);
 
 	_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, config.pmesh->data->rawMesh));
 }
@@ -1474,6 +1470,14 @@ void ModelNode::bindTexturesToSamplers(MaterialConfiguration &config, Shader::Sh
 	if ((config.textureCount > 3) && !config.phandles[3].empty()) {
 		config.material->setTexture("sampler_3_id", config.phandles[3]);
 	}
+}
+
+void ModelNode::bindShaderVariables(Shader::ShaderSurface *surface, MaterialConfiguration &config) {
+	surface->setVariable("_objectModelviewMatrix", &_renderTransform);
+	surface->setVariable("_bindPose", &_absoluteBaseTransform);
+	surface->setVariable("_boneTransforms", config.pmesh->data->rawMesh->getBoneTransforms().data());
+	config.material->setVariable("_alpha", &_alpha);
+	config.material->setVariable("_ambient", config.pmesh->ambient);
 }
 
 } // End of namespace Aurora

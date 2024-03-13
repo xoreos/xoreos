@@ -179,6 +179,11 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case UNIFORM_F_COLOUR:
 			f_header += "uniform vec4 _colour;\n";
 			break;
+		case UNIFORM_V_TINT:
+			f_header += "uniform vec4 _tintR;\n";
+			f_header += "uniform vec4 _tintG;\n";
+			f_header += "uniform vec4 _tintB;\n";
+			break;
 		default: break;
 		}
 	}
@@ -562,6 +567,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case TEXTURE_LIGHTMAP: f_action_string = "lightmap"; break;
 		case TEXTURE_BUMPMAP: f_action_string = "bumpmap"; break;
 		case FORCE_OPAQUE: f_action_string = "force_opaque"; break;
+		case TINT: f_action_string = "tint"; break;
 		case NOOP: f_action_string = "noop"; break;
 		}
 
@@ -642,6 +648,23 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case FORCE_OPAQUE:
 			f_action_string = "fraggle.a = 1.0f;\n";
 			break;
+		case TINT:
+			/**
+			 * Tinting is based on NWN2 tint maps. It looks like a tint map can provide which
+			 * tint channel(s) are applied, with alpha used to provide additional modulation,
+			 * however the a bit of guesswork shows that an additional 0.25f multiplier is used
+			 * to avoid the tint from overwhelming the base colour.
+			 */
+			if (isGL3) {
+				f_action_string = \
+					"vec4 tinticle = texture(action_tint_sampler, action_tint_coords);\n"
+					"froggle = vec4(tinticle.rgb * tinticle.a * 0.25f, tinticle.a);\n";
+			} else {
+				f_action_string = \
+					"vec4 tinticle = texture2D(action_tint_sampler, action_tint_coords);\n"
+					"froggle = vec4(tinticle.rgb * tinticle.a * 0.25f, tinticle.a);\n";
+			}
+			break;
 		case NOOP:
 			f_action_string = "// noop;\n";
 			break;
@@ -663,6 +686,9 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			break;
 		case BLEND_MULTIPLY:
 			f_blend_string = "fraggle *= froggle;\n";
+			break;
+		case BLEND_TINT:
+			f_blend_string = "fraggle = vec4(mix(mix(mix(fraggle.xyz, _tintR.xyz, froggle.r), _tintG.xyz, froggle.g), _tintB.xyz, froggle.b), fraggle.a);\n";
 			break;
 		case BLEND_IGNORED:
 			break;
@@ -703,6 +729,11 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			"}\n"
 			"fraggle = (fraggle * vec4(_ambient, 1.0)) + vec4(laggle, 0.0);\n"
 			"\n";
+		/**
+		 * @todo: the above uses _ambient as object ambient, but there might need to be world
+		 * ambient as well. Unsure if this should be included in _ambient directly, or if it
+		 * should be (yet another) uniform vec3 and multiplied against _ambient here.
+		 */
 	}
 
 	/**
@@ -845,6 +876,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
 		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;
 		case FORCE_OPAQUE: n_string += "force_opaque"; break;
+		case TINT: n_string += "tint"; break;
 		case NOOP: n_string += "noop"; break;
 		}
 	}
@@ -860,6 +892,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
 		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;
 		case FORCE_OPAQUE: n_string += "force_opaque"; break;
+		case TINT: n_string += "tint"; break;
 		case NOOP: n_string += "noop"; break;
 		}
 
@@ -870,6 +903,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case BLEND_ZERO: n_string += "blend_zero"; break;
 		case BLEND_ONE: n_string += "blend_one"; break;
 		case BLEND_MULTIPLY: n_string += "blend_multiply"; break;
+		case BLEND_TINT: n_string += "blend_tint"; break;
 		case BLEND_IGNORED: n_string += "blend_ignored"; break;
 		}
 	}

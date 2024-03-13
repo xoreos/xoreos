@@ -35,6 +35,8 @@ Light::Light(const Aurora::GFF3Struct &light) : Object(kObjectTypeLight) {
 }
 
 Light::~Light() {
+	// Lights can be deregistered even if they aren't registered.
+	LightMan.deregisterLight(&_lightDiffuse);
 }
 
 void Light::load(const Aurora::GFF3Struct &light) {
@@ -73,27 +75,17 @@ void Light::load(const Aurora::GFF3Struct &light) {
 	float ypos = light.getDouble("YPosition");
 	float zpos = light.getDouble("ZPosition");
 
+	/**
+	 * Near as can be seen, ambient lighting is never actually used. There doesn't
+	 * appear to be a way to know if it should be recognised or not, other than
+	 * checking for valid colour information; a light not used generally has colours
+	 * of all zero. The same applies for specular.
+	 */
 	auto &lightColours = light.getStruct("Light");
 	const auto &lightDiffuse = lightColours.getStruct("Diffuse");
 	//const auto &lightSpecular = lightColours.getStruct("Specular");
-	const auto &lightAmbient = lightColours.getStruct("Ambient");
+	//const auto &lightAmbient = lightColours.getStruct("Ambient");
 	float intensity = lightColours.getDouble("Intensity");  // Type float.
-
-	_lightAmbient.position = glm::vec3(xpos, ypos, zpos);
-	_lightAmbient.radius = range;
-	_lightAmbient.multiplier = intensity;
-	_lightAmbient.priority = 1;  // Unsure which parameter might represent priority.
-	_lightAmbient.fading = 0;  // Unsure which parameter might represent fading hints.
-	_lightAmbient.ambient = 1;
-	// "r", "g", "b", "a" are all of type byte.
-	_lightAmbient.colour[0] = static_cast<float>(lightAmbient.getUint("r")) / 255.0f;
-	_lightAmbient.colour[1] = static_cast<float>(lightAmbient.getUint("g")) / 255.0f;
-	_lightAmbient.colour[2] = static_cast<float>(lightAmbient.getUint("b")) / 255.0f;
-	// 'a' value exists but unsure what it's used for.
-
-	if (lightAmbient.getBool("IsOn")) {
-		LightMan.registerLight(&_lightAmbient);
-	}
 
 	_lightDiffuse.position = glm::vec3(xpos, ypos, zpos);  // It's assumed these are world coordinates.
 	_lightDiffuse.radius = range;
@@ -109,12 +101,10 @@ void Light::load(const Aurora::GFF3Struct &light) {
 	/**
 	 * The "IsOn" value always looks to be 0, so not sure if it's being enabled
 	 * somewhere else, or there's some other hint to indicate if the light is
-	 * enabled or not. Need to look at more than just the intro area to get more
-	 * data on the matter.
+	 * enabled or not.
+	 * For now, just always enable diffuse lighting.
 	 */
-	if (lightDiffuse.getBool("IsOn") || true) {
-		LightMan.registerLight(&_lightDiffuse);
-	}
+	LightMan.registerLight(&_lightDiffuse);
 }
 
 } // End of namespace NWN2

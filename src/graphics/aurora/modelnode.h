@@ -367,6 +367,7 @@ protected:
 	virtual void setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter);
 	virtual void addBlendedOverEnvMapPass(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
 	virtual void bindTexturesToSamplers(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
+	virtual void bindShaderVariables(Shader::ShaderSurface *surface, MaterialConfiguration &config);
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;
