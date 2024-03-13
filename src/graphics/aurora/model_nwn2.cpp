@@ -52,6 +52,15 @@ static const uint32_t kMDBID = MKTAG('N', 'W', 'N', '2');
 
 static const uint32_t kRigidID = MKTAG('R', 'I', 'G', 'D');
 static const uint32_t kSkinID  = MKTAG('S', 'K', 'I', 'N');
+/**
+ * Other ID values that have been observed include:
+ *    H A I R
+ *    C O L S
+ *    C O L 2
+ *    C O L 3
+ *    W A L K
+ *    H O O K
+ */
 
 namespace Graphics {
 
@@ -199,7 +208,8 @@ void Model_NWN2::addState(ParserContext &ctx) {
 }
 
 
-ModelNode_NWN2::ModelNode_NWN2(Model &model) : ModelNode(model), _tintedMapIndex(-1) {
+ModelNode_NWN2::ModelNode_NWN2(Model &model) : ModelNode(model) {
+	memset(_tint, 0, 3 * 4 * sizeof(float));
 }
 
 ModelNode_NWN2::~ModelNode_NWN2() {
@@ -220,14 +230,14 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	Common::UString diffuseMap = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 	Common::UString normalMap  = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
-	                _tintMap   = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	Common::UString tintMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 	Common::UString glowMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
 	_mesh = new Mesh();
 
-	_mesh->diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [2] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[0] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[1] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[2] = ctx.mdb->readIEEEFloatLE();
@@ -248,6 +258,9 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
+	if (!tintMap.empty()) {
+		textures.push_back(tintMap);
+	}
 
 	loadTextures(textures);
 
@@ -258,9 +271,6 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
 	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
 	vertexDecl.push_back(VertexAttrib(VTCOORD  , 3, GL_FLOAT));
-
-	if (!_tintMap.empty())
-		vertexDecl.push_back(VertexAttrib(VTCOORD + 1, 3, GL_FLOAT));
 
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
@@ -283,14 +293,6 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
-
-		// TintMap TexCoords
-		if (!_tintMap.empty()) {
-			v[0] = v[-3];
-			v[1] = v[-2];
-			v[2] = v[-1];
-			v += 3;
-		}
 	}
 
 
@@ -302,7 +304,15 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	for (uint32_t i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
-	Common::UString meshName = ctx.mdlName;
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
 	meshName += ".";
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
@@ -310,11 +320,11 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 		meshName += "xoreos.default";
 	}
 	meshName += ".";
-	meshName += _name;
+	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 	if (checkMesh) {
-		warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+		warning("Warning: probable rigid mesh duplication of: %s, attempting to correct", meshName.c_str());
 		delete _mesh->data->rawMesh;
 		_mesh->data->rawMesh = checkMesh;
 	} else {
@@ -345,14 +355,14 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	Common::UString diffuseMap = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 	Common::UString normalMap  = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
-	                _tintMap   = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
+	Common::UString tintMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 	Common::UString glowMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
 	_mesh = new Mesh();
 
-	_mesh->diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	_mesh->diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->ambient [2] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[0] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[1] = ctx.mdb->readIEEEFloatLE();
 	_mesh->specular[2] = ctx.mdb->readIEEEFloatLE();
@@ -373,6 +383,9 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
+	if (!tintMap.empty()) {
+		textures.push_back(tintMap);
+	}
 
 	loadTextures(textures);
 
@@ -383,9 +396,6 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
 	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
 	vertexDecl.push_back(VertexAttrib(VTCOORD  , 3, GL_FLOAT));
-
-	if (!_tintMap.empty())
-		vertexDecl.push_back(VertexAttrib(VTCOORD + 1, 3, GL_FLOAT));
 
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
@@ -411,14 +421,6 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
 
-		// TintMap TexCoords
-		if (!_tintMap.empty()) {
-			v[0] = v[-3];
-			v[1] = v[-2];
-			v[2] = v[-1];
-			v += 3;
-		}
-
 		ctx.mdb->skip(4); // Bone count
 	}
 
@@ -432,7 +434,15 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	createBound();
 
-	Common::UString meshName = ctx.mdlName;
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
 	meshName += ".";
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
@@ -440,11 +450,11 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 		meshName += "xoreos.default";
 	}
 	meshName += ".";
-	meshName += _name;
+	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 	if (checkMesh) {
-		warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+		warning("Warning: probable skin mesh duplication of: %s, attempting to correct", meshName.c_str());
 		delete _mesh->data->rawMesh;
 		_mesh->data->rawMesh = checkMesh;
 	} else {
@@ -457,88 +467,40 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 }
 
 void ModelNode_NWN2::setTint(const float tint[3][4]) {
-	if (!_mesh || !_mesh->data)
-		return;
-
 	lockFrameIfVisible();
 
 	memcpy(_tint, tint, 3 * 4 * sizeof(float));
 
-	removeTint();
-	createTint();
-
 	unlockFrameIfVisible();
 }
 
-void ModelNode_NWN2::removeTint() {
-	if (_tintedMapIndex < 0)
-		return;
+void ModelNode_NWN2::setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter) {
+	if (textureIndex == 1) {
+		if (config.phandles[1].empty())
+			return;
 
-	_mesh->data->textures.erase(_mesh->data->textures.begin() + _tintedMapIndex);
+		config.materialName += "." + config.phandles[1].getName();
+		cripter.declareUniform(Shader::ShaderDescriptor::UNIFORM_V_TINT);
 
-	_tintedMapIndex = -1;
+		cripter.declareSampler(Shader::ShaderDescriptor::SAMPLER_TEXTURE_1,
+		                       Shader::ShaderDescriptor::SAMPLER_2D);
+
+		cripter.connect(Shader::ShaderDescriptor::SAMPLER_TEXTURE_1,
+		                Shader::ShaderDescriptor::INPUT_UV0,
+		                Shader::ShaderDescriptor::TINT);
+
+		cripter.addPass(Shader::ShaderDescriptor::TINT,
+		                Shader::ShaderDescriptor::BLEND_TINT);
+	} else {
+		ModelNode::setupShaderTexture(config, textureIndex, cripter);
+	}
 }
 
-/* Create a tinted texture by combining the tint map with the tint colors.
- *
- * This is currently all done here in software and has several drawbacks:
- * - Slow
- * - We're creating lots of uncompressed RBGA texture, so it
- *   takes up a lot of memory, both on the GPU and in system RAM
- *
- * TODO: We really need to do this in shaders in the future.
- */
-void ModelNode_NWN2::createTint() {
-	if (_tintMap.empty())
-		return;
-
-	ImageDecoder *tintMap   = 0;
-	Surface      *tintedMap = 0;
-	try {
-		// Load and uncompress the texture
-		tintMap = Texture::loadImage(_tintMap);
-		if (tintMap->isCompressed())
-			tintMap->decompress();
-
-		const ImageDecoder::MipMap &tintImg = tintMap->getMipMap(0);
-
-		// Create a new target surface with the same dimensions
-		tintedMap = new Surface(tintImg.width, tintImg.height);
-		ImageDecoder::MipMap &tintedImg = tintedMap->getMipMap();
-
-		// Iterate over all pixels: read values, mix tints, write pixel to target surface
-		for (int n = 0; n < tintImg.width * tintImg.height; n++) {
-			float srcColor[4], dstColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-			tintImg.getPixel(n, srcColor[0], srcColor[1], srcColor[2], srcColor[3]);
-
-			if (srcColor[3] != 0.0f) {
-				// Mix using the value and the alpha components as intensities
-				// TODO: Verify how the mixing is actually done in NWN2!
-				for (int i = 0; i < 3; i++) {
-					for (int j = 0; j < 3; j++)
-						dstColor[j] += _tint[i][j] * srcColor[i] * _tint[i][3] * srcColor[3] * _mesh->diffuse[i];
-				}
-			} else
-				// Source alpha is 0.0f: No tinting for this pixel
-				for (int i = 0; i < 3; i++)
-					dstColor[i] = _mesh->diffuse[i] * _tint[i][3];
-
-			tintedImg.setPixel(n, dstColor[0], dstColor[1], dstColor[2], dstColor[3]);
-		}
-
-	} catch (...) {
-		delete tintMap;
-		delete tintedMap;
-		return;
-	}
-
-	delete tintMap;
-
-	// And add the new texture to the TextureManager
-	TextureHandle tintedTexture = TextureMan.add(Texture::create(tintedMap));
-
-	_mesh->data->textures.push_back(tintedTexture);
-	_tintedMapIndex = _mesh->data->textures.size() - 1;
+void ModelNode_NWN2::bindShaderVariables(Shader::ShaderSurface *surface, MaterialConfiguration &config) {
+	ModelNode::bindShaderVariables(surface, config);
+	config.material->setVariable("_tintR", _tint[0]);
+	config.material->setVariable("_tintG", _tint[1]);
+	config.material->setVariable("_tintB", _tint[2]);
 }
 
 } // End of namespace Aurora

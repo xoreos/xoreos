@@ -52,11 +52,11 @@
 namespace Graphics {
 
 namespace Aurora {
-
+/*
 static bool nodeComp(ModelNode *a, ModelNode *b) {
 	return a->isInFrontOf(*b);
 }
-
+*/
 ModelNode::Skin::Skin() : boneMappingCount(0) {
 }
 
@@ -69,8 +69,7 @@ ModelNode::MeshData::MeshData() : rawMesh(0), envMapMode(kModeEnvironmentBlended
 
 ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(false),
 	shadow(false), beaming(false), inheritcolor(false), rotatetexture(false),
-	isTransparent(false), hasTransparencyHint(false), transparencyHint(false),
-	data(0), dangly(0), skin(0) {
+	transparencyHint(0), data(0), dangly(0), skin(0) {
 }
 
 ModelNode::MaterialConfiguration::MaterialConfiguration() :
@@ -91,6 +90,8 @@ ModelNode::ModelNode(Model &model) :
 		_alpha(1.0f),
 		_render(false),
 		_dirtyRender(true),
+		_renderHints(0),
+		_light(0),
 		_mesh(0),
 		_rootStateNode(0),
 		_nodeNumber(0),
@@ -134,11 +135,22 @@ ModelNode::~ModelNode() {
 		}
 	}
 
+	if (_light) {
+		LightMan.deregisterLight(_light);
+		delete _light;
+	}
+
 	delete _mesh;
 	_mesh = 0;
 
 	delete _attachedModel;
 	_attachedModel = 0;
+
+	for (auto &renderable: _renderableArray) {
+		delete renderable.getMaterial();
+		delete renderable.getSurface();
+	}
+	_renderableArray.clear();
 }
 
 ModelNode *ModelNode::getParent() {
@@ -418,13 +430,6 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	unlockFrameIfVisible();
 }
 
-void ModelNode::setMaterial(Shader::ShaderMaterial *material) {
-	_material = material;
-	if (_shaderRenderable) {
-		_shaderRenderable->setMaterial(_material);
-	}
-}
-
 float ModelNode::getAlpha() {
 	if (!_mesh) {
 		return _alpha;
@@ -448,44 +453,38 @@ void ModelNode::setAlpha(float alpha, bool isRecursive) {
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
-	bool hasTexture = false;
-
 	_mesh->data->textures.resize(textures.size());
 
-	bool hasAlpha = true;
-	bool isDecal  = true;
+	bool isDecal = true;  // This might be needed later.
 
 	Common::UString envMap;
 
 	for (size_t t = 0; t != textures.size(); t++) {
-
 		try {
-
 			if (!textures[t].empty() && (textures[t] != "NULL")) {
 				_mesh->data->textures[t] = TextureMan.get(textures[t]);
 				if (_mesh->data->textures[t].empty())
 					continue;
-
-				hasTexture = true;
-
-				if (!_mesh->data->textures[t].getTexture().hasAlpha())
-					hasAlpha = false;
-				if (_mesh->data->textures[t].getTexture().getTXI().getFeatures().alphaMean == 1.0f)
-					hasAlpha = false;
-
-				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().decal)
+				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().decal) {
 					isDecal = false;
-
-				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture.empty())
+				}
+				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture.empty()) {
 					envMap = _mesh->data->textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture;
-				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().envMapTexture.empty())
+				}
+				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().envMapTexture.empty()) {
 					envMap = _mesh->data->textures[t].getTexture().getTXI().getFeatures().envMapTexture;
+				}
 			}
-
 		} catch (...) {
 			Common::exceptionDispatcherWarning();
 		}
+	}
 
+	if (isDecal) {
+		_renderHints |= ModelNode::RENDER_HINT_DECAL;
+	} else {
+		// If textures have changed and running this again, be sure to clear the hint.
+		_renderHints &= ~(ModelNode::RENDER_HINT_DECAL);
 	}
 
 	envMap.trim();
@@ -497,19 +496,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 		}
 	}
 
-	if (_mesh->hasTransparencyHint) {
-		_mesh->isTransparent = _mesh->transparencyHint;
-		if (isDecal)
-			_mesh->isTransparent = true;
-	} else {
-		_mesh->isTransparent = hasAlpha;
-	}
-
 	_dirtyRender = true;
-	// If the node has no actual texture, we just assume
-	// that the geometry shouldn't be rendered.
-	if (!hasTexture)
-		_render = false;
 }
 
 void ModelNode::createBound() {
@@ -636,11 +623,18 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 }
 
 void ModelNode::orderChildren() {
+	/**
+	 * It looks like the mdl format itself specifies the "proper" rendering order of
+	 * most nodes in the order in which they're loaded. So nodes can't be sorted, or
+	 * else weird things happen with rendering.
+	 */
+	/*
 	_children.sort(nodeComp);
 
 	// Order the children's children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c)
 		(*c)->orderChildren();
+	*/
 }
 
 void ModelNode::renderGeometry(ModelNode::Mesh &mesh) {
@@ -843,7 +837,11 @@ void ModelNode::calcRenderTransform(const glm::mat4 &parentTransform) {
 void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 	calcRenderTransform(parentTransform);
 	/**
-	 * Ignoring _render for now because it's being falsely set to false.
+	 * Ignoring _render for now because it's being falsely set to false. Later it would be nice
+	 * to make some function that checks for all the "don't render" scenarios and only update
+	 * them when there's a change - not run the checks every single frame.
+	 * One example is if there's some kind of animation that changes the alpha value of a node,
+	 * then the "render or not" check is only needed when the animation updates - not every frame.
 	 */
 	/* if (_render) {} */
 
@@ -855,20 +853,9 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 		 */
 		buildMaterial();
 	} else {
-		/**
-		 * @todo Ideally there should be some kind of check in here to determine visibility.
-		 * if the node isn't (camera) visible, then don't bother trying to render it.
-		 */
-		if (_renderableArray.size() == 0) {
-			if (_rootStateNode) {
-				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
-				}
-			}
-		} else {
-			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
-			}
+		for (size_t i = 0; i < _renderableArray.size(); ++i) {
+			LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), getMesh()->radius);
+			_renderableArray[i].renderImmediate(_renderTransform);
 		}
 	}
 
@@ -881,13 +868,25 @@ void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
 	}
 }
 
+void ModelNode::renderImmediate() const {
+	/**
+	 * The intent is for this function to be called from the render queues. To be in
+	 * one of those queues, this node should have been through queueRender, itself which
+	 * will take care of any _dirtyRender check. There is therefore no need to be perform
+	 * that check again here.
+	 */
+	for (size_t i = 0; i < _renderableArray.size(); ++i) {
+		LightMan.buildActiveLights(glm::vec3(_renderTransform[3]), getMesh()->radius);
+		_renderableArray[i].renderImmediate();
+	}
+}
+
 void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 	calcRenderTransform(parentTransform);
 	/**
 	 * Ignoring _render for now because it's being falsely set to false.
 	 */
 	/* if (_render) {} */
-
 	if (_dirtyRender) {
 		/**
 		 * Do this regardless of if the modelnode is actually visible or not, to prevent
@@ -900,23 +899,23 @@ void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 		 * @todo Ideally there should be some kind of check in here to determine visibility.
 		 * if the node isn't (camera) visible, then don't bother trying to render it.
 		 */
-		if (_renderableArray.size() == 0) {
-			if (_rootStateNode) {
-				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, this->getAlpha());
-				}
-			}
-		} else {
-			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, this->getAlpha());
-			}
+		for (size_t i = 0; i < _renderableArray.size(); ++i) {
+			/**
+			 * @todo: look at the queues and if they're really necessary.
+			 * For now this will simply render the node immediately if the transparency hint is zero,
+			 * or otherwise queue for later sorting (by hint) and rendering. It might be possible to
+			 * avoid the render queues entirely if the node simply needs rendering after all child
+			 * nodes: something to be investigated.
+			 */
+			RenderMan.queueNode(this, _renderHints);
 		}
 	}
 
 	if (_attachedModel) {
 		_attachedModel->queueRender(_renderTransform);
 	}
-	// Render the node's children
+
+	// Queue the node's children for rendering.
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
 		(*c)->queueRender(_renderTransform);
 	}
@@ -1118,6 +1117,10 @@ void ModelNode::notifyVertexCoordsBuffered() {
 	_vertexCoordsBuffered = true;
 }
 
+Graphics::LightManager::LightNode *ModelNode::getLight() const {
+	return _light;
+}
+
 ModelNode::Mesh *ModelNode::getMesh() const {
 	if (_mesh) {
 		return _mesh;
@@ -1177,14 +1180,36 @@ TextureHandle *ModelNode::getEnvironmentMap(EnvironmentMapMode &mode) {
 }
 
 void ModelNode::buildMaterial() {
+
+	/**
+	 * @TODO: Not actually the best place to put light position calculation. It kind of works
+	 * for static lights, but there's no guarantee at this point they aren't yet activated and
+	 * wanted to be put into whichever bounding hierarchy will be created. A better idea is to
+	 * calculate the position during loading of the light information itself.
+	 */
+	if (_light) {
+		///< @TODO: absolute transforms aren't properly calculated by now apparently.
+		//glm::mat4 tform = _model->getAbsoluteTransform() * this->getAbsoluteTransform();
+		_light->position = glm::vec3(_renderTransform[3]);
+	}
+
+	/**
+	 * @TODO: is there any reason to not simply make the material and surface
+	 * part of the renderable? Not pointers, just variables - which does mean
+	 * that a material and surface need post-constructor setting of shader
+	 * objects and maybe some nice copy constructors, operators, etc, but it
+	 * might be worth the effort. Something to think about.
+	 */
+	for (auto &renderable: _renderableArray) {
+		delete renderable.getMaterial();
+		delete renderable.getSurface();
+	}
 	_renderableArray.clear();
 
 	/**
-	 * If there's no override of mesh, textures, or environment mapping, then don't bother
-	 * to create any new renderables. Just make sure _rootStateNode has some, and have the
-	 * render queuing use the renderables from there instead. This isn't really a problem,
-	 * as the per-modelnode data (modelview matrix in this case) is still supplied from
-	 * _this_ object.
+	 * Even if there's no override of mesh, textures, or environment mapping there still
+	 * needs to be the creation of renderables. This is to ensure that local data such as
+	 * modelview matrix, alpha, ambient, etc, are correctly bound when rendering.
 	 */
 
 	if (!_model->getState().empty()) {
@@ -1198,25 +1223,22 @@ void ModelNode::buildMaterial() {
 
 	_dirtyRender = false;
 
-	if (!_mesh || !_mesh->data ||
-			((_mesh->data->textures.size() == 0) && _mesh->data->envMap.empty() && !_mesh->data->rawMesh))
-		return;
-
 	MaterialConfiguration config;
-	config.pmesh = _mesh;
+	config.pmesh = getMesh();
 	config.phandles = getTextures(config.textureCount);
 	config.penvmap = getEnvironmentMap(config.envmapmode);
 
-	if ((config.textureCount == 0) || !_render || !config.pmesh->data->rawMesh || config.phandles[0].empty())
+	if ((config.textureCount == 0) ||
+	    !config.pmesh ||
+	    !config.pmesh->render ||
+	    !config.pmesh->data ||
+	    !config.pmesh->data->rawMesh ||
+	    config.phandles[0].empty())
 		return;
 
 	config.materialName = "xoreos.";
 	Shader::ShaderDescriptor cripter;
-	_renderableArray.clear();
 	declareShaderInputs(config, cripter);
-
-	if (_name == "Plane237")
-		config.pmesh->isTransparent = true;  // Hack hack hack hack. For NWN.
 
 	if (config.penvmap) {
 		setupEnvMapSampler(config, cripter);
@@ -1224,9 +1246,8 @@ void ModelNode::buildMaterial() {
 			addBlendedUnderEnvMapPass(config, cripter);
 	}
 
-	if (config.pmesh->isTransparent &&
-			!(config.materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
-		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	if (config.pmesh->transparencyHint) {
+		_renderHints |= ModelNode::RENDER_HINT_TRANSPARENT;
 	}
 
 	for (uint32_t i = 0; (i < 4) && (i < config.textureCount); ++i)
@@ -1238,25 +1259,6 @@ void ModelNode::buildMaterial() {
 	if (config.materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
 		cripter.addPass(Shader::ShaderDescriptor::FORCE_OPAQUE,
 		                Shader::ShaderDescriptor::BLEND_IGNORED);
-	}
-
-	if ((config.materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) &&
-			(config.pmesh->data->rawMesh->getVertexBuffer()->getCount() <= 6)) {
-		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B;
-	}
-
-	Shader::ShaderSurface *surface;
-
-	config.material = MaterialMan.getMaterial(config.materialName);
-	if (config.material) {
-		surface = SurfaceMan.getSurface(config.materialName);
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, _mesh->data->rawMesh));
-		return;
-	}
-
-	if (_mesh->alpha < 1.0f) {
-		config.materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
-		config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
 	Common::UString vertexShaderName;
@@ -1277,13 +1279,14 @@ void ModelNode::buildMaterial() {
 		Common::UString vertexStringFinal;
 		Common::UString fragmentStringFinal;
 
+		cripter.hasLights(true);
 		cripter.build(isGL3, vertexStringFinal, fragmentStringFinal);
 		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
 		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
 	}
 
 	// Shader objects should now exist, so go ahead and make the material and surface.
-	surface = new Shader::ShaderSurface(vertexObject, config.materialName);
+	Shader::ShaderSurface *surface = new Shader::ShaderSurface(vertexObject, config.materialName);
 	config.material = new Shader::ShaderMaterial(fragmentObject, config.materialName);
 	config.material->setFlags(config.materialFlags);
 	if (config.materialFlags & Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND) {
@@ -1292,12 +1295,12 @@ void ModelNode::buildMaterial() {
 		config.material->setBlendDstRGB(GL_ONE_MINUS_SRC_COLOR);
 		config.material->setBlendDstAlpha(GL_ONE_MINUS_SRC_ALPHA);
 	}
-	MaterialMan.addMaterial(config.material);
-	SurfaceMan.addSurface(surface);
 
 	bindTexturesToSamplers(config, cripter);
 
-	_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, _mesh->data->rawMesh));
+	bindShaderVariables(surface, config);
+
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, config.material, config.pmesh->data->rawMesh));
 }
 
 void ModelNode::declareShaderInputs(MaterialConfiguration &UNUSED(config), Shader::ShaderDescriptor &cripter) {
@@ -1334,8 +1337,9 @@ void ModelNode::addBlendedUnderEnvMapPass(MaterialConfiguration &config, Shader:
 
 	// Figure out if a cube or sphere map is used.
 	if (config.penvmap->getTexture().getImage().isCubeMap()) {
-		if (!config.pmesh->isTransparent)
+		if (!config.pmesh->isTransparent) {
 			config.materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+		}
 
 		cripter.addPass(Shader::ShaderDescriptor::ENV_CUBE,
 		                Shader::ShaderDescriptor::BLEND_ONE);
@@ -1371,15 +1375,16 @@ void ModelNode::setupShaderTexture(MaterialConfiguration &config, int textureInd
 		if (config.phandles[0].getTexture().getTXI().getFeatures().blending) {
 			config.materialFlags |= Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND;
 			// For KotOR2, this is required to get some windows showing up properly.
-			if (config.pmesh->hasTransparencyHint &&
+			if (config.pmesh->transparencyHint &&
 					!(config.materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 				config.materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 			}
 		}
 
 		// Check to see if it's actually a decal texture.
-		if (config.phandles[0].getTexture().getTXI().getFeatures().decal)
+		if (config.phandles[0].getTexture().getTXI().getFeatures().decal) {
 			config.materialFlags |= Shader::ShaderMaterial::MATERIAL_DECAL;
+		}
 
 		if (config.penvmap && (config.envmapmode == kModeEnvironmentBlendedUnder)) {
 			cripter.addPass(Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
@@ -1446,27 +1451,33 @@ void ModelNode::addBlendedOverEnvMapPass(MaterialConfiguration &config, Shader::
 }
 
 void ModelNode::bindTexturesToSamplers(MaterialConfiguration &config, Shader::ShaderDescriptor &UNUSED(cripter)) {
-	Shader::ShaderSampler *sampler;
-
 	if (config.penvmap) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_7_id"));
-		sampler->handle = *config.penvmap;
+		config.material->setTexture("sampler_7_id", *config.penvmap);
 	}
 
 	if ((config.textureCount > 0) && !config.phandles[0].empty()) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_0_id"));
-		sampler->handle = config.phandles[0];
+		config.material->setTexture("sampler_0_id", config.phandles[0]);
 	}
 
 	if ((config.textureCount > 1) && !config.phandles[1].empty()) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_1_id"));
-		sampler->handle = config.phandles[1];
+		config.material->setTexture("sampler_1_id", config.phandles[1]);
 	}
 
 	if ((config.textureCount > 2) && !config.phandles[2].empty()) {
-		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_2_id"));
-		sampler->handle = config.phandles[2];
+		config.material->setTexture("sampler_2_id", config.phandles[2]);
 	}
+
+	if ((config.textureCount > 3) && !config.phandles[3].empty()) {
+		config.material->setTexture("sampler_3_id", config.phandles[3]);
+	}
+}
+
+void ModelNode::bindShaderVariables(Shader::ShaderSurface *surface, MaterialConfiguration &config) {
+	surface->setVariable("_objectModelviewMatrix", &_renderTransform);
+	surface->setVariable("_bindPose", &_absoluteBaseTransform);
+	surface->setVariable("_boneTransforms", config.pmesh->data->rawMesh->getBoneTransforms().data());
+	config.material->setVariable("_alpha", &_alpha);
+	config.material->setVariable("_ambient", config.pmesh->ambient);
 }
 
 } // End of namespace Aurora
