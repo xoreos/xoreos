@@ -22,6 +22,7 @@
  *  The premade character chooser.
  */
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 

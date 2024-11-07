@@ -22,7 +22,9 @@
  *  The context holding an area in KotOR games.
  */
 
+#include <algorithm>
 #include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

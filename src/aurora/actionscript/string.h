@@ -35,7 +35,7 @@ namespace ActionScript {
 
 class String;
 
-typedef boost::shared_ptr<String> StringPtr;
+typedef std::shared_ptr<String> StringPtr;
 
 class String : public Common::UString, public Object {
 public:

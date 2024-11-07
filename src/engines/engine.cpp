@@ -22,6 +22,7 @@
  *  Generic engine interface.
  */
 
+#include <algorithm>
 #include <cassert>
 
 #include "src/common/util.h"

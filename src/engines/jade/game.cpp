@@ -22,6 +22,7 @@
  *  The context handling the gameplay in Jade Empire.
  */
 
+#include <algorithm>
 #include <cassert>
 
 #include "src/aurora/resman.h"

@@ -30,8 +30,6 @@
 
 #include <cassert>
 
-#include <boost/make_shared.hpp>
-
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -1544,7 +1542,7 @@ void NCSFile::o_writearray(InstructionType type) {
 		throw Common::Exception("NCSFile::o_writearray(): Invalid index %d", index);
 
 	arrayVar.growArray(valueVar.getType(), index + 1);
-	arrayVar.getArray()[index] = boost::make_shared<Variable>(Variable(valueVar));
+	arrayVar.getArray()[index] = std::make_shared<Variable>(Variable(valueVar));
 }
 
 /** READARRAY: push the value of an array element onto of the stack.

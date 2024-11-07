@@ -36,7 +36,7 @@ namespace ActionScript {
 
 class Array;
 
-typedef boost::shared_ptr<Array> ArrayPtr;
+typedef std::shared_ptr<Array> ArrayPtr;
 
 class Array : public Object {
 public:

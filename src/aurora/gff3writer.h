@@ -27,9 +27,9 @@
 
 #include <list>
 #include <functional>
+#include <memory>
 
 #include <boost/noncopyable.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/variant.hpp>
 
 #ifdef BOOST_COMP_CLANG
@@ -49,8 +49,8 @@ namespace Aurora {
 class GFF3WriterStruct;
 class GFF3WriterList;
 
-typedef boost::shared_ptr<GFF3WriterStruct> GFF3WriterStructPtr;
-typedef boost::shared_ptr<GFF3WriterList> GFF3WriterListPtr;
+typedef std::shared_ptr<GFF3WriterStruct> GFF3WriterStructPtr;
+typedef std::shared_ptr<GFF3WriterList> GFF3WriterListPtr;
 
 class GFF3Writer : boost::noncopyable {
 public:
@@ -152,7 +152,7 @@ private:
 		Value value;
 	};
 
-	typedef boost::shared_ptr<Field> FieldPtr;
+	typedef std::shared_ptr<Field> FieldPtr;
 
 	uint32_t _id;
 	uint32_t _version;

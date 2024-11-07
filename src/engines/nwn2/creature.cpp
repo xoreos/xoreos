@@ -22,8 +22,8 @@
  *  A creature in a Neverwinter Nights 2 area.
  */
 
+#include <algorithm>
 #include <cassert>
-
 #include <memory>
 
 #include "src/common/util.h"

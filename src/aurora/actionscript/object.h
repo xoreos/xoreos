@@ -26,9 +26,7 @@
 #define AURORA_ACTIONSCRIPT_OBJECT_H
 
 #include <map>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 
 #include "src/common/ustring.h"
 
@@ -42,9 +40,9 @@ namespace ActionScript {
 class AVM;
 class Object;
 
-typedef boost::shared_ptr<Object> ObjectPtr;
+typedef std::shared_ptr<Object> ObjectPtr;
 
-class Object : public boost::enable_shared_from_this<Object> {
+class Object : public std::enable_shared_from_this<Object> {
 public:
 	Object();
 	Object(Object *object);
