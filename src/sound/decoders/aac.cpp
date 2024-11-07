@@ -28,8 +28,6 @@
 
 #include <neaacdec.h>
 
-#include <boost/scoped_array.hpp>
-
 #include "src/common/disposableptr.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
@@ -105,7 +103,7 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	size_t inBufferPos = 0;
 	size_t inBufferSize = stream.size();
 
-	boost::scoped_array<byte> inBuffer(new byte[inBufferSize]);
+	std::unique_ptr<byte[]> inBuffer = std::make_unique<byte[]>(inBufferSize);
 	if (stream.read(inBuffer.get(), inBufferSize) != inBufferSize)
 		throw Common::Exception(Common::kReadError);
 
