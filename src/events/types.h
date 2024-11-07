@@ -27,10 +27,9 @@
 
 #include <stdexcept>
 #include <functional>
+#include <memory>
 
 #include "src/common/error.h"
-
-#include <boost/shared_ptr.hpp>
 
 #include "src/common/fallthrough.h"
 START_IGNORE_IMPLICIT_FALLTHROUGH
@@ -359,11 +358,11 @@ enum ControllerButton {
 template<typename T> struct MainThreadFunctor {
 private:
 	std::function<T ()> func;
-	boost::shared_ptr<T> retVal;
-	boost::shared_ptr<Common::Exception> error;
+	std::shared_ptr<T> retVal;
+	std::shared_ptr<Common::Exception> error;
 
 public:
-	MainThreadFunctor(const std::function<T ()> &f) : func(f), retVal(new T), error(new Common::Exception) { }
+	MainThreadFunctor(const std::function<T ()> &f) : func(f), retVal(std::make_shared<T>()), error(std::make_shared<Common::Exception>()) { }
 	void operator()() const {
 		try {
 			*retVal = func();
@@ -384,10 +383,10 @@ public:
 template<> struct MainThreadFunctor<void> {
 private:
 	std::function<void ()> func;
-	boost::shared_ptr<Common::Exception> error;
+	std::shared_ptr<Common::Exception> error;
 
 public:
-	MainThreadFunctor(const std::function<void ()> &f) : func(f), error(new Common::Exception) { }
+	MainThreadFunctor(const std::function<void ()> &f) : func(f), error(std::make_shared<Common::Exception>()) { }
 	void operator()() const {
 		try {
 			func();

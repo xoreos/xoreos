@@ -22,6 +22,7 @@
  *  Base debug console for KotOR games.
  */
 
+#include <algorithm>
 #include <functional>
 
 #include "src/common/filelist.h"

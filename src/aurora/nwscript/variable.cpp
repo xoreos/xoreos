@@ -23,8 +23,7 @@
  */
 
 #include <cassert>
-
-#include <boost/make_shared.hpp>
+#include <memory>
 
 #include "src/common/error.h"
 #include "src/common/ustring.h"
@@ -120,7 +119,7 @@ void Variable::setType(Type type) {
 			break;
 
 		case kTypeArray:
-			_array = boost::make_shared<Array>();
+			_array = std::make_shared<Array>();
 			break;
 
 		case kTypeInt:
@@ -393,7 +392,7 @@ void Variable::growArray(Type type, size_t size) {
 
 	_array->reserve(size);
 	while (_array->size() < size)
-		_array->push_back(boost::make_shared<Variable>(Variable(type)));
+		_array->emplace_back(std::make_shared<Variable>(Variable(type)));
 }
 
 ScriptState &Variable::getScriptState() {

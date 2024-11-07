@@ -28,8 +28,6 @@
 #include <vector>
 #include <memory>
 
-#include <boost/shared_ptr.hpp>
-
 #include "src/common/types.h"
 #include "src/common/rational.h"
 #include "src/common/timestamp.h"
@@ -361,22 +359,22 @@ protected:
 	/**
 	 * A Track pointer
 	 */
-	typedef boost::shared_ptr<Track> TrackPtr;
+	typedef std::shared_ptr<Track> TrackPtr;
 
 	/**
 	 * A const Track pointer
 	 */
-	typedef boost::shared_ptr<const Track> ConstTrackPtr;
+	typedef std::shared_ptr<const Track> ConstTrackPtr;
 
 	/**
 	 * An AudioTrack pointer
 	 */
-	typedef boost::shared_ptr<AudioTrack> AudioTrackPtr;
+	typedef std::shared_ptr<AudioTrack> AudioTrackPtr;
 
 	/**
 	 * A VideoTrack pointer
 	 */
-	typedef boost::shared_ptr<VideoTrack> VideoTrackPtr;
+	typedef std::shared_ptr<VideoTrack> VideoTrackPtr;
 
 	/**
 	 * A list of tracks

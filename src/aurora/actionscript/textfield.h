@@ -33,7 +33,7 @@ namespace ActionScript {
 
 class TextField;
 
-typedef boost::shared_ptr<TextField> TextFieldPtr;
+typedef std::shared_ptr<TextField> TextFieldPtr;
 
 class TextField : public Object {
 public:

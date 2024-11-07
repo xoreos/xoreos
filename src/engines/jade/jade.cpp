@@ -22,6 +22,7 @@
  *  Engine class handling Jade Empire
  */
 
+#include <algorithm>
 #include <cassert>
 
 #include "src/common/util.h"

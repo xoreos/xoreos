@@ -24,8 +24,6 @@
 
 #include <memory>
 
-#include <boost/make_shared.hpp>
-
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 
@@ -363,7 +361,7 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 
 	const bool includeSelf = ctx.getParams()[5].getInt() != 0;
 	if (includeSelf) {
-		result.push_back(boost::make_shared<Aurora::NWScript::Variable>(target));
+		result.emplace_back(std::make_shared<Aurora::NWScript::Variable>(target));
 		count--;
 	}
 
@@ -392,7 +390,7 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	objects.sort(ObjectDistanceSort(*target));
 
 	for (std::list<Object *>::iterator it = objects.begin(); it != objects.end() && count > 0; ++it, count--)
-		result.push_back(boost::make_shared<Aurora::NWScript::Variable>(*it));
+		result.emplace_back(std::make_shared<Aurora::NWScript::Variable>(*it));
 }
 
 void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -423,7 +421,7 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	const bool includeSelf = ctx.getParams()[6].getInt() != 0;
 	if (includeSelf) {
-		result.push_back(boost::make_shared<Aurora::NWScript::Variable>(target));
+		result.emplace_back(std::make_shared<Aurora::NWScript::Variable>(target));
 		count--;
 	}
 
@@ -452,7 +450,7 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	objects.sort(ObjectDistanceSort(*target));
 
 	for (std::list<Object *>::iterator it = objects.begin(); it != objects.end() && count > 0; ++it, count--)
-		result.push_back(boost::make_shared<Aurora::NWScript::Variable>(*it));
+		result.emplace_back(std::make_shared<Aurora::NWScript::Variable>(*it));
 }
 
 void Functions::UT_getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {

@@ -25,7 +25,7 @@
 #ifndef AURORA_ACTIONSCRIPT_VARIABLE_H
 #define AURORA_ACTIONSCRIPT_VARIABLE_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "src/common/ustring.h"
 
@@ -38,7 +38,7 @@ namespace ActionScript {
 class Object;
 class Function;
 
-typedef boost::shared_ptr<Object> ObjectPtr;
+typedef std::shared_ptr<Object> ObjectPtr;
 
 /** An action script variable. */
 class Variable {
@@ -75,7 +75,7 @@ public:
 	const Common::UString asString() const;
 	bool asBoolean() const;
 
-	template<typename T> boost::shared_ptr<T> as() const;
+	template<typename T> std::shared_ptr<T> as() const;
 
 	void operator=(Variable v);
 
@@ -106,8 +106,8 @@ private:
 	} _value;
 };
 
-template<typename T> boost::shared_ptr<T> Variable::as() const {
-	return boost::dynamic_pointer_cast<T>(_value.object);
+template<typename T> std::shared_ptr<T> Variable::as() const {
+	return std::dynamic_pointer_cast<T>(_value.object);
 }
 
 } // End of namespace ActionScript

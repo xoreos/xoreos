@@ -54,7 +54,7 @@ GFF3Writer::VoidData &GFF3Writer::VoidData::operator=(const VoidData &rhs) {
 
 
 GFF3Writer::GFF3Writer(uint32_t id, uint32_t version) : _id(id), _version(version) {
-	_structs.push_back(boost::make_shared<GFF3WriterStruct>(this));
+	_structs.emplace_back(std::make_shared<GFF3WriterStruct>(this));
 }
 
 GFF3WriterStructPtr GFF3Writer::getTopLevel() {
@@ -358,7 +358,7 @@ size_t GFF3Writer::createField(GFF3Struct::FieldType type, const Common::UString
 	size_t index = _fields.size();
 
 	// Create field
-	GFF3Writer::FieldPtr field = boost::make_shared<Field>();
+	GFF3Writer::FieldPtr field = std::make_shared<Field>();
 	field->value.type = type;
 	field->labelIndex = addLabel(label);
 	_fields.push_back(field);
@@ -381,13 +381,13 @@ GFF3WriterStructPtr GFF3WriterList::addStruct(const Common::UString &label) {
 GFF3WriterStructPtr GFF3WriterList::addStruct(const Common::UString &label, uint32_t id, bool inList) {
 	// Create the structure pointer
 	GFF3WriterStructPtr strct(
-			boost::make_shared<GFF3WriterStruct>(_parent, id));
+			std::make_shared<GFF3WriterStruct>(_parent, id));
 
 	// Create a field index
 	_strcts.push_back(_parent->_structs.size());
 
 	if (!inList) {
-		GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
+		GFF3Writer::FieldPtr field = std::make_shared<GFF3Writer::Field>();
 		field->value.type = GFF3Struct::kFieldTypeStruct;
 		field->value.data = static_cast<uint32_t>(_parent->_structs.size());
 
@@ -426,11 +426,11 @@ GFF3WriterStructPtr GFF3WriterStruct::addStruct(const Common::UString &label) {
 GFF3WriterStructPtr GFF3WriterStruct::addStruct(const Common::UString &label, uint32_t id) {
 	// Create the structure pointer
 	GFF3WriterStructPtr strct(
-			boost::make_shared<GFF3WriterStruct>(_parent, id));
+			std::make_shared<GFF3WriterStruct>(_parent, id));
 
 	// Create a field index
 	_fieldIndices.push_back(_parent->_fields.size());
-	GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
+	GFF3Writer::FieldPtr field = std::make_shared<GFF3Writer::Field>();
 	field->value.type = GFF3Struct::kFieldTypeStruct;
 	field->value.data = static_cast<uint32_t>(_parent->_structs.size());
 
@@ -448,11 +448,11 @@ GFF3WriterStructPtr GFF3WriterStruct::addStruct(const Common::UString &label, ui
 
 GFF3WriterListPtr GFF3WriterStruct::addList(const Common::UString &label) {
 	// Create the list pointer
-	GFF3WriterListPtr strct(boost::make_shared<GFF3WriterList>(_parent));
+	GFF3WriterListPtr strct(std::make_shared<GFF3WriterList>(_parent));
 
 	// Create a field index
 	_fieldIndices.push_back(_parent->_fields.size());
-	GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
+	GFF3Writer::FieldPtr field = std::make_shared<GFF3Writer::Field>();
 	field->value.type = GFF3Struct::kFieldTypeList;
 	field->value.data = static_cast<uint32_t>(_parent->_lists.size());
 

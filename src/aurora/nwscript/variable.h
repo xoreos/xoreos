@@ -25,9 +25,8 @@
 #ifndef AURORA_NWSCRIPT_VARIABLE_H
 #define AURORA_NWSCRIPT_VARIABLE_H
 
+#include <memory>
 #include <vector>
-
-#include <boost/shared_ptr.hpp>
 
 #include "src/common/types.h"
 
@@ -55,7 +54,7 @@ struct ScriptState {
 
 class Variable {
 public:
-	typedef std::vector< boost::shared_ptr<Variable> > Array;
+	typedef std::vector<std::shared_ptr<Variable>> Array;
 
 	Variable(Type type = kTypeVoid);
 	Variable(int32_t value);
@@ -123,7 +122,7 @@ private:
 		Variable *_reference;
 	} _value;
 
-	boost::shared_ptr<Array> _array;
+	std::shared_ptr<Array> _array;
 };
 
 } // End of namespace NWScript

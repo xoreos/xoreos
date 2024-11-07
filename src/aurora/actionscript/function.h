@@ -37,7 +37,7 @@ namespace ActionScript {
 
 class Function;
 
-typedef boost::shared_ptr<Function> FunctionPtr;
+typedef std::shared_ptr<Function> FunctionPtr;
 
 class Function : public Object {
 public:

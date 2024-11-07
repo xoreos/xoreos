@@ -22,6 +22,8 @@
  *  The graphics resolution menu.
  */
 
+#include <algorithm>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/ustring.h"
