@@ -26,9 +26,9 @@
 #define AURORA_GFXFILE_H
 
 #include <memory>
+#include <optional>
 
 #include <boost/variant.hpp>
-#include <boost/optional.hpp>
 
 #include "external/glm/glm.hpp"
 
@@ -200,12 +200,12 @@ public:
 		bool autosize;
 		bool noSelect;
 		bool html;
-		boost::optional<uint16_t> fontId;
-		boost::optional<uint16_t> fontHeight;
-		boost::optional<glm::u8vec4> textColor;
-		boost::optional<uint16_t> maxLength;
-		boost::optional<Common::UString> initialText;
-		boost::optional<EditTextLayout> layout;
+		std::optional<uint16_t> fontId;
+		std::optional<uint16_t> fontHeight;
+		std::optional<glm::u8vec4> textColor;
+		std::optional<uint16_t> maxLength;
+		std::optional<Common::UString> initialText;
+		std::optional<EditTextLayout> layout;
 	};
 
 	/**
@@ -215,9 +215,9 @@ public:
 		Common::UString name;
 		std::vector<Glyph> glyphs;
 		std::vector<KerningCode> kerningCodes;
-		boost::optional<uint16_t> fontAscent;
-		boost::optional<uint16_t> fontDescent;
-		boost::optional<int16_t> fontLeading;
+		std::optional<uint16_t> fontAscent;
+		std::optional<uint16_t> fontDescent;
+		std::optional<int16_t> fontLeading;
 	};
 
 	/**
@@ -306,11 +306,11 @@ public:
 		bool hasMove;
 
 		uint16_t depth;
-		boost::optional<uint16_t> characterId;
-		boost::optional<Common::UString> name;
-		boost::optional<glm::mat3x2> matrix;
-		boost::optional<ColorTransform> colorTransform;
-		boost::optional<uint8_t> blendMode;
+		std::optional<uint16_t> characterId;
+		std::optional<Common::UString> name;
+		std::optional<glm::mat3x2> matrix;
+		std::optional<ColorTransform> colorTransform;
+		std::optional<uint8_t> blendMode;
 	};
 
 	/** A do action control tag. */
