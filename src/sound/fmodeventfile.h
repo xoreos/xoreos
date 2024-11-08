@@ -26,8 +26,7 @@
 #define SOUND_FMODEVENTFILE_H
 
 #include <map>
-
-#include <boost/variant.hpp>
+#include <variant>
 
 #include "src/common/readstream.h"
 #include "src/common/ustring.h"
@@ -89,7 +88,7 @@ public:
 	/** Some objects in FMOD can have generic properties. */
 	struct Property {
 		PropertyType type;
-		boost::variant<int32_t, float, Common::UString> value;
+		std::variant<int32_t, float, Common::UString> value;
 	};
 
 	/** Reference to an external wave bank. */
