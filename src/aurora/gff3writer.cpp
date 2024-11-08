@@ -26,8 +26,6 @@
 
 #include <algorithm>
 
-#include <boost/make_shared.hpp>
-
 #include "src/common/writestream.h"
 #include "src/common/memreadstream.h"
 
