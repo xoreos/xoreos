@@ -32,10 +32,10 @@
 namespace Graphics {
 
 CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
-	BOOST_SCOPE_EXIT( (&sides) ) {
+	BOOST_SCOPE_EXIT(&sides) {
 		for (size_t i = 0; i < ARRAYSIZE(sides); i++)
 			delete sides[i];
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	_layerCount = ARRAYSIZE(sides);
 	_isCubeMap  = true;

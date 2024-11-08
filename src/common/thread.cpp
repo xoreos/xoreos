@@ -208,7 +208,7 @@ void Thread::setCurrentThreadName(const Common::UString &name) {
 	// Set it to destroy upon exit
 	BOOST_SCOPE_EXIT(kernel32) {
 		FreeLibrary(kernel32);
-	} BOOST_SCOPE_EXIT_END;
+	};
 
 	DIAGNOSTICS_PUSH
 	IGNORE_FUNCTION_CAST

@@ -377,9 +377,9 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 	}
 
 	for (int i = 0; i < 3; i++) {
-		BOOST_SCOPE_EXIT(&_packet) {
+		BOOST_SCOPE_EXIT(this) {
 			_packet.packet = nullptr;
-		} BOOST_SCOPE_EXIT_END
+		};
 
 		_packet.b_o_s = (i == 0);
 		_packet.bytes = headerSizes[i];
@@ -418,9 +418,9 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &packet1,
 #undef READ_WHOLE_STREAM
 
 	for (int i = 0; i < 3; i++) {
-		BOOST_SCOPE_EXIT(&_packet) {
+		BOOST_SCOPE_EXIT(this) {
 			_packet.packet = nullptr;
-		} BOOST_SCOPE_EXIT_END
+		};
 
 		_packet.b_o_s = (i == 0);
 		_packet.bytes = headerSizes[i];
@@ -466,9 +466,9 @@ size_t PacketizedVorbisStream::readBuffer(int16_t *buffer, const size_t numSampl
 			std::unique_ptr<byte[]> data = std::make_unique<byte[]>(stream->size());
 			stream->read(data.get(), stream->size());
 
-			BOOST_SCOPE_EXIT(&_packet) {
+			BOOST_SCOPE_EXIT(this) {
 				_packet.packet = nullptr;
-			} BOOST_SCOPE_EXIT_END
+			};
 
 			// Synthesize!
 			_packet.packet = data.get();
