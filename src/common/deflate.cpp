@@ -91,9 +91,9 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 	std::unique_ptr<byte[]> decompressedData = std::make_unique<byte[]>(outputSize);
 
 	z_stream strm;
-	BOOST_SCOPE_EXIT( (&strm) ) {
-			inflateEnd(&strm);
-	} BOOST_SCOPE_EXIT_END
+	BOOST_SCOPE_EXIT(&strm) {
+		inflateEnd(&strm);
+	};
 
 	initInflateZStream(strm, windowBits, inputSize, data);
 
@@ -121,9 +121,9 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, size_t &outputSize,
                                          int windowBits, unsigned int frameSize) {
 	z_stream strm;
-	BOOST_SCOPE_EXIT( (&strm) ) {
-			inflateEnd(&strm);
-	} BOOST_SCOPE_EXIT_END
+	BOOST_SCOPE_EXIT(&strm) {
+		inflateEnd(&strm);
+	};
 
 	initInflateZStream(strm, windowBits, inputSize, data);
 
@@ -180,9 +180,9 @@ size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits,
                               byte *output, size_t outputSize, unsigned int frameSize) {
 
 	z_stream strm;
-	BOOST_SCOPE_EXIT( (&strm) ) {
-			inflateEnd(&strm);
-	} BOOST_SCOPE_EXIT_END
+	BOOST_SCOPE_EXIT(&strm) {
+		inflateEnd(&strm);
+	};
 
 	initInflateZStream(strm, windowBits, 0, 0);
 
@@ -224,9 +224,9 @@ size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits,
 
 byte *compressDeflate(const byte *data, size_t inputSize, size_t &outputSize, int windowBits, unsigned int frameSize) {
 	z_stream strm;
-	BOOST_SCOPE_EXIT( (&strm) ) {
+	BOOST_SCOPE_EXIT(&strm) {
 		deflateEnd(&strm);
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	initDeflateZStream(strm, windowBits, inputSize, data);
 

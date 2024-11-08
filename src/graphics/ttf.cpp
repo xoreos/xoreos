@@ -53,10 +53,10 @@ TTFRenderer::TTFRenderer(Common::SeekableReadStream &ttfFile, int height) :
 		throw Common::Exception("TTFRenderer: Could not init freetype2");
 
 	bool success = false;
-	BOOST_SCOPE_EXIT( (&success) (&_library)) {
+	BOOST_SCOPE_EXIT(this, &success) {
 		if (!success)
 			FT_Done_FreeType(_library);
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	const size_t size = ttfFile.size();
 	_fileBuffer = std::make_unique<uint8_t[]>(size);
@@ -67,10 +67,10 @@ TTFRenderer::TTFRenderer(Common::SeekableReadStream &ttfFile, int height) :
 	if (FT_New_Memory_Face(_library, _fileBuffer.get(), size, 0, &_face))
 		throw Common::Exception("TTFRenderer: Could not load font file");
 
-	BOOST_SCOPE_EXIT( (&success) (&_face)) {
+	BOOST_SCOPE_EXIT(this, &success) {
 		if (!success)
 			FT_Done_Face(_face);
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	// We only support scalable fonts.
 	if (!FT_IS_SCALABLE(_face))

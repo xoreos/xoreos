@@ -153,9 +153,9 @@ std::unique_ptr<SeekableReadStream> decompressXboxLZX(ReadStream &input, size_t 
 	if (!lzxd)
 		throw Exception("Failed to initialize lzxd");
 
-	BOOST_SCOPE_EXIT((lzxd)) {
+	BOOST_SCOPE_EXIT(lzxd) {
 		lzxd_free(lzxd);
-	} BOOST_SCOPE_EXIT_END;
+	};
 
 	int result = lzxd_decompress(lzxd, outputSize);
 	if (result != MSPACK_ERR_OK)

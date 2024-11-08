@@ -371,7 +371,7 @@ uint32_t ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
                                     std::vector<KEYDataFile *> &keyData) {
 
 	bool success = false;
-	BOOST_SCOPE_EXIT( (&success) (&archives) (&keyData) ) {
+	BOOST_SCOPE_EXIT(&success, &archives, &keyData) {
 		if (!success) {
 			for (std::vector<KEYDataFile *>::iterator b = keyData.begin(); b != keyData.end(); ++b)
 				delete *b;
@@ -379,7 +379,7 @@ uint32_t ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 			keyData.clear();
 			archives.clear();
 		}
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	std::unique_ptr<Common::SeekableReadStream> stream(keyStream);
 	KEYFile key(*keyStream);
@@ -426,12 +426,12 @@ void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
 	bool couldSet = false;
 	_openedArchives.push_back(OpenedArchive());
 
-	BOOST_SCOPE_EXIT( (&couldSet) (&_openedArchives) (&archive) ) {
+	BOOST_SCOPE_EXIT(this, &couldSet, &archive) {
 		if (!couldSet) {
 			_openedArchives.pop_back();
 			delete archive;
 		}
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	_openedArchives.back().set(knownArchive, *archive);
 	couldSet = true;

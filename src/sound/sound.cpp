@@ -352,10 +352,10 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 	ChannelHandle handle = newChannel();
 
 	bool success = false;
-	BOOST_SCOPE_EXIT ( (&success) (&handle) (this_) ) {
+	BOOST_SCOPE_EXIT(this, &success, &handle) {
 		if (!success)
-			this_->freeChannel(handle);
-	} BOOST_SCOPE_EXIT_END
+			freeChannel(handle);
+	};
 
 	const TypeList::iterator typeEndIt = _types[type].list.end();
 

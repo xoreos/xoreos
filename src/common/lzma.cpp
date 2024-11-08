@@ -86,10 +86,10 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
 	inputSize -= propsSize;
 
 	lzma_stream strm = LZMA_STREAM_INIT;
-	BOOST_SCOPE_EXIT( (&strm) (&filters) ) {
+	BOOST_SCOPE_EXIT(&strm, &filters) {
 		kLZMAAllocator.free(0, filters[0].options);
 		lzma_end(&strm);
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	lzma_ret lzmaRet = LZMA_OK;
 
@@ -155,9 +155,9 @@ std::unique_ptr<SeekableReadStream> decompressERFLZMA(ReadStream &input, size_t 
 			throw Exception("Failed to decode LZMA1 properties");
 	}
 
-	BOOST_SCOPE_EXIT((&filters)) {
+	BOOST_SCOPE_EXIT(&filters) {
 		kLZMAAllocator.free(0, filters[0].options);
-	} BOOST_SCOPE_EXIT_END;
+	};
 
 	// Not sure what this byte is (possibly number of pages per decode?)
 	byte unk0 = input.readByte();
@@ -186,9 +186,9 @@ std::unique_ptr<SeekableReadStream> decompressERFLZMA(ReadStream &input, size_t 
 
 		// Allocate the stream
 		lzma_stream strm = LZMA_STREAM_INIT;
-		BOOST_SCOPE_EXIT((&strm)) {
+		BOOST_SCOPE_EXIT(&strm) {
 			lzma_end(&strm);
-		} BOOST_SCOPE_EXIT_END
+		};
 
 		// Create the raw decoder
 		lzma_ret lzmaRet = lzma_raw_decoder(&strm, filters);
