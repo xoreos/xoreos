@@ -129,35 +129,35 @@ void GFXCharacter::getSprite(Sprite &sprite) const {
 	if (_type != kSprite)
 		throw Common::Exception("Character is not a sprite");
 
-	sprite = boost::get<Sprite>(_value);
+	sprite = std::get<Sprite>(_value);
 }
 
 void GFXCharacter::getShape(Shape &shape) const {
 	if (_type != kShape)
 		throw Common::Exception("Character is not a shape");
 
-	shape = boost::get<Shape>(_value);
+	shape = std::get<Shape>(_value);
 }
 
 void GFXCharacter::getFont(Font &font) const {
 	if (_type != kFont)
 		throw Common::Exception("Character is not a font");
 
-	font = boost::get<Font>(_value);
+	font = std::get<Font>(_value);
 }
 
 void GFXCharacter::getEditText(EditText &editText) const {
 	if (_type != kEditText)
 		throw Common::Exception("Character is not an edit text");
 
-	editText = boost::get<EditText>(_value);
+	editText = std::get<EditText>(_value);
 }
 
 void GFXCharacter::getExternalImage(ExternalImage &externalImage) const {
 	if (_type != kExternalImage)
 		throw Common::Exception("Character is not an external image");
 
-	externalImage = boost::get<ExternalImage>(_value);
+	externalImage = std::get<ExternalImage>(_value);
 }
 
 GFXControl GFXControl::createPlaceObject(PlaceObject placeObject) {
@@ -184,14 +184,14 @@ void GFXControl::getPlaceObject(PlaceObject &placeObject) const {
 	if (_type != kPlaceObject)
 		throw Common::Exception("Control is not a PlaceObject");
 
-	placeObject = boost::get<PlaceObject>(_value);
+	placeObject = std::get<PlaceObject>(_value);
 }
 
 void GFXControl::getDoAction(DoAction &doAction) const {
 	if (_type != kDoAction)
 		throw Common::Exception("Control is not a DoAction");
 
-	doAction = boost::get<DoAction>(_value);
+	doAction = std::get<DoAction>(_value);
 }
 
 GFXControl::GFXControl(ControlType type) : _type(type) {

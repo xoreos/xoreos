@@ -176,19 +176,19 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 				case GFF3Struct::kFieldTypeUint16:
 				case GFF3Struct::kFieldTypeUint32:
 				case GFF3Struct::kFieldTypeStruct:
-					stream.writeUint32LE(boost::get<uint32_t>(field->value.data));
+					stream.writeUint32LE(std::get<uint32_t>(field->value.data));
 					break;
 				case GFF3Struct::kFieldTypeList:
 					stream.writeUint32LE(listDataIndex * 4);
-					listDataIndex += 1 + _lists[boost::get<uint32_t>(field->value.data)]->getSize();
+					listDataIndex += 1 + _lists[std::get<uint32_t>(field->value.data)]->getSize();
 					break;
 				case GFF3Struct::kFieldTypeChar:
 				case GFF3Struct::kFieldTypeSint16:
 				case GFF3Struct::kFieldTypeSint32:
-					stream.writeSint32LE(boost::get<int32_t>(field->value.data));
+					stream.writeSint32LE(std::get<int32_t>(field->value.data));
 					break;
 				case GFF3Struct::kFieldTypeFloat:
-					stream.writeIEEEFloatLE(boost::get<float>(field->value.data));
+					stream.writeIEEEFloatLE(std::get<float>(field->value.data));
 					break;
 				default:
 					throw Common::Exception("Invalid Field type");
@@ -220,28 +220,28 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 	for (const auto &value : individualValues) {
 		switch (value.type) {
 			case GFF3Struct::kFieldTypeUint64:
-				stream.writeUint64LE(boost::get<uint64_t>(value.data));
+				stream.writeUint64LE(std::get<uint64_t>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeSint64:
-				stream.writeSint64LE(boost::get<int64_t>(value.data));
+				stream.writeSint64LE(std::get<int64_t>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeDouble:
-				stream.writeIEEEDoubleLE(boost::get<double>(value.data));
+				stream.writeIEEEDoubleLE(std::get<double>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeStrRef:
 				stream.writeUint32LE(4);
-				stream.writeUint32LE(boost::get<uint32_t>(value.data));
+				stream.writeUint32LE(std::get<uint32_t>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeResRef:
 				if (value.isRaw) {
-					const VoidData &voidData = boost::get<VoidData>(value.data);
+					const VoidData &voidData = std::get<VoidData>(value.data);
 
 					stream.writeByte(MIN<size_t>(255, static_cast<uint32_t>(voidData.data->size())));
 					stream.writeStream(*voidData.data, 255);
 					voidData.data->seek(0);
 
 				} else {
-					const Common::UString &string = boost::get<Common::UString>(value.data);
+					const Common::UString &string = std::get<Common::UString>(value.data);
 
 					stream.writeByte(MIN<size_t>(255, string.size()));
 					stream.write(string.c_str(), MIN<size_t>(string.size(), 255));
@@ -250,40 +250,40 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 				break;
 			case GFF3Struct::kFieldTypeExoString:
 				if (value.isRaw) {
-					const VoidData &voidData = boost::get<VoidData>(value.data);
+					const VoidData &voidData = std::get<VoidData>(value.data);
 
 					stream.writeUint32LE(static_cast<uint32_t>(voidData.data->size()));
 					stream.writeStream(*voidData.data);
 					voidData.data->seek(0);
 
 				} else {
-					const Common::UString &string = boost::get<Common::UString>(value.data);
+					const Common::UString &string = std::get<Common::UString>(value.data);
 
 					stream.writeUint32LE(static_cast<uint32_t>(std::strlen(string.c_str())));
 					stream.writeString(string);
 				}
 				break;
 			case GFF3Struct::kFieldTypeLocString:
-				stream.writeUint32LE(boost::get<LocString>(value.data).getWrittenSize() + 8);
-				stream.writeUint32LE(boost::get<LocString>(value.data).getID());
-				stream.writeUint32LE(boost::get<LocString>(value.data).getNumStrings());
-				boost::get<LocString>(value.data).writeLocString(stream);
+				stream.writeUint32LE(std::get<LocString>(value.data).getWrittenSize() + 8);
+				stream.writeUint32LE(std::get<LocString>(value.data).getID());
+				stream.writeUint32LE(std::get<LocString>(value.data).getNumStrings());
+				std::get<LocString>(value.data).writeLocString(stream);
 				break;
 			case GFF3Struct::kFieldTypeVoid:
-				stream.writeUint32LE(static_cast<uint32_t>(boost::get<VoidData>(value.data).data->size()));
-				stream.writeStream(*boost::get<VoidData>(value.data).data);
-				boost::get<VoidData>(value.data).data->seek(0);
+				stream.writeUint32LE(static_cast<uint32_t>(std::get<VoidData>(value.data).data->size()));
+				stream.writeStream(*std::get<VoidData>(value.data).data);
+				std::get<VoidData>(value.data).data->seek(0);
 				break;
 			case GFF3Struct::kFieldTypeVector:
-				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.x);
-				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.y);
-				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.z);
+				stream.writeIEEEFloatLE(std::get<Vector4>(value.data).vec.x);
+				stream.writeIEEEFloatLE(std::get<Vector4>(value.data).vec.y);
+				stream.writeIEEEFloatLE(std::get<Vector4>(value.data).vec.z);
 				break;
 			case GFF3Struct::kFieldTypeOrientation:
-				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.x);
-				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.y);
-				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.z);
-				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.w);
+				stream.writeIEEEFloatLE(std::get<Vector4>(value.data).vec.x);
+				stream.writeIEEEFloatLE(std::get<Vector4>(value.data).vec.y);
+				stream.writeIEEEFloatLE(std::get<Vector4>(value.data).vec.z);
+				stream.writeIEEEFloatLE(std::get<Vector4>(value.data).vec.w);
 				break;
 			default:
 				break;
@@ -330,22 +330,22 @@ uint32_t GFF3Writer::getFieldDataSize(Value value) {
 			return 8;
 		case GFF3Struct::kFieldTypeExoString:
 			if (value.isRaw)
-				return 4 + boost::get<VoidData>(value.data).data->size();
+				return 4 + std::get<VoidData>(value.data).data->size();
 			else
-				return 4 + std::strlen(boost::get<Common::UString>(value.data).c_str());
+				return 4 + std::strlen(std::get<Common::UString>(value.data).c_str());
 		case GFF3Struct::kFieldTypeLocString:
-			return 12 + boost::get<LocString>(value.data).getWrittenSize();
+			return 12 + std::get<LocString>(value.data).getWrittenSize();
 		case GFF3Struct::kFieldTypeResRef:
 			if (value.isRaw)
-				return 1 + MIN<size_t>(255, boost::get<VoidData>(value.data).data->size());
+				return 1 + MIN<size_t>(255, std::get<VoidData>(value.data).data->size());
 			else
-				return 1 + MIN<size_t>(255, boost::get<Common::UString>(value.data).size());
+				return 1 + MIN<size_t>(255, std::get<Common::UString>(value.data).size());
 		case GFF3Struct::kFieldTypeVector:
 			return 12;
 		case GFF3Struct::kFieldTypeOrientation:
 			return 16;
 		case GFF3Struct::kFieldTypeVoid:
-			return 4 + boost::get<VoidData>(value.data).data->size();
+			return 4 + std::get<VoidData>(value.data).data->size();
 		default:
 			return 0;
 	}

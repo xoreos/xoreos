@@ -27,8 +27,7 @@
 
 #include <memory>
 #include <optional>
-
-#include <boost/variant.hpp>
+#include <variant>
 
 #include "external/glm/glm.hpp"
 
@@ -88,7 +87,7 @@ public:
 	/** A style for filling. */
 	struct FillStyle {
 		byte type;
-		boost::variant<Fill, Gradient, Bitmap> value;
+		std::variant<Fill, Gradient, Bitmap> value;
 
 		FillStyle() {
 			type = 0xFF;
@@ -258,7 +257,7 @@ public:
 	void getExternalImage(ExternalImage &externalImage) const;
 
 private:
-	boost::variant<
+	std::variant<
 		Sprite,
 		Shape,
 		EditText,
@@ -334,7 +333,7 @@ public:
 	void getDoAction(DoAction &doAction) const;
 
 private:
-	boost::variant<PlaceObject, DoAction> _value;
+	std::variant<PlaceObject, DoAction> _value;
 
 	ControlType _type;
 
