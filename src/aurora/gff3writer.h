@@ -28,9 +28,9 @@
 #include <list>
 #include <functional>
 #include <memory>
+#include <variant>
 
 #include <boost/noncopyable.hpp>
-#include <boost/variant.hpp>
 
 #ifdef BOOST_COMP_CLANG
 	#define GLM_LANG_STL11_FORCED // Fix clang glm c++11 bug
@@ -102,7 +102,7 @@ private:
 	};
 
 	/** A variant containing all possible types of GFF data. */
-	typedef boost::variant<
+	typedef std::variant<
 		uint32_t,
 		uint64_t,
 		int32_t,
@@ -114,13 +114,6 @@ private:
 		LocString,
 		VoidData
 	> ValueData;
-
-	class ValueDataLess : public boost::static_visitor<bool> {
-	public:
-		template<typename T, typename U> bool operator()(const T &UNUSED(v1), const U &UNUSED(v2)) const { return false; }
-
-		template<typename T> bool operator()(const T &v1, const T &v2) const { return v1 < v2; }
-	};
 
 	/** A value holds a type and data. */
 	struct Value {
@@ -136,13 +129,10 @@ private:
 
 		/** Relational operator for map find. */
 		bool operator<(const Value &rhs) const {
-			if (type != rhs.type) {
+			if (type != rhs.type)
 				return type < rhs.type;
-			} else if (data.which() != rhs.data.which()) {
-				return data.which() < rhs.data.which();
-			} else {
-				return boost::apply_visitor(ValueDataLess(), data, rhs.data);
-			}
+
+			return data < rhs.data;
 		}
 	};
 

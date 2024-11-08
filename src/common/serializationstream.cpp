@@ -22,7 +22,7 @@
  *  Classes for serializing and deserializing raw data.
  */
 
-#include <boost/type_traits.hpp>
+#include <type_traits>
 
 #include "src/common/serializationstream.h"
 #include "src/common/encoding.h"
@@ -86,7 +86,7 @@ void SerializationReadStream::readOrWriteSint16BE(int16_t &value) {
 
 template<typename T>
 static UString toHexString(T value) {
-	using unsignedT = typename boost::make_unsigned<T>::type;
+	using unsignedT = std::make_unsigned_t<T>;
 	unsignedT v = static_cast<unsignedT>(value);
 
 	const size_t bits = sizeof(unsignedT) * 8;

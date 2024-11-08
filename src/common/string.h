@@ -26,10 +26,8 @@
 #define XOREOS_COMMON_STRING_H
 
 #include <cstdint>
-
 #include <string>
-
-#include <boost/type_traits/make_unsigned.hpp>
+#include <type_traits>
 
 #include "src/common/system.h"
 
@@ -48,7 +46,7 @@ typedef int (*CTypeFunction)(int);
 /** Is the character an ASCII character? */
 template<typename T>
 inline bool isASCII(T c) {
-	typedef typename boost::make_unsigned<T>::type UnsignedType;
+	using UnsignedType = std::make_unsigned_t<T>;
 	UnsignedType u = static_cast<UnsignedType>(c);
 	return (u & ~static_cast<UnsignedType>(0x7F)) == 0;
 }

@@ -25,9 +25,8 @@
 #ifndef AURORA_GR2FILE_H
 #define AURORA_GR2FILE_H
 
+#include <optional>
 #include <vector>
-
-#include <boost/optional.hpp>
 
 #include "external/glm/glm.hpp"
 #include "external/glm/detail/type_quat.hpp"
@@ -79,7 +78,7 @@ private:
 	void loadModel(Section &section);
 	void loadSkeleton(Section &section);
 
-	boost::optional<Relocation> readRelocation(Section &section);
+	std::optional<Relocation> readRelocation(Section &section);
 	Section &getRelocatedStream(Relocation &relocation);
 
 	std::vector<Section> _sections;

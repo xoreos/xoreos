@@ -171,28 +171,28 @@ void GR2File::load(Common::SeekableReadStream &gr2) {
 	Section &root = _sections[rootSection];
 	root.stream->seek(rootOffset);
 
-	boost::optional<Relocation> artToolInfoRelocation = readRelocation(root);
-	boost::optional<Relocation> exporterInfoRelocation = readRelocation(root);
-	boost::optional<Relocation> filenameRelocation = readRelocation(root);
+	std::optional<Relocation> artToolInfoRelocation = readRelocation(root);
+	std::optional<Relocation> exporterInfoRelocation = readRelocation(root);
+	std::optional<Relocation> filenameRelocation = readRelocation(root);
 
 	uint32_t texturesCount = root.stream->readUint32LE();
-	boost::optional<Relocation> texturesRelocation = readRelocation(root);
+	std::optional<Relocation> texturesRelocation = readRelocation(root);
 	uint32_t materialsCount = root.stream->readUint32LE();
-	boost::optional<Relocation> materialsRelocation = readRelocation(root);
+	std::optional<Relocation> materialsRelocation = readRelocation(root);
 	uint32_t skeletonsCount = root.stream->readUint32LE();
-	boost::optional<Relocation> skeletonsRelocation = readRelocation(root);
+	std::optional<Relocation> skeletonsRelocation = readRelocation(root);
 	uint32_t vertexDataCount = root.stream->readUint32LE();
-	boost::optional<Relocation> vertexDataRelocation = readRelocation(root);
+	std::optional<Relocation> vertexDataRelocation = readRelocation(root);
 	uint32_t triTopologiesCount = root.stream->readUint32LE();
-	boost::optional<Relocation> triTopologiesRelocation = readRelocation(root);
+	std::optional<Relocation> triTopologiesRelocation = readRelocation(root);
 	uint32_t meshesCount = root.stream->readUint32LE();
-	boost::optional<Relocation> meshesRelocation = readRelocation(root);
+	std::optional<Relocation> meshesRelocation = readRelocation(root);
 	uint32_t modelsCount = root.stream->readUint32LE();
-	boost::optional<Relocation> modelsRelocation = readRelocation(root);
+	std::optional<Relocation> modelsRelocation = readRelocation(root);
 	uint32_t trackGroupsCount = root.stream->readUint32LE();
-	boost::optional<Relocation> trackGroupsRelocation = readRelocation(root);
+	std::optional<Relocation> trackGroupsRelocation = readRelocation(root);
 	uint32_t animationsCount = root.stream->readUint32LE();
-	boost::optional<Relocation> animationsRelocation = readRelocation(root);
+	std::optional<Relocation> animationsRelocation = readRelocation(root);
 
 	if (texturesCount != 0 || texturesRelocation)
 		warning("TODO: Implement textures");
@@ -231,7 +231,7 @@ void GR2File::load(Common::SeekableReadStream &gr2) {
 }
 
 void GR2File::loadArtToolInfo(GR2File::Section &section) {
-	boost::optional<Relocation> artToolNameRelocation = readRelocation(section);
+	std::optional<Relocation> artToolNameRelocation = readRelocation(section);
 	_artToolInfo.majorVersion = section.stream->readUint32LE();
 	_artToolInfo.minorVersion = section.stream->readUint32LE();
 	_artToolInfo.unitsPerMeter = section.stream->readIEEEFloatLE();
@@ -258,7 +258,7 @@ void GR2File::loadArtToolInfo(GR2File::Section &section) {
 }
 
 void GR2File::loadExporterInfo(GR2File::Section &section) {
-	boost::optional<Relocation> exporterNameRelocation = readRelocation(section);
+	std::optional<Relocation> exporterNameRelocation = readRelocation(section);
 	_exporterInfo.majorVersion = section.stream->readUint32LE();
 	_exporterInfo.minorVersion = section.stream->readUint32LE();
 	_exporterInfo.customization = section.stream->readUint32LE();
@@ -273,16 +273,16 @@ void GR2File::loadExporterInfo(GR2File::Section &section) {
 }
 
 void GR2File::loadSkeleton(GR2File::Section &section) {
-	boost::optional<Relocation> skeletonRelocation = readRelocation(section);
+	std::optional<Relocation> skeletonRelocation = readRelocation(section);
 	assert(static_cast<bool>(skeletonRelocation));
 
 	section.pushPosition();
 
 	Section &skeletonSection = getRelocatedStream(*skeletonRelocation);
 
-	boost::optional<Relocation> nameRelocation = readRelocation(skeletonSection);
+	std::optional<Relocation> nameRelocation = readRelocation(skeletonSection);
 	uint32_t numBones = skeletonSection.stream->readUint32LE();
-	boost::optional<Relocation> bonesRelocation = readRelocation(skeletonSection);
+	std::optional<Relocation> bonesRelocation = readRelocation(skeletonSection);
 
 	assert(static_cast<bool>(nameRelocation));
 	assert(static_cast<bool>(bonesRelocation));
@@ -297,7 +297,7 @@ void GR2File::loadSkeleton(GR2File::Section &section) {
 	Section &bonesSection = getRelocatedStream(*bonesRelocation);
 	skeleton.bones.resize(numBones);
 	for (auto &bone : skeleton.bones) {
-		boost::optional<Relocation> boneNameRelocation = readRelocation(bonesSection);
+		std::optional<Relocation> boneNameRelocation = readRelocation(bonesSection);
 
 		bone.parent = bonesSection.stream->readSint32LE();
 
@@ -339,8 +339,8 @@ void GR2File::loadSkeleton(GR2File::Section &section) {
 		// Inverse world transform
 		bonesSection.stream->skip(16 * 4);
 
-		boost::optional<Relocation> lightInfo = readRelocation(bonesSection);
-		boost::optional<Relocation> cameraInfo = readRelocation(bonesSection);
+		std::optional<Relocation> lightInfo = readRelocation(bonesSection);
+		std::optional<Relocation> cameraInfo = readRelocation(bonesSection);
 
 		if (static_cast<bool>(lightInfo))
 			warning("TODO: Add light info reading");
@@ -357,8 +357,8 @@ void GR2File::loadSkeleton(GR2File::Section &section) {
 }
 
 void GR2File::loadModel(GR2File::Section &section) {
-	boost::optional<Relocation> nameRelocation = readRelocation(section);
-	boost::optional<Relocation> skeletonRelocation = readRelocation(section);
+	std::optional<Relocation> nameRelocation = readRelocation(section);
+	std::optional<Relocation> skeletonRelocation = readRelocation(section);
 
 	assert(static_cast<bool>(nameRelocation));
 	assert(static_cast<bool>(skeletonRelocation));
@@ -369,7 +369,7 @@ void GR2File::loadModel(GR2File::Section &section) {
 	);
 }
 
-boost::optional<GR2File::Relocation> GR2File::readRelocation(GR2File::Section &section) {
+std::optional<GR2File::Relocation> GR2File::readRelocation(GR2File::Section &section) {
 	auto relocationIter = std::find_if(
 			section.relocations.begin(),
 			section.relocations.end(),
@@ -379,7 +379,7 @@ boost::optional<GR2File::Relocation> GR2File::readRelocation(GR2File::Section &s
 	section.stream->skip(4);
 
 	if (relocationIter == section.relocations.end())
-		return boost::none;
+		return std::nullopt;
 
 	return *relocationIter;
 }

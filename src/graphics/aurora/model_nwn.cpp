@@ -29,8 +29,9 @@
  */
 
 #include <cassert>
+#include <unordered_set>
 
-#include <boost/unordered_set.hpp>
+#include <boost/functional/hash.hpp>
 
 #include "external/glm/glm.hpp"
 
@@ -1361,15 +1362,17 @@ bool operator == (const FaceVert &a, const FaceVert &b) {
 	return (a.p == b.p) && (a.t == b.t) && fuzzyEqual(&a.n[0], &b.n[0]);
 }
 
-std::size_t hash_value(const FaceVert &b) {
-	std::size_t seed = 0;
-	boost::hash_combine(seed, b.p);
-	boost::hash_combine(seed, b.t);
-	boost::hash_combine(seed, uint32_t(b.n[0] * 1E4));
-	boost::hash_combine(seed, uint32_t(b.n[1] * 1E4));
-	boost::hash_combine(seed, uint32_t(b.n[2] * 1E4));
-	return seed;
-}
+struct FaceVertHash {
+	std::size_t operator()(const FaceVert &b) const {
+		std::size_t seed = 0;
+		boost::hash_combine(seed, b.p);
+		boost::hash_combine(seed, b.t);
+		boost::hash_combine(seed, uint32_t(b.n[0] * 1E4));
+		boost::hash_combine(seed, uint32_t(b.n[1] * 1E4));
+		boost::hash_combine(seed, uint32_t(b.n[2] * 1E4));
+		return seed;
+	}
+};
 
 void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
@@ -1391,8 +1394,8 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 	uint32_t facesCount = mesh.faceCount;
 	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint32_t), GL_UNSIGNED_INT);
 
-	boost::unordered_set<FaceVert> verts;
-	typedef boost::unordered_set<FaceVert>::iterator verts_set_it;
+	using FaceVertSet = std::unordered_set<FaceVert, FaceVertHash>;
+	FaceVertSet verts;
 
 	uint32_t vertexCount = 0;
 	uint32_t *f = reinterpret_cast<uint32_t *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
@@ -1413,7 +1416,7 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 			fv.t = t[j];
 			fv.n = n;
 
-			std::pair<verts_set_it, bool> it = verts.insert(fv);
+			auto it = verts.insert(fv);
 			if (it.second)
 				vertexCount++;
 
@@ -1433,24 +1436,24 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	for (verts_set_it i = verts.begin(); i != verts.end(); ++i) {
-		byte  *vData = reinterpret_cast<byte  *>(_mesh->data->rawMesh->getVertexBuffer()->getData()) + i->i * _mesh->data->rawMesh->getVertexBuffer()->getSize();
+	for (const FaceVert& vert : verts) {
+		byte  *vData = reinterpret_cast<byte  *>(_mesh->data->rawMesh->getVertexBuffer()->getData()) + vert.i * _mesh->data->rawMesh->getVertexBuffer()->getSize();
 		float *v     = reinterpret_cast<float *>(vData);
 
 		// Position
-		*v++ = mesh.vX[i->p];
-		*v++ = mesh.vY[i->p];
-		*v++ = mesh.vZ[i->p];
+		*v++ = mesh.vX[vert.p];
+		*v++ = mesh.vY[vert.p];
+		*v++ = mesh.vZ[vert.p];
 
 		// Normal
-		*v++ = i->n[0];
-		*v++ = i->n[1];
-		*v++ = i->n[2];
+		*v++ = vert.n[0];
+		*v++ = vert.n[1];
+		*v++ = vert.n[2];
 
 		// TexCoord
-		if (i->t < mesh.tCount) {
-			*v++ = mesh.tX[i->t];
-			*v++ = mesh.tY[i->t];
+		if (vert.t < mesh.tCount) {
+			*v++ = mesh.tX[vert.t];
+			*v++ = mesh.tY[vert.t];
 		} else {
 			*v++ = 0.0f;
 			*v++ = 0.0f;
