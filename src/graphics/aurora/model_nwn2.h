@@ -95,15 +95,11 @@ public:
 
 	void setTint(const float tint[3][4]);
 
+	void setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter);
+	void bindShaderVariables(Shader::ShaderSurface *surface, MaterialConfiguration &config);
+
 private:
-	Common::UString _tintMap;
-
-	int _tintedMapIndex;
-
 	float _tint[3][4];
-
-	void removeTint();
-	void createTint();
 };
 
 } // End of namespace Aurora
