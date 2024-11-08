@@ -172,13 +172,13 @@ void Campaign::loadCampaignResource(const Common::UString &campaign) {
 		throw Common::Exception("No such campaign \"%s\"", campaign.c_str());
 
 	bool success = false;
-	BOOST_SCOPE_EXIT( (&success) (this_) ) {
+	BOOST_SCOPE_EXIT(this, &success) {
 		try {
 			if (!success)
-				this_->clear();
+				clear();
 		} catch (...) {
 		}
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	indexMandatoryDirectory(directory, 0, -1, 1000, &_resCampaign);
 

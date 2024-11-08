@@ -92,6 +92,9 @@ else()
   message(STATUS "Unknown platform, maybe not supported")
 endif()
 
+# Force BOOST_SCOPE_EXIT to behave in lambda mode
+add_definitions(-DBOOST_SCOPE_EXIT_CONFIG_USE_LAMBDAS)
+
 # C++ standard we're compiling against
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

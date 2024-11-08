@@ -92,9 +92,9 @@ XMLParser::XMLParser(ReadStream &stream, bool makeLower, const UString &fileName
 		throw e;
 	}
 
-	BOOST_SCOPE_EXIT( (&xml) ) {
+	BOOST_SCOPE_EXIT(&xml) {
 		xmlFreeDoc(xml);
-	} BOOST_SCOPE_EXIT_END
+	};
 
 	xmlNodePtr root = xmlDocGetRootElement(xml);
 	if (!root)

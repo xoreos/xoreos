@@ -428,6 +428,9 @@ case "$target" in
 		;;
 esac;
 
+dnl Force BOOST_SCOPE_EXIT to behave in lambda mode
+XOREOS_CFLAGS="$XOREOS_CFLAGS -DBOOST_SCOPE_EXIT_CONFIG_USE_LAMBDAS"
+
 AC_SUBST(XOREOS_CFLAGS)
 AC_SUBST(XOREOS_LIBS)
 
