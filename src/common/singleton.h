@@ -50,18 +50,16 @@
 #ifndef COMMON_SINGLETON_H
 #define COMMON_SINGLETON_H
 
-#include <boost/noncopyable.hpp>
-
 namespace Common {
 
 /**
  * Generic template base class for implementing the singleton design pattern.
  */
 template<class T>
-class Singleton : boost::noncopyable {
+class Singleton {
 private:
-	Singleton<T>(const Singleton<T> &);
-	Singleton<T> &operator=(const Singleton<T> &);
+	Singleton<T>(const Singleton<T> &) = delete;
+	Singleton<T> &operator=(const Singleton<T> &) = delete;
 
 	static T *_singleton;
 

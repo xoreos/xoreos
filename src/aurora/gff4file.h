@@ -31,8 +31,6 @@
 
 #include "external/glm/mat4x4.hpp"
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/endianness.h"
 #include "src/common/ustring.h"
@@ -91,7 +89,7 @@ class GFF4Struct;
  *  See also: GFF3File in gff3file.h for the earlier V3.2/V3.3 versions of
  *  the GFF format.
  */
-class GFF4File : boost::noncopyable, public AuroraFile {
+class GFF4File : public AuroraFile {
 public:
 	/** Read a GFF4 file out of the stream. */
 	GFF4File(std::unique_ptr<Common::SeekableReadStream> gff4, uint32_t type = 0xFFFFFFFF);
@@ -100,6 +98,9 @@ public:
 	/** Request this resource from the ResourceManager and read a GFF4 file out of it. */
 	GFF4File(const Common::UString &gff4, FileType fileType, uint32_t type = 0xFFFFFFFF);
 	~GFF4File();
+
+	GFF4File(const GFF4File &) = delete;
+	GFF4File &operator=(const GFF4File &) = delete;
 
 	/** Return the GFF4's specific type. */
 	uint32_t getType() const;

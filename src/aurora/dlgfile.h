@@ -27,8 +27,6 @@
 
 #include <vector>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -55,7 +53,7 @@ namespace NWScript {
 //       - "Emotion", "FacialAnim"
 //       - "Logic"
 
-class DLGFile : boost::noncopyable {
+class DLGFile {
 public:
 	static const uint32_t kEndLine     = 0xFFFFFFFE;
 	static const uint32_t kInvalidLine = 0xFFFFFFFF;
@@ -83,6 +81,9 @@ public:
 	/** Request this resource from the ResourceManager and read a DLG file out of it. */
 	DLGFile(const Common::UString &dlg, NWScript::Object *owner = 0, bool repairNWNPremium = false);
 	~DLGFile();
+
+	DLGFile(const DLGFile &) = delete;
+	DLGFile &operator=(const DLGFile &) = delete;
 
 	/** Does starting the conversation zoom in the camera onto the speaker or not? */
 	bool getNoZoomIn() const;

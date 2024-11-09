@@ -27,8 +27,6 @@
 
 #include <cassert>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/disposableptr.h"
 #include "src/common/error.h"
@@ -67,7 +65,7 @@ protected:
  * the data stream, ordering the bits LSB to MSB.
  */
 template<int valueBits, bool isLE, bool isMSB2LSB>
-class BitStreamWriterImpl : boost::noncopyable, public BitStreamWriter {
+class BitStreamWriterImpl : public BitStreamWriter {
 private:
 	DisposablePtr<WriteStream> _stream; ///< The output stream.
 
@@ -127,8 +125,10 @@ public:
 			throw Exception("BitStreamWriter: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
 	}
 
-	~BitStreamWriterImpl() {
-	}
+	~BitStreamWriterImpl() = default;
+
+	BitStreamWriterImpl(const BitStreamWriterImpl& ) = delete;
+	BitStreamWriterImpl &operator=(const BitStreamWriterImpl &) = delete;
 
 	/** Write a bit to the bit stream. */
 	void putBit(bool bit) {

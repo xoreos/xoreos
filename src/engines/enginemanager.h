@@ -27,8 +27,6 @@
 
 #include <list>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
 
@@ -41,9 +39,12 @@ namespace Engines {
 
 class EngineProbe;
 
-class GameInstance : boost::noncopyable {
+class GameInstance {
 public:
 	virtual ~GameInstance();
+
+	GameInstance(const GameInstance &) = delete;
+	GameInstance &operator=(const GameInstance &) = delete;
 
 	virtual Common::UString getGameName(bool platform) const = 0;
 

@@ -27,8 +27,6 @@
 
 #include <cassert>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/disposableptr.h"
 #include "src/common/error.h"
@@ -82,7 +80,7 @@ protected:
  * from the data stream and hands out the bits in the order of LSB to MSB.
  */
 template<int valueBits, bool isLE, bool isMSB2LSB>
-class BitStreamImpl : boost::noncopyable, public BitStream {
+class BitStreamImpl : public BitStream {
 private:
 	DisposablePtr<SeekableReadStream> _stream; ///< The input stream.
 
@@ -146,8 +144,10 @@ public:
 			throw Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
 	}
 
-	~BitStreamImpl() {
-	}
+	~BitStreamImpl() = default;
+
+	BitStreamImpl(const BitStreamImpl &) = delete;
+	BitStreamImpl &operator=(const BitStreamImpl &) = delete;
 
 	/** Read a bit from the bit stream. */
 	uint32_t getBit() {

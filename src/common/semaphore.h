@@ -30,17 +30,18 @@ START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_thread.h>
 STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 
 namespace Common {
 
 /** A semaphore . */
-class Semaphore : boost::noncopyable {
+class Semaphore {
 public:
 	Semaphore(uint value = 0);
 	~Semaphore();
+
+	Semaphore(const Semaphore &) = delete;
+	Semaphore &operator=(const Semaphore &) = delete;
 
 	bool lock(uint32_t timeout = 0);
 	bool lockTry();

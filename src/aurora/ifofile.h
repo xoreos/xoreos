@@ -28,8 +28,6 @@
 #include <vector>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -66,10 +64,13 @@ class GFF3Struct;
  *  Jade Empire does not use an IFO file. Neither do Sonic Chronicles or
  *  the two Dragon Age games.
  */
-class IFOFile : boost::noncopyable {
+class IFOFile {
 public:
 	IFOFile();
 	~IFOFile();
+
+	IFOFile(const IFOFile &) = delete;
+	IFOFile &operator=(const IFOFile &) = delete;
 
 	/** Take over this stream and load an IFO out of it.
 	 *

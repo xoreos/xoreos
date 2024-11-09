@@ -28,8 +28,6 @@
 #include <cstdio>
 #include <cstddef>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/writestream.h"
 
@@ -38,11 +36,14 @@ namespace Common {
 class UString;
 
 /** A simple streaming file writing class. */
-class WriteFile : boost::noncopyable, public SeekableWriteStream {
+class WriteFile : public SeekableWriteStream {
 public:
 	WriteFile();
 	WriteFile(const UString &fileName);
 	~WriteFile();
+
+	WriteFile(const WriteFile &) = delete;
+	WriteFile &operator=(const WriteFile &) = delete;
 
 	/** Try to open the file with the given fileName.
 	 *

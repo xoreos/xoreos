@@ -25,8 +25,6 @@
 #ifndef AURORA_TALKTABLE_H
 #define AURORA_TALKTABLE_H
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/encoding.h"
 
@@ -49,9 +47,12 @@ namespace Aurora {
  *  See classes TalkTable_TLK and TalkTable_GFF for the two main
  *  formats a talk table can be found in.
  */
-class TalkTable : boost::noncopyable {
+class TalkTable {
 public:
 	virtual ~TalkTable();
+
+	TalkTable(const TalkTable &) = delete;
+	TalkTable &operator=(const TalkTable &) = delete;
 
 	virtual bool hasEntry(uint32_t strRef) const = 0;
 

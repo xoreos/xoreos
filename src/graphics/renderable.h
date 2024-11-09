@@ -25,8 +25,6 @@
 #ifndef GRAPHICS_RENDERABLE_H
 #define GRAPHICS_RENDERABLE_H
 
-#include <boost/noncopyable.hpp>
-
 #include "external/glm/mat4x4.hpp"
 
 #include "src/common/ustring.h"
@@ -39,10 +37,13 @@
 namespace Graphics {
 
 /** An object that can be displayed by the graphics manager. */
-class Renderable : boost::noncopyable, public Queueable {
+class Renderable : public Queueable {
 public:
 	Renderable(RenderableType type);
 	~Renderable();
+
+	Renderable(const Renderable &) = delete;
+	Renderable &operator=(const Renderable &) = delete;
 
 	bool operator<(const Queueable &q) const;
 

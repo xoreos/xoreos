@@ -27,8 +27,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/ustring.h"
 
 namespace Graphics {
@@ -39,7 +37,7 @@ namespace Graphics {
 
 namespace Engines {
 
-class LoadProgress : boost::noncopyable {
+class LoadProgress {
 public:
 	/** Create a load progress display.
 	 *
@@ -57,6 +55,9 @@ public:
 	 */
 	LoadProgress(size_t steps);
 	~LoadProgress();
+
+	LoadProgress(const LoadProgress &) = delete;
+	LoadProgress &operator=(const LoadProgress &) = delete;
 
 	/** Take a step in advancing the progress. */
 	void step(const Common::UString &description);

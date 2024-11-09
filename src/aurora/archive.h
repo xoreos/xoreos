@@ -27,8 +27,6 @@
 
 #include <list>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/hash.h"
@@ -42,7 +40,7 @@ namespace Common {
 namespace Aurora {
 
 /** An abstract file archive. */
-class Archive : boost::noncopyable {
+class Archive {
 public:
 	/** A resource within the archive. */
 	struct Resource {
@@ -58,6 +56,9 @@ public:
 
 	Archive();
 	virtual ~Archive();
+
+	Archive(const Archive &) = delete;
+	Archive &operator=(const Archive &) = delete;
 
 	/** Return the list of resources. */
 	virtual const ResourceList &getResources() const = 0;

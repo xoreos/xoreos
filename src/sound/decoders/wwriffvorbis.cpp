@@ -56,8 +56,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -78,12 +76,15 @@
 
 namespace Sound {
 
-class CodebookLibrary : boost::noncopyable {
+class CodebookLibrary {
 public:
 	CodebookLibrary(Common::SeekableReadStream &stream);
 	CodebookLibrary();
 
-	~CodebookLibrary() { }
+	~CodebookLibrary() = default;
+
+	CodebookLibrary(const CodebookLibrary &) = delete;
+	CodebookLibrary &operator=(const CodebookLibrary &) = delete;
 
 	void rebuild(size_t i, Common::BitStreamWriter &bos);
 	void rebuild(Common::BitStream &bis, size_t size, Common::BitStreamWriter &bos);

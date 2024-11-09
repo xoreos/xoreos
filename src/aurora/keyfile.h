@@ -27,8 +27,6 @@
 
 #include <vector>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -67,7 +65,7 @@ namespace Aurora {
  *  games (Baldur's Gate et al) are not supported at all, even though
  *  they claim to be V1.
  */
-class KEYFile : boost::noncopyable, public AuroraFile {
+class KEYFile : public AuroraFile {
 public:
 	/** A key resource index. */
 	struct Resource {
@@ -83,6 +81,9 @@ public:
 
 	KEYFile(Common::SeekableReadStream &key);
 	~KEYFile();
+
+	KEYFile(const KEYFile &) = delete;
+	KEYFile &operator=(const KEYFile &) = delete;
 
 	/** Return a list of all managed bifs. */
 	const BIFList &getBIFs() const;

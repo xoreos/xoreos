@@ -33,8 +33,6 @@
 #include <functional>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
@@ -196,10 +194,13 @@ private:
 	static size_t findWordEnd  (const Common::UString &line, size_t pos);
 };
 
-class Console : boost::noncopyable {
+class Console {
 public:
 	Console(Engine &engine, const Common::UString &font, int fontHeight = 0);
 	virtual ~Console();
+
+	Console(const Console &) = delete;
+	Console &operator=(const Console &) = delete;
 
 	void show();
 	void hide();
