@@ -29,8 +29,6 @@
 #include <map>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -81,13 +79,16 @@ class GFF3Struct;
  *  See also: GFF4File in gff4file.h for the later V4.0/V4.1 versions of
  *  the GFF format.
  */
-class GFF3File : boost::noncopyable, public AuroraFile {
+class GFF3File : public AuroraFile {
 public:
 	/** Take over this stream and read a GFF3 file out of it. */
 	GFF3File(Common::SeekableReadStream *gff3, uint32_t id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	/** Request this resource from the ResourceManager and read a GFF3 file out of it. */
 	GFF3File(const Common::UString &gff3, FileType type, uint32_t id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	virtual ~GFF3File();
+
+	GFF3File(const GFF3File &) = delete;
+	GFF3File &operator=(const GFF3File &) = delete;
 
 	/** Return the GFF3's specific type. */
 	uint32_t getType() const;

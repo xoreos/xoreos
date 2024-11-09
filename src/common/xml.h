@@ -35,8 +35,6 @@
 #include <map>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/ustring.h"
 
 struct _xmlNode;
@@ -53,7 +51,7 @@ void deinitXML();
 class XMLNode;
 
 /** Class to parse a ReadStream into a simple XML tree. */
-class XMLParser : boost::noncopyable {
+class XMLParser {
 public:
 	/** Parse an XML file out of a stream.
 	 *
@@ -64,6 +62,9 @@ public:
 	XMLParser(ReadStream &stream, bool makeLower = false, const UString &fileName = "stream.xml");
 	~XMLParser();
 
+	XMLParser(const XMLParser &) = delete;
+	XMLParser &operator=(const XMLParser &) = delete;
+
 	/** Return the XML root node. */
 	const XMLNode &getRoot() const;
 
@@ -71,9 +72,12 @@ private:
 	std::unique_ptr<XMLNode> _rootNode;
 };
 
-class XMLNode : boost::noncopyable {
+class XMLNode {
 public:
 	~XMLNode();
+
+	XMLNode(const XMLNode &) = delete;
+	XMLNode &operator=(const XMLNode &) = delete;
 
 	typedef std::map<UString, UString> Properties;
 	typedef std::list<std::unique_ptr<const XMLNode>> Children;

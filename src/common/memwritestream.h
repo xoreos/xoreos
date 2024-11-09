@@ -52,8 +52,6 @@
 
 #include <cstddef>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/disposableptr.h"
 #include "src/common/writestream.h"
@@ -65,10 +63,13 @@ namespace Common {
  *
  *  Writing past the size of the memory block will fail with an exception.
  */
-class MemoryWriteStream : boost::noncopyable, public SeekableWriteStream {
+class MemoryWriteStream : public SeekableWriteStream {
 public:
 	MemoryWriteStream(byte *buf, size_t len) : _ptr(buf), _bufSize(len), _pos(0) { }
-	~MemoryWriteStream() { }
+	~MemoryWriteStream() = default;
+
+	MemoryWriteStream(const MemoryWriteStream &) = delete;
+	MemoryWriteStream &operator=(const MemoryWriteStream &) = delete;
 
 	/** Template constructor to create a MemoryWriteStream around an array buffer. */
 	template<size_t N>
@@ -95,10 +96,13 @@ private:
  *
  *  As long as more memory can be allocated, writing into the stream won't fail.
  */
-class MemoryWriteStreamDynamic : boost::noncopyable, public SeekableWriteStream {
+class MemoryWriteStreamDynamic : public SeekableWriteStream {
 public:
 	MemoryWriteStreamDynamic(bool disposeMemory = false, size_t capacity = 0);
 	~MemoryWriteStreamDynamic();
+
+	MemoryWriteStreamDynamic(const MemoryWriteStreamDynamic &) = delete;
+	MemoryWriteStreamDynamic &operator=(const MemoryWriteStreamDynamic &) = delete;
 
 	void reserve(size_t s);
 

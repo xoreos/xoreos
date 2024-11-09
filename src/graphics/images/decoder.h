@@ -28,8 +28,6 @@
 #include <vector>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 
 #include "src/graphics/types.h"
@@ -44,7 +42,7 @@ namespace Common {
 namespace Graphics {
 
 /** A generic interface for image decoders. */
-class ImageDecoder : boost::noncopyable {
+class ImageDecoder {
 public:
 	/** A mip map. */
 	struct MipMap {

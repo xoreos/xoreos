@@ -53,8 +53,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 
 namespace Common {
@@ -62,10 +60,13 @@ namespace Common {
 class FFT;
 
 /** (Inverse) Modified Discrete Cosine Transforms. */
-class MDCT : boost::noncopyable {
+class MDCT {
 public:
 	MDCT(int bits, bool inverse, double scale);
 	~MDCT();
+
+	MDCT(const MDCT &) = delete;
+	MDCT &operator=(const MDCT &) = delete;
 
 	/** Compute MDCT of size N = 2^nbits. */
 	void calcMDCT(float *output, const float *input);

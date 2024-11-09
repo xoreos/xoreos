@@ -25,8 +25,6 @@
 #ifndef VIDEO_CODECS_CODEC_H
 #define VIDEO_CODECS_CODEC_H
 
-#include <boost/noncopyable.hpp>
-
 namespace Common {
 	class SeekableReadStream;
 }
@@ -37,10 +35,13 @@ namespace Graphics {
 
 namespace Video {
 
-class Codec : boost::noncopyable {
+class Codec {
 public:
 	Codec();
 	virtual ~Codec();
+
+	Codec(const Codec &) = delete;
+	Codec &operator=(const Codec &) = delete;
 
 	virtual void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &data) = 0;
 };

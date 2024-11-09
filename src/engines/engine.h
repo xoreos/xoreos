@@ -27,8 +27,6 @@
 
 #include <vector>
 
-#include <boost/noncopyable.hpp>
-
 #include <memory>
 #include "src/common/ustring.h"
 
@@ -46,10 +44,13 @@ namespace Engines {
 class Console;
 
 /** The base class for an engine within BioWare's Aurora family. */
-class Engine : boost::noncopyable {
+class Engine {
 public:
 	Engine();
 	virtual ~Engine();
+
+	Engine(const Engine &) = delete;
+	Engine &operator=(const Engine &) = delete;
 
 	/** Detect which languages this game instance supports. */
 	virtual bool detectLanguages(Aurora::GameID game, const Common::UString &target,

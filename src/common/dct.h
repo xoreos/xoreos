@@ -55,8 +55,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 
 namespace Common {
@@ -64,7 +62,7 @@ namespace Common {
 class RDFT;
 
 /** (Inverse) Discrete Cosine Transforms. */
-class DCT : boost::noncopyable {
+class DCT {
 public:
 	enum TransformType {
 		DCT_II,
@@ -75,6 +73,9 @@ public:
 
 	DCT(int bits, TransformType trans);
 	~DCT();
+
+	DCT(const DCT &) = delete;
+	DCT &operator=(const DCT &) = delete;
 
 	void calc(float *data);
 

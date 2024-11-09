@@ -35,17 +35,18 @@
 
 #include <atomic>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/ustring.h"
 
 namespace Common {
 
 /** A class that creates its own thread. */
-class Thread : boost::noncopyable {
+class Thread {
 public:
 	Thread();
 	virtual ~Thread();
+
+	Thread(const Thread &) = delete;
+	Thread &operator=(const Thread &) = delete;
 
 	bool createThread(const UString &name = "");
 	bool destroyThread();

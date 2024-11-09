@@ -31,8 +31,6 @@
 #include <list>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/ustring.h"
 #include "src/common/stringmap.h"
 
@@ -111,12 +109,15 @@ private:
  * Lines starting with a '#' are ignored (i.e. treated as comments).
  * Some effort is made to preserve comments, though.
  */
-class ConfigFile : boost::noncopyable {
+class ConfigFile {
 public:
 	typedef std::list<std::unique_ptr<ConfigDomain>> DomainList;
 
 	ConfigFile();
 	~ConfigFile();
+
+	ConfigFile(const ConfigFile &) = delete;
+	ConfigFile &operator=(const ConfigFile &) = delete;
 
 	/**
 	 * Check whether the given string is a valid section or key name.

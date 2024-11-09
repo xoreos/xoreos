@@ -29,8 +29,6 @@
 #include <vector>
 #include <map>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -59,7 +57,7 @@ namespace Aurora {
  *  identified by raw row index (since this index is now meaningless),
  *  but by an "ID" column.
  */
-class GDAFile : boost::noncopyable {
+class GDAFile {
 public:
 	static const size_t kInvalidColumn = SIZE_MAX;
 	static const size_t kInvalidRow    = SIZE_MAX;
@@ -87,6 +85,9 @@ public:
 	/** Take over this stream and read a GDA file out of it. */
 	GDAFile(Common::SeekableReadStream *gda);
 	~GDAFile();
+
+	GDAFile(const GDAFile &) = delete;
+	GDAFile &operator=(const GDAFile &) = delete;
 
 	/** Add another GDA with the same column structure to the bottom of this GDA.
 	 *

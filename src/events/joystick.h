@@ -30,16 +30,17 @@ START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_joystick.h>
 STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/ustring.h"
 
 namespace Events {
 
-class Joystick : boost::noncopyable {
+class Joystick {
 public:
 	Joystick(int index);
 	virtual ~Joystick();
+
+	Joystick(const Joystick &) = delete;
+	Joystick &operator=(const Joystick &) = delete;
 
 	/** Return the joystick's name. */
 	const Common::UString &getName() const;

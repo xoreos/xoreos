@@ -53,8 +53,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 
 namespace Common {
@@ -62,7 +60,7 @@ namespace Common {
 class FFT;
 
 /** (Inverse) Real Discrete Fourier Transform. */
-class RDFT : boost::noncopyable {
+class RDFT {
 public:
 	enum TransformType {
 		DFT_R2C,
@@ -73,6 +71,9 @@ public:
 
 	RDFT(int bits, TransformType trans);
 	~RDFT();
+
+	RDFT(const RDFT &) = delete;
+	RDFT &operator=(const RDFT &) = delete;
 
 	void calc(float *data);
 

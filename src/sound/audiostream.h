@@ -52,8 +52,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/util.h"
 #include "src/common/types.h"
 #include "src/common/disposableptr.h"
@@ -68,11 +66,15 @@ namespace Sound {
  * Generic audio input stream. Subclasses of this are used to feed arbitrary
  * sampled audio data into xoreos' SoundManager.
  */
-class AudioStream : boost::noncopyable {
+class AudioStream {
 public:
 	static const size_t kSizeInvalid = SIZE_MAX;
 
-	virtual ~AudioStream() {}
+	AudioStream() = default;
+	virtual ~AudioStream() = default;
+
+	AudioStream(const AudioStream &) = delete;
+	AudioStream &operator=(const AudioStream &) = delete;
 
 	/**
 	 * Fill the given buffer with up to numSamples samples. Returns the actual

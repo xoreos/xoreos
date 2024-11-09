@@ -28,8 +28,6 @@
 #include <cstdio>
 #include <cstddef>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/readstream.h"
 
@@ -38,11 +36,14 @@ namespace Common {
 class UString;
 
 /** A simple streaming file reading class. */
-class ReadFile : boost::noncopyable, public SeekableReadStream {
+class ReadFile : public SeekableReadStream {
 public:
 	ReadFile();
 	ReadFile(const UString &fileName);
 	~ReadFile();
+
+	ReadFile(const ReadFile &) = delete;
+	ReadFile &operator=(const ReadFile &) = delete;
 
 	/** Try to open the file with the given fileName.
 	 *

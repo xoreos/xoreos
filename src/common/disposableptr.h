@@ -53,8 +53,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/system.h"
 #include "src/common/types.h"
 #include "src/common/deallocator.h"
@@ -67,13 +65,16 @@ namespace Common {
  *  through a deallocator template parameter.
  */
 template<typename T, class Deallocator>
-class DisposablePtrBase : boost::noncopyable {
+class DisposablePtrBase {
 public:
 	typedef T ValueType;
 	typedef T *PointerType;
 	typedef T &ReferenceType;
 
 	explicit DisposablePtrBase(PointerType o, bool d) : _pointer(o), _dispose(d) {}
+
+	DisposablePtrBase(const DisposablePtrBase &) = delete;
+	DisposablePtrBase &operator=(const DisposablePtrBase &) = delete;
 
 	/** Implicit conversion operator to bool for convenience, to make
 	 *  checks like "if (disposablePtr) ..." possible.

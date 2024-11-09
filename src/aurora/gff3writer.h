@@ -30,8 +30,6 @@
 #include <memory>
 #include <variant>
 
-#include <boost/noncopyable.hpp>
-
 #ifdef BOOST_COMP_CLANG
 	#define GLM_LANG_STL11_FORCED // Fix clang glm c++11 bug
 #endif // BOOST_COMP_CLANG
@@ -52,10 +50,13 @@ class GFF3WriterList;
 typedef std::shared_ptr<GFF3WriterStruct> GFF3WriterStructPtr;
 typedef std::shared_ptr<GFF3WriterList> GFF3WriterListPtr;
 
-class GFF3Writer : boost::noncopyable {
+class GFF3Writer {
 public:
 	// TODO: Add a constructor consuming a GFF3File object.
 	GFF3Writer(uint32_t id, uint32_t version = MKTAG('V', '3', '.', '2'));
+
+	GFF3Writer(const GFF3Writer &) = delete;
+	GFF3Writer &operator=(const GFF3Writer &) = delete;
 
 	/** Get the top-level struct. */
 	GFF3WriterStructPtr getTopLevel();
@@ -137,7 +138,12 @@ private:
 	};
 
 	/** An implementation for a field. */
-	struct Field : boost::noncopyable {
+	struct Field {
+		Field() = default;
+
+		Field(const Field &) = delete;
+		Field &operator=(const Field &) = delete;
+
 		uint32_t labelIndex;
 		Value value;
 	};
@@ -165,9 +171,12 @@ private:
 };
 
 /** A GFF3 list containing GFF3 structs. */
-class GFF3WriterList : boost::noncopyable {
+class GFF3WriterList {
 public:
 	GFF3WriterList(GFF3Writer *parent);
+
+	GFF3WriterList(const GFF3WriterList &) = delete;
+	GFF3WriterList &operator=(const GFF3WriterList &) = delete;
 
 	/** Add a new struct to the list. */
 	GFF3WriterStructPtr addStruct();
@@ -192,9 +201,12 @@ private:
  *
  *  A field can be of any type, including list and struct.
  */
-class GFF3WriterStruct : boost::noncopyable {
+class GFF3WriterStruct {
 public:
 	GFF3WriterStruct(GFF3Writer *parent, uint32_t id = 0xFFFFFFFF);
+
+	GFF3WriterStruct(const GFF3WriterStruct &) = delete;
+	GFF3WriterStruct &operator=(const GFF3WriterStruct &) = delete;
 
 	/** Get ID of the struct. */
 	uint32_t getID() const;

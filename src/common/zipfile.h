@@ -30,8 +30,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -40,7 +38,7 @@ namespace Common {
 class SeekableReadStream;
 
 /** A class encapsulating ZIP file access. */
-class ZipFile : boost::noncopyable {
+class ZipFile {
 public:
 	/** A file. */
 	struct File {
@@ -52,6 +50,9 @@ public:
 
 	ZipFile(SeekableReadStream *zip);
 	~ZipFile();
+
+	ZipFile(const ZipFile &) = delete;
+	ZipFile &operator=(const ZipFile &) = delete;
 
 	/** Return the list of files. */
 	const FileList &getFiles() const;

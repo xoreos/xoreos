@@ -55,8 +55,6 @@
 
 #include <memory>
 
-#include <boost/noncopyable.hpp>
-
 #include "src/common/types.h"
 
 namespace Common {
@@ -64,10 +62,13 @@ namespace Common {
 struct Complex;
 
 /** (Inverse) Fast Fourier Transform. */
-class FFT : boost::noncopyable {
+class FFT {
 public:
 	FFT(int bits, bool inverse);
 	~FFT();
+
+	FFT(const FFT &) = delete;
+	FFT &operator=(const FFT &) = delete;
 
 	const uint16_t *getRevTab() const;
 
