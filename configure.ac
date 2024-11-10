@@ -71,11 +71,6 @@ AC_CHECK_FUNCS([fabsf])
 AC_CHECK_FUNCS([fminf])
 AC_CHECK_FUNCS([fmaxf])
 
-dnl String to integer/float conversion functions
-AC_CHECK_FUNCS([strtoll])
-AC_CHECK_FUNCS([strtoull])
-AC_CHECK_FUNCS([strtof])
-
 dnl Check for strcasecmp
 AC_CHECK_FUNCS([strcasecmp])
 
