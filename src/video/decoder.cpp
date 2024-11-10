@@ -24,8 +24,6 @@
 
 #include <cassert>
 
-#include <boost/pointer_cast.hpp>
-
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 #include "src/common/threads.h"
@@ -90,7 +88,7 @@ void VideoDecoder::initVideo() {
 uint32_t VideoDecoder::getWidth() const {
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if ((*it)->getTrackType() == Track::kTrackTypeVideo)
-			return boost::static_pointer_cast<const VideoTrack>(*it)->getWidth();
+			return std::static_pointer_cast<const VideoTrack>(*it)->getWidth();
 
 	return 0;
 }
@@ -98,7 +96,7 @@ uint32_t VideoDecoder::getWidth() const {
 uint32_t VideoDecoder::getHeight() const {
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if ((*it)->getTrackType() == Track::kTrackTypeVideo)
-			return boost::static_pointer_cast<const VideoTrack>(*it)->getHeight();
+			return std::static_pointer_cast<const VideoTrack>(*it)->getHeight();
 
 	return 0;
 }
@@ -161,10 +159,10 @@ void VideoDecoder::addTrack(Track *track, bool isExternal) {
 	if (track->getTrackType() == Track::kTrackTypeAudio) {
 		// Update volume settings if it's an audio track
 		// TODO: Make this setting available via an external interface
-		boost::static_pointer_cast<AudioTrack>(owned)->setGain(1.0f);
+		std::static_pointer_cast<AudioTrack>(owned)->setGain(1.0f);
 	} else if (track->getTrackType() == Track::kTrackTypeVideo) {
 		// If this track has a better time, update _nextVideoTrack
-		VideoTrackPtr videoTrack = boost::static_pointer_cast<VideoTrack>(owned);
+		VideoTrackPtr videoTrack = std::static_pointer_cast<VideoTrack>(owned);
 		if (!_nextVideoTrack || videoTrack->getNextFrameStartTime() < _nextVideoTrack->getNextFrameStartTime())
 			_nextVideoTrack = videoTrack;
 	}
@@ -175,7 +173,7 @@ void VideoDecoder::addTrack(Track *track, bool isExternal) {
 
 	// Start the track if we're playing
 	if (isPlaying() && track->getTrackType() == Track::kTrackTypeAudio)
-		boost::static_pointer_cast<AudioTrack>(owned)->start();
+		std::static_pointer_cast<AudioTrack>(owned)->start();
 }
 
 VideoDecoder::TrackPtr VideoDecoder::getTrack(uint track) {
@@ -198,7 +196,7 @@ VideoDecoder::VideoTrackPtr VideoDecoder::findNextVideoTrack() {
 
 	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++) {
 		if ((*it)->getTrackType() == Track::kTrackTypeVideo && !(*it)->endOfTrack()) {
-			VideoTrackPtr track = boost::static_pointer_cast<VideoTrack>(*it);
+			VideoTrackPtr track = std::static_pointer_cast<VideoTrack>(*it);
 			Common::Timestamp time = track->getNextFrameStartTime();
 
 			if (time < bestTime) {
@@ -223,13 +221,13 @@ VideoDecoder::ConstTrackList VideoDecoder::getInternalTracks() const {
 void VideoDecoder::startAudio() {
 	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if ((*it)->getTrackType() == Track::kTrackTypeAudio)
-			boost::static_pointer_cast<AudioTrack>(*it)->start();
+			std::static_pointer_cast<AudioTrack>(*it)->start();
 }
 
 void VideoDecoder::stopAudio() {
 	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if ((*it)->getTrackType() == Track::kTrackTypeAudio)
-			boost::static_pointer_cast<AudioTrack>(*it)->stop();
+			std::static_pointer_cast<AudioTrack>(*it)->stop();
 }
 
 bool VideoDecoder::hasAudio() const {
@@ -325,7 +323,7 @@ void VideoDecoder::update() {
 
 	// Ensure we have enough audio by the time we get to the next frame
 	for (TrackList::iterator it = _internalTracks.begin(); it != _internalTracks.end(); it++)
-		if ((*it)->getTrackType() == Track::kTrackTypeAudio && boost::static_pointer_cast<AudioTrack>(*it)->canBufferData())
+		if ((*it)->getTrackType() == Track::kTrackTypeAudio && std::static_pointer_cast<AudioTrack>(*it)->canBufferData())
 			checkAudioBuffer(static_cast<AudioTrack&>(**it), audioNeeded);
 }
 
