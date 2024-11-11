@@ -219,7 +219,7 @@ public:
 
 	void clear();
 	void print(const Common::UString &line);
-	void printf(const char *s, ...) GCC_PRINTF(2, 3);
+	[[gnu::format(printf, 2, 3)]] void printf(const char *s, ...);
 
 
 protected:
