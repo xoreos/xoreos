@@ -35,10 +35,10 @@ namespace Common {
 namespace String {
 
 /** Print formatted data into a std::string object, similar to sprintf(). */
-std::string format(const char *format, ...) GCC_PRINTF(1, 2);
+[[gnu::format(printf, 1, 2)]] std::string format(const char *format, ...);
 
 /** Print formatted data into a std::string object, similar to vsprintf(). */
-std::string formatV(const char *format, va_list args) GCC_PRINTF(1, 0);
+[[gnu::format(printf, 1, 0)]] std::string formatV(const char *format, va_list args);
 
 /** The function type used by the ctype class functions. */
 typedef int (*CTypeFunction)(int);

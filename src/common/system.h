@@ -138,7 +138,6 @@
 //
 #if defined(__GNUC__)
 	#define PACKED_STRUCT __attribute__((__packed__))
-	#define GCC_PRINTF(x,y) __attribute__((__format__(printf, x, y)))
 
 	#define DIAGNOSTICS_PUSH _Pragma("GCC diagnostic push")
 	#define DIAGNOSTICS_POP _Pragma("GCC diagnostic pop")
@@ -158,7 +157,6 @@
 
 #else
 	#define PACKED_STRUCT
-	#define GCC_PRINTF(x,y)
 #endif
 
 #if defined(__cplusplus)

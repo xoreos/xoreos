@@ -38,14 +38,14 @@ public:
 	typedef std::stack<UString> Stack;
 
 	StackException() = default;
-	StackException(const char *s, ...) GCC_PRINTF(2, 3);
+	[[gnu::format(printf, 2, 3)]] StackException(const char *s, ...);
 	StackException(const StackException &e) = default;
 	StackException(const std::exception &e);
 	~StackException() = default;
 
 	StackException &operator=(const StackException &) = default;
 
-	void add(const char *s, ...) GCC_PRINTF(2, 3);
+	[[gnu::format(printf, 2, 3)]] void add(const char *s, ...);
 	void add(const std::exception &e);
 
 	const char *what() const throw();
@@ -70,14 +70,14 @@ void printException(Exception &e, const UString &prefix = "ERROR: ");
 
 /** Exception dispatcher that prints the exception as an error, and adds another reason on top.
  *  This is intended for fatal errors. */
-void exceptionDispatcherError(const char *s, ...) GCC_PRINTF(1, 2);
+[[gnu::format(printf, 1, 2)]] void exceptionDispatcherError(const char *s, ...);
 /** Exception dispatcher that prints the exception as an error.
  *  This is intended for fatal errors. */
 void exceptionDispatcherError();
 
 /** Exception dispatcher that prints the exception as a warning, and adds another reason on top.
  *  This is intended for non-fatal exceptions that can be ignored. */
-void exceptionDispatcherWarning(const char *s, ...) GCC_PRINTF(1, 2);
+[[gnu::format(printf, 1, 2)]] void exceptionDispatcherWarning(const char *s, ...);
 /** Exception dispatcher that prints the exception as a warning.
  *  This is intended for non-fatal exceptions that can be ignored. */
 void exceptionDispatcherWarning();

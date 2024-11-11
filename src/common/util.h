@@ -135,21 +135,21 @@ constexpr std::size_t ARRAYSIZE(const T (&)[N]) {
  *  Automatically prepends the text "WARNING: " and appends
  *  an exclamation mark and a newline.
  */
-void warning(const char *s, ...) GCC_PRINTF(1, 2);
+[[gnu::format(printf, 1, 2)]] void warning(const char *s, ...);
 /** Print a status message to both stderr and the global
  *  log file (if a global log file has been opened).
  *  See Common::DebugManager for details.
  *
  *  Automatically appends a newline.
  */
-void status(const char *s, ...) GCC_PRINTF(1, 2);
+[[gnu::format(printf, 1, 2)]] void status(const char *s, ...);
 /** Print an info message to both stdout and the global
  *  log file (if a global log file has been opened).
  *  See Common::DebugManager for details.
  *
  *  Automatically appends a newline.
  */
-void info(const char *s, ...) GCC_PRINTF(1, 2);
+[[gnu::format(printf, 1, 2)]] void info(const char *s, ...);
 
 /** Print an error message to both stderr and the global
  *  log file (if a global log file has been opened).
@@ -161,7 +161,7 @@ void info(const char *s, ...) GCC_PRINTF(1, 2);
  *  Additionally, the program will immediately quit with
  *  return code 1.
  */
-[[noreturn]] void error(const char *s, ...) GCC_PRINTF(1, 2);
+[[noreturn, gnu::format(printf, 1, 2)]] void error(const char *s, ...);
 
 /** Convert a uint32_t holding the bit pattern of a 32-bit IEEE 754 single
  *  precision floating point value into a real, native float.
