@@ -63,7 +63,6 @@
 	#include <cstdlib>
 
 	#define FORCEINLINE __forceinline
-	#define PLUGIN_EXPORT __declspec(dllexport)
 
 	#if _MSC_VER < 1900
 		#define snprintf c99_snprintf
@@ -110,8 +109,6 @@
 	#if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)
 		#define XOREOS_LITTLE_ENDIAN 1
 	#endif
-
-	#define PLUGIN_EXPORT __declspec(dllexport)
 
 	#ifndef WIN32
 		#define WIN32
