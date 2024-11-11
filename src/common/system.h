@@ -137,8 +137,6 @@
 // GCC specific stuff
 //
 #if defined(__GNUC__)
-	#define PACKED_STRUCT __attribute__((__packed__))
-
 	#define DIAGNOSTICS_PUSH _Pragma("GCC diagnostic push")
 	#define DIAGNOSTICS_POP _Pragma("GCC diagnostic pop")
 
@@ -154,9 +152,6 @@
 	#if !defined(FORCEINLINE) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 		#define FORCEINLINE inline __attribute__((__always_inline__))
 	#endif
-
-#else
-	#define PACKED_STRUCT
 #endif
 
 #if defined(__cplusplus)
