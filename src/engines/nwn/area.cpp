@@ -51,6 +51,41 @@
 #include "src/engines/nwn/door.h"
 #include "src/engines/nwn/creature.h"
 
+float tile_colour_array[][4] = {
+	{0.0f, 0.0f, 0.0f, 1.0f}, // 0, black
+	{0.8f, 0.8f, 0.8f, 1.0f}, // 1, white
+	{0.2f, 0.2f, 0.2f, 1.0f}, // 2, soft white
+	{1.0f, 1.0f, 1.0f, 1.0f}, // 3, bright white
+	{0.4f, 0.4f, 0.2f, 1.0f}, // 4, pale, dark yellow
+	{0.4f, 0.4f, 0.0f, 1.0f}, // 5, dark yellow
+	{0.8f, 0.8f, 0.5f, 1.0f}, // 6, pale yellow
+	{0.8f, 0.8f, 0.0f, 1.0f}, // 7, yellow
+	{0.2f, 0.4f, 0.2f, 1.0f}, // 8, pale, dark green
+	{0.0f, 0.4f, 0.0f, 1.0f}, // 9, dark green
+	{0.6f, 0.8f, 0.6f, 1.0f}, // 10, pale green
+	{0.0f, 0.8f, 0.0f, 1.0f}, // 11, green
+	{0.0f, 0.8f, 0.8f, 1.0f}, // 12, pale, dark aqua
+	{0.0f, 0.5f, 0.5f, 1.0f}, // 13, dark aqua
+	{0.6f, 0.9f, 0.9f, 1.0f}, // 14, pale aqua
+	{0.0f, 0.9f, 0.9f, 1.0f}, // 15, aqua
+	{0.2f, 0.5f, 0.7f, 1.0f}, // 16, pale, dark blue
+	{0.0f, 0.0f, 0.5f, 1.0f}, // 17, dark blue
+	{0.7f, 0.7f, 0.9f, 1.0f}, // 18, pale blue
+	{0.0f, 0.0f, 0.9f, 1.0f}, // 19, blue
+	{0.0f, 0.0f, 0.0f, 1.0f}, // 20, pale dark purple
+	{0.3f, 0.0f, 0.5f, 1.0f}, // 21, dark purple
+	{0.9f, 0.9f, 1.0f, 1.0f}, // 22, pale purple
+	{1.0f, 0.0f, 1.0f, 1.0f}, // 23, purple
+	{0.5f, 0.2f, 0.2f, 1.0f}, // 24, pale dark red
+	{0.5f, 0.0f, 0.0f, 1.0f}, // 25, dark red
+	{1.0f, 0.5f, 0.5f, 1.0f}, // 26, pale red
+	{1.0f, 0.0f, 0.0f, 1.0f}, // 27, red
+	{0.5f, 0.4f, 0.3f, 1.0f}, // 28, pale dark orange
+	{0.5f, 0.3f, 0.0f, 1.0f}, // 29, dark orange
+	{1.0f, 0.8f, 0.6f, 1.0f}, // 30, pale orange
+	{1.0f, 0.6f, 0.0f, 1.0f}, // 31, orange
+};
+
 namespace Engines {
 
 namespace NWN {
@@ -73,6 +108,8 @@ Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeAr
 
 	// Tell the module that we exist
 	_module->addObject(*this);
+
+	_dirtyLights = true;
 }
 
 Area::~Area() {
@@ -287,6 +324,108 @@ void Area::hide() {
 	_visible = false;
 }
 
+void Area::rebuildStaticLights() {
+	/**
+	 * @TODO: this doesn't so much rebuild, as build. There's no removal
+	 * of older lights.
+	 * It could be useful for each tile to better keep track of all the
+	 * lights that belong to it. This would make activating/deactivating
+	 * lights when the tile fades in & out of view easier to perform.
+	 * The models can be referenced, but the lights need to be accessed
+	 * within the modelnodes.
+	 */
+	for (size_t i = 0; i < _tiles.size(); ++i) {
+		const auto &tile = _tiles[i];
+
+		float x, y, z;
+		tile.model->getAbsolutePosition(x, y, z);
+		glm::vec3 tilepos(x, y, z);
+
+		auto name = tile.model->getName();
+
+		// Really make sure all the node transforms are up to date and correct.
+		tile.model->computeNodeTransforms();
+
+		{
+			auto lightname = name + "sl1";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				if (node) {
+					auto flame = loadModelObject("fx_flame01.mdl");
+					if (tile.srcLight[0] > 0) {
+						flame->setState(std::to_string(tile.srcLight[0]));
+					}
+					auto subnode = flame->getNode("AuroraLight01");
+					auto nodelight = subnode->getLight();
+
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					nodelight->position = glm::vec3(tform[3]);
+					LightMan.registerLight(nodelight);
+
+					_tiles[i].sl1_light = flame;
+				}
+			}
+		}
+
+		{
+			auto lightname = name + "sl2";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				if (node) {
+					auto flame = loadModelObject("fx_flame01.mdl");
+					if (tile.srcLight[1] > 0) {
+						flame->setState(std::to_string(tile.srcLight[1]));
+					}
+					auto subnode = flame->getNode("AuroraLight01");
+					auto nodelight = subnode->getLight();
+
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					nodelight->position = glm::vec3(tform[3]);
+					LightMan.registerLight(nodelight);
+
+					_tiles[i].sl2_light = flame;
+				}
+			}
+		}
+
+		if (tile.mainLight[0] > 0) {
+			auto lightname = name + "ml1";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				auto *nodelight = node->getLight();
+				if (nodelight) {
+					// @TODO: nodelight doesn't yet exist for ASCII models. Need to implement that yet.
+					size_t index = tile.mainLight[0] & 0x1F;
+					nodelight->colour[0] = tile_colour_array[index][0];
+					nodelight->colour[1] = tile_colour_array[index][1];
+					nodelight->colour[2] = tile_colour_array[index][2];
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					nodelight->position = glm::vec3(tform[3]);
+					LightMan.registerLight(nodelight);
+				}
+			}
+		}
+
+		if (tile.mainLight[1] > 0) {
+			auto lightname = name + "ml2";
+			if (tile.model->hasNode(lightname)) {
+				auto node = tile.model->getNode(lightname);
+				auto *nodelight = node->getLight();
+				if (nodelight) {
+					size_t index = tile.mainLight[1] & 0x1F;
+					nodelight->colour[0] = tile_colour_array[index][0];
+					nodelight->colour[1] = tile_colour_array[index][1];
+					nodelight->colour[2] = tile_colour_array[index][2];
+					glm::mat4 tform = tile.model->getAbsoluteTransform() * node->getAbsoluteTransform();
+					nodelight->position = glm::vec3(tform[3]);
+					LightMan.registerLight(nodelight);
+				}
+			}
+		}
+	}
+	_dirtyLights = false;
+}
+
 void Area::loadARE(const Aurora::GFF3Struct &are) {
 	// Tag
 
@@ -404,6 +543,8 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 
 	tile.tile  = 0;
 	tile.model = 0;
+	tile.sl1_light = 0;
+	tile.sl2_light = 0;
 }
 
 void Area::loadModels() {
@@ -419,6 +560,8 @@ void Area::loadModels() {
 				_objectMap.insert(std::make_pair(*id, object.get()));
 		}
 	}
+
+	rebuildStaticLights();
 }
 
 void Area::unloadModels() {
@@ -505,6 +648,11 @@ void Area::unloadTiles() {
 
 			delete t.model;
 			t.model = 0;
+
+			delete t.sl1_light;
+			t.sl1_light = 0;
+			delete t.sl2_light;
+			t.sl2_light = 0;
 		}
 	}
 }
