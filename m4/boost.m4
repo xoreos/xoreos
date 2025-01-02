@@ -1503,6 +1503,8 @@ if test x$boost_cv_inc_path != xno; then
   # I'm not sure about my test for `il' (be careful: Intel's ICC pre-defines
   # the same defines as GCC's).
   for i in \
+    _BOOST_clang_test(19, 0) \
+    _BOOST_clang_test(18, 0) \
     _BOOST_clang_test(17, 0) \
     _BOOST_clang_test(16, 0) \
     _BOOST_clang_test(15, 0) \
@@ -1529,13 +1531,19 @@ if test x$boost_cv_inc_path != xno; then
     _BOOST_clang_test(3, 2) \
     _BOOST_clang_test(3, 1) \
     _BOOST_clang_test(3, 0) \
+    _BOOST_gcc_test(14, 2) \
+    _BOOST_gcc_test(14, 1) \
+    _BOOST_gcc_test(14, 0) \
+    _BOOST_gcc_test(13, 3) \
     _BOOST_gcc_test(13, 2) \
     _BOOST_gcc_test(13, 1) \
     _BOOST_gcc_test(13, 0) \
+    _BOOST_gcc_test(12, 4) \
     _BOOST_gcc_test(12, 3) \
     _BOOST_gcc_test(12, 2) \
     _BOOST_gcc_test(12, 1) \
     _BOOST_gcc_test(12, 0) \
+    _BOOST_gcc_test(11, 5) \
     _BOOST_gcc_test(11, 4) \
     _BOOST_gcc_test(11, 3) \
     _BOOST_gcc_test(11, 2) \
