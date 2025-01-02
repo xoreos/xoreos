@@ -58,8 +58,8 @@ namespace Common {
 template<class T>
 class Singleton {
 private:
-	Singleton<T>(const Singleton<T> &) = delete;
-	Singleton<T> &operator=(const Singleton<T> &) = delete;
+	Singleton(const Singleton<T> &) = delete;
+	Singleton &operator=(const Singleton<T> &) = delete;
 
 	static T *_singleton;
 
@@ -103,8 +103,8 @@ public:
 		T::destroyInstance();
 	}
 protected:
-	Singleton<T>() { }
-	virtual ~Singleton<T>() { }
+	Singleton() { }
+	virtual ~Singleton() { }
 
 	typedef T SingletonBaseType;
 };
