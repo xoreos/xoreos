@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_CAMERA_H
 #define GRAPHICS_CAMERA_H
 
+#include "external/glm/mat4x4.hpp"
+
 #include "src/common/types.h"
 #include "src/common/maths.h"
 #include "src/common/singleton.h"
@@ -37,6 +39,8 @@ public:
 
 	const float *getPosition   () const; ///< Get the current camera position cache.
 	const float *getOrientation() const; ///< Get the current camera orientation cache.
+
+	const glm::mat4 &getModelview() const; ///< Get the current modelview matrix.
 
 	void reset(); ///< Reset the current position and orientation.
 
@@ -75,6 +79,8 @@ private:
 	float _orientationCache[3]; ///< Current orientation, cached.
 
 	bool _needUpdate;
+
+	glm::mat4 _modelview;
 };
 
 } // End of namespace Graphics

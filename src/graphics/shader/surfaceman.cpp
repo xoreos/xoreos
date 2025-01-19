@@ -59,16 +59,6 @@ void SurfaceManager::deinit() {
 }
 
 void SurfaceManager::cleanup() {
-	std::map<Common::UString, ShaderSurface *>::iterator iter = _resourceMap.begin();
-	while (iter != _resourceMap.end()) {
-		ShaderSurface *surface = iter->second;
-		iter++;
-		if (surface->useCount() == 0) {
-			iter = delResource(iter);
-		} else {
-			iter++;
-		}
-	}
 }
 
 void SurfaceManager::addSurface(ShaderSurface *surface) {
