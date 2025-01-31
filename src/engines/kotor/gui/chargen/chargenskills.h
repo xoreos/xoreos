@@ -19,39 +19,31 @@
  */
 
 /** @file
- *  The panel to customize a quick character.
+ *  The menu for modifying the skills of the character.
  */
 
-#ifndef ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
-#define ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
+#ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARGENSKILLS_H
+#define ENGINES_KOTOR_GUI_CHARGEN_CHARGENSKILLS_H
 
 #include "src/engines/kotorbase/gui/gui.h"
 
-#include "src/engines/kotor/gui/chargen/charactergeneration.h"
+#include "src/engines/kotor/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class CustomCharPanel : public KotORBase::GUI {
+class CharacterGenerationSkillsMenu : public CharacterGenerationBaseMenu {
 public:
-	CustomCharPanel(CharacterGenerationMenu *charGenMenu, Console *console = 0);
+	CharacterGenerationSkillsMenu(KotORBase::CharacterGenerationInfo &info,
+	                            ::Engines::Console *console = 0);
 
 private:
-	CharacterGenerationMenu *_charGen;
-
-	virtual void callbackActive(Widget &widget);
-
-	/**
-	 * @brief Update the appearance of the buttons for the individual steps
-	 *
-	 * This function is called after each step (forwards or backwards)
-	 */
-	void updateButtons();
+	void callbackActive(Widget &widget);
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
+#endif // ENGINES_KOTOR_GUI_CHARGEN_CHARGENSKILLS_H
