@@ -89,13 +89,16 @@ public:
 
 	///< Uniforms included in the final shader.
 	enum Uniform {
-		UNIFORM_V_OBJECT_MODELVIEW_MATRIX,
-		UNIFORM_V_PROJECTION_MATRIX,
-		UNIFOM_V_MODELVIEW_MATRIX,
-		UNIFORM_V_BIND_POSE,
-		UNIFORM_V_BONE_TRANSFORMS,
-		UNIFORM_F_ALPHA,
-		UNIFORM_F_COLOUR
+		UNIFORM_V_OBJECT_MODELVIEW_MATRIX,  // mat4
+		UNIFORM_V_PROJECTION_MATRIX,        // mat4
+		UNIFOM_V_MODELVIEW_MATRIX,          // mat4
+		UNIFORM_V_BIND_POSE,                // mat4
+		UNIFORM_V_BONE_TRANSFORMS,          // mat4[]
+		UNIFORM_F_ALPHA,                    // float
+		UNIFORM_F_COLOUR,                   // vec4, global colour.
+
+		// NWN2
+		UNIFORM_V_TINT,                     // vec4 _tintR, _tintG, _tintB
 	};
 
 	///< Fragment shader action. Multiple actions can be used in a single shader.
@@ -108,6 +111,7 @@ public:
 		TEXTURE_LIGHTMAP,
 		TEXTURE_BUMPMAP,
 		FORCE_OPAQUE,
+		TINT,
 		NOOP
 	};
 
@@ -118,6 +122,7 @@ public:
 		BLEND_ZERO,
 		BLEND_ONE,
 		BLEND_MULTIPLY,   ///< Not really blending, but component-wise multiply.
+		BLEND_TINT,
 		BLEND_IGNORED     ///< Blending not applicable to the component.
 	};
 
@@ -142,6 +147,10 @@ public:
 	             ShaderDescriptor::Action action);
 
 	void addPass(ShaderDescriptor::Action action, ShaderDescriptor::Blend blend);
+
+	inline void hasLights(bool lights) {
+		_hasLighting = lights;
+	}
 
 	void build(bool isGL3, Common::UString &v_string, Common::UString &f_string);
 
@@ -191,6 +200,17 @@ private:
 	std::vector<UniformDescriptor> _uniformDescriptors;
 	std::vector<Connector> _connectors;
 	std::vector<Pass> _passes;
+
+	bool _hasLighting = false;
+
+	/**
+	 * @TODO: it might be useful to include some customisation for each game
+	 * if they require anything outside of the normal build process. This
+	 * could perhaps be as simple as:
+	 *    declareCustom(const string &vertex, const string &fragment);
+	 *    addPrePassCustom(const string &vertex, const string &fragment);
+	 *    addPostPassCustom(const string &vertex, const string &fragment);
+	 */
 };
 
 } // End of namespace Shader

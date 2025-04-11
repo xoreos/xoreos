@@ -56,6 +56,7 @@
 #include "src/graphics/glcontainer.h"
 #include "src/graphics/renderable.h"
 #include "src/graphics/camera.h"
+#include "src/graphics/lightman.h"
 
 #include "src/graphics/images/decoder.h"
 #include "src/graphics/images/screenshot.h"
@@ -66,7 +67,7 @@
 #include "src/graphics/mesh/meshman.h"
 
 #include "src/graphics/render/renderman.h"
-
+#include "src/engines/nwn/area.h"
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 static glm::mat4 inverse(const glm::mat4 &m);
@@ -820,7 +821,7 @@ void GraphicsManager::recalculateObjectDistances() {
 	for (std::list<Queueable *>::const_iterator o = objects.begin(); o != objects.end(); ++o)
 		static_cast<Renderable *>(*o)->calculateDistance();
 
-	QueueMan.sortQueue(kQueueVisibleWorldObject);
+	//QueueMan.sortQueue(kQueueVisibleWorldObject);
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 
 	// GUI front objects
@@ -1212,17 +1213,7 @@ bool GraphicsManager::renderWorldShader() {
 	_projection = _perspective;
 	_projectionInv = _perspectiveInv;
 
-	float cPos[3];
-	float cOrient[3];
-
-	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
-	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
-
-	_modelview = glm::mat4();
-	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
-	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[1]), glm::vec3(0.0f, 1.0f, 0.0f));
-	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[2]), glm::vec3(0.0f, 0.0f, 1.0f));
-	_modelview = glm::translate(_modelview, glm::vec3(-cPos[0], -cPos[1], -cPos[2]));
+	_modelview = CameraMan.getModelview();
 
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
 	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
@@ -1231,7 +1222,19 @@ bool GraphicsManager::renderWorldShader() {
 
 	_animationThread.flush();
 
+
 	glm::mat4 ident;
+#if 0
+	/**
+	 * Enable this bit of code to render without sorting through the render queue
+	 * system. This might or might not work, depending on the game and some
+	 * transparency issues.
+	 */
+	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+	     o != objects.rend(); ++o) {
+		static_cast<Renderable *>(*o)->renderImmediate(ident);
+	}
+#endif
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -1240,6 +1243,8 @@ bool GraphicsManager::renderWorldShader() {
 	RenderMan.sort();
 	RenderMan.render();
 
+
+	LightMan.clear();
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;
 }
@@ -1345,6 +1350,8 @@ void GraphicsManager::renderScene() {
 	}
 
 	if (_rendererExperimental) {
+		LightMan.clear();  // Clear any visible lights; they'll be reset as necessary.
+
 		renderGUIBackShader();
 		renderWorldShader();
 		renderGUIFrontShader();

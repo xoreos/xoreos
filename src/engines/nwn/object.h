@@ -42,6 +42,9 @@
 
 #include "src/engines/nwn/script/container.h"
 
+// ------- TESTING IN PROGRESS ------------
+#include "external/glm/mat4x4.hpp"
+
 namespace Aurora {
 	class SSFFile;
 

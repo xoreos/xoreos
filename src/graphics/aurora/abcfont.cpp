@@ -48,9 +48,7 @@ ABCFont::ABCFont(const Common::UString &name) : _base(0) {
 
 	_mesh = static_cast<Mesh::MeshFont *>(MeshMan.getMesh("defaultMeshFont"));
 	_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/text.frag", Shader::SHADER_FRAGMENT), "text");
-	Shader::ShaderSampler *sampler;
-	sampler = (Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
-	sampler->handle = _texture;
+	_material->setTexture("sampler_0_id", _texture);
 	_renderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material, _mesh);
 }
 
@@ -90,7 +88,7 @@ void ABCFont::renderBind(const glm::mat4 &transform) const {
 	glUseProgram(_renderable->getProgram()->glid);
 	_material->bindProgram(_renderable->getProgram(), 1.0f);
 	_material->bindGLState();
-	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &transform);
+	_renderable->getSurface()->bindProgram(_renderable->getProgram(), transform);
 	_renderable->getSurface()->bindGLState();
 	_mesh->renderBind();
 }

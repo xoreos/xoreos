@@ -171,6 +171,10 @@ float Model::getDepth() const {
 	return _boundBox.getDepth() * _scale[2];
 }
 
+float Model::getRadius() const {
+	return _radius;
+}
+
 void Model::drawBound(bool enabled) {
 	_drawBound = enabled;
 }
@@ -214,6 +218,10 @@ void Model::getAbsolutePosition(float &x, float &y, float &z) const {
 	x = _absolutePosition[3][0];
 	y = _absolutePosition[3][1];
 	z = _absolutePosition[3][2];
+}
+
+const glm::mat4 &Model::getAbsoluteTransform() const {
+	return _absolutePosition;
 }
 
 void Model::setScale(float x, float y, float z) {
@@ -690,7 +698,15 @@ void Model::renderImmediate(const glm::mat4 &parentTransform) {
 	}
 
 	glm::mat4 transform = parentTransform * _absolutePosition;
-	queueDrawBound();
+	//queueDrawBound();
+	/**
+	 * @TODO: CameraMan.modelview() would be very useful to have here. Could
+	 * grab modelview for light manager - or better yet, light manager could
+	 * directly use it instead of passing things in as a parameter.
+	 * CameraMan should ideally provide some visibility testing as well, to
+	 * skip rendering if the model simply isn't visible.
+	 */
+	LightMan.buildActiveLights(glm::vec3(transform[3]), _radius);
 
 	// Queue the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
@@ -731,7 +747,8 @@ void Model::queueDrawBound() {
 	_boundTransform *= glm::translate(glm::mat4(), glm::vec3((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f));
 	_boundTransform *= glm::scale(glm::mat4(), glm::vec3((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f));
 
-	RenderMan.queueRenderable(&_boundRenderable, &_boundTransform, 1.0f);
+	//RenderMan.queueRenderable(&_boundRenderable, &_boundTransform, 1.0f);
+	doDrawBound();
 }
 
 void Model::doDrawBound() {
