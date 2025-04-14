@@ -287,6 +287,8 @@ protected:
 	void showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx);
 	void addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx);
 
+	void switchPlayerCharacter(Aurora::NWScript::FunctionContext &ctx);
+
 	// Events, functions_events.cpp
 
 	void signalEvent(Aurora::NWScript::FunctionContext &ctx);

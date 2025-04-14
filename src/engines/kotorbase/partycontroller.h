@@ -53,6 +53,8 @@ public:
 	const std::pair<int, Creature *> &getPartyMemberByIndex(int index) const;
 	/** Get a list of the party members. */
 	std::vector<int> getPartyMembers() const;
+	/** Get the current party leader id. */
+	int getPartyLeaderID() const;
 
 	/** Is a specified creature a party member? */
 	bool isObjectPartyMember(Creature *creature) const;
@@ -61,6 +63,8 @@ public:
 	void clearCurrentParty();
 	/** Add a creature to the party. */
 	void addPartyMember(int npc, Creature *creature);
+	/** Remove a member from the party. */
+	void removePartyMember(int npc);
 	/** Set which party member should be the controlled character. */
 	void setPartyLeader(int npc);
 	/** Set which party member should be the controlled character. */

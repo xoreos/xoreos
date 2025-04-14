@@ -104,6 +104,8 @@ public:
 	Area *getCurrentArea();
 	/** Return the player character. */
 	Creature *getPC();
+	/** Switch the player character with an available npc. */
+	void switchPC(unsigned int index);
 	/** Return a map between surface type and whether it is walkable. */
 	const std::vector<bool> &getWalkableSurfaces() const;
 	/** Return the fade quad. */

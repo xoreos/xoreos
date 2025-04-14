@@ -38,6 +38,7 @@
 #include "src/aurora/dlgfile.h"
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/graphics/camera.h"
 
@@ -177,6 +178,23 @@ void Module::usePC(const CharacterGenerationInfo &info) {
 
 Creature *Module::getPC() {
 	return _pc;
+}
+
+void Module::switchPC(unsigned int index) {
+	if (!_partyController.isAvailableCreature(index))
+		throw Common::Exception("%u is not an available npc id", index);
+
+	Creature *newPC = createCreature(_partyController.getAvailableNPCTemplate(index));
+	_partyController.addPartyMember(index, newPC);
+	int oldLeaderID = _partyController.getPartyLeaderID();
+
+	Creature *oldPC = _partyController.getPartyLeader();
+	_partyController.setPartyLeader(index);
+	_partyController.removePartyMember(oldLeaderID);
+	_pc = newPC;
+	notifyPartyLeaderChanged();
+
+	_area->removeObject(oldPC);
 }
 
 const std::vector<bool> &Module::getWalkableSurfaces() const {

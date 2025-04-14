@@ -129,7 +129,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{   8, "ExecuteScript"                       , &Functions::executeScript                        },
 	{   9, "ClearAllActions"                     , &Functions::clearAllActions                      },
 	{  10, "SetFacing"                           , 0                                                },
-	{  11, "SwitchPlayerCharacter"               , 0                                                },
+	{  11, "SwitchPlayerCharacter"               , &Functions::switchPlayerCharacter                },
 	{  12, "SetTime"                             , 0                                                },
 	{  13, "SetPartyLeader"                      , &Functions::setPartyLeader                       },
 	{  14, "SetAreaUnescapable"                  , 0                                                },
