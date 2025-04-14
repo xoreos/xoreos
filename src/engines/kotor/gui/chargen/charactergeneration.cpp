@@ -29,6 +29,7 @@
 #include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/talkman.h"
 
@@ -45,6 +46,9 @@
 #include "src/engines/kotor/gui/chargen/customchar.h"
 #include "src/engines/kotor/gui/chargen/chargenportrait.h"
 #include "src/engines/kotor/gui/chargen/chargenname.h"
+#include "src/engines/kotor/gui/chargen/chargenabilities.h"
+#include "src/engines/kotor/gui/chargen/chargenskills.h"
+#include "src/engines/kotor/gui/chargen/chargenfeats.h"
 
 namespace Engines {
 
@@ -223,6 +227,77 @@ void CharacterGenerationMenu::showName() {
 		Odyssey::WidgetLabel *lblName = getLabel("LBL_NAME");
 		if (lblName)
 			lblName->setText(info.getName());
+
+		_step += 1;
+	}
+}
+
+void CharacterGenerationMenu::showAbilities() {
+	// Operate on a copy of the character object
+	CharacterGenerationInfo info = *_pc;
+
+	_charGenMenu = std::make_unique<CharacterGenerationAbilitiesMenu>(info);
+
+	sub(*_charGenMenu);
+	if (_charGenMenu->isAccepted()) {
+		*_pc = info;
+
+		Odyssey::WidgetLabel *lblStrength = getLabel("STR_AB_LBL");
+		if (lblStrength)
+			lblStrength->setText(Common::composeString(
+						info.getAbilities().strength));
+		Odyssey::WidgetLabel *lblDexterity = getLabel("DEX_AB_LBL");
+		if (lblDexterity)
+			lblDexterity->setText(Common::composeString(
+						info.getAbilities().dexterity));
+		Odyssey::WidgetLabel *lblConstitution = getLabel("CON_AB_LBL");
+		if (lblConstitution)
+			lblConstitution->setText(Common::composeString(
+						info.getAbilities().constitution));
+		Odyssey::WidgetLabel *lblWisdom = getLabel("WIS_AB_LBL");
+		if (lblWisdom)
+			lblWisdom->setText(Common::composeString(
+						info.getAbilities().wisdom));
+		Odyssey::WidgetLabel *lblIntelligence = getLabel("INT_AB_LBL");
+		if (lblIntelligence)
+			lblIntelligence->setText(Common::composeString(
+						info.getAbilities().intelligence));
+		Odyssey::WidgetLabel *lblCharisma = getLabel("CHA_AB_LBL");
+		if (lblCharisma)
+			lblCharisma->setText(Common::composeString(
+						info.getAbilities().charisma));
+
+		_step += 1;
+	}
+}
+
+void CharacterGenerationMenu::showSkills() {
+	// Operate on a copy of the character object
+	CharacterGenerationInfo info = *_pc;
+
+	_charGenMenu = std::make_unique<CharacterGenerationSkillsMenu>(info);
+
+	sub(*_charGenMenu);
+	if (_charGenMenu->isAccepted()) {
+		*_pc = info;
+
+		// TODO update display
+
+		_step += 1;
+	}
+}
+
+void CharacterGenerationMenu::showFeats() {
+	// Operate on a copy of the character object
+	CharacterGenerationInfo info = *_pc;
+
+	_charGenMenu = std::make_unique<CharacterGenerationFeatsMenu>(info);
+
+	sub(*_charGenMenu);
+	if (_charGenMenu->isAccepted()) {
+		*_pc = info;
+
+		// TODO update display
 
 		_step += 1;
 	}
