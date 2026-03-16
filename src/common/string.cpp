@@ -59,7 +59,7 @@ std::string formatV(const char *format, va_list args) {
 		throw std::system_error(errno, std::generic_category(), "Invalid formatting string");
 	} if (static_cast<size_t>(size) >= sizeof(stackBuf)) {
 		std::unique_ptr<char[]> buf = std::make_unique<char[]>(static_cast<unsigned int>(size) + 1);
-		vsnprintf(buf.get(), size, format, copy);
+		vsnprintf(buf.get(), static_cast<unsigned int>(size) + 1, format, copy);
 		result = std::string(buf.get(), size);
 	} else {
 		result = std::string(stackBuf, size);

@@ -91,6 +91,19 @@ GTEST_TEST(MD5, hashVector) {
 	compareData(digest, kDigestData);
 }
 
+GTEST_TEST(MD5, hashEmptyVector) {
+	// MD5 of an empty input is d41d8cd98f00b204e9800998ecf8427e
+	static const byte kDigestEmpty[] = { 0xD4, 0x1D, 0x8C, 0xD9, 0x8F, 0x00, 0xB2, 0x04,
+	                                     0xE9, 0x80, 0x09, 0x98, 0xEC, 0xF8, 0x42, 0x7E };
+
+	std::vector<byte> digest;
+	std::vector<byte> empty;
+
+	Common::hashMD5(empty, digest);
+
+	compareData(digest, kDigestEmpty);
+}
+
 GTEST_TEST(MD5, compareString) {
 	std::vector<byte> digest;
 	createVector(digest, kDigestString);
@@ -121,4 +134,16 @@ GTEST_TEST(MD5, compareVector) {
 	createVector(data, kData);
 
 	EXPECT_TRUE(Common::compareMD5Digest(data, digest));
+}
+
+GTEST_TEST(MD5, compareEmptyVector) {
+	// MD5 of an empty input is d41d8cd98f00b204e9800998ecf8427e
+	static const byte kDigestEmpty[] = { 0xD4, 0x1D, 0x8C, 0xD9, 0x8F, 0x00, 0xB2, 0x04,
+	                                     0xE9, 0x80, 0x09, 0x98, 0xEC, 0xF8, 0x42, 0x7E };
+
+	std::vector<byte> digest;
+	createVector(digest, kDigestEmpty);
+
+	std::vector<byte> empty;
+	EXPECT_TRUE(Common::compareMD5Digest(empty, digest));
 }

@@ -341,7 +341,7 @@ void hashMD5(const UString &string, std::vector<byte> &digest) {
 }
 
 void hashMD5(const std::vector<byte> &data, std::vector<byte> &digest) {
-	hashMD5(&data[0], data.size(), digest);
+	hashMD5(data.data(), data.size(), digest);
 }
 
 
@@ -370,7 +370,7 @@ bool compareMD5Digest(const UString &string, const std::vector<byte> &digest) {
 }
 
 bool compareMD5Digest(const std::vector<byte> &data, const std::vector<byte> &digest) {
-	return compareMD5Digest(&data[0], data.size(), digest);
+	return compareMD5Digest(data.data(), data.size(), digest);
 }
 
 } // End of namespace Common
