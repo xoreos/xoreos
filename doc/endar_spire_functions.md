@@ -26,38 +26,38 @@ Functions are sorted by their numeric ID, which matches the order in
 |   7 | `DelayCommand` | ✅ | |
 |   8 | `ExecuteScript` | ✅ | |
 |   9 | `ClearAllActions` | ✅ | |
-|  10 | `SetFacing` | ❌ | Needed for creature orientation after dialogue |
+|  10 | `SetFacing` | ✅ | Needed for creature orientation after dialogue |
 |  22 | `ActionMoveToObject` | ✅ | |
 |  24 | `GetArea` | ✅ | |
 |  25 | `GetEnteringObject` | ✅ | |
-|  27 | `GetPosition` | ❌ | Needed for proximity / pathfinding checks |
-|  28 | `GetFacing` | ❌ | Needed for dialogue camera positioning |
-|  29 | `GetItemPossessor` | ❌ | Needed for item ownership checks |
-|  30 | `GetItemPossessedBy` | ❌ | Needed to check if PC already has an item |
+|  27 | `GetPosition` | ✅ | Needed for proximity / pathfinding checks |
+|  28 | `GetFacing` | ✅ | Needed for dialogue camera positioning |
+|  29 | `GetItemPossessor` | ✅ | Needed for item ownership checks |
+|  30 | `GetItemPossessedBy` | ✅ | Needed to check if PC already has an item |
 |  31 | `CreateItemOnObject` | ✅ | |
-|  32 | `ActionEquipItem` | ❌ | Required to auto-equip starting gear |
-|  34 | `ActionPickUpItem` | ❌ | Required for footlocker looting |
-|  37 | `ActionAttack` | ❌ | Core combat action |
-|  39 | `ActionSpeakString` | ❌ | Needed for Trask VO lines during tutorial |
-|  40 | `ActionPlayAnimation` | ❌ | Hit/miss animations |
-|  41 | `GetDistanceToObject` | ❌ | Combat range checks |
+|  32 | `ActionEquipItem` | ✅ | Required to auto-equip starting gear |
+|  34 | `ActionPickUpItem` | ⚠️ | Lightweight queued pickup action; full looting flow still pending |
+|  37 | `ActionAttack` | ✅ | Core combat action |
+|  39 | `ActionSpeakString` | ⚠️ | Currently logs dialogue text; no speech bubble/VO playback |
+|  40 | `ActionPlayAnimation` | ⚠️ | Basic ID mapping implemented; unsupported IDs are ignored |
+|  41 | `GetDistanceToObject` | ✅ | Combat range checks |
 |  42 | `GetIsObjectValid` | ✅ | |
 |  43 | `ActionOpenDoor` | ✅ | |
 |  49 | `GetCurrentHitPoints` | ✅ | |
 |  50 | `GetMaxHitPoints` | ✅ | |
-|  78 | `EffectHeal` | ❌ | Needed to restore HP after mock combat |
-|  79 | `EffectDamage` | ❌ | Needed for combat damage application |
-| 106 | `GetObjectType` | ❌ | Used in many combat/interaction guards |
-| 116 | `GetAC` | ❌ | Used for attack-roll resolution |
-| 140 | `GetIsDead` | ❌ | Detect downed state in combat loop |
-| 166 | `GetHitDice` | ❌ | Used in combat difficulty scaling |
+|  78 | `EffectHeal` | ✅ | Needed to restore HP after mock combat |
+|  79 | `EffectDamage` | ✅ | Needed for combat damage application |
+| 106 | `GetObjectType` | ✅ | Used in many combat/interaction guards |
+| 116 | `GetAC` | ⚠️ | Base AC calculation only; equipment bonuses not yet applied |
+| 140 | `GetIsDead` | ✅ | Detect downed state in combat loop |
+| 166 | `GetHitDice` | ✅ | Used in combat difficulty scaling |
 | 217 | `GetIsPC` | ✅ | |
-| 220 | `ApplyEffectToObject` | ❌ | Applies EffectDamage / EffectHeal to a target |
-| 316 | `GetAttackTarget` | ❌ | Used in combat state machine |
-| 320 | `GetIsInCombat` | ❌ | Used to gate combat-specific dialogue |
-| 403 | `ExploreAreaForPlayer` | ❌ | Reveals minimap when entering Endar Spire |
+| 220 | `ApplyEffectToObject` | ⚠️ | Applies heal/damage HP changes; limited effect semantics |
+| 316 | `GetAttackTarget` | ✅ | Used in combat state machine |
+| 320 | `GetIsInCombat` | ✅ | Used to gate combat-specific dialogue |
+| 403 | `ExploreAreaForPlayer` | ⚠️ | Script hook implemented as no-op for now |
 | 443 | `GetIsOpen` | ✅ | |
-| 556 | `GetLastHostileActor` | ❌ | Used in OnPhysicalAttacked handler |
+| 556 | `GetLastHostileActor` | ✅ | Used in OnPhysicalAttacked handler |
 | 578 | `GetGlobalBoolean` | ✅ | |
 | 579 | `SetGlobalBoolean` | ✅ | |
 | 580 | `GetGlobalNumber` | ✅ | |
