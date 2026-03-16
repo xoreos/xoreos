@@ -152,6 +152,14 @@ public:
 	void equipItem(Common::UString tag, InventorySlot slot, bool updateModel = true);
 	void equipItem(Common::UString tag, InventorySlot slot, CreatureInfo &invOwner, bool updateModel = true);
 
+	/** Create a live Item object for an inventory tag, store it and return it. */
+	Item *addScriptItem(const Common::UString &tag);
+	/** Find a live Item by tag in script items or equipment. Returns nullptr if not found. */
+	Item *findInventoryItemByTag(const Common::UString &tag) const;
+
+	/** Return the total character level (sum of all class levels). */
+	int getHitDice() const;
+
 	// Animation
 
 	void playDefaultAnimation();
@@ -196,6 +204,7 @@ public:
 	Object *getAttackTarget() const;
 	int getAttackRound() const;
 	Object *getAttemptedAttackTarget() const;
+	Object *getLastHostileActor() const;
 
 	void setAttemptedAttackTarget(Object *target);
 
@@ -262,6 +271,9 @@ private:
 	Common::UString _conversation;
 
 	std::map<InventorySlot, std::unique_ptr<Item>> _equipment;
+
+	/** Live Item objects created via scripts for inventory items. */
+	std::vector<std::unique_ptr<Item>> _scriptItems;
 
 	ActionQueue _actions;
 

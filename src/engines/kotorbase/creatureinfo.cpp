@@ -132,6 +132,10 @@ int CreatureInfo::getLevelByPosition(int position) const {
 	return _levels[position].level;
 }
 
+int CreatureInfo::getNumClasses() const {
+	return static_cast<int>(_levels.size());
+}
+
 int CreatureInfo::getAbilityScore(Ability ability) const {
 	switch (ability) {
 		case kAbilityStrength:

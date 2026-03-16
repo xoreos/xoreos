@@ -201,6 +201,14 @@ protected:
 	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
 	void destroyObject(Aurora::NWScript::FunctionContext &ctx);
 
+	void getPosition(Aurora::NWScript::FunctionContext &ctx);
+	void getFacing(Aurora::NWScript::FunctionContext &ctx);
+	void getItemPossessor(Aurora::NWScript::FunctionContext &ctx);
+	void getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx);
+	void getObjectType(Aurora::NWScript::FunctionContext &ctx);
+	void getDistanceToObject(Aurora::NWScript::FunctionContext &ctx);
+	void exploreAreaForPlayer(Aurora::NWScript::FunctionContext &ctx);
+
 	// Situated objects, functions_situated.cpp
 
 	void getLocked(Aurora::NWScript::FunctionContext &ctx);
@@ -224,6 +232,13 @@ protected:
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 	void actionFollowLeader(Aurora::NWScript::FunctionContext &ctx);
 	void clearAllActions(Aurora::NWScript::FunctionContext &ctx);
+
+	void setFacing(Aurora::NWScript::FunctionContext &ctx);
+	void actionEquipItem(Aurora::NWScript::FunctionContext &ctx);
+	void actionPickUpItem(Aurora::NWScript::FunctionContext &ctx);
+	void actionAttack(Aurora::NWScript::FunctionContext &ctx);
+	void actionSpeakString(Aurora::NWScript::FunctionContext &ctx);
+	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
 
 	// Sound, functions_sound.cpp
 
@@ -257,6 +272,17 @@ protected:
 	void getSkillRank(Aurora::NWScript::FunctionContext &ctx);
 
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
+	void getHitDice(Aurora::NWScript::FunctionContext &ctx);
+	void getAC(Aurora::NWScript::FunctionContext &ctx);
+	void getAttackTarget(Aurora::NWScript::FunctionContext &ctx);
+	void getIsInCombat(Aurora::NWScript::FunctionContext &ctx);
+	void getLastHostileActor(Aurora::NWScript::FunctionContext &ctx);
+
+	void effectHeal(Aurora::NWScript::FunctionContext &ctx);
+	void effectDamage(Aurora::NWScript::FunctionContext &ctx);
+	void applyEffectToObject(Aurora::NWScript::FunctionContext &ctx);
 
 	// Global values, functions_global.cpp
 

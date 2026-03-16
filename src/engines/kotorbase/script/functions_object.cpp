@@ -24,6 +24,7 @@
 
 // TODO: check what happens on using invalid objects.
 
+#include <cmath>
 #include <memory>
 
 #include "src/common/util.h"
@@ -162,6 +163,9 @@ void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = ObjectContainer::toCreature(object);
 	if (creature) {
 		creature->getInventory().addItem(itemTag, count);
+		Item *item = creature->addScriptItem(itemTag);
+		if (item)
+			ctx.getReturn() = item;
 		return;
 	}
 
@@ -245,6 +249,120 @@ void Functions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
 	if (object)
 		_game->getModule().getCurrentArea()->removeObject(object);
+}
+
+void Functions::getPosition(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().setVector(0.0f, 0.0f, 0.0f);
+
+	Object *object = ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	float x, y, z;
+	object->getPosition(x, y, z);
+	ctx.getReturn().setVector(x, y, z);
+}
+
+void Functions::getFacing(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0.0f;
+
+	Object *object = ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	float x, y, z, angle;
+	object->getOrientation(x, y, z, angle);
+	ctx.getReturn() = angle;
+}
+
+void Functions::getItemPossessor(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = static_cast<Aurora::NWScript::Object *>(nullptr);
+
+	Aurora::NWScript::Object *rawObj = ctx.getParams()[0].getObject();
+	if (!rawObj)
+		return;
+
+	// Search all creatures in the current area for one that has this item equipped or in script items
+	const std::vector<Creature *> &creatures = _game->getModule().getCurrentArea()->getCreatures();
+	for (Creature *creature : creatures) {
+		if (!creature)
+			continue;
+		// Check equipped items
+		for (int slot = 0; slot < kInventorySlotMAX; ++slot) {
+			Item *equipped = creature->getEquipedItem(static_cast<InventorySlot>(slot));
+			if (equipped && equipped == static_cast<Object *>(rawObj)) {
+				ctx.getReturn() = creature;
+				return;
+			}
+		}
+		// Check script items
+		Item *found = creature->findInventoryItemByTag(
+		    static_cast<Object *>(rawObj)->getTag());
+		if (found && found == static_cast<Object *>(rawObj)) {
+			ctx.getReturn() = creature;
+			return;
+		}
+	}
+}
+
+void Functions::getItemPossessedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = static_cast<Aurora::NWScript::Object *>(nullptr);
+
+	Creature *creature = ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (!creature)
+		return;
+
+	const Common::UString &tag = ctx.getParams()[1].getString();
+
+	// Check equipped items first (live Item objects)
+	Item *item = creature->findInventoryItemByTag(tag);
+	if (item) {
+		ctx.getReturn() = item;
+		return;
+	}
+
+	// If tag is in inventory (tag+count), create a live Item object for scripting
+	if (creature->getInventory().hasItem(tag)) {
+		item = creature->addScriptItem(tag);
+		if (item)
+			ctx.getReturn() = item;
+	}
+}
+
+void Functions::getObjectType(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = static_cast<int32_t>(kObjectTypeInvalid);
+
+	Object *object = ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object || (static_cast<uint32_t>(object->getType()) >= kObjectTypeMAX))
+		return;
+
+	ctx.getReturn() = static_cast<int32_t>(object->getType());
+}
+
+void Functions::getDistanceToObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1.0f;
+
+	Object *target = ObjectContainer::toObject(getParamObject(ctx, 0));
+	Object *caller = ObjectContainer::toObject(ctx.getCaller());
+	if (!target || !caller)
+		return;
+
+	float x1, y1, z1;
+	target->getPosition(x1, y1, z1);
+
+	float x2, y2, z2;
+	caller->getPosition(x2, y2, z2);
+
+	float dx = x1 - x2;
+	float dy = y1 - y2;
+	float dz = z1 - z2;
+	ctx.getReturn() = std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+void Functions::exploreAreaForPlayer(Aurora::NWScript::FunctionContext &ctx) {
+	// Marks the entire area as explored on the minimap for the given player.
+	// Full minimap revelation requires a rendering-layer hook; this stub
+	// satisfies script execution so the Endar Spire module runs without error.
 }
 
 } // End of namespace KotORBase
