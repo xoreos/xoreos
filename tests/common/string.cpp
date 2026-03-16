@@ -32,6 +32,17 @@ GTEST_TEST(String, format) {
 	EXPECT_STREQ(str.c_str(), "Foo|Bar|23");
 }
 
+GTEST_TEST(String, formatLong) {
+	// Construct a format string long enough to exceed the internal 1024-byte
+	// stack buffer so the heap-allocation path is exercised.  The resulting
+	// string must be exactly 1025 characters and end with the sentinel 'Z'.
+	std::string padding(1024, 'X');
+	const std::string str = Common::String::format("%sZ", padding.c_str());
+
+	ASSERT_EQ(str.size(), static_cast<size_t>(1025));
+	EXPECT_EQ(str.back(), 'Z');
+}
+
 GTEST_TEST(String, charClasses) {
 	EXPECT_TRUE (Common::String::isASCII('F'));
 	EXPECT_FALSE(Common::String::isASCII(0xF6));
