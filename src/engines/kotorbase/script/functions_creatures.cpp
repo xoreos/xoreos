@@ -23,12 +23,15 @@
  */
 
 #include "src/common/error.h"
+#include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/object.h"
 #include "src/engines/kotorbase/creature.h"
 #include "src/engines/kotorbase/objectcontainer.h"
+#include "src/engines/kotorbase/effect.h"
 
 #include "src/engines/kotorbase/script/functions.h"
 
@@ -144,6 +147,94 @@ void Functions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature->getAbilityScore(KotORBase::Ability(nAbilityType));
 }
 
-} // End of namespace KotOR
+void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = ObjectContainer::toCreature(getParamObject(ctx, 0));
+	ctx.getReturn() = creature ? (int32_t)creature->isDead() : 0;
+}
+
+void Functions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = ObjectContainer::toCreature(getParamObject(ctx, 0));
+	ctx.getReturn() = creature ? creature->getHitDice() : 0;
+}
+
+void Functions::getAC(Aurora::NWScript::FunctionContext &ctx) {
+	// Base AC in the d20 KOTOR system is 10 + Dexterity modifier.
+	// Equipped armour and shields add further bonuses but require
+	// per-item property tables that are not yet wired up.
+	Creature *creature = ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (!creature) {
+		ctx.getReturn() = 10;
+		return;
+	}
+
+	int dex = creature->getAbilityScore(kAbilityDexterity);
+	int dexMod = (dex - 10) / 2;
+	ctx.getReturn() = 10 + dexMod;
+}
+
+void Functions::getAttackTarget(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = static_cast<Aurora::NWScript::Object *>(nullptr);
+
+	Creature *creature = ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (!creature)
+		return;
+
+	ctx.getReturn() = creature->getAttackTarget();
+}
+
+void Functions::getIsInCombat(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = ObjectContainer::toCreature(getParamObject(ctx, 0));
+	ctx.getReturn() = creature ? (int32_t)creature->isInCombat() : 0;
+}
+
+void Functions::getLastHostileActor(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = static_cast<Aurora::NWScript::Object *>(nullptr);
+
+	// Parameter 0 defaults to OBJECT_SELF
+	Aurora::NWScript::Object *rawParam = ctx.getParams()[0].getObject();
+	Creature *creature = ObjectContainer::toCreature(rawParam ? rawParam : ctx.getCaller());
+	if (!creature)
+		return;
+
+	ctx.getReturn() = creature->getLastHostileActor();
+}
+
+void Functions::effectHeal(Aurora::NWScript::FunctionContext &ctx) {
+	int amount = ctx.getParams()[0].getInt();
+	ctx.getReturn() = new Effect(kEffectHeal, amount);
+}
+
+void Functions::effectDamage(Aurora::NWScript::FunctionContext &ctx) {
+	int amount = ctx.getParams()[0].getInt();
+	int damageType = ctx.getParams()[1].getInt();
+	// param 2 (damage power) is not used in the basic implementation
+	ctx.getReturn() = new Effect(kEffectDamage, amount, damageType);
+}
+
+void Functions::applyEffectToObject(Aurora::NWScript::FunctionContext &ctx) {
+	// int nDurationType, effect eEffect, object oTarget, float fDuration=0.0
+	const Effect *effect = dynamic_cast<const Effect *>(ctx.getParams()[1].getEngineType());
+	Object *target = ObjectContainer::toObject(ctx.getParams()[2].getObject());
+
+	if (!effect || !target)
+		return;
+
+	int current = target->getCurrentHitPoints();
+
+	if (effect->getType() == kEffectHeal) {
+		int healed = current + effect->getAmount();
+		target->setCurrentHitPoints(healed);
+	} else if (effect->getType() == kEffectDamage) {
+		int damaged = current - effect->getAmount();
+		target->setCurrentHitPoints(damaged);
+
+		// Check for death on creatures
+		Creature *creature = ObjectContainer::toCreature(target);
+		if (creature)
+			creature->handleDeath();
+	}
+}
+
+} // End of namespace KotORBase
 
 } // End of namespace Engines

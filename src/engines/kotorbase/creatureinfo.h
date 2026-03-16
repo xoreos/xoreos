@@ -65,6 +65,7 @@ public:
 	int getClassLevel(Class charClass) const;
 	Class getClassByPosition(int position) const;
 	int getLevelByPosition(int position) const;
+	int getNumClasses() const;
 
 	// Abilities
 

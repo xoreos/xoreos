@@ -25,11 +25,13 @@
 #include "external/glm/geometric.hpp"
 
 #include "src/common/error.h"
+#include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/kotorbase/types.h"
 #include "src/engines/kotorbase/door.h"
+#include "src/engines/kotorbase/item.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/game.h"
@@ -137,6 +139,96 @@ void Functions::clearAllActions(Aurora::NWScript::FunctionContext &ctx) {
 		caller = _game->getModule().getPartyLeader();
 
 	caller->clearActions();
+}
+
+void Functions::setFacing(Aurora::NWScript::FunctionContext &ctx) {
+	float facing = ctx.getParams()[0].getFloat();
+
+	Object *object = ObjectContainer::toObject(ctx.getCaller());
+	if (object)
+		object->setOrientation(0.0f, 0.0f, 1.0f, facing);
+}
+
+void Functions::actionEquipItem(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = dynamic_cast<Item *>(ObjectContainer::toObject(ctx.getParams()[0].getObject()));
+	int slot = ctx.getParams()[1].getInt();
+
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
+	if (!caller || !item)
+		return;
+
+	caller->equipItem(item->getTag(), static_cast<InventorySlot>(slot));
+}
+
+void Functions::actionPickUpItem(Aurora::NWScript::FunctionContext &ctx) {
+	// Pick up an item from a container or the ground into caller's inventory.
+	// For the Endar Spire milestone, items are primarily created via
+	// CreateItemOnObject, so this is a lightweight queue-based stub.
+	Object *itemObj = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
+	if (!caller || !itemObj)
+		return;
+
+	Action action(kActionPickUpItem);
+	action.object = itemObj;
+	caller->addAction(action);
+}
+
+void Functions::actionAttack(Aurora::NWScript::FunctionContext &ctx) {
+	Object *target = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
+	if (!caller || !target)
+		return;
+
+	Action action(kActionAttackObject);
+	action.object = target;
+	caller->addAction(action);
+}
+
+void Functions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) {
+	// In the original engine, ActionSpeakString queues a spoken line above
+	// the creature's head. We log it so script logic is not silently skipped.
+	const Common::UString &str = ctx.getParams()[0].getString();
+
+	Object *caller = ObjectContainer::toObject(ctx.getCaller());
+	const Common::UString tag = caller ? caller->getTag() : Common::UString("(unknown)");
+
+	warning("ActionSpeakString [%s]: %s", tag.c_str(), str.c_str());
+}
+
+void Functions::actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx) {
+	int animID = ctx.getParams()[0].getInt();
+
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
+	if (!caller)
+		return;
+
+	// Map the numeric animation ID to a named animation string.
+	// KOTOR animation IDs are documented in animconst.nss; common ones used in
+	// combat and dialogue are handled here; unknown IDs fall back to a no-op.
+	Common::UString animName;
+	switch (animID) {
+		case  0: animName = "pause1";     break; // ANIMATION_LOOPING_PAUSE
+		case  1: animName = "pause2";     break; // ANIMATION_LOOPING_PAUSE2
+		case  2: animName = "listen";     break; // ANIMATION_LOOPING_LISTEN
+		case  3: animName = "meditate";   break; // ANIMATION_LOOPING_MEDITATE
+		case  4: animName = "worship";    break; // ANIMATION_LOOPING_WORSHIP
+		case 10: animName = "talk";       break; // ANIMATION_LOOPING_TALK_NORMAL
+		case 11: animName = "talklooking"; break; // ANIMATION_LOOPING_TALK_PLEADING
+		case 16: animName = "victory1";   break; // ANIMATION_LOOPING_DEAD_FRONT
+		case 17: animName = "victory2";   break; // ANIMATION_LOOPING_DEAD_BACK
+		case 38: animName = "attack1";    break; // ANIMATION_FIREFORGET_HEAD_TURN_LEFT
+		case 39: animName = "attack2";    break; // ANIMATION_FIREFORGET_HEAD_TURN_RIGHT
+		case 40: animName = "dodge";      break; // ANIMATION_FIREFORGET_PAUSE_SCRATCH_HEAD
+		case 44: animName = "die";        break; // ANIMATION_FIREFORGET_SPASM
+		case 48: animName = "g8a1";       break; // ANIMATION_FIREFORGET_DODGE_DUCK
+		case 49: animName = "g8a2";       break; // ANIMATION_FIREFORGET_DODGE_SIDE
+		default: return; // Unknown animation ID; ignore
+	}
+
+	float speed = ctx.getParams()[1].getFloat();
+	float length = ctx.getParams()[2].getFloat();
+	caller->playAnimation(animName, true, length, speed > 0.0f ? speed : 1.0f);
 }
 
 } // End of namespace KotORBase

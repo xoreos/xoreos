@@ -669,6 +669,44 @@ float Creature::getMaxAttackRange() const {
 	return 1.0f;
 }
 
+Item *Creature::addScriptItem(const Common::UString &tag) {
+	// Return an existing script item for this tag if one already exists
+	for (auto &item : _scriptItems)
+		if (item && item->getTag() == tag)
+			return item.get();
+
+	try {
+		_scriptItems.push_back(std::make_unique<Item>(tag));
+		return _scriptItems.back().get();
+	} catch (Common::Exception &e) {
+		e.add("Failed to create script item \"%s\"", tag.c_str());
+		Common::printException(e, "WARNING: ");
+		return nullptr;
+	}
+}
+
+Item *Creature::findInventoryItemByTag(const Common::UString &tag) const {
+	// Search equipped items first
+	for (const auto &kv : _equipment) {
+		if (kv.second && kv.second->getTag() == tag)
+			return kv.second.get();
+	}
+	// Search live script items in inventory
+	for (const auto &item : _scriptItems) {
+		if (item && item->getTag() == tag)
+			return item.get();
+	}
+	return nullptr;
+}
+
+int Creature::getHitDice() const {
+	int total = 0;
+	const int numClasses = _info.getNumClasses();
+	for (int i = 0; i < numClasses; ++i)
+		total += _info.getLevelByPosition(i);
+	return total;
+}
+
 void Creature::playDefaultAnimation() {
 	if (_model)
 		_model->playDefaultAnimation();
@@ -842,6 +880,10 @@ int Creature::getAttackRound() const {
 
 Object *Creature::getAttemptedAttackTarget() const {
 	return _attemptedAttackTarget;
+}
+
+Object *Creature::getLastHostileActor() const {
+	return _lastHostileActor;
 }
 
 void Creature::setAttemptedAttackTarget(Object *target) {
