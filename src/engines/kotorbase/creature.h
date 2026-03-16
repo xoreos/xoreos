@@ -241,6 +241,7 @@ private:
 	Object *_attackTarget { nullptr };
 	int _attackRound { 0 };
 	Object *_attemptedAttackTarget { nullptr };
+	Object *_lastHostileActor { nullptr };
 
 
 	bool _isPC; ///< Is the creature a PC?
