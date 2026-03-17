@@ -55,6 +55,8 @@ public:
 	Gender getGender() const;
 	/** Get abilities of the character. */
 	const CreatureInfo::Abilities &getAbilities() const;
+	/** Get skills of the character. */
+	const CreatureInfo::Skills &getSkills() const;
 
 	/** Set the name of the Character. */
 	void setName(const Common::UString &name);
@@ -62,6 +64,10 @@ public:
 	void setSkin(Skin);
 	/** Set the face index of the character. */
 	void setFace(uint8_t face);
+	/** Set an ability score. */
+	void setAbilityScore(Ability ability, uint32_t score);
+	/** Set a skill rank. */
+	void setSkillRank(Skill skill, uint32_t rank);
 
 protected:
 	Class _class;
@@ -69,6 +75,7 @@ protected:
 	Skin _skin;
 	uint8_t _face;
 	CreatureInfo::Abilities _abilities;
+	CreatureInfo::Skills _skills;
 
 	Common::UString _name;
 

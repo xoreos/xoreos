@@ -57,17 +57,34 @@ void CustomCharPanel::callbackActive(Widget &widget) {
 		return;
 	}
 
+	// Custom character creation uses five ordered steps:
+	//   1. Ability score allocation
+	//   2. Skill point allocation
+	//   3. Portrait / appearance selection
+	//   4. Name entry
+	//   5. Confirm and start
+
 	if (widget.getTag() == "BTN_STEPNAME1") {
-		_charGen->showPortrait();
+		_charGen->showAbilities();
 		return;
 	}
 
 	if (widget.getTag() == "BTN_STEPNAME2") {
-		_charGen->showName();
+		_charGen->showSkills();
 		return;
 	}
 
 	if (widget.getTag() == "BTN_STEPNAME3") {
+		_charGen->showPortrait();
+		return;
+	}
+
+	if (widget.getTag() == "BTN_STEPNAME4") {
+		_charGen->showName();
+		return;
+	}
+
+	if (widget.getTag() == "BTN_STEPNAME5") {
 		_charGen->start();
 		GfxMan.lockFrame();
 		_returnCode = 2;

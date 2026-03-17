@@ -185,6 +185,18 @@ void Functions::actionAttack(Aurora::NWScript::FunctionContext &ctx) {
 	caller->addAction(action);
 }
 
+void Functions::cancelCombat(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = ObjectContainer::toCreature(ctx.getParams()[0].getObject());
+	if (creature)
+		creature->cancelCombat();
+}
+
+void Functions::getLastAttacker(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = ObjectContainer::toCreature(ctx.getParams()[0].getObject());
+	ctx.getReturn() = creature ? creature->getLastHostileActor()
+	                           : static_cast<Aurora::NWScript::Object *>(nullptr);
+}
+
 void Functions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) {
 	// In the original engine, ActionSpeakString queues a spoken line above
 	// the creature's head. We log it so script logic is not silently skipped.
