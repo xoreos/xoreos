@@ -25,6 +25,11 @@
 #ifndef ENGINES_KOTORBASE_SCRIPT_FUNCTIONS_H
 #define ENGINES_KOTORBASE_SCRIPT_FUNCTIONS_H
 
+#include <cstddef>
+#include <vector>
+
+#include "src/common/ustring.h"
+
 #include "src/aurora/nwscript/types.h"
 
 namespace Aurora {
@@ -187,6 +192,9 @@ protected:
 	void getNearestCreature(Aurora::NWScript::FunctionContext &ctx);
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
+	void getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx);
+	void getNextItemInInventory(Aurora::NWScript::FunctionContext &ctx);
+
 	void getArea    (Aurora::NWScript::FunctionContext &ctx);
 	void getLocation(Aurora::NWScript::FunctionContext &ctx);
 
@@ -333,6 +341,11 @@ protected:
 
 private:
 	Game *_game;
+
+	// State for GetFirstItemInInventory / GetNextItemInInventory
+	Object *_inventoryIterObject { nullptr };
+	std::vector<Common::UString> _inventoryIterTags;
+	size_t _inventoryIterIndex { 0 };
 };
 
 } // End of namespace KotOR

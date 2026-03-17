@@ -365,6 +365,73 @@ void Functions::exploreAreaForPlayer(Aurora::NWScript::FunctionContext &ctx) {
 	// satisfies script execution so the Endar Spire module runs without error.
 }
 
+void Functions::getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = ObjectContainer::toObject(getParamObject(ctx, 0));
+	ctx.getReturn() = static_cast<Aurora::NWScript::Object *>(nullptr);
+
+	_inventoryIterObject = object;
+	_inventoryIterTags.clear();
+	_inventoryIterIndex = 0;
+
+	if (!object)
+		return;
+
+	Creature *creature = ObjectContainer::toCreature(object);
+	if (creature) {
+		for (const auto &kv : creature->getInventory().getItems())
+			_inventoryIterTags.push_back(kv.first);
+	} else {
+		Placeable *placeable = ObjectContainer::toPlaceable(object);
+		if (placeable)
+			for (const auto &kv : placeable->getInventory().getItems())
+				_inventoryIterTags.push_back(kv.first);
+	}
+
+	if (_inventoryIterTags.empty())
+		return;
+
+	const Common::UString &tag = _inventoryIterTags[_inventoryIterIndex++];
+	creature = ObjectContainer::toCreature(object);
+	if (creature) {
+		Item *item = creature->addScriptItem(tag);
+		if (item)
+			ctx.getReturn() = item;
+	} else {
+		Placeable *placeable = ObjectContainer::toPlaceable(object);
+		if (placeable) {
+			Item *item = placeable->addScriptItem(tag);
+			if (item)
+				ctx.getReturn() = item;
+		}
+	}
+}
+
+void Functions::getNextItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = static_cast<Aurora::NWScript::Object *>(nullptr);
+
+	if (_inventoryIterIndex >= _inventoryIterTags.size())
+		return;
+
+	const Common::UString &tag = _inventoryIterTags[_inventoryIterIndex++];
+	Object *object = _inventoryIterObject;
+	if (!object)
+		return;
+
+	Creature *creature = ObjectContainer::toCreature(object);
+	if (creature) {
+		Item *item = creature->addScriptItem(tag);
+		if (item)
+			ctx.getReturn() = item;
+	} else {
+		Placeable *placeable = ObjectContainer::toPlaceable(object);
+		if (placeable) {
+			Item *item = placeable->addScriptItem(tag);
+			if (item)
+				ctx.getReturn() = item;
+		}
+	}
+}
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines

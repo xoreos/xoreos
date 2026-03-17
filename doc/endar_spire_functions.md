@@ -48,7 +48,7 @@ Functions are sorted by their numeric ID, which matches the order in
 |  78 | `EffectHeal` | ✅ | Needed to restore HP after mock combat |
 |  79 | `EffectDamage` | ✅ | Needed for combat damage application |
 | 106 | `GetObjectType` | ✅ | Used in many combat/interaction guards |
-| 116 | `GetAC` | ⚠️ | Base AC calculation only; equipment bonuses not yet applied |
+| 116 | `GetAC` | ✅ | Full AC: 10 + Dex modifier + equipped armour bonus |
 | 140 | `GetIsDead` | ✅ | Detect downed state in combat loop |
 | 166 | `GetHitDice` | ✅ | Used in combat difficulty scaling |
 | 217 | `GetIsPC` | ✅ | |

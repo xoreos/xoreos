@@ -160,6 +160,9 @@ public:
 	/** Return the total character level (sum of all class levels). */
 	int getHitDice() const;
 
+	/** Compute the full armor class (10 + Dex modifier + equipped armour bonus). */
+	int getAC() const;
+
 	// Animation
 
 	void playDefaultAnimation();

@@ -49,6 +49,7 @@
 
 #include "src/engines/kotorbase/creature.h"
 #include "src/engines/kotorbase/item.h"
+#include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/creaturesearch.h"
 
 #include "src/engines/kotorbase/gui/chargeninfo.h"
@@ -707,6 +708,18 @@ int Creature::getHitDice() const {
 	return total;
 }
 
+int Creature::getAC() const {
+	int dex = _info.getAbilityScore(kAbilityDexterity);
+	int dexMod = (dex - 10) / 2;
+	int ac = 10 + dexMod;
+
+	const Item *armor = getEquipedItem(kInventorySlotBody);
+	if (armor)
+		ac += armor->getACBonus();
+
+	return ac;
+}
+
 void Creature::playDefaultAnimation() {
 	if (_model)
 		_model->playDefaultAnimation();
@@ -901,10 +914,34 @@ void Creature::cancelCombat() {
 }
 
 void Creature::executeAttack(Object *target) {
-	const Item *leftWeapon = getEquipedItem(kInventorySlotLeftWeapon);
 	const Item *rightWeapon = getEquipedItem(kInventorySlotRightWeapon);
-	int damage;
+	const Item *leftWeapon  = getEquipedItem(kInventorySlotLeftWeapon);
 
+	// Determine attack modifier: use Dex for ranged weapons, Str for melee
+	bool ranged = (rightWeapon && rightWeapon->isRangedWeapon()) ||
+	              (leftWeapon  && leftWeapon->isRangedWeapon());
+	int attackMod = ranged ? _info.getAbilityModifier(kAbilityDexterity)
+	                       : _info.getAbilityModifier(kAbilityStrength);
+
+	// Roll d20 (1..20 inclusive) + attack modifier vs target AC
+	int d20 = RNG.getNext(1, 21);
+	int attackRoll = d20 + attackMod;
+
+	Creature *targetCreature = ObjectContainer::toCreature(target);
+	int targetAC = targetCreature ? targetCreature->getAC() : 10;
+
+	// Natural 1 always misses; natural 20 always hits; otherwise compare totals
+	bool hit = (d20 == 20) || (d20 != 1 && attackRoll >= targetAC);
+
+	if (!hit) {
+		debugC(Common::kDebugEngineLogic, 1,
+		       "Object \"%s\" missed \"%s\" (roll %d+%d=%d vs AC %d)",
+		       _tag.c_str(), target->getTag().c_str(),
+		       d20, attackMod, attackRoll, targetAC);
+		return;
+	}
+
+	int damage;
 	if (rightWeapon && leftWeapon)
 		damage = computeWeaponDamage(leftWeapon) + computeWeaponDamage(rightWeapon);
 	else if (rightWeapon)
@@ -923,8 +960,10 @@ void Creature::executeAttack(Object *target) {
 	target->setCurrentHitPoints(hp);
 
 	debugC(Common::kDebugEngineLogic, 1,
-	       "Object \"%s\" was hit by \"%s\", has %d/%d HP",
-	       target->getTag().c_str(), _tag.c_str(), hp, target->getMaxHitPoints());
+	       "Object \"%s\" was hit by \"%s\" (roll %d+%d=%d vs AC %d), %d damage, %d/%d HP remaining",
+	       target->getTag().c_str(), _tag.c_str(),
+	       d20, attackMod, attackRoll, targetAC,
+	       damage, hp, target->getMaxHitPoints());
 }
 
 bool Creature::isDead() const {
