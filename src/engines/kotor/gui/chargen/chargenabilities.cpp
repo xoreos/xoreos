@@ -156,7 +156,7 @@ void CharacterGenerationAbilitiesMenu::callbackActive(Widget &widget) {
 	}
 
 	if (tag == "BTN_RECOMMENDED") {
-		// Reset to class defaults and re-display.
+		// Reset to class defaults and recalculate remaining points.
 		const KotORBase::CreatureInfo::Abilities &base = _info.getAbilities();
 		_str  = base.strength;
 		_dex  = base.dexterity;
@@ -164,7 +164,18 @@ void CharacterGenerationAbilitiesMenu::callbackActive(Widget &widget) {
 		_intl = base.intelligence;
 		_wis  = base.wisdom;
 		_cha  = base.charisma;
-		_remainingPoints = kAbilityPointPool;
+
+		// Recalculate spent points for the reset scores.
+		auto spentFor = [](uint32_t score) -> int {
+			int spent = 0;
+			for (uint32_t s = kAbilityMin; s < score; ++s)
+				spent += raiseCost(s);
+			return spent;
+		};
+		_remainingPoints = kAbilityPointPool
+		                   - spentFor(_str) - spentFor(_dex) - spentFor(_con)
+		                   - spentFor(_intl) - spentFor(_wis) - spentFor(_cha);
+
 		updateLabels();
 		return;
 	}

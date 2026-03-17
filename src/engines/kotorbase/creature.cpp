@@ -566,7 +566,10 @@ void Creature::initAsPC(const CharacterGenerationInfo &chargenInfo, const Creatu
 	_minOneHitPoint = true;
 
 	// Compute starting max HP: class hit die (max value) + Constitution modifier.
-	int hitDie = 6; // default (Scoundrel)
+	// The fallback of 6 matches the Scoundrel hit die and is also the minimum
+	// d6 that any KotOR class uses.
+	static const int kDefaultHitDie = 6;
+	int hitDie = kDefaultHitDie;
 	try {
 		const Aurora::TwoDAFile &classes = TwoDAReg.get2DA("classes");
 		Common::UString label;
