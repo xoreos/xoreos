@@ -245,6 +245,8 @@ protected:
 	void actionEquipItem(Aurora::NWScript::FunctionContext &ctx);
 	void actionPickUpItem(Aurora::NWScript::FunctionContext &ctx);
 	void actionAttack(Aurora::NWScript::FunctionContext &ctx);
+	void cancelCombat(Aurora::NWScript::FunctionContext &ctx);
+	void getLastAttacker(Aurora::NWScript::FunctionContext &ctx);
 	void actionSpeakString(Aurora::NWScript::FunctionContext &ctx);
 	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
 

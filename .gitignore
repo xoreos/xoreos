@@ -102,3 +102,6 @@ Makefile.in
 
 # Windows binary
 /src/xoreos.exe
+
+# CMake build directory
+/build/

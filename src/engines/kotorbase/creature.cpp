@@ -564,7 +564,29 @@ void Creature::initAsPC(const CharacterGenerationInfo &chargenInfo, const Creatu
 	_face = chargenInfo.getFace();
 
 	_minOneHitPoint = true;
-	_currentHitPoints = _maxHitPoints = 1;
+
+	// Compute starting max HP: class hit die (max value) + Constitution modifier.
+	int hitDie = 6; // default (Scoundrel)
+	try {
+		const Aurora::TwoDAFile &classes = TwoDAReg.get2DA("classes");
+		Common::UString label;
+		switch (chargenInfo.getClass()) {
+			case kClassSoldier:   label = "Soldier";   break;
+			case kClassScout:     label = "Scout";     break;
+			case kClassScoundrel: label = "Scoundrel"; break;
+			default: break;
+		}
+		if (!label.empty())
+			hitDie = classes.getRow("label", label).getInt("hitdie");
+	} catch (...) {
+		// Keep the default if the 2DA lookup fails.
+	}
+
+	int conMod = _info.getAbilityModifier(kAbilityConstitution);
+	int hp = hitDie + conMod;
+	if (hp < 1)
+		hp = 1;
+	_currentHitPoints = _maxHitPoints = hp;
 
 	reloadEquipment();
 	loadEquippedModel();

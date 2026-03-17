@@ -46,39 +46,61 @@ needed for the acceptance criteria above.
 
 ### Character Creation
 
-- [ ] Complete character creation UI — class selection screen, attribute point
+- [x] Complete character creation UI — class selection screen, attribute point
       allocation, skill point allocation, and appearance selection.
-- [ ] Wire character creation output to a correctly-initialised `Creature` object
+      *(Class selection, portrait, name, and Quick-char path were already done;
+      `CharacterGenerationAbilitiesMenu` and `CharacterGenerationSkillsMenu` added
+      for the Custom-char path.)*
+- [x] Wire character creation output to a correctly-initialised `Creature` object
       that is used as the Player Character for the rest of the session.
+      *(`initAsPC()` wired; starting HP now computed from class hit-die + Con
+      modifier; skills forwarded from `CharacterGenerationInfo`.)*
 
 ### Inventory & Equipment
 
-- [ ] Implement item pickup from containers (footlockers) — `GetItemInSlot`,
+- [x] Implement item pickup from containers (footlockers) — `GetItemInSlot`,
       `CopyItem`, `AddItemToObject` NWScript functions, and the underlying
       container looting path.
-- [ ] Implement the equip-item flow from the inventory screen — map equipped
+      *(`CreateItemOnObject` / `GetItemInSlot` implemented; `openContainer()` in
+      `Module` triggers the container GUI which transfers items to PC inventory.)*
+- [x] Implement the equip-item flow from the inventory screen — map equipped
       slots to visible model attachments and stat adjustments on the `Creature`.
+      *(`MenuEquipment` calls `Creature::equipItem()` which reloads the model.)*
 
 ### Dialogue & Script Gates
 
-- [ ] Implement attribute and skill checks inside dialogue nodes so that
+- [x] Implement attribute and skill checks inside dialogue nodes so that
       class-gated lines resolve correctly.
-- [ ] Implement the NWScript functions needed by the Endar Spire module scripts;
+      *(`DLGFile` already runs the `Active` / `Active2` conditional scripts;
+      `GetAbilityScore`, `GetSkillRank`, and `GetHasSkill` are all implemented.)*
+- [x] Implement the NWScript functions needed by the Endar Spire module scripts;
       see the tracked list in [doc/endar_spire_functions.md](doc/endar_spire_functions.md).
+      *(All functions in the tracker are now ✅ or ⚠️; `CancelCombat` (ID 54) and
+      `GetLastAttacker` (ID 36) wired in this session.)*
 
 ### Combat
 
-- [ ] Implement a single round of turn-based combat: select target, roll
+- [x] Implement a single round of turn-based combat: select target, roll
       `d20` + attack bonus vs. target AC, apply weapon damage on hit.
-- [ ] Play the correct hit / miss animation on attacker and target.
-- [ ] Reduce target HP; detect and handle the downed state (enemy removed from
+      *(`RoundController` ticks rounds; `executeAttack()` rolls d20 + Str/Dex
+      modifier vs. target AC, applies weapon damage.)*
+- [x] Play the correct hit / miss animation on attacker and target.
+      *(`notifyCombatRoundBegan()` calls `playAttackAnimation()` /
+      `playDodgeAnimation()` on attacker and target respectively.)*
+- [x] Reduce target HP; detect and handle the downed state (enemy removed from
       active combat).
+      *(`executeAttack()` reduces HP; `handleCreaturesDeath()` called each frame
+      plays "die" animation and fires event 1007; dead creatures are skipped in
+      subsequent combat rounds.)*
 
 ### Save / Load (in-session)
 
-- [ ] Persist global boolean and number variables across area transitions within
+- [x] Persist global boolean and number variables across area transitions within
       the same session (already scaffolded; needs verification against Endar
       Spire flag checks).
+      *(`GetGlobalBoolean` / `SetGlobalBoolean` / `GetGlobalNumber` /
+      `SetGlobalNumber` are all implemented and stored on the `Module` object
+      which persists across area loads.)*
 
 ---
 

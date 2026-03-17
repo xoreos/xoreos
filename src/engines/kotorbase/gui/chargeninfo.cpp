@@ -52,6 +52,10 @@ const CreatureInfo::Abilities &CharacterGenerationInfo::getAbilities() const {
 	return _abilities;
 }
 
+const CreatureInfo::Skills &CharacterGenerationInfo::getSkills() const {
+	return _skills;
+}
+
 void CharacterGenerationInfo::setName(const Common::UString &name) {
 	_name = name;
 }
@@ -64,6 +68,32 @@ void CharacterGenerationInfo::setFace(uint8_t face) {
 	_face = face;
 }
 
+void CharacterGenerationInfo::setAbilityScore(Ability ability, uint32_t score) {
+	switch (ability) {
+		case kAbilityStrength:     _abilities.strength     = score; break;
+		case kAbilityDexterity:    _abilities.dexterity    = score; break;
+		case kAbilityConstitution: _abilities.constitution = score; break;
+		case kAbilityIntelligence: _abilities.intelligence = score; break;
+		case kAbilityWisdom:       _abilities.wisdom       = score; break;
+		case kAbilityCharisma:     _abilities.charisma     = score; break;
+		default: break;
+	}
+}
+
+void CharacterGenerationInfo::setSkillRank(Skill skill, uint32_t rank) {
+	switch (skill) {
+		case kSkillComputerUse:  _skills.computerUse  = rank; break;
+		case kSkillDemolitions:  _skills.demolitions  = rank; break;
+		case kSkillStealth:      _skills.stealth      = rank; break;
+		case kSkillAwareness:    _skills.awareness    = rank; break;
+		case kSkillPersuade:     _skills.persuade     = rank; break;
+		case kSkillRepair:       _skills.repair       = rank; break;
+		case kSkillSecurity:     _skills.security     = rank; break;
+		case kSkillTreatInjury:  _skills.treatInjury  = rank; break;
+		default: break;
+	}
+}
+
 CharacterGenerationInfo::CharacterGenerationInfo(const CharacterGenerationInfo &info) {
 	_class = info._class;
 	_gender = info._gender;
@@ -71,6 +101,7 @@ CharacterGenerationInfo::CharacterGenerationInfo(const CharacterGenerationInfo &
 	_face = info._face;
 	_name = info._name;
 	_abilities = info._abilities;
+	_skills = info._skills;
 }
 
 CharacterGenerationInfo::~CharacterGenerationInfo() {
@@ -83,6 +114,7 @@ void CharacterGenerationInfo::operator=(const CharacterGenerationInfo &info) {
 	_face = info._face;
 	_name = info._name;
 	_abilities = info._abilities;
+	_skills = info._skills;
 }
 
 CharacterGenerationInfo::CharacterGenerationInfo() {
