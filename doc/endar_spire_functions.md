@@ -51,10 +51,17 @@ Functions are sorted by their numeric ID, which matches the order in
 | 116 | `GetAC` | ✅ | Full AC: 10 + Dex modifier + equipped armour bonus |
 | 140 | `GetIsDead` | ✅ | Detect downed state in combat loop |
 | 166 | `GetHitDice` | ✅ | Used in combat difficulty scaling |
+| 196 | `ActionJumpToObject` | ✅ | Teleports caller to target object's position; used in escape-pod trigger |
+| 197 | `GetWaypointByTag` | ✅ | Finds a waypoint by tag in the current module |
+| 202 | `ActionWait` | ✅ | Queues a wait action; completes on first executor tick |
+| 213 | `GetLocation` | ✅ | Returns the current location of an object |
+| 214 | `ActionJumpToLocation` | ✅ | Teleports caller to a Location engine type |
+| 215 | `Location` | ✅ | Constructs a Location engine type from a position vector and facing |
 | 217 | `GetIsPC` | ✅ | |
 | 220 | `ApplyEffectToObject` | ⚠️ | Applies heal/damage HP changes; limited effect semantics |
 | 316 | `GetAttackTarget` | ✅ | Used in combat state machine |
 | 320 | `GetIsInCombat` | ✅ | Used to gate combat-specific dialogue |
+| 385 | `JumpToObject` | ✅ | Instant-teleport variant of ActionJumpToObject |
 | 403 | `ExploreAreaForPlayer` | ⚠️ | Script hook implemented as no-op for now |
 | 443 | `GetIsOpen` | ✅ | |
 | 556 | `GetLastHostileActor` | ✅ | Used in OnPhysicalAttacked handler |

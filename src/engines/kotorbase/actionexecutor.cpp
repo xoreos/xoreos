@@ -61,6 +61,10 @@ void ActionExecutor::execute(const Action &action, const ExecutionContext &ctx) 
 		case kActionPickUpItem:
 			executePickUpItem(action, ctx);
 			break;
+		case kActionWait:
+			// Wait actions complete immediately on the first tick.
+			ctx.creature->popAction();
+			break;
 		default:
 			warning("TODO: Handle action %u", (uint)action.type);
 			break;

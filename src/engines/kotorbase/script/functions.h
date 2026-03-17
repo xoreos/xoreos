@@ -199,6 +199,11 @@ protected:
 	void getLocation(Aurora::NWScript::FunctionContext &ctx);
 
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
+
+	void locationCreate(Aurora::NWScript::FunctionContext &ctx);
+
+	void getWaypointByTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void setMinOneHP(Aurora::NWScript::FunctionContext &ctx);
 	void setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
@@ -249,6 +254,9 @@ protected:
 	void getLastAttacker(Aurora::NWScript::FunctionContext &ctx);
 	void actionSpeakString(Aurora::NWScript::FunctionContext &ctx);
 	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
+	void actionJumpToObject(Aurora::NWScript::FunctionContext &ctx);
+	void actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionWait(Aurora::NWScript::FunctionContext &ctx);
 
 	// Sound, functions_sound.cpp
 

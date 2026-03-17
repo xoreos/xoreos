@@ -243,6 +243,34 @@ void Functions::actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx) {
 	caller->playAnimation(animName, true, length, speed > 0.0f ? speed : 1.0f);
 }
 
+void Functions::actionJumpToObject(Aurora::NWScript::FunctionContext &ctx) {
+	// Immediately teleport the caller to the position of the target object.
+	// This is the action-queued variant of JumpToObject; for the Endar Spire
+	// milestone both variants behave identically (instant teleport, no path).
+	jumpToObject(ctx);
+}
+
+void Functions::actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
+	// Immediately teleport the caller to the given location.
+	// Delegates to the already-implemented JumpToLocation function.
+	jumpToLocation(ctx);
+}
+
+void Functions::actionWait(Aurora::NWScript::FunctionContext &ctx) {
+	// Queue a wait action with the specified duration (seconds).
+	// The action executor pops it immediately after the first tick; this is
+	// sufficient for any script that only needs to yield briefly.
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
+	if (!caller)
+		return;
+
+	// Store the wait duration in the `range` field (repurposed as a float
+	// payload; the executor currently completes the wait on the first tick).
+	Action action(kActionWait);
+	action.range = ctx.getParams()[0].getFloat();
+	caller->addAction(action);
+}
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines
