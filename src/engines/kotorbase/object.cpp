@@ -207,7 +207,7 @@ void Object::setMaxHitPoints(int maxHP) {
 
 void Object::setCurrentHitPoints(int hitpoints) {
 	if (_minOneHitPoint)
-		_currentHitPoints = MIN(1, MIN(hitpoints, _maxHitPoints));
+		_currentHitPoints = MAX(1, MIN(hitpoints, _maxHitPoints));
 	else
 		_currentHitPoints = MIN(hitpoints, _maxHitPoints);
 }

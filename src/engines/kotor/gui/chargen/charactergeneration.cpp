@@ -233,7 +233,7 @@ int CharacterGenerationMenu::getStep() {
 }
 
 void CharacterGenerationMenu::decStep() {
-	_step = MIN(0, _step - 1);
+	_step = MAX(0, _step - 1);
 }
 
 void CharacterGenerationMenu::start() {

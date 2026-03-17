@@ -33,6 +33,7 @@
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/door.h"
 #include "src/engines/kotorbase/placeable.h"
+#include "src/engines/kotorbase/inventory.h"
 
 static const float kWalkDistance = 2.0f;
 
@@ -56,6 +57,9 @@ void ActionExecutor::execute(const Action &action, const ExecutionContext &ctx) 
 			break;
 		case kActionAttackObject:
 			executeAttackObject(action, ctx);
+			break;
+		case kActionPickUpItem:
+			executePickUpItem(action, ctx);
 			break;
 		default:
 			warning("TODO: Handle action %u", (uint)action.type);
@@ -160,6 +164,24 @@ void ActionExecutor::executeAttackObject(const Action &action, const ExecutionCo
 
 	ctx.creature->popAction();
 	ctx.creature->startCombat(action.object, ctx.area->_module->getNextCombatRound());
+}
+
+void ActionExecutor::executePickUpItem(const Action &action, const ExecutionContext &ctx) {
+	if (!action.object)
+		return;
+
+	float x, y, _;
+	action.object->getPosition(x, y, _);
+
+	if (!moveTo(glm::vec2(x, y), action.range, ctx))
+		return;
+
+	Common::UString itemTag = action.object->getTag();
+	Object *itemObject = action.object;
+
+	ctx.creature->popAction();
+	ctx.creature->getInventory().addItem(itemTag);
+	ctx.area->removeObject(itemObject);
 }
 
 bool ActionExecutor::isLocationReached(const glm::vec2 &location, float range, const ExecutionContext &ctx) {
