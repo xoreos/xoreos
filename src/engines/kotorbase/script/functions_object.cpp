@@ -203,6 +203,49 @@ void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
 	object->setPosition(x, y, z);
 }
 
+void Functions::jumpToObject(Aurora::NWScript::FunctionContext &ctx) {
+	Object *caller = ObjectContainer::toObject(ctx.getCaller());
+	Object *target = ObjectContainer::toObject(getParamObject(ctx, 0));
+
+	if (!caller || !target)
+		return;
+
+	float x, y, z;
+	target->getPosition(x, y, z);
+	caller->setPosition(x, y, z);
+}
+
+void Functions::locationCreate(Aurora::NWScript::FunctionContext &ctx) {
+	// Location(vector position, float facing) -> location engine type
+	float x, y, z;
+	ctx.getParams()[0].getVector(x, y, z);
+	float facing = ctx.getParams()[1].getFloat();
+
+	Location loc;
+	loc.setPosition(x, y, z);
+	loc.setFacing(facing);
+
+	ctx.getReturn() = loc;
+}
+
+void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &tag = ctx.getParams()[0].getString();
+
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(
+		_game->getModule().findObjectsByTag(tag));
+
+	// Iterate until we find a waypoint
+	Aurora::NWScript::Object *found = nullptr;
+	while (Aurora::NWScript::Object *o = search->next()) {
+		if (ObjectContainer::toWaypoint(o)) {
+			found = o;
+			break;
+		}
+	}
+
+	ctx.getReturn() = found;
+}
+
 void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = 0;
 
