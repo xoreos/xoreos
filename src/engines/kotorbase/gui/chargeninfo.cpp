@@ -70,6 +70,7 @@ CharacterGenerationInfo::CharacterGenerationInfo(const CharacterGenerationInfo &
 	_skin = info._skin;
 	_face = info._face;
 	_name = info._name;
+	_abilities = info._abilities;
 }
 
 CharacterGenerationInfo::~CharacterGenerationInfo() {
@@ -81,6 +82,7 @@ void CharacterGenerationInfo::operator=(const CharacterGenerationInfo &info) {
 	_skin = info._skin;
 	_face = info._face;
 	_name = info._name;
+	_abilities = info._abilities;
 }
 
 CharacterGenerationInfo::CharacterGenerationInfo() {

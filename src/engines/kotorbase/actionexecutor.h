@@ -52,6 +52,7 @@ private:
 	static void executeOpenLock(const Action &action, const ExecutionContext &ctx);
 	static void executeUseObject(const Action &action, const ExecutionContext &ctx);
 	static void executeAttackObject(const Action &action, const ExecutionContext &ctx);
+	static void executePickUpItem(const Action &action, const ExecutionContext &ctx);
 
 	/**
 	 * Move the current creature towards a specified location. Returns

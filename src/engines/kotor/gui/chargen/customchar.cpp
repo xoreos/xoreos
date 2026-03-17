@@ -22,6 +22,8 @@
  *  The panel to customize a quick character.
  */
 
+#include "src/graphics/graphics.h"
+
 #include "src/engines/odyssey/label.h"
 
 #include "src/engines/kotor/gui/chargen/customchar.h"
@@ -55,7 +57,22 @@ void CustomCharPanel::callbackActive(Widget &widget) {
 		return;
 	}
 
-	// TODO implement the custom character generation
+	if (widget.getTag() == "BTN_STEPNAME1") {
+		_charGen->showPortrait();
+		return;
+	}
+
+	if (widget.getTag() == "BTN_STEPNAME2") {
+		_charGen->showName();
+		return;
+	}
+
+	if (widget.getTag() == "BTN_STEPNAME3") {
+		_charGen->start();
+		GfxMan.lockFrame();
+		_returnCode = 2;
+		return;
+	}
 }
 
 } // End of namespace KotOR
