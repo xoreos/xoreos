@@ -252,6 +252,21 @@ Inventory &Placeable::getInventory() {
 	return _inventory;
 }
 
+Item *Placeable::addScriptItem(const Common::UString &tag) {
+	for (auto &item : _scriptItems)
+		if (item && item->getTag() == tag)
+			return item.get();
+
+	try {
+		_scriptItems.push_back(std::make_unique<Item>(tag));
+		return _scriptItems.back().get();
+	} catch (Common::Exception &e) {
+		e.add("Failed to create script item \"%s\"", tag.c_str());
+		Common::printException(e, "WARNING: ");
+		return nullptr;
+	}
+}
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines

@@ -25,6 +25,9 @@
 #ifndef ENGINES_KOTORBASE_PLACEABLE_H
 #define ENGINES_KOTORBASE_PLACEABLE_H
 
+#include <memory>
+#include <vector>
+
 #include "src/engines/kotorbase/item.h"
 #include "src/engines/kotorbase/inventory.h"
 #include "src/engines/kotorbase/situated.h"
@@ -76,6 +79,9 @@ public:
 	bool hasInventory();
 	Inventory &getInventory();
 
+	/** Create or retrieve a live Item object for an inventory tag. */
+	Item *addScriptItem(const Common::UString &tag);
+
 	// Object/cursor interactions
 
 	const Common::UString &getCursor() const;
@@ -96,6 +102,9 @@ private:
 
 	bool _hasInventory; ///< Does this placeable have an inventory?
 	Inventory _inventory; ///< The current items of this placeable if it has an inventory.
+
+	/** Live Item objects created for scripting purposes (mirrors Creature::_scriptItems). */
+	std::vector<std::unique_ptr<Item>> _scriptItems;
 
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFF3Struct &placeable);

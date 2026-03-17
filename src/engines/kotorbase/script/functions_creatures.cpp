@@ -158,18 +158,8 @@ void Functions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getAC(Aurora::NWScript::FunctionContext &ctx) {
-	// Base AC in the d20 KOTOR system is 10 + Dexterity modifier.
-	// Equipped armour and shields add further bonuses but require
-	// per-item property tables that are not yet wired up.
 	Creature *creature = ObjectContainer::toCreature(getParamObject(ctx, 0));
-	if (!creature) {
-		ctx.getReturn() = 10;
-		return;
-	}
-
-	int dex = creature->getAbilityScore(kAbilityDexterity);
-	int dexMod = (dex - 10) / 2;
-	ctx.getReturn() = 10 + dexMod;
+	ctx.getReturn() = creature ? creature->getAC() : 10;
 }
 
 void Functions::getAttackTarget(Aurora::NWScript::FunctionContext &ctx) {

@@ -46,6 +46,8 @@ public:
 	bool isSlotEquipable(InventorySlot slot) const;
 	bool isRangedWeapon() const;
 
+	int getACBonus() const;
+
 	// Visual properties
 
 	int getBodyVariation() const;
@@ -66,6 +68,7 @@ private:
 	int _modelVariation;
 	int _bodyVariation;
 	int _textureVariation;
+	int _acBonus;
 
 	void load(const Aurora::GFF3Struct &gff);
 };

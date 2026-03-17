@@ -56,6 +56,7 @@ void Item::load(const Aurora::GFF3Struct &gff) {
 	_maxAttackRange = twoDA.getFloat("maxattackrange");
 	_numDice = twoDA.getInt("numdice");
 	_dieToRoll = twoDA.getInt("dietoroll");
+	_acBonus = twoDA.getInt("ACBonus");
 
 	// Model, body and texture variations
 	_modelVariation = gff.getSint("ModelVariation");
@@ -92,6 +93,10 @@ bool Item::isSlotEquipable(InventorySlot slot) const {
 
 bool Item::isRangedWeapon() const {
 	return _rangedWeapon;
+}
+
+int Item::getACBonus() const {
+	return _acBonus;
 }
 
 int Item::getBodyVariation() const {
