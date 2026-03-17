@@ -41,5 +41,6 @@ include tests/common/rules.mk
 include tests/aurora/rules.mk
 include tests/images/rules.mk
 include tests/engines/nwn2/rules.mk
+include tests/engines/kotorbase/rules.mk
 
 TESTS += $(check_PROGRAMS)

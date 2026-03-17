@@ -102,6 +102,18 @@ needed for the acceptance criteria above.
       `SetGlobalNumber` are all implemented and stored on the `Module` object
       which persists across area loads.)*
 
+### CI Test Coverage
+
+- [x] Add unit tests for the core combat formulas (AC derivation, d20 hit/miss
+      determination including natural-1 / natural-20 rules, ability-modifier
+      integration) so that regressions in the combat path are caught
+      automatically.
+      *(`tests/engines/kotorbase/combat.cpp` added; wired into the Autotools
+      `check_PROGRAMS` target via `tests/engines/kotorbase/rules.mk`.)*
+- [x] Add unit tests for `CreatureInfo` ability-score storage, modifier
+      calculation, and skill-rank round-trips.
+      *(`tests/engines/kotorbase/creatureinfo.cpp` added.)*
+
 ---
 
 ## Out of Scope
