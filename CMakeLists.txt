@@ -302,7 +302,12 @@ find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${ZLIB_LIBRARIES})
 
-find_package(Boost COMPONENTS system filesystem date_time locale REQUIRED)
+find_package(Boost COMPONENTS filesystem date_time locale REQUIRED)
+if(Boost_VERSION_STRING VERSION_LESS "1.70.0")
+  # Boost.System is header-only since 1.70.0 and is not required.
+  # From 1.89.0 it's not available at all and looking for it results in build configuration error.
+  find_package(Boost COMPONENTS system REQUIRED)
+endif()
 
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
