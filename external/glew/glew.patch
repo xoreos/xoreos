@@ -1,37 +1,37 @@
-diff -ur a/eglew.h b/eglew.h
---- a/eglew.h	2017-08-20 12:01:35.410583684 +0200
-+++ b/eglew.h	2017-08-20 12:02:48.134928758 +0200
-@@ -106,7 +106,7 @@
- #include <KHR/khrplatform.h>
+diff '--color=auto' -ur a/eglew.h b/eglew.h
+--- a/eglew.h	2026-04-01 23:08:35.280971262 +0200
++++ b/eglew.h	2026-04-01 23:07:54.807219349 +0200
+@@ -107,7 +107,7 @@
  #include <EGL/eglplatform.h>
-
--#include <GL/glew.h>
-+#include "external/glew/glew.h"
-
- #ifdef __cplusplus
- extern "C" {
-diff -ur a/glew.c b/glew.c
---- a/glew.c	2017-08-20 12:01:29.324638491 +0200
-+++ b/glew.c	2017-08-20 12:04:10.590186200 +0200
+ 
+ #ifndef GLEW_INCLUDE
+-#  include <GL/glew.h>
++#  include "external/glew/glew.h"
+ #else
+ #  include GLEW_INCLUDE
+ #endif
+diff '--color=auto' -ur a/glew.c b/glew.c
+--- a/glew.c	2026-04-01 23:08:36.529963607 +0200
++++ b/glew.c	2026-04-01 23:07:57.764201222 +0200
 @@ -31,7 +31,7 @@
  */
-
+ 
  #ifndef GLEW_INCLUDE
--#include <GL/glew.h>
-+#include "external/glew/glew.h"
+-#  include <GL/glew.h>
++#  include "external/glew/glew.h"
  #else
- #include GLEW_INCLUDE
+ #  include GLEW_INCLUDE
  #endif
-@@ -40,7 +40,7 @@
- #  define GLAPI extern
- #  include <GL/osmesa.h>
+@@ -48,7 +48,7 @@
+ #    undef GLEW_APIENTRY_DEFINED
+ #  endif
  #elif defined(GLEW_EGL)
 -#  include <GL/eglew.h>
 +#  include "external/glew/eglew.h"
  #elif defined(_WIN32)
  /*
   * If NOGDI is defined, wingdi.h won't be included by windows.h, and thus
-@@ -50,9 +50,9 @@
+@@ -58,9 +58,9 @@
  #  if defined(NOGDI)
  #    undef NOGDI
  #  endif
@@ -41,41 +41,17 @@ diff -ur a/glew.c b/glew.c
 -#  include <GL/glxew.h>
 +#  include "external/glew/glxew.h"
  #endif
-
+ 
  #include <stddef.h>  /* For size_t */
-@@ -16218,7 +16218,7 @@
-
-   if (GLEW_VERSION_3_0)
-   {
--    GLint n = 0;
-+    GLint nExt = 0;
-     GLint i;
-     PFNGLGETINTEGERVPROC getIntegerv;
-     PFNGLGETSTRINGIPROC getStringi;
-@@ -16232,12 +16232,12 @@
-     #endif
-
-     if (getIntegerv)
--      getIntegerv(GL_NUM_EXTENSIONS, &n);
-+      getIntegerv(GL_NUM_EXTENSIONS, &nExt);
-
-     /* glGetStringi is OpenGL 3.0 */
-     getStringi = (PFNGLGETSTRINGIPROC) glewGetProcAddress((const GLubyte*)"glGetStringi");
-     if (getStringi)
--      for (i = 0; i<n; ++i)
-+      for (i = 0; i<nExt; ++i)
-       {
-         ext = (const char *) getStringi(GL_EXTENSIONS, i);
-
-diff -ur a/glxew.h b/glxew.h
---- a/glxew.h	2017-08-20 12:01:35.410583684 +0200
-+++ b/glxew.h	2017-08-20 12:02:48.137928731 +0200
-@@ -98,7 +98,7 @@
- #include <X11/Xlib.h>
- #include <X11/Xutil.h>
+diff '--color=auto' -ur a/glxew.h b/glxew.h
+--- a/glxew.h	2026-04-01 23:08:38.874949236 +0200
++++ b/glxew.h	2026-04-01 23:08:00.392185113 +0200
+@@ -100,7 +100,7 @@
  #include <X11/Xmd.h>
--#include <GL/glew.h>
-+#include "external/glew/glew.h"
-
- #ifdef __cplusplus
- extern "C" {
+ 
+ #ifndef GLEW_INCLUDE
+-#  include <GL/glew.h>
++#  include "external/glew/glew.h"
+ #else
+ #  include GLEW_INCLUDE
+ #endif
