@@ -22,6 +22,7 @@ ipch/
 # autotools temp files
 Makefile
 Makefile.in
+/ABOUT-NLS
 /INSTALL
 /aclocal.m4
 /autom4te.cache/
@@ -38,7 +39,14 @@ Makefile.in
 /m4/ltversion.m4
 /m4/lt~obsolete.m4
 /m4/pkg.m4
+/m4/build-to-host.m4
+/m4/gettext.m4
+/m4/intlmacosx.m4
+/m4/nls.m4
+/m4/po.m4
+/m4/progtest.m4
 /stamp-h1
+/po/
 
 # CMake temp file
 /CMakeCache.txt
