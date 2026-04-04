@@ -63,6 +63,7 @@ void AnimationThread::registerModel(Model *model) {
 }
 
 void AnimationThread::unregisterModel(Model *model) {
+	registerQueuedModels(); // in case the model to be unregistered is queued
 	if (_pause.load(std::memory_order_seq_cst) == kPausePaused) {
 		unregisterModelInternal(model);
 	} else {
