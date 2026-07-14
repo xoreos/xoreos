@@ -48,6 +48,9 @@ Makefile.in
 /stamp-h1
 /po/
 
+# Out-of-source build dir (used by build-by-cmake.sh)
+/build/
+
 # CMake temp file
 /CMakeCache.txt
 /CMakeFiles/
