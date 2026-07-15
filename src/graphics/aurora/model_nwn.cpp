@@ -1378,6 +1378,14 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
 		return;
 
+	// A node carrying mesh data but of an unknown type (e.g. an Enhanced
+	// Edition-specific node) never allocated _mesh; skip it instead of
+	// dereferencing a null pointer.
+	if (!_mesh) {
+		warning("ModelNode_NWN_ASCII::processMesh(): Mesh data on a non-mesh node, skipping");
+		return;
+	}
+
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
 	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
