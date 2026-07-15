@@ -58,7 +58,7 @@ namespace Engines {
 namespace NWN {
 
 NWNEngine::NWNEngine() : _language(Aurora::kLanguageInvalid),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false) {
+	_isEE(false), _hasXP1(false), _hasXP2(false), _hasXP3(false) {
 
 	_console = std::make_unique<Console>(*this);
 }
@@ -70,8 +70,22 @@ bool NWNEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UStri
                                 Aurora::Platform UNUSED(platform),
                                 std::vector<Aurora::Language> &languages) const {
 	try {
+		// In Neverwinter Nights: Enhanced Edition, dialog.tlk lives under
+		// "lang/<lang>/data/dialog.tlk" rather than at the game root. Detect
+		// the EE layout by the presence of "data/nwn_base.key" and, if found,
+		// walk the "lang" directory recursively.
+		const bool isEE = Common::FilePath::isRegularFile(target + "/data/nwn_base.key");
+
+		Common::UString tlkRoot = target;
+		int recurseDepth = 0;
+
+		if (isEE) {
+			tlkRoot += "/lang";
+			recurseDepth = -1;
+		}
+
 		Common::FileList files;
-		if (!files.addDirectory(target))
+		if (!files.addDirectory(tlkRoot, recurseDepth))
 			return true;
 
 		Common::UString tlk = files.findFirst("dialog.tlk", true);
@@ -210,51 +224,99 @@ void NWNEngine::declareLanguages() {
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
 }
 
+// In Neverwinter Nights: Enhanced Edition, dialog.tlk lives outside any KEY
+// under "lang/<code>/data/" using ISO 639-1 codes (en, de, fr, ...). Map the
+// Aurora::Language enum to those short codes so we can index the right dir.
+static Common::UString getEELanguageCode(Aurora::Language language) {
+	switch (language) {
+		case Aurora::kLanguageEnglish           : return "en";
+		case Aurora::kLanguageFrench            : return "fr";
+		case Aurora::kLanguageGerman            : return "de";
+		case Aurora::kLanguageItalian           : return "it";
+		case Aurora::kLanguageSpanish           : return "es";
+		case Aurora::kLanguagePolish            : return "pl";
+		default:
+			return "";
+	}
+}
+
 void NWNEngine::initResources(LoadProgress &progress) {
+	// Detect the Neverwinter Nights: Enhanced Edition layout. The EE places
+	// its KEYs under data/ rather than at the game root, has no gui_32bit.erf
+	// (GUI textures ship inside aurora_gui.bif) and uses "mus"/"mov" rather
+	// than "music"/"movies" for the sound/movie directories. It also lacks
+	// the "modules"/"hak"/"texturepacks"/"nwm"/"ambient" root directories that
+	// the original NWN shipped with, so those are made optional below.
+	_isEE = Common::FilePath::isRegularFile(_target + "/data/nwn_base.key");
+
 	progress.step("Setting base directory");
 	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	indexMandatoryDirectory("data"        , 0, 0, 2);
-	indexMandatoryDirectory("nwm"         , 0, 0, 3);
-	indexMandatoryDirectory("modules"     , 0, 0, 4);
-	indexMandatoryDirectory("hak"         , 0, 0, 5);
-	indexMandatoryDirectory("texturepacks", 0, 0, 6);
+	indexMandatoryDirectory("data", 0, 0, 2);
+	if (_isEE) {
+		// EE keeps nwm/modules/hak/texturepacks inside data/ (or does not ship them
+		// at the root at all). Make them optional so we don't fail on missing dirs.
+		indexOptionalDirectory ("nwm"         , 0, 0, 3);
+		indexOptionalDirectory ("modules"     , 0, 0, 4);
+		indexOptionalDirectory ("hak"         , 0, 0, 5);
+		indexOptionalDirectory ("texturepacks", 0, 0, 6);
+	} else {
+		indexMandatoryDirectory("nwm"         , 0, 0, 3);
+		indexMandatoryDirectory("modules"     , 0, 0, 4);
+		indexMandatoryDirectory("hak"         , 0, 0, 5);
+		indexMandatoryDirectory("texturepacks", 0, 0, 6);
+	}
 
 	progress.step("Loading main KEY");
-	indexMandatoryArchive("chitin.key", 10);
+	if (_isEE) {
+		// EE uses two KEYs under data/, no chitin.key at the root
+		indexMandatoryArchive("data/nwn_base.key"  , 10);
+		indexMandatoryArchive("data/nwn_retail.key", 11);
+	} else {
+		indexMandatoryArchive("chitin.key", 10);
+	}
 
 	progress.step("Loading expansions and patch KEYs");
 
 	// Base game patch
-	indexOptionalArchive("patch.key", 11);
+	indexOptionalArchive("patch.key", 12);
 
 	// Expansion 1: Shadows of Undrentide (SoU)
 	_hasXP1 = ResMan.hasArchive("xp1.key");
-	indexOptionalArchive("xp1.key"     , 12);
-	indexOptionalArchive("xp1patch.key", 13);
+	indexOptionalArchive("xp1.key"     , 13);
+	indexOptionalArchive("xp1patch.key", 14);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
 	_hasXP2 = ResMan.hasArchive("xp2.key");
-	indexOptionalArchive("xp2.key"     , 14);
-	indexOptionalArchive("xp2patch.key", 15);
+	indexOptionalArchive("xp2.key"     , 15);
+	indexOptionalArchive("xp2patch.key", 16);
 
 	// Expansion 3: Kingmaker (resources also included in the final 1.69 patch)
 	_hasXP3 = ResMan.hasArchive("xp3.key");
-	indexOptionalArchive("xp3.key"     , 16);
-	indexOptionalArchive("xp3patch.key", 17);
+	indexOptionalArchive("xp3.key"     , 17);
+	indexOptionalArchive("xp3patch.key", 18);
 
 	progress.step("Loading GUI textures");
-	indexMandatoryArchive("gui_32bit.erf", 50);
-	indexOptionalArchive ("xp1_gui.erf"  , 51);
-	indexOptionalArchive ("xp2_gui.erf"  , 52);
+	if (_isEE) {
+		// EE ships GUI textures inside aurora_gui.bif (indexed via the data/ dir),
+		// so there is no separate gui_32bit.erf to load.
+	} else {
+		indexMandatoryArchive("gui_32bit.erf", 50);
+		indexOptionalArchive ("xp1_gui.erf"  , 51);
+		indexOptionalArchive ("xp2_gui.erf"  , 52);
+	}
 
 	progress.step("Indexing extra sound resources");
-	indexMandatoryDirectory("ambient"   , 0, 0, 100);
+	if (_isEE)
+		indexOptionalDirectory("ambient", 0, 0, 100);
+	else
+		indexMandatoryDirectory("ambient", 0, 0, 100);
 	progress.step("Indexing extra music resources");
-	indexMandatoryDirectory("music"     , 0, 0, 101);
+	// EE uses "data/mus" and "data/mov" rather than root-level "music"/"movies"
+	indexMandatoryDirectory(_isEE ? "data/mus" : "music" , 0, 0, 101);
 	progress.step("Indexing extra movie resources");
-	indexMandatoryDirectory("movies"    , 0, 0, 102);
+	indexMandatoryDirectory(_isEE ? "data/mov" : "movies", 0, 0, 102);
 	progress.step("Indexing extra image resources");
 	indexOptionalDirectory ("portraits" , 0, 0, 103);
 	progress.step("Indexing extra talktables");
@@ -269,6 +331,14 @@ void NWNEngine::initResources(LoadProgress &progress) {
 
 	if (EventMan.quitRequested())
 		return;
+
+	if (_isEE) {
+		// EE's dialog.tlk is not inside any KEY/BIF; index the per-language
+		// "lang/<code>/data" directory so ResMan can resolve "dialog.tlk".
+		const Common::UString langCode = getEELanguageCode(_language);
+		if (!langCode.empty())
+			indexMandatoryDirectory("lang/" + langCode + "/data", 0, 0, 19);
+	}
 
 	progress.step("Loading main talk table");
 	TalkMan.addTable("dialog", "dialogf", false, 0);

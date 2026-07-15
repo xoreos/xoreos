@@ -131,11 +131,35 @@ public:
 
 };
 
+class EngineProbeEE : public EngineProbe {
+public:
+	EngineProbeEE() {}
+	~EngineProbeEE() {}
+
+	// Neverwinter Nights: Enhanced Edition uses a different layout: the main KEY
+	// files live under "data/" and the binary does not expose the version string
+	// the original Version detection looks for. Use kPlatformUnknown so we don't
+	// try to probe for an nwmain-style binary; the engine self-detects the EE
+	// layout from the directory in initResources().
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformUnknown; }
+
+	bool probe(const Common::UString &directory, const Common::FileList &UNUSED(rootFiles)) const {
+
+		// rootFiles is non-recursive, so it does not contain files inside "data/".
+		// Check the filesystem directly for the EE KEY files, which uniquely
+		// identify the Enhanced Edition layout.
+		return Common::FilePath::isRegularFile(directory + "/data/nwn_base.key") &&
+		       Common::FilePath::isRegularFile(directory + "/data/nwn_retail.key");
+	}
+
+};
+
 
 void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
 	probes.push_back(new EngineProbeWindows);
 	probes.push_back(new EngineProbeMac);
 	probes.push_back(new EngineProbeLinux);
+	probes.push_back(new EngineProbeEE);
 	probes.push_back(new EngineProbeFallback);
 }
 
