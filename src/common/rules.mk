@@ -88,6 +88,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/serializationstream.h \
     src/common/string.h \
     src/common/lzx.h \
+    src/common/profiling.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -143,6 +144,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/serializationstream.cpp \
     src/common/string.cpp \
     src/common/lzx.cpp \
+    src/common/profiling.cpp \
     $(EMPTY)
 
 src_common_libcommon_la_LIBADD = \
