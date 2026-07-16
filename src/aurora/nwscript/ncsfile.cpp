@@ -29,6 +29,9 @@
  */
 
 #include <cassert>
+#include <cstdio>
+#include <memory>
+#include <vector>
 
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -37,6 +40,7 @@
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/debug.h"
+#include "src/common/profiling.h"
 
 #include "src/aurora/resman.h"
 
@@ -191,6 +195,49 @@ void NCSStack::print() const {
 #define OPCODE(x) { &NCSFile::x, #x }
 #define OPCODE0() { 0, "" }
 
+namespace {
+
+// Maximum opcode byte handled by the dispatch table. One entry per opcode
+// byte (0x00..kNCSFileOpCodeCount - 1); entries above this are illegal. Kept
+// in sync with the table built in NCSFile::setupOpcodes().
+const size_t kNCSFileOpCodeCount = 0x3A;
+
+// Per-opcode profiling counters, named "nwscript.o_<index>" (zero-padded
+// decimal keeps things simple and matches what we use elsewhere). Initialized
+// on first use so the registry always has them, even if no NCS is ever run.
+// Note: ProfileCounter is non-copyable (its atomic<uint64_t> can't be copied
+// or moved), so the vector holds unique_ptrs to keep the container itself
+// movable while the inner objects stay in stable heap locations.
+std::vector<std::unique_ptr<Common::ProfileCounter>> &getOpcodeCounters() {
+	static std::vector<std::unique_ptr<Common::ProfileCounter>> counters = []() {
+		std::vector<std::unique_ptr<Common::ProfileCounter>> v;
+		v.reserve(kNCSFileOpCodeCount);
+		for (size_t i = 0; i < kNCSFileOpCodeCount; ++i) {
+			char name[32];
+			std::snprintf(name, sizeof(name), "nwscript.o_%02zu", i);
+			auto c = std::make_unique<Common::ProfileCounter>(name);
+			Common::ProfilingManager::registerCounter(*c);
+			v.push_back(std::move(c));
+		}
+		return v;
+	}();
+	return counters;
+}
+
+// Single counter for opcode bytes that fall inside a slot but whose function
+// pointer is null (i.e. OPCODE0() / unimplemented). Bucketed separately so
+// the dump makes the gap visible.
+Common::ProfileCounter &getUnimplementedCounter() {
+	static std::unique_ptr<Common::ProfileCounter> counter = []() {
+		auto c = std::make_unique<Common::ProfileCounter>("nwscript.UNIMPLEMENTED");
+		Common::ProfilingManager::registerCounter(*c);
+		return c;
+	}();
+	return *counter;
+}
+
+} // end anonymous namespace
+
 void NCSFile::setupOpcodes() {
 	static const Opcode opcodes[] = {
 		// 0x00
@@ -273,6 +320,7 @@ void NCSFile::setupOpcodes() {
 }
 
 #undef OPCODE
+#undef OPCODE0
 
 NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _script(ncs) {
 	assert(_script);
@@ -428,6 +476,15 @@ bool NCSFile::executeStep() {
 		type   = _script->readByte();
 	} catch (...) {
 		return false;
+	}
+
+	if (Common::ProfilingManager::enabled()) {
+		if (opcode < _opcodeListSize) {
+			if (_opcodes[opcode].proc)
+				getOpcodeCounters()[opcode]->inc();
+			else
+				getUnimplementedCounter().inc();
+		}
 	}
 
 	if ((opcode >= _opcodeListSize) || (!_opcodes[opcode].proc))

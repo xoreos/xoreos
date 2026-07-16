@@ -25,6 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/debug.h"
+#include "src/common/profiling.h"
 
 #include "src/aurora/nwscript/functionman.h"
 
@@ -34,12 +35,19 @@ namespace Aurora {
 
 namespace NWScript {
 
+// Coverage sets for which engine/script functions are invoked at runtime.
+// All NCS scripts go through FunctionManager::call(), so these see everything.
+static Common::CoverageSet g_calledFunctions("nwscript.script_functions");
+static Common::CoverageSet g_missingFunctions("nwscript.MISSING_FUNCTIONS");
+
 FunctionManager::FunctionEntry::FunctionEntry(const Common::UString &name) :
 	empty(true), ctx(name) {
 }
 
 
 FunctionManager::FunctionManager() {
+	Common::ProfilingManager::registerCoverage(g_calledFunctions);
+	Common::ProfilingManager::registerCoverage(g_missingFunctions);
 }
 
 FunctionManager::~FunctionManager() {
@@ -85,6 +93,13 @@ FunctionContext FunctionManager::createContext(const Common::UString &function) 
 }
 
 void FunctionManager::call(const Common::UString &function, FunctionContext &ctx) const {
+	if (Common::ProfilingManager::enabled()) {
+		const std::string &name = function.toString();
+		g_calledFunctions.add(name);
+		if (!hasFunction(function))
+			g_missingFunctions.add(name);
+	}
+
 	debugCN(Common::kDebugEngineScripts, 5, "%s %s(%s)", formatType(ctx.getReturn().getType()).c_str(),
 	        ctx.getName().c_str(), formatParams(ctx).c_str());
 
@@ -103,6 +118,13 @@ FunctionContext FunctionManager::createContext(uint32_t function) const {
 }
 
 void FunctionManager::call(uint32_t function, FunctionContext &ctx) const {
+	if (Common::ProfilingManager::enabled()) {
+		const std::string &name = ctx.getName().toString();
+		g_calledFunctions.add(name);
+		if (!hasFunction(function))
+			g_missingFunctions.add(name);
+	}
+
 	debugCN(Common::kDebugEngineScripts, 5, "%s %s(%s)", formatType(ctx.getReturn().getType()).c_str(),
 	        ctx.getName().c_str(), formatParams(ctx).c_str());
 
@@ -129,6 +151,15 @@ const FunctionManager::FunctionEntry &FunctionManager::find(uint32_t function) c
 		throw Common::Exception("No such NWScript function %d", function);
 
 	return _functionArray[function];
+}
+
+bool FunctionManager::hasFunction(const Common::UString &function) const {
+	FunctionMap::const_iterator f = _functionMap.find(function);
+	return (f != _functionMap.end()) && !f->second.empty;
+}
+
+bool FunctionManager::hasFunction(uint32_t function) const {
+	return (function < _functionArray.size()) && !_functionArray[function].empty;
 }
 
 } // End of namespace NWScript

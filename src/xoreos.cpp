@@ -27,7 +27,10 @@
 #include <cassert>
 #include <climits>
 #include <cstdio>
+#include <csignal>
+#include <cstdlib>
 
+#include <string>
 #include <vector>
 
 #include "src/cline.h"
@@ -41,6 +44,7 @@
 #include "src/common/threads.h"
 #include "src/common/debugman.h"
 #include "src/common/configman.h"
+#include "src/common/profiling.h"
 #include "src/common/random.h"
 #ifdef ENABLE_XML
 #include "src/common/xml.h"
@@ -94,6 +98,16 @@ static void listDebug();
 
 static bool configFileIsBroken = false;
 
+// Dump the in-process profiling/counters to the configured JSON file. Safe
+// to call more than once (the manager overwrites atomically).
+static void flushProfile() {
+	if (!Common::ProfilingManager::enabled())
+		return;
+
+	const std::string path = ConfigMan.getString("profiledump", "xoreos.profile.json").toString();
+	Common::ProfilingManager::flush(path);
+}
+
 int main(int argc, char **argv) {
 	initPlatform();
 	initConfig();
@@ -112,6 +126,15 @@ int main(int argc, char **argv) {
 		Common::exceptionDispatcherError();
 
 		return 1;
+	}
+
+	// Activate profiling after CLI parsing so we only pay the cost when
+	// requested. Register atexit + a SIGINT handler so the dump happens on
+	// graceful exit *and* when the user aborts with Ctrl-C.
+	if (ConfigMan.getBool("profile", false)) {
+		Common::ProfilingManager::setEnabled(true);
+		std::atexit(flushProfile);
+		std::signal(SIGINT, [](int) { flushProfile(); std::exit(130); });
 	}
 
 	// Check the requested target
