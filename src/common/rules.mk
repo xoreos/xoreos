@@ -46,6 +46,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/blowfish.h \
     src/common/deflate.h \
     src/common/error.h \
+    src/common/assertion.h \
     src/common/util.h \
     src/common/strutil.h \
     src/common/encoding.h \
