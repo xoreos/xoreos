@@ -276,6 +276,9 @@ static void initConfig() {
 
 	ConfigMan.setBool(Common::kConfigRealmDefault, "skipvideos", false);
 
+	ConfigMan.setBool(Common::kConfigRealmDefault, "profile", false);
+	ConfigMan.setString(Common::kConfigRealmDefault, "profiledump", "xoreos.profile.json");
+
 	ConfigMan.setBool(Common::kConfigRealmDefault, "saveconf", true);
 
 	// Populate the new config with the defaults

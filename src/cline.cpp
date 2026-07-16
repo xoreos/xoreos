@@ -44,6 +44,8 @@ static void displayUsage(const Common::UString &name) {
 	std::printf("  -hSIZE  --height=SIZE       Set the window's height to SIZE.\n");
 	std::printf("  -fBOOL  --fullscreen=BOOL   Switch fullscreen on/off.\n");
 	std::printf("  -kBOOL  --skipvideos=BOOL   Disable videos on/off.\n");
+	std::printf("          --profile=BOOL      Enable coverage/profiling instrumentation on/off.\n");
+	std::printf("          --profile-dump=FILE Dump profile data to FILE on shutdown.\n");
 	std::printf("  -vVOL   --volume=VOL        Set global volume to VOL.\n");
 	std::printf("  -mVOL   --volume_music=VOL  Set music volume to VOL.\n");
 	std::printf("  -sVOL   --volume_sfx=VOL    Set SFX volume to VOL.\n");
