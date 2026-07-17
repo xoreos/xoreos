@@ -129,12 +129,22 @@ int main(int argc, char **argv) {
 	}
 
 	// Activate profiling after CLI parsing so we only pay the cost when
-	// requested. Register atexit + a SIGINT handler so the dump happens on
-	// graceful exit *and* when the user aborts with Ctrl-C.
+	// requested. Register atexit + signal handlers so the dump happens on
+	// graceful exit, Ctrl-C, and crashes (SIGSEGV/SIGABRT/SIGFPE) — without
+	// the crash handlers, a fatal signal would skip atexit and leave us
+	// blind on the very bugs profiling is meant to debug.
 	if (ConfigMan.getBool("profile", false)) {
 		Common::ProfilingManager::setEnabled(true);
 		std::atexit(flushProfile);
 		std::signal(SIGINT, [](int) { flushProfile(); std::exit(130); });
+		auto crashHandler = [](int sig) {
+			flushProfile();
+			std::signal(sig, SIG_DFL);
+			std::raise(sig);
+		};
+		std::signal(SIGSEGV, crashHandler);
+		std::signal(SIGABRT, crashHandler);
+		std::signal(SIGFPE,  crashHandler);
 	}
 
 	// Check the requested target

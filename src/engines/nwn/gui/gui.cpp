@@ -27,6 +27,7 @@
 #include "src/common/endianness.h"
 #include "src/common/error.h"
 #include "src/common/util.h"
+#include "src/common/profiling.h"
 
 #include "src/aurora/talkman.h"
 #include "src/aurora/gff3file.h"
@@ -48,6 +49,15 @@
 #include "src/engines/nwn/gui/widgets/slider.h"
 
 #include "src/engines/nwn/gui/gui.h"
+
+// Coverage set tracking which GUI widget types are encountered at create.
+// Captures both known NWN widget types and any EE-specific ones we don't
+// have an enum entry for.
+static Common::CoverageSet g_guiWidgetTypes("gui.widget_types");
+static bool _g_guiWidgetTypesRegistered = []{
+	Common::ProfilingManager::registerCoverage(g_guiWidgetTypes);
+	return true;
+}();
 
 namespace Engines {
 
@@ -118,6 +128,12 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 }
 
 void GUI::createWidget(WidgetContext &ctx) {
+	if (Common::ProfilingManager::enabled()) {
+		char buf[32];
+		std::snprintf(buf, sizeof(buf), "WidgetType.%d", (int) ctx.type);
+		g_guiWidgetTypes.add(buf);
+	}
+
 	// ...BioWare...
 	fixWidgetType(ctx.tag, ctx.type);
 
