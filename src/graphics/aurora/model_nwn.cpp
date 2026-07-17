@@ -43,6 +43,7 @@
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/streamtokenizer.h"
+#include "src/common/profiling.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
@@ -57,6 +58,14 @@
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
+
+// Coverage set tracking which MDL node types are encountered at load. Lets
+// us spot EE-only node types when comparing runs against the 1.69 corpus.
+static Common::CoverageSet g_mdlNodeTypes("model_nwn.node_types");
+static bool _g_mdlNodeTypesRegistered = []{
+	Common::ProfilingManager::registerCoverage(g_mdlNodeTypes);
+	return true;
+}();
 
 using Common::kDebugGraphics;
 
@@ -1089,6 +1098,9 @@ ModelNode_NWN_ASCII::~ModelNode_NWN_ASCII() {
 void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
                                const Common::UString &type, const Common::UString &name) {
 
+	if (Common::ProfilingManager::enabled())
+		g_mdlNodeTypes.add(type.toString());
+
 	bool end      = false;
 	bool skipNode = false;
 
@@ -1377,6 +1389,15 @@ struct FaceVertHash {
 void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
 		return;
+
+	// A node carrying mesh data but of an unknown type (e.g. an Enhanced
+	// Edition-specific node) never allocated _mesh; skip it instead of
+	// dereferencing a null pointer. This is a known EE-soft-skip path;
+	// Is_True isn't used here because the null is expected, not a bug.
+	if (!_mesh) {
+		warning("ModelNode_NWN_ASCII::processMesh(): Mesh data on a non-mesh node, skipping");
+		return;
+	}
 
 	_render = _mesh->render;
 	_mesh->data = new MeshData();

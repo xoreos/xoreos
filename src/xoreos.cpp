@@ -27,7 +27,10 @@
 #include <cassert>
 #include <climits>
 #include <cstdio>
+#include <csignal>
+#include <cstdlib>
 
+#include <string>
 #include <vector>
 
 #include "src/cline.h"
@@ -41,6 +44,7 @@
 #include "src/common/threads.h"
 #include "src/common/debugman.h"
 #include "src/common/configman.h"
+#include "src/common/profiling.h"
 #include "src/common/random.h"
 #ifdef ENABLE_XML
 #include "src/common/xml.h"
@@ -94,6 +98,16 @@ static void listDebug();
 
 static bool configFileIsBroken = false;
 
+// Dump the in-process profiling/counters to the configured JSON file. Safe
+// to call more than once (the manager overwrites atomically).
+static void flushProfile() {
+	if (!Common::ProfilingManager::enabled())
+		return;
+
+	const std::string path = ConfigMan.getString("profiledump", "xoreos.profile.json").toString();
+	Common::ProfilingManager::flush(path);
+}
+
 int main(int argc, char **argv) {
 	initPlatform();
 	initConfig();
@@ -112,6 +126,25 @@ int main(int argc, char **argv) {
 		Common::exceptionDispatcherError();
 
 		return 1;
+	}
+
+	// Activate profiling after CLI parsing so we only pay the cost when
+	// requested. Register atexit + signal handlers so the dump happens on
+	// graceful exit, Ctrl-C, and crashes (SIGSEGV/SIGABRT/SIGFPE) — without
+	// the crash handlers, a fatal signal would skip atexit and leave us
+	// blind on the very bugs profiling is meant to debug.
+	if (ConfigMan.getBool("profile", false)) {
+		Common::ProfilingManager::setEnabled(true);
+		std::atexit(flushProfile);
+		std::signal(SIGINT, [](int) { flushProfile(); std::exit(130); });
+		auto crashHandler = [](int sig) {
+			flushProfile();
+			std::signal(sig, SIG_DFL);
+			std::raise(sig);
+		};
+		std::signal(SIGSEGV, crashHandler);
+		std::signal(SIGABRT, crashHandler);
+		std::signal(SIGFPE,  crashHandler);
 	}
 
 	// Check the requested target
@@ -275,6 +308,9 @@ static void initConfig() {
 	ConfigMan.setBool(Common::kConfigRealmDefault, "showfps", false);
 
 	ConfigMan.setBool(Common::kConfigRealmDefault, "skipvideos", false);
+
+	ConfigMan.setBool(Common::kConfigRealmDefault, "profile", false);
+	ConfigMan.setString(Common::kConfigRealmDefault, "profiledump", "xoreos.profile.json");
 
 	ConfigMan.setBool(Common::kConfigRealmDefault, "saveconf", true);
 

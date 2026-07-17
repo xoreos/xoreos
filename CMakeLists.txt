@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5...4.4)
 
 project(xoreos CXX)
 set(xoreos_VERSION 0.0.6)

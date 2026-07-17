@@ -61,6 +61,11 @@ enum DebugChannel {
 
 	kDebugActionScript, ///< "GActionScript", actionscript interpreter
 
+	kDebugNWScriptVM, ///< "NWScriptVM", NWScript bytecode VM internals.
+	kDebugNWNMDL    , ///< "NWNMDL", NWN model (MDL/MDLX) loader.
+	kDebugNWNGUI    , ///< "NWNGUI", NWN GUI/widget loader.
+	kDebugCoverDump , ///< "CoverDump", coverage/profiling instrumentation.
+
 	kDebugChannelCount, ///< Total number of debug channels.
 	kDebugChannelAll    ///< Special value to refer to all debug channel.
 };

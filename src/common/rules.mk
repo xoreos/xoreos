@@ -46,6 +46,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/blowfish.h \
     src/common/deflate.h \
     src/common/error.h \
+    src/common/assertion.h \
     src/common/util.h \
     src/common/strutil.h \
     src/common/encoding.h \
@@ -88,6 +89,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/serializationstream.h \
     src/common/string.h \
     src/common/lzx.h \
+    src/common/profiling.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -143,6 +145,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/serializationstream.cpp \
     src/common/string.cpp \
     src/common/lzx.cpp \
+    src/common/profiling.cpp \
     $(EMPTY)
 
 src_common_libcommon_la_LIBADD = \

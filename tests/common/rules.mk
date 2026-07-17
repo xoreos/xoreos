@@ -250,3 +250,8 @@ check_PROGRAMS                   += tests/common/test_string
 tests_common_test_string_SOURCES  = tests/common/string.cpp
 tests_common_test_string_LDADD    = $(common_LIBS)
 tests_common_test_string_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                  += tests/common/test_profiling
+tests_common_test_profiling_SOURCES  = tests/common/profiling.cpp
+tests_common_test_profiling_LDADD    = $(common_LIBS)
+tests_common_test_profiling_CXXFLAGS = $(test_CXXFLAGS)

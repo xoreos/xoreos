@@ -57,6 +57,11 @@ public:
 	FunctionContext createContext(uint32_t function) const;
 	void call(uint32_t function, FunctionContext &ctx) const;
 
+	/** Does the named function exist? */
+	bool hasFunction(const Common::UString &function) const;
+	/** Does the function with this numeric ID exist? */
+	bool hasFunction(uint32_t function) const;
+
 private:
 	struct FunctionEntry {
 		bool empty;
