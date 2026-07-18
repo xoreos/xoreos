@@ -34,8 +34,11 @@
 
 #include "src/graphics/aurora/cursorman.h"
 
+#include "src/common/util.h"
+
 #include "src/engines/aurora/gui.h"
 #include "src/engines/aurora/widget.h"
+#include "src/aurora/widgetnameresolver.h"
 #include "src/engines/aurora/console.h"
 
 /** Time between clicks to still be considered a double-click. */
@@ -43,10 +46,17 @@ static const uint32_t kDoubleClickTime = 500;
 
 namespace Engines {
 
+LoadMode GUI::sDefaultLoadMode = kStrict;
+std::unique_ptr<Aurora::WidgetNameResolver> GUI::sDefaultNameResolver;
+
 GUI::GUI(Console *console) : _console(console),
 	_currentWidget(0), _startCode(kStartCodeNone), _returnCode(kReturnCodeNone),
-	_sub(0), _x(0.0f), _y(0.0f), _z(0.0f) {
+	_sub(0), _loadMode(sDefaultLoadMode), _nameResolver(sDefaultNameResolver.get()),
+	_x(0.0f), _y(0.0f), _z(0.0f) {
+}
 
+void GUI::setDefaultNameResolver(Aurora::WidgetNameResolver *resolver) {
+	sDefaultNameResolver.reset(resolver);
 }
 
 GUI::~GUI() {
@@ -316,11 +326,25 @@ bool GUI::hasWidget(const Common::UString &tag) const {
 }
 
 Widget *GUI::getWidget(const Common::UString &tag, bool vital) {
-	// Look up the widget in the map
-	WidgetMap::iterator widget = _widgetMap.find(tag);
+	return findWidget(tag, vital);
+}
+
+const Widget *GUI::getWidget(const Common::UString &tag, bool vital) const {
+	return findWidget(tag, vital);
+}
+
+Widget *GUI::findWidget(const Common::UString &tag, bool vital) {
+	const Common::UString resolvedTag = _nameResolver ? _nameResolver->resolve(tag) : tag;
+	WidgetMap::iterator widget = _widgetMap.find(resolvedTag);
 	if (widget == _widgetMap.end()) {
-		if (vital)
+		if (vital) {
+			if (_loadMode == kLenient) {
+				warning("Vital widget \"%s\" missing (lenient mode; resolver=%s)",
+				        tag.c_str(), _nameResolver ? "set" : "none");
+				return 0;
+			}
 			throw Common::Exception("Vital widget \"%s\" doesn't exist", tag.c_str());
+		}
 
 		return 0;
 	}
@@ -328,12 +352,18 @@ Widget *GUI::getWidget(const Common::UString &tag, bool vital) {
 	return widget->second;
 }
 
-const Widget *GUI::getWidget(const Common::UString &tag, bool vital) const {
-	// Look up the widget in the map
-	WidgetMap::const_iterator widget = _widgetMap.find(tag);
+const Widget *GUI::findWidget(const Common::UString &tag, bool vital) const {
+	const Common::UString resolvedTag = _nameResolver ? _nameResolver->resolve(tag) : tag;
+	WidgetMap::const_iterator widget = _widgetMap.find(resolvedTag);
 	if (widget == _widgetMap.end()) {
-		if (vital)
+		if (vital) {
+			if (_loadMode == kLenient) {
+				warning("Vital widget \"%s\" missing (lenient mode; resolver=%s)",
+				        tag.c_str(), _nameResolver ? "set" : "none");
+				return 0;
+			}
 			throw Common::Exception("Vital widget \"%s\" doesn't exist", tag.c_str());
+		}
 
 		return 0;
 	}

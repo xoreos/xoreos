@@ -46,8 +46,10 @@
 #include "src/engines/aurora/tokenman.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
+#include "src/engines/aurora/gui.h"
 
 #include "src/engines/nwn/nwn.h"
+#include "src/engines/nwn/gui/nwnee_resolver.h"
 #include "src/engines/nwn/version.h"
 #include "src/engines/nwn/modelloader.h"
 #include "src/engines/nwn/console.h"
@@ -248,6 +250,15 @@ void NWNEngine::initResources(LoadProgress &progress) {
 	// the "modules"/"hak"/"texturepacks"/"nwm"/"ambient" root directories that
 	// the original NWN shipped with, so those are made optional below.
 	_isEE = Common::FilePath::isRegularFile(_target + "/data/nwn_base.key");
+
+	// EE differs structurally from original NWN (obj_Parent conventions, widget
+	// tag renames). Make every GUI load + lookup lenient by default so a
+	// missing/mismatched widget no longer aborts the engine before we reach
+	// module/area rendering. Original NWN keeps strict behavior.
+	if (_isEE) {
+		::Engines::GUI::setDefaultLoadMode(::Engines::kLenient);
+		::Engines::GUI::setDefaultNameResolver(new Engines::NWN::NWNEEWidgetNameResolver);
+	}
 
 	progress.step("Setting base directory");
 	ResMan.registerDataBase(_target);

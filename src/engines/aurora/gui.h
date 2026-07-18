@@ -27,15 +27,24 @@
 
 #include <list>
 #include <map>
+#include <memory>
 
 #include "src/common/ustring.h"
 
 #include "src/events/types.h"
 
+#include "src/aurora/widgetnameresolver.h"
+
 namespace Engines {
 
 class Widget;
 class Console;
+
+/** How strictly a GUI checks structural invariants when loading. */
+enum LoadMode {
+	kStrict  = 0, ///< Original NWN: throw on Obj_Parent mismatch, vital widget missing
+	kLenient = 1  ///< Variant builds (e.g. NWN:EE): warn + return null instead of throw
+};
 
 /** A GUI. */
 class GUI {
@@ -69,6 +78,26 @@ public:
 	virtual Common::UString getName() const;
 
 
+	/** Set the per-instance load mode. Affects this GUI's load() and
+	 *  getWidget() behavior. */
+	void setLoadMode(LoadMode mode) { _loadMode = mode; }
+	LoadMode getLoadMode() const { return _loadMode; }
+
+	/** Set the per-instance widget name resolver (non-owning; the
+	 *  instance points at an externally-owned resolver). Pass nullptr
+	 *  to clear. */
+	void setNameResolver(Aurora::WidgetNameResolver *resolver) { _nameResolver = resolver; }
+	Aurora::WidgetNameResolver *getNameResolver() const { return _nameResolver; }
+
+	/** Set the global default load mode for newly-created GUI instances. */
+	static void setDefaultLoadMode(LoadMode mode) { sDefaultLoadMode = mode; }
+	static LoadMode getDefaultLoadMode()             { return sDefaultLoadMode; }
+
+	/** Set the global default name resolver (takes ownership; readable by
+	 *  newly-created GUI instances via raw pointer). Pass nullptr to
+	 *  clear. */
+	static void setDefaultNameResolver(Aurora::WidgetNameResolver *resolver);
+
 protected:
 	Console *_console;
 
@@ -99,6 +128,10 @@ protected:
 	Widget *getWidget(const Common::UString &tag, bool vital = false);
 	/** Return a widget in the GUI. */
 	const Widget *getWidget(const Common::UString &tag, bool vital = false) const;
+
+	/** Look up a widget in the map, honoring the resolver. */
+	Widget *findWidget(const Common::UString &tag, bool vital);
+	const Widget *findWidget(const Common::UString &tag, bool vital) const;
 
 	/** Put these widgets together into a group. */
 	void declareGroup(const std::list<Widget *> &group);
@@ -144,6 +177,11 @@ private:
 
 	WidgetList _widgets;   ///< All widgets in the GUI.
 	WidgetMap  _widgetMap; ///< All widgets in the GUI, index by their tag.
+
+	LoadMode _loadMode;                                              ///< Per-instance load mode.
+	Aurora::WidgetNameResolver *_nameResolver;                        ///< Per-instance (non-owning) name resolver.
+	static LoadMode sDefaultLoadMode;                                ///< Default load mode for new instances.
+	static std::unique_ptr<Aurora::WidgetNameResolver> sDefaultNameResolver; ///< Default name resolver for new instances (owned).
 
 	float _x; ///< The GUI X position.
 	float _y; ///< The GUI Y position.

@@ -108,8 +108,19 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 	addWidget(ctx.widget);
 
 	if (ctx.parent) {
-		if (ctx.strct->getString("Obj_Parent") != ctx.parent->getTag())
-			throw Common::Exception("Parent's tag != Obj_Parent");
+		// Check that the widget's declared Obj_Parent matches the live parent.
+		// In kStrict mode (original NWN) this is a hard integrity check; in
+		// kLenient mode (NWN:EE and other variants) it is logged but the
+		// actual child-to-parent attachment still uses the live parent, so
+		// the tree structure remains correct.
+		const Common::UString declaredParent = ctx.strct->getString("Obj_Parent");
+		if (declaredParent != ctx.parent->getTag()) {
+			if (getLoadMode() == kLenient)
+				warning("GUI::loadWidget(): Parent tag mismatch (lenient): widget \"%s\" declared parent \"%s\" but loaded under \"%s\"",
+				        ctx.tag.c_str(), declaredParent.c_str(), ctx.parent->getTag().c_str());
+			else
+				throw Common::Exception("Parent's tag != Obj_Parent");
+		}
 
 		parent->addChild(*ctx.widget);
 	} else {

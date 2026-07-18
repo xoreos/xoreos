@@ -23,6 +23,8 @@
  */
 #include "src/aurora/talkman.h"
 
+#include "src/common/util.h"
+
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/creature.h"
 
@@ -39,31 +41,54 @@ namespace NWN {
 
 CharRace::CharRace(CharGenChoices &choices, ::Engines::Console *console) : CharGenBase(console) {
 	_choices = &choices;
-	load("cg_race");
+
+	try {
+		load("cg_race");
+	} catch (Common::Exception &e) {
+		warning("CharRace::load(\"cg_race\") failed: %s", e.what());
+		return;
+	}
 
 	// TODO Implement subrace.
-	getWidget("SubRaceButton", true)->setDisabled(true);
+	// NWN:EE renames several of these widgets. The lenient loader will
+	// log a warning + return null instead of throwing, so we use plain
+	// warning() (no abort) to keep the engine moving under EE while
+	// still flagging the unexpected shape to the operator.
+	Widget *subRace = getWidget("SubRaceButton", true);
+	if (!subRace)
+		warning("CharRace: SubRaceButton missing (variant compat) at %s:%d", __FILE__, __LINE__);
+	if (subRace) subRace->setDisabled(true);
 
 	// Init buttons and helpbox.
-	_buttons = std::make_unique<ButtonsGroup>(getEditBox("HelpBox", true));
+	WidgetEditBox *helpBox = getEditBox("HelpBox", true);
+	if (!helpBox) {
+		warning("CharRace: HelpBox missing at %s:%d; UI will be inert", __FILE__, __LINE__);
+		reset();
+		return;
+	}
+	_buttons = std::make_unique<ButtonsGroup>(helpBox);
 
-	uint textID = 251;
-	uint titleID = 1985;
-
-	_buttons->addButton(getButton("DwarfButton", true),
-	                    TalkMan.getString(titleID), TalkMan.getString(textID));
-	_buttons->addButton(getButton("ElfButton", true),
-	                    TalkMan.getString(++titleID), TalkMan.getString(++textID));
-	_buttons->addButton(getButton("GnomeButton", true),
-	                    TalkMan.getString(++titleID), TalkMan.getString(++textID));
-	_buttons->addButton(getButton("HalflingButton", true),
-	                    TalkMan.getString(++titleID), TalkMan.getString(++textID));
-	_buttons->addButton(getButton("HalfElfButton", true),
-	                    TalkMan.getString(++titleID), TalkMan.getString(++textID));
-	_buttons->addButton(getButton("HalfOrcButton", true),
-	                    TalkMan.getString(++titleID), TalkMan.getString(++textID));
-	_buttons->addButton(getButton("HumanButton", true),
-	                    TalkMan.getString(++titleID), TalkMan.getString(++textID));
+	// EE renames many of these buttons. Each lookup is soft-missed in
+	// lenient mode; we filter to the ones that actually resolve, then
+	// continue. Original NWN continues to require every button (strict).
+	struct { const char *tag; uint titleID; uint textID; } raceBtns[] = {
+		{ "DwarfButton",     1985, 251 },
+		{ "ElfButton",       1986, 252 },
+		{ "GnomeButton",     1987, 253 },
+		{ "HalflingButton",  1988, 254 },
+		{ "HalfElfButton",   1989, 255 },
+		{ "HalfOrcButton",   1990, 256 },
+		{ "HumanButton",     1991, 257 },
+	};
+	for (auto &rb : raceBtns) {
+		WidgetButton *btn = getButton(rb.tag, true);
+		if (!btn) {
+			warning("CharRace: %s missing (variant compat) at %s:%d",
+			        rb.tag, __FILE__, __LINE__);
+			continue;
+		}
+		_buttons->addButton(btn, TalkMan.getString(rb.titleID), TalkMan.getString(rb.textID));
+	}
 
 	reset();
 }
