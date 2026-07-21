@@ -389,12 +389,12 @@ void GUIQuad::buildMaterial() {
 		/* Texture is empty; default to simple colour shader. */
 		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/colour.frag", Shader::SHADER_FRAGMENT),
 		                                       "guiquad");
-		_material->setVariableExternal("_colour", &_r);
+		_material->setVariable("_colour", &_r);
 		surface = SurfaceMan.getSurface("defaultSurface");
 	} else {
 		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/texture.frag", Shader::SHADER_FRAGMENT),
 		                                       "guiquad");
-		((Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id")))->handle = _texture;
+		_material->setTexture("sampler_0_id", _texture);
 		surface = SurfaceMan.getSurface("textureSurface");
 	}
 

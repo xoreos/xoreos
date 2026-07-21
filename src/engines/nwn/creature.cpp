@@ -159,6 +159,10 @@ void Creature::hide() {
 		_model->hide();
 }
 
+void Creature::renderImmediate(const glm::mat4 &parentTransform) {
+	_model->renderImmediate(parentTransform);
+}
+
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);

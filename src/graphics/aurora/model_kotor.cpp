@@ -453,8 +453,9 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 
 	_nodeNumber = ctx.mdl->readUint16LE();
 
-	if (_nodeNumber < ctx.names.size())
+	if (_nodeNumber < ctx.names.size()) {
 		_name = ctx.names[_nodeNumber];
+	}
 
 	ctx.mdl->skip(6 + 4); // Unknown + parent pointer
 
@@ -495,15 +496,11 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	Model::readArray(*ctx.mdl, ctx.offModelData + controllerDataOffset,
 	                 controllerDataCount, controllerDataInt);
 
-	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
-	                    controllerKeyCount, controllerDataFloat, controllerDataInt);
-
 	if ((ctx.flags & 0xF400) != 0)
 		throw Common::Exception("Unknown node flags %04X", ctx.flags);
 
 	if (ctx.flags & kNodeFlagHasLight) {
-		// TODO: Light
-		ctx.mdl->skip(0x5C);
+		readLight(ctx);
 	}
 
 	if (ctx.flags & kNodeFlagHasEmitter) {
@@ -543,18 +540,20 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		readSaber(ctx);
 	}
 
-	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
-		ModelNode_KotOR *childNode = new ModelNode_KotOR(*_model);
-		ctx.nodes.push_back(childNode);
-
-		childNode->setParent(this);
-
-		ctx.mdl->seek(ctx.offModelData + *child);
-		childNode->load(ctx);
-	}
+	// Node controllers must be read after the above to ensure applying data correctly.
+	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
+	                    controllerKeyCount, controllerDataFloat, controllerDataInt);
 
 	if (_mesh && _mesh->data) {
-		Common::UString meshName = ctx.mdlName;
+		Common::UString meshName = _name;
+		ModelNode *hnode = this;
+		ModelNode *parent = hnode->getParent();
+		while (parent && (parent != hnode)) {
+			meshName += ".";
+			meshName += parent->getName();
+			hnode = parent;
+			parent = hnode->getParent();
+		}
 		meshName += ".";
 		if (ctx.state->name.size() != 0) {
 			meshName += ctx.state->name;
@@ -562,43 +561,19 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 			meshName += "xoreos.default";
 		}
 		meshName += ".";
-		meshName += _name;
+		meshName += ctx.mdlName;
 
 		if (GfxMan.isRendererExperimental()) {
-			/**
-			 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
-			 * of exactly the same name. This dirty hack will double up on static objects
-			 * without state, but hopefully they're relatively few and it won't impact
-			 * performance too much.
-			 * A future improvement will be to see if an entire model has already been
-			 * loaded and to use that directly: that should prevent models with an empty
-			 * state from being affected by this dirty hack.
-			 */
-			Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
-			if (ctx.state->name.size() == 0) {
-				while (mystery_mesh) {
-					meshName += "_";
-					mystery_mesh = MeshMan.getMesh(meshName);
-				}
-			}
-
-			if (!mystery_mesh) {
-				Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
-				if (checkMesh) {
-					delete _mesh->data->rawMesh;
-					_mesh->data->rawMesh = checkMesh;
-				} else {
-					_mesh->data->rawMesh->setName(meshName);
-					_mesh->data->rawMesh->init();
-					MeshMan.addMesh(_mesh->data->rawMesh);
-				}
-			} else {
+			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+			if (checkMesh) {
 				delete _mesh->data->rawMesh;
-				_mesh->data->rawMesh = mystery_mesh;
+				_mesh->data->rawMesh = checkMesh;
+			} else {
+				_mesh->data->rawMesh->setName(meshName);
+				_mesh->data->rawMesh->init();
+				MeshMan.addMesh(_mesh->data->rawMesh);
 			}
-
-			buildMaterial();
-
+			_dirtyRender = true;
 		} else {
 			/**
 			 * Because meshes need to be unique right now, at least until animation can use
@@ -612,6 +587,20 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 
 			MeshMan.addMesh(_mesh->data->rawMesh);
 		}
+	}
+
+	if (_light) {
+		LightMan.registerLight(_light);
+	}
+
+	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
+		ModelNode_KotOR *childNode = new ModelNode_KotOR(*_model);
+		ctx.nodes.push_back(childNode);
+
+		childNode->setParent(this);
+
+		ctx.mdl->seek(ctx.offModelData + *child);
+		childNode->load(ctx);
 	}
 }
 
@@ -633,6 +622,46 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 			case kControllerTypeOrientation:
 				readOrientationController(columnCount, rowCount, timeIndex, dataIndex, dataFloat, dataInt);
 				break;
+			case kControllerTypeVerticalDisplacement:
+				for (int n = 0; n < columnCount; ++n) {
+					_displacement.push_back(dataFloat[dataIndex + n]);
+				}
+				break;
+		}
+
+		if (type == kControllerTypeRadius) {
+			if (columnCount != 1)
+				throw Common::Exception("Radius controller with %d values", columnCount);
+
+			/**
+			 * Radius can apply to either a light or an emitter. Light will have priority
+			 * here, but there shouldn't be both light and emitter types on the same node.
+			 */
+			if (_light) {
+				// Starting radius
+				if (dataFloat[timeIndex + 0] == 0.0f)
+					_light->radius = dataFloat[dataIndex + 0];
+			}
+		} else if (type == kControllerTypeMultiplier) {
+			if (columnCount != 1)
+				throw Common::Exception("Multiplier controller with %d values", columnCount);
+
+			if (_light) {
+				// Starting multiplier
+				if (dataFloat[timeIndex + 0] == 0.0f) {
+					_light->multiplier = dataFloat[dataIndex + 0];
+				}
+			}
+		} else if (type == kControllerTypeColor) {
+			if (columnCount != 3)
+				throw Common::Exception("Color controller with %d values", columnCount);
+
+			if (_light) {
+				// Starting light value.
+				_light->colour[0] = dataFloat[dataIndex + 0];
+				_light->colour[1] = dataFloat[dataIndex + 1];
+				_light->colour[2] = dataFloat[dataIndex + 2];
+			}
 		}
 	}
 	ctx.mdl->seek(pos);
@@ -745,6 +774,8 @@ void ModelNode_KotOR::readOrientationController(uint8_t columnCount, uint16_t ro
 }
 
 void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
+	_mesh = new Mesh();
+
 	size_t P = ctx.mdl->pos();
 
 	ctx.mdl->skip(8); // Function pointers
@@ -762,31 +793,26 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	float radius = ctx.mdl->readIEEEFloatLE();
+	_mesh->radius = ctx.mdl->readIEEEFloatLE();
 
 	float pointsAverage[3];
 	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
-	_mesh = new Mesh();
+	_mesh->ambient[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->ambient[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->ambient[2] = ctx.mdl->readIEEEFloatLE();
 
 	_mesh->diffuse[0] = ctx.mdl->readIEEEFloatLE();
 	_mesh->diffuse[1] = ctx.mdl->readIEEEFloatLE();
 	_mesh->diffuse[2] = ctx.mdl->readIEEEFloatLE();
 
-	_mesh->ambient[0] = ctx.mdl->readIEEEFloatLE();
-	_mesh->ambient[1] = ctx.mdl->readIEEEFloatLE();
-	_mesh->ambient[2] = ctx.mdl->readIEEEFloatLE();
-
 	_mesh->specular[0] = 0;
 	_mesh->specular[1] = 0;
 	_mesh->specular[2] = 0;
 
-	uint32_t transparencyHint = ctx.mdl->readUint32LE();
-
-	_mesh->hasTransparencyHint = true;
-	_mesh->transparencyHint    = (transparencyHint != 0);
+	_mesh->transparencyHint = ctx.mdl->readUint32LE();
 
 	ctx.textures.clear();
 	ctx.textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
@@ -826,9 +852,11 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	ctx.mdl->skip(2);
 
 	byte unknownFlag1 = ctx.mdl->readByte();
-	_mesh->shadow  = ctx.mdl->readByte() == 1;
+	byte shadow = ctx.mdl->readByte();
+	_mesh->shadow  = shadow == 1;
 	byte unknownFlag2 = ctx.mdl->readByte();
-	_mesh->render  = ctx.mdl->readByte() == 1;
+	byte render = ctx.mdl->readByte();
+	_mesh->render  = render == 1;
 
 	ctx.mdl->skip(10);
 
@@ -1137,6 +1165,49 @@ void ModelNode_KotOR::readEmitter(Model_KotOR::ParserContext &ctx) {
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 
 	ctx.mdl->skip(24); // Unknown
+}
+
+void ModelNode_KotOR::readLight(Model_KotOR::ParserContext &ctx) {
+	_light = new Graphics::LightManager::LightNode();
+
+	/**
+	 * Provide some sensible defaults for the light, which can overridden
+	 * by the root node values (if any) and then controllers in the current
+	 * state (if any).
+	 */
+	_light->colour[0] = 1.0f;
+	_light->colour[1] = 1.0f;
+	_light->colour[2] = 1.0f;
+	_light->multiplier = 1.0f;
+	_light->radius = 7.0f;
+
+	if (ctx.state->name.size() == 0) {
+		// Get the root state node and see if it has a light.
+		ModelNode *node = _model->getNode(_name);
+		if (node) {
+			const auto *rootLight = node->getLight();
+			if (rootLight) {
+				*_light = *rootLight;
+			}
+		}
+	}
+
+	ctx.mdl->skip(4);  // flare radius
+	ctx.mdl->skip(12); // Array unknown
+	ctx.mdl->skip(12); // Array of flare sizes.
+	ctx.mdl->skip(12); // Array of flare positions.
+	ctx.mdl->skip(12); // Array of flare colour shifts.
+	ctx.mdl->skip(12); // Array of flare texture names.
+
+	_light->priority = ctx.mdl->readUint32LE();
+
+	_light->ambient = ctx.mdl->readUint32LE();  // Ambient only flag.
+	ctx.mdl->skip(4);  // Dynamic only flag.
+	ctx.mdl->skip(4);  // Affect dynamic flag.
+	ctx.mdl->skip(4);  // Shadow flag.
+	ctx.mdl->skip(4);  // Generate flare flag.
+
+	_light->fading = ctx.mdl->readUint32LE();
 }
 
 } // End of namespace Aurora

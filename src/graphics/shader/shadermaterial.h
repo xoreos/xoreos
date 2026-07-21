@@ -35,10 +35,11 @@ class ShaderMaterial {
 public:
 	enum {
 		MATERIAL_OPAQUE        = 0x0001,  ///< Render hint; material has no transparency.
-		MATERIAL_TRANSPARENT   = 0x0002,  ///< Material definitely has transparency.
-		MATERIAL_TRANSPARENT_B = 0x0004,  ///< Material definitely has transparency.
-		MATERIAL_DECAL         = 0x0008,  ///< Material is a decal.
-		MATERIAL_CUSTOM_BLEND  = 0x0010,  ///< Different blending is being used, see _blend* variables.
+		MATERIAL_OPAQUE_B      = 0x0002,  ///< Render hint: no transparency, likely a simple wall or gui panel.
+		MATERIAL_TRANSPARENT   = 0x0004,  ///< Material definitely has transparency.
+		MATERIAL_TRANSPARENT_B = 0x0008,  ///< Material definitely has transparency, likely a window.
+		MATERIAL_DECAL         = 0x0010,  ///< Material is a decal.
+		MATERIAL_CUSTOM_BLEND  = 0x0020,  ///< Different blending is being used, see _blend* variables.
 	};
 
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
@@ -62,45 +63,26 @@ public:
 
 	Shader::ShaderVariableType getVariableType(uint32_t index) const;
 
-	void *getVariableData(uint32_t index) const;
-	void *getVariableData(const Common::UString &name) const;
+	const void *getVariableData(uint32_t index) const;
+	const void *getVariableData(const Common::UString &name) const;
 
 	const Common::UString &getVariableName(uint32_t index) const;
 
-	uint32_t getVariableFlags(uint32_t index) const;
-
-	// Do not use this function to set sampler data. Instead, get the the variable data and modify
-	// it directly; the texture unit associated with the texture id might be incorrect otherwise.
-	void setVariableExternal(uint32_t index, void *loc, bool textureUnitRecalc = true);
-	void setVariableExternal(const Common::UString &name, void *loc, bool textureUnitRecalc = true);
-	void setVariableInternal(uint32_t index, bool textureUnitRecalc = true);
-	void setVariableInternal(const Common::UString &name, bool textureUnitRecalc = true);
-
-	void recalcTextureUnits();
-
-	bool isVariableOwned(uint32_t index) const;
-	bool isVariableOwned(const Common::UString &name) const;
+	void setVariable(uint32_t index, const void *loc);
+	void setVariable(const Common::UString &name, const void *loc);
+	void setTexture(const Common::UString &name, Graphics::Aurora::TextureHandle handle);
 
 	void bindProgram(Shader::ShaderProgram *program);
-	void bindProgramNoFade(Shader::ShaderProgram *program);
-	void bindProgram(Shader::ShaderProgram *program, float fade);
-	void bindFade(Shader::ShaderProgram *program, float fade);
+	void bindProgram(Shader::ShaderProgram *program, float alpha);
 
 	void bindGLState();
 	void unbindGLState();
 	void restoreGLState();
 
-	void useIncrement();
-	void useDecrement();
-	uint32_t useCount() const;
-
 private:
-	struct ShaderMaterialVariable {
-		void *data;
-		uint32_t flags;  // Full flags may or may not be required here.
-	};
 
-	std::vector<ShaderMaterialVariable> _variableData;
+	std::vector<const void *> _variableData;
+	std::vector<Shader::ShaderSampler> _samplers;
 	Shader::ShaderObject *_fragShader;
 	uint32_t _flags;
 	GLenum _blendEquationRGB;
@@ -110,13 +92,8 @@ private:
 	GLenum _blendDstRGB;
 	GLenum _blendDstAlpha;
 
+	float _alpha;  ///< Give the material an alpha variable for convenience.
 	Common::UString _name;
-	uint32_t _usageCount;
-
-	uint32_t _alphaIndex;
-
-	void *genMaterialVar(uint32_t index);
-	void delMaterialVar(uint32_t index);
 };
 
 } // End of namespace Shader

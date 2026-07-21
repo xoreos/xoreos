@@ -63,6 +63,12 @@ private:
 	std::map<Common::UString, ShaderMaterial *> _resourceMap;
 
 	std::map<Common::UString, ShaderMaterial *>::iterator delResource(std::map<Common::UString, ShaderMaterial *>::iterator iter);
+
+	float _colourWhite[4];
+	float _colourBlack[4];
+	float _colourBlack75[4];
+	float _colourBlack50[4];
+	float _colourGrey50[4];
 };
 
 } // End of namespace Shader

@@ -192,6 +192,8 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 		_scale[2] = 1.0f;
 	}
 
+	_radius = 7.0f;
+
 	_fileName = name;
 
 	ParserContext ctx(name, texture);
@@ -257,7 +259,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	float radius = ctx.mdl->readIEEEFloatLE();
+	_radius = ctx.mdl->readIEEEFloatLE();
 
 	_animationScale = ctx.mdl->readIEEEFloatLE();
 
@@ -303,7 +305,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 
 		line[0].makeLower();
 
-		if        (line[0] == "newmodel") {
+		if (line[0] == "newmodel") {
 			if (!_name.empty())
 				warning("Model_NWN_ASCII::load(): More than one model definition");
 
@@ -581,8 +583,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 		throw Common::Exception("Unknown model node flags %08X", flags);
 
 	if (flags & kNodeFlagHasLight) {
-		// TODO: Light
-		ctx.mdl->skip(0x5C);
+		readLight(ctx);
 	}
 
 	if (flags & kNodeFlagHasEmitter) {
@@ -634,7 +635,6 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 			node->inheritOrientation(*this);
 	}
 
-
 	for (std::vector<uint32_t>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 
@@ -650,7 +650,6 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 		childNode->load(ctx);
 	}
-
 }
 
 void ModelNode_NWN_Binary::checkDuplicateNode(Model_NWN::ParserContext &ctx, ModelNode_NWN_Binary *newNode) {
@@ -687,6 +686,55 @@ void ModelNode_NWN_Binary::checkDuplicateNode(Model_NWN::ParserContext &ctx, Mod
 	delete oldChildNode;
 }
 
+void ModelNode_NWN_Binary::readLight(Model_NWN::ParserContext &ctx) {
+	_light = new Graphics::LightManager::LightNode();
+
+	/**
+	 * Provide some sensible defaults for the light, which can overridden
+	 * by the root node values (if any) and then controllers in the current
+	 * state (if any).
+	 */
+	_light->colour[0] = 1.0f;
+	_light->colour[1] = 1.0f;
+	_light->colour[2] = 1.0f;
+	_light->multiplier = 1.0f;
+	_light->radius = 7.0f;
+
+	if (ctx.state->name.size() == 0) {
+		// Get the root state node and see if it has a light.
+		ModelNode *node = _model->getNode(_name);
+		if (node) {
+			const auto *rootLight = node->getLight();
+			if (rootLight) {
+				*_light = *rootLight;
+			}
+		}
+	}
+
+	ctx.mdl->skip(4);  // flare radius
+	ctx.mdl->skip(12); // Array unknown
+	ctx.mdl->skip(12); // Array of flare sizes.
+	ctx.mdl->skip(12); // Array of flare positions.
+	ctx.mdl->skip(12); // Array of flare colour shifts.
+	ctx.mdl->skip(12); // Array of flare texture names.
+
+	_light->priority = ctx.mdl->readUint32LE();
+
+	_light->ambient = ctx.mdl->readUint32LE();  // Ambient only flag.
+	ctx.mdl->skip(4);  // Dynamic only flag.
+	ctx.mdl->skip(4);  // Affect dynamic flag.
+	ctx.mdl->skip(4);  // Shadow flag.
+	ctx.mdl->skip(4);  // Generate flare flag.
+
+	_light->fading = ctx.mdl->readUint32LE();
+
+	/**
+	 * Don't register the light yet, because NWN might change the position or
+	 * other parameters first. This is done e.g with tile source lights.
+	 */
+	//LightMan.registerLight(_light);
+}
+
 struct Face {
 	float normal[3];
 
@@ -719,7 +767,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	boundingMax[1] = ctx.mdl->readIEEEFloatLE();
 	boundingMax[2] = ctx.mdl->readIEEEFloatLE();
 
-	float radius = ctx.mdl->readIEEEFloatLE();
+	_mesh->radius = ctx.mdl->readIEEEFloatLE();
 
 	float pointsAverage[3];
 	pointsAverage[0] = ctx.mdl->readIEEEFloatLE();
@@ -744,8 +792,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	_mesh->beaming = ctx.mdl->readUint32LE() == 1;
 	_mesh->render  = ctx.mdl->readUint32LE() == 1;
 
-	_mesh->hasTransparencyHint = true;
-	_mesh->transparencyHint = ctx.mdl->readUint32LE() == 1;
+	_mesh->transparencyHint = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -946,7 +993,29 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	ctx.mdl->seek(endPos);
 
-	Common::UString meshName = ctx.mdlName;
+	/**
+	 * If the mesh is going to be added to the mesh manager, then a name to uniquely
+	 * identify it will be needed. To do that, take into account the model and node
+	 * structure:
+	 *    model->state->node->node->(etc)->mesh
+	 * Actual mesh names could be duplicated, but by incorporating the entire node
+	 * hierarchy, current state, and model name, then this should represent something
+	 * unique for this particular node's mesh.
+	 *
+	 * @TODO: slight optimisation would be to check for this before processing any
+	 * of the above mesh data. If the mesh already exists, just skip past the data
+	 * instead of processing it.
+	 */
+
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
 	meshName += ".";
 	if (ctx.state->name.size() != 0) {
 		meshName += ctx.state->name;
@@ -954,7 +1023,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		meshName += "xoreos.default";
 	}
 	meshName += ".";
-	meshName += _name;
+	meshName += ctx.mdlName;
 
 	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 	if (checkMesh) {
@@ -1064,10 +1133,45 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 				throw Common::Exception("Alpha controller with %d values", columnCount);
 
 			// Starting alpha
-			if (data[timeIndex + 0] == 0.0f)
+			if (data[timeIndex + 0] == 0.0f) {
+				_alpha = data[dataIndex + 0];
 				if (data[dataIndex + 0] == 0.0f)
 					// TODO: Just disabled rendering if alpha == 0.0 for now
 					_render = false;
+			}
+		} else if (type == kControllerTypeRadius) {
+			if (columnCount != 1)
+				throw Common::Exception("Radius controller with %d values", columnCount);
+
+			/**
+			 * Radius can apply to either a light or an emitter. Light will have priority
+			 * here, but there shouldn't be both light and emitter types on the same node.
+			 */
+			if (_light) {
+				// Starting radius
+				if (data[timeIndex + 0] == 0.0f)
+					_light->radius = data[dataIndex + 0];
+			}
+		} else if (type == kControllerTypeMultiplier) {
+			if (columnCount != 1)
+				throw Common::Exception("Multiplier controller with %d values", columnCount);
+
+			if (_light) {
+				// Starting multiplier
+				if (data[timeIndex + 0] == 0.0f) {
+					_light->multiplier = data[dataIndex + 0];
+				}
+			}
+		} else if (type == kControllerTypeColor) {
+			if (columnCount != 3)
+				throw Common::Exception("Color controller with %d values", columnCount);
+
+			if (_light) {
+				// Starting light value.
+				_light->colour[0] = data[dataIndex + 0];
+				_light->colour[1] = data[dataIndex + 1];
+				_light->colour[2] = data[dataIndex + 2];
+			}
 		}
 
 	}
@@ -1099,7 +1203,6 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin")) {
 		_mesh = new ModelNode::Mesh();
-		_mesh->hasTransparencyHint = true;
 		_mesh->render = true;
 		if (type == "danglymesh")
 			_mesh->dangly = new Dangly();
@@ -1125,7 +1228,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 		line[0].makeLower();
 
-		if        (line[0] == "endnode") {
+		if (line[0] == "endnode") {
 			end = true;
 			break;
 		} else if (skipNode) {
@@ -1145,6 +1248,8 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 			readFloats(line, _orientation, 4, 1);
 
 			_orientation[3] = Common::rad2deg(_orientation[3]);
+		} else if (line[0] == "ambient") {
+			readFloats(line, mesh.ambient, 3, 1);
 		} else if (line[0] == "render") {
 			Common::parseString(line[1], _mesh->render);
 		} else if (line[0] == "transparencyhint") {
@@ -1190,16 +1295,6 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	processMesh(mesh);
 
-	Common::UString meshName = ctx.mdlName;
-	meshName += ".";
-	if (ctx.state->name.size() != 0) {
-		meshName += ctx.state->name;
-	} else {
-		meshName += "xoreos.default";
-	}
-	meshName += ".";
-	meshName += _name;
-
 	if (!_mesh) {
 		return;
 	}
@@ -1212,12 +1307,33 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		return;
 	}
 
-	_mesh->data->rawMesh->setName(meshName);
-	_mesh->data->rawMesh->init();
-	if (MeshMan.getMesh(meshName)) {
-		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
 	}
-	MeshMan.addMesh(_mesh->data->rawMesh);
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += ctx.mdlName;
+
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 
 	if (GfxMan.isRendererExperimental())
 		buildMaterial();
@@ -1381,6 +1497,10 @@ void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
 	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
+
+	_mesh->ambient[0] = mesh.ambient[0];
+	_mesh->ambient[1] = mesh.ambient[1];
+	_mesh->ambient[2] = mesh.ambient[2];
 
 	loadTextures(mesh.textures);
 

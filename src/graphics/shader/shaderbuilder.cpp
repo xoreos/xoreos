@@ -78,6 +78,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 	Common::UString v_header, f_header;
 	Common::UString v_body, f_body;
 
+	bool foundNormal0 = false;
 
 	/**
 	 * @todo Declare required inputs here. For vertex shaders this means the camera
@@ -120,6 +121,42 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		           "	vec4 froggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
 	}
 
+	if (_hasLighting) {
+		/**
+		 * Structs are not supported by the introspection code right now, so treat
+		 * lighting as an array of vec4 basic type and index into it appropriately.
+		 * It's not the best solution, but it will have to do until structs are
+		 * better supported.
+		 * struct LightParameters {
+		 *     vec4 colour;
+		 *     vec4 position;
+		 *     vec4 coefficients;
+		 * };
+		 * uniform LightParameters _lights[8];
+		 */
+		f_header += "\n"
+			"uniform vec4 _lights[24];\n"
+			"uniform int _activeLights;\n"
+			"uniform vec3 _ambient;\n";
+
+		/**
+		 * Lights are basically a position, colour, and maybe strength (diffuse.w).
+		 * When calculating lights attaching to a surface however, then surface properties
+		 * need to be taken into account: albedo, specular, etc.
+		 *
+		 * To do this properly, the lighting will be some global variables. Lights are not modelnode
+		 * specific normally, but instead apply to an entire area, and so it makes sense for them to
+		 * be bound appropriately.
+		 * Modelnode data (albedo, specular, etc) will likely be modelnode specific, and iterate
+		 * over all enabled light sources.
+		 *
+		 * It makes most sense at the time of writing to apply lighting to fraggle just before it's
+		 * assigned alpha values and handed over to the output framebuffer. So a lighting function
+		 * might be best used.
+		 */
+	}
+
+
 	int boneCount = 0;
 
 	/**
@@ -141,6 +178,11 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case UNIFORM_F_ALPHA: break;
 		case UNIFORM_F_COLOUR:
 			f_header += "uniform vec4 _colour;\n";
+			break;
+		case UNIFORM_V_TINT:
+			f_header += "uniform vec4 _tintR;\n";
+			f_header += "uniform vec4 _tintG;\n";
+			f_header += "uniform vec4 _tintB;\n";
 			break;
 		default: break;
 		}
@@ -258,8 +300,9 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 				output_desc_string = "varying vec3 normal0;\n";
 				f_desc_string = "varying vec3 normal0;\n";
 			}
-			///< @todo This is always modified by something special.
-			body_desc_string = "normal0 = inputNormal0.xyz;\n";
+			///< @todo This should be modified by the rotation matrix in mo
+			body_desc_string = "normal0 = mat3(mo) * inputNormal0.xyz;\n";
+			foundNormal0 = true;
 			break;
 		case INPUT_NORMAL1:
 			if (isGL3) {
@@ -459,6 +502,15 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		f_header += sampler_descriptor_string;
 	}
 
+	if (!foundNormal0) {
+		/**
+		 * Normal0 wasn't defined as an input, however some later code might be relying on it,
+		 * particularly lighting. The default GL value for a normal was (0,0,1), so it seems
+		 * reasonable to copy that if not otherwise found.
+		 */
+		 f_header += "vec3 normal0 = vec3(0, 0, 1);\n";
+	}
+
 	/**
 	 * Fragment shader sampler uv coordinate mapping.
 	 *
@@ -515,6 +567,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case TEXTURE_LIGHTMAP: f_action_string = "lightmap"; break;
 		case TEXTURE_BUMPMAP: f_action_string = "bumpmap"; break;
 		case FORCE_OPAQUE: f_action_string = "force_opaque"; break;
+		case TINT: f_action_string = "tint"; break;
 		case NOOP: f_action_string = "noop"; break;
 		}
 
@@ -595,6 +648,23 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case FORCE_OPAQUE:
 			f_action_string = "fraggle.a = 1.0f;\n";
 			break;
+		case TINT:
+			/**
+			 * Tinting is based on NWN2 tint maps. It looks like a tint map can provide which
+			 * tint channel(s) are applied, with alpha used to provide additional modulation,
+			 * however the a bit of guesswork shows that an additional 0.25f multiplier is used
+			 * to avoid the tint from overwhelming the base colour.
+			 */
+			if (isGL3) {
+				f_action_string = \
+					"vec4 tinticle = texture(action_tint_sampler, action_tint_coords);\n"
+					"froggle = vec4(tinticle.rgb * tinticle.a * 0.25f, tinticle.a);\n";
+			} else {
+				f_action_string = \
+					"vec4 tinticle = texture2D(action_tint_sampler, action_tint_coords);\n"
+					"froggle = vec4(tinticle.rgb * tinticle.a * 0.25f, tinticle.a);\n";
+			}
+			break;
 		case NOOP:
 			f_action_string = "// noop;\n";
 			break;
@@ -617,12 +687,53 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case BLEND_MULTIPLY:
 			f_blend_string = "fraggle *= froggle;\n";
 			break;
+		case BLEND_TINT:
+			f_blend_string = "fraggle = vec4(mix(mix(mix(fraggle.xyz, _tintR.xyz, froggle.r), _tintG.xyz, froggle.g), _tintB.xyz, froggle.b), fraggle.a);\n";
+			break;
 		case BLEND_IGNORED:
 			break;
 		}
 
 		f_body += f_action_string;
 		f_body += f_blend_string;
+	}
+
+	if (_hasLighting) {
+		/**
+		 * It's worth noting that lights always need a position to work on. This is assumed
+		 * to be position0, and declared as an in to the fragment shader. That's probably
+		 * a safe assumption to make; if it's not, then we'll find out pretty quickly because
+		 * the shader won't compile and the program will crash.
+		 *
+		 * Normals a bit tricker. If a normal vector is supplied by the mesh data, then
+		 * lighting still applies - just without the gradient associated with a normal.
+		 * @todo: check to see if the shader descriptor has normals or not.
+		 *
+		 * d = distance
+		 * Ac = constant
+		 * Al = linear
+		 * Aq = quadratic
+		 * attenuation = 1.0 / (Ac + Al*d + Aq*d*d)
+		 */
+		f_body +=
+			"vec3 laggle = vec3(0.0, 0.0, 0.0);\n"
+			"for (int i = 0; i < _activeLights; ++i) {\n"
+			"    vec4 coeff = _lights[3*i+2];\n"
+			"    vec3 diff = _lights[3*i+1].xyz - position0;\n"
+			"    vec3 direction = normalize(diff);\n"
+			"    float distance = length(diff);\n"
+			"    float grad = max(dot(normal0, direction), 0.0);\n"
+			"    float attenuation = 1.0 / (1.0 + (coeff.x * distance) + (coeff.y * distance * distance));\n"
+			"    vec3 ambient = _lights[3*i+0].xyz * attenuation * (coeff.z + coeff.w * grad);\n"
+			"    laggle += fraggle.xyz * ambient;\n"
+			"}\n"
+			"fraggle = (fraggle * vec4(_ambient, 1.0)) + vec4(laggle, 0.0);\n"
+			"\n";
+		/**
+		 * @todo: the above uses _ambient as object ambient, but there might need to be world
+		 * ambient as well. Unsure if this should be included in _ambient directly, or if it
+		 * should be (yet another) uniform vec3 and multiplied against _ambient here.
+		 */
 	}
 
 	/**
@@ -660,6 +771,7 @@ void ShaderDescriptor::clear() {
 	_uniformDescriptors.clear();
 	_connectors.clear();
 	_passes.clear();
+	_hasLighting = false;
 }
 
 void ShaderDescriptor::genName(Common::UString &n_string) {
@@ -764,6 +876,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
 		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;
 		case FORCE_OPAQUE: n_string += "force_opaque"; break;
+		case TINT: n_string += "tint"; break;
 		case NOOP: n_string += "noop"; break;
 		}
 	}
@@ -779,6 +892,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
 		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;
 		case FORCE_OPAQUE: n_string += "force_opaque"; break;
+		case TINT: n_string += "tint"; break;
 		case NOOP: n_string += "noop"; break;
 		}
 
@@ -789,6 +903,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case BLEND_ZERO: n_string += "blend_zero"; break;
 		case BLEND_ONE: n_string += "blend_one"; break;
 		case BLEND_MULTIPLY: n_string += "blend_multiply"; break;
+		case BLEND_TINT: n_string += "blend_tint"; break;
 		case BLEND_IGNORED: n_string += "blend_ignored"; break;
 		}
 	}

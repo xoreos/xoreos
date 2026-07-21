@@ -109,6 +109,7 @@ public:
 private:
 	void checkDuplicateNode(Model_NWN::ParserContext &ctx, ModelNode_NWN_Binary *newNode);
 
+	void readLight(Model_NWN::ParserContext &ctx);
 	void readMesh(Model_NWN::ParserContext &ctx);
 	void readAnim(Model_NWN::ParserContext &ctx);
 
@@ -129,6 +130,8 @@ private:
 		uint32_t vCount;
 		uint32_t tCount;
 		uint32_t faceCount;
+
+		float ambient[3];
 
 		std::vector<Common::UString> textures;
 

@@ -85,6 +85,8 @@ public:
 	float getHeight() const;
 	/** Get the depth of the model's bounding box. */
 	float getDepth () const;
+	/** Get the radius of the model's bounding sphere. */
+	float getRadius() const;
 
 	/** Is that point within the model's bounding box? */
 	bool isIn(float x, float y) const;
@@ -103,6 +105,8 @@ public:
 	void getPosition(float &x, float &y, float &z) const;
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
+	/** Get the current absolute transform of the model. */
+	const glm::mat4 &getAbsoluteTransform() const;
 
 	/** Set the current scale of the model. */
 	void setScale   (float x, float y, float z);
@@ -261,6 +265,8 @@ protected:
 	Common::BoundingBox _boundBox;
 	/** The model's box after translate/rotate. */
 	Common::BoundingBox _absoluteBoundBox;
+
+	float _radius;
 
 	bool _hasSkinNodes;
 	bool _positionRelative;

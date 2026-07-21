@@ -78,6 +78,12 @@ void CameraManager::update() {
 	memcpy(_positionCache   , _position   , sizeof(_positionCache));
 	memcpy(_orientationCache, _orientation, sizeof(_orientationCache));
 
+	_modelview = glm::mat4();
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-_orientation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-_orientation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-_orientation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+	_modelview = glm::translate(_modelview, glm::vec3(-_position[0], -_position[1], -_position[2]));
+
 	GfxMan.recalculateObjectDistances();
 	NotificationMan.cameraMoved();
 
@@ -90,6 +96,10 @@ const float *CameraManager::getPosition() const {
 
 const float *CameraManager::getOrientation() const {
 	return _orientationCache;
+}
+
+const glm::mat4 &CameraManager::getModelview() const {
+	return _modelview;
 }
 
 void CameraManager::reset() {

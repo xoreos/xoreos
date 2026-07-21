@@ -99,10 +99,9 @@ private:
 	float _width;
 	float _height;
 
-	float _bR;
-	float _bG;
-	float _bB;
-	float _bA;
+	float _bColour[4];
+	float _textureMatrix[16];
+	float _alpha;
 
 	Quad _qPortrait;
 	std::vector<Quad> _qBorder;

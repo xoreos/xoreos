@@ -43,6 +43,8 @@
 #include "src/graphics/mesh/meshman.h"
 #include "src/graphics/shader/shaderrenderable.h"
 
+#include "src/graphics/lightman.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -139,6 +141,7 @@ public:
 	const glm::mat4 &getAbsoluteTransform() const { return _absoluteTransform; }
 	const glm::mat4 &getBoneTransform() const { return _boneTransform; }
 	const glm::mat4 &getAbsoluteBaseTransformInverse() const { return _absoluteBaseTransformInv; }
+	const glm::mat4 &getRenderTransform() const { return _renderTransform; }
 
 	void computeTransforms();
 
@@ -218,6 +221,8 @@ public:
 
 		int tilefade;
 
+		float radius;
+
 		bool render; ///< Render this mesh?
 		bool shadow; ///< Does the node have a shadow?
 
@@ -227,9 +232,7 @@ public:
 
 		bool isTransparent;
 
-		bool hasTransparencyHint;
-		bool transparencyHint;
-		uint32_t transparencyHintFull;
+		uint32_t transparencyHint;
 
 		bool isBackgroundGeometry;
 
@@ -254,6 +257,12 @@ public:
 		MaterialConfiguration();
 	};
 
+	enum {
+		RENDER_HINT_NORMAL      = 0x0001,  ///< Node can be rendered immediately.
+		RENDER_HINT_TRANSPARENT = 0x0002,  ///< Node is transparent, subject to changed rendering order.
+		RENDER_HINT_DECAL       = 0x0004,  ///< Node renders as a decal, subject to changed rendering order.
+	};
+
 protected:
 	Model *_model; ///< The model this node belongs to.
 
@@ -274,10 +283,12 @@ protected:
 	float _orientation[4]; ///< Orientation of the node.
 	float _scale      [3]; ///< Scale of the node.
 
-	float _alpha;          ///< Alpha of the node, used if no _mesh is present in this node.
+	float _alpha;     ///< Alpha of the node, used if no _mesh is present in this node.
 
 	std::vector<PositionKeyFrame> _positionFrames;      ///< Keyframes for position animation.
 	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation.
+
+	std::vector<float> _displacement;
 
 	/** Position of the node after translate/rotate. */
 	glm::mat4 _absolutePosition;
@@ -285,6 +296,9 @@ protected:
 
 	bool _render; ///< Render the node?
 	bool _dirtyRender; ///< Rendering information needs updating.
+	uint32_t _renderHints;  ///< Hints to know when and how to render the node.
+
+	Graphics::LightManager::LightNode *_light;
 
 	Mesh *_mesh;
 	ModelNode *_rootStateNode;
@@ -316,10 +330,6 @@ protected:
 	bool _orientationBuffered;
 	bool _vertexCoordsBuffered;
 
-
-	Shader::ShaderMaterial *_material;
-	Shader::ShaderRenderable *_shaderRenderable;
-
 	// Loading helpers
 	void loadTextures(const std::vector<Common::UString> &textures);
 	void createBound();
@@ -349,7 +359,6 @@ protected:
 	TextureHandle *getTextures(uint32_t &count);
 	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
 
-	void setMaterial(Shader::ShaderMaterial *material);
 	virtual void buildMaterial();
 
 	virtual void declareShaderInputs(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
@@ -358,6 +367,7 @@ protected:
 	virtual void setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter);
 	virtual void addBlendedOverEnvMapPass(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
 	virtual void bindTexturesToSamplers(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
+	virtual void bindShaderVariables(Shader::ShaderSurface *surface, MaterialConfiguration &config);
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;
@@ -387,6 +397,8 @@ public:
 
 	std::list<ModelNode *> &getChildren(); ///< Get the node's children.
 
+	Graphics::LightManager::LightNode *getLight() const;
+
 	Mesh *getMesh() const;
 
 	/** Is this node in front of that other node? */
@@ -394,6 +406,8 @@ public:
 
 	void inheritPosition(ModelNode &node) const;
 	void inheritOrientation(ModelNode &node) const;
+
+	void renderImmediate() const;  ///< Assumes _renderTransform is already calculated.
 
 	friend class Model;
 	friend class Animation;

@@ -239,7 +239,6 @@ void Model_Jade::load(ParserContext &ctx) {
 
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
-
 	addState(ctx);
 }
 
@@ -346,39 +345,6 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
-
-	Common::UString meshName = ctx.mdlName;
-	meshName += ".";
-	if (ctx.state->name.size() != 0) {
-		meshName += ctx.state->name;
-	} else {
-		meshName += "xoreos.default";
-	}
-	meshName += ".";
-	meshName += _name;
-
-	if (!_mesh) {
-		return;
-	}
-
-	if (!_mesh->data) {
-		return;
-	}
-
-	if (!_mesh->data->rawMesh) {
-		return;
-	}
-
-	_mesh->data->rawMesh->init();
-	if (MeshMan.getMesh(meshName)) {
-		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
-
-		// TODO: figure out the right thing to handle mesh duplication.
-		meshName += "#" + Common::generateIDRandomString();
-	}
-	_mesh->data->rawMesh->setName(meshName);
-	MeshMan.addMesh(_mesh->data->rawMesh);
-
 	if (GfxMan.isRendererExperimental())
 		buildMaterial();
 }
@@ -409,7 +375,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	_mesh = new Mesh();
 
-	uint32_t transparencyHint = ctx.mdl->readUint32LE();
+	_mesh->transparencyHint = ctx.mdl->readUint32LE();
 	uint16_t flags            = ctx.mdl->readUint16LE();
 
 	_mesh->shadow = ctx.mdl->readUint16LE() != 0;
@@ -417,10 +383,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	_mesh->render  = (flags & kNodeFlagsRender) != 0;
 	_mesh->beaming = (flags & kNodeFlagsBeaming) != 0;
 	_mesh->isBackgroundGeometry = (flags & kNodeFlagsBackgroundGeometry) != 0;
-
-	_mesh->hasTransparencyHint = true;
-	_mesh->transparencyHint    = (transparencyHint == 1);
-	_mesh->transparencyHintFull = transparencyHint;
 
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
@@ -527,7 +489,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 			}
 		}
 	}
-
 
 	// Read face indices
 
@@ -693,6 +654,34 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16_t));
 
 	createBound();
+
+	Common::UString meshName = _name;
+	ModelNode *hnode = this;
+	ModelNode *parent = hnode->getParent();
+	while (parent && (parent != hnode)) {
+		meshName += ".";
+		meshName += parent->getName();
+		hnode = parent;
+		parent = hnode->getParent();
+	}
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += ctx.mdlName;
+
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 }
 
 /** Opens the resource for the materialID and parses it to return the 4 normal textures.
@@ -743,6 +732,9 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 		_jadeMaterialData.ambientColor[0] = mab->readIEEEFloatLE();
 		_jadeMaterialData.ambientColor[1] = mab->readIEEEFloatLE();
 		_jadeMaterialData.ambientColor[2] = mab->readIEEEFloatLE();
+		_mesh->ambient[0] = _jadeMaterialData.ambientColor[0];
+		_mesh->ambient[1] = _jadeMaterialData.ambientColor[1];
+		_mesh->ambient[2] = _jadeMaterialData.ambientColor[2];
 
 		mab->skip(24); // Unknown
 

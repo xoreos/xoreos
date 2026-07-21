@@ -45,6 +45,7 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/vertexbuffer.h \
     src/graphics/imguiwrapper.h \
     src/graphics/imguidemo.h \
+    src/graphics/lightman.h \
     $(EMPTY)
 
 src_graphics_libgraphics_la_SOURCES += \
@@ -66,6 +67,7 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/vertexbuffer.cpp \
     src/graphics/imguiwrapper.cpp \
     src/graphics/imguidemo.cpp \
+    src/graphics/lightman.cpp \
     $(EMPTY)
 
 src_graphics_libgraphics_la_LIBADD = \

@@ -30,6 +30,8 @@
 #include <map>
 #include <memory>
 
+#include "external/glm/mat4x4.hpp"
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
@@ -45,6 +47,9 @@
 
 #include "src/engines/nwn/tileset.h"
 #include "src/engines/nwn/object.h"
+
+// ------- TESTING IN PROGRESS ------------
+#include "src/graphics/lightman.h"
 
 namespace Engines {
 
@@ -122,10 +127,17 @@ public:
 	void toggleWalkmesh();
 
 
+	inline void checkStaticLights() {
+		if (_dirtyLights) {
+			this->rebuildStaticLights();
+		}
+	}
 protected:
 	/** Notify the area that the camera has been moved. */
 	void notifyCameraMoved();
 
+	bool _dirtyLights;
+	void rebuildStaticLights();
 
 private:
 	/** Tile orientation. */
@@ -151,6 +163,9 @@ private:
 		const Tileset::Tile *tile; ///< The actual tile within the tileset.
 
 		Graphics::Aurora::Model *model; ///< The tile's model.
+
+		Graphics::Aurora::Model *sl1_light;
+		Graphics::Aurora::Model *sl2_light;
 	};
 
 	typedef std::list<std::unique_ptr<NWN::Object>> ObjectList;

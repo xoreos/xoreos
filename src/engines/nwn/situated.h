@@ -49,6 +49,8 @@ public:
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
 
+	virtual void renderImmediate(const glm::mat4 &parentTransform);
+
 	// Basic properties
 
 	/** Is the situated object open? */
