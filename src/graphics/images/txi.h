@@ -71,7 +71,6 @@ public:
 		bool compressTexture { false };
 		Common::UString controllerScript;
 		bool cube { false };
-		uint32_t dbMapping { 0 };
 		bool decal { false };
 		uint8_t defaultBPP { 0 };
 		uint16_t defaultHeight { 0 };
@@ -114,6 +113,7 @@ public:
 		uint8_t waterWidth { 0 };
 		uint16_t xBoxDownsample { 0 };
 
+		std::vector<uint16_t> dbMapping;
 		std::vector<Coords> upperLeftCoords;
 		std::vector<Coords> lowerRightCoords;
 	};
