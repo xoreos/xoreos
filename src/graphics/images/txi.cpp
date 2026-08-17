@@ -114,9 +114,23 @@ void TXI::load(Common::SeekableReadStream &stream) {
 			_features.controllerScript = args;
 		else if (command == TXICommandCube)
 			Common::parseString(args, _features.cube);
-		else if (command == TXICommandDBMapping)
-			Common::parseString(args, _features.dbMapping);
-		else if (command == TXICommandDecal)
+		else if (command == TXICommandDBMapping) {
+			uint32_t count;
+			Common::parseString(args, count);
+
+			if (count > 0x10000)
+				throw Common::Exception("dbmapping count exceeds 65536");
+
+			// Read in the mapping table
+			if (count > 0) {
+				_features.dbMapping.reserve(count);
+				for (uint32_t i = 0; i < count; i++) {
+					uint16_t value;
+					Common::parseString(Common::readStringLine(stream, Common::kEncodingASCII), value);
+					_features.dbMapping.push_back(value);
+				}
+			}
+		} else if (command == TXICommandDecal)
 			Common::parseString(args, _features.decal);
 		else if (command == TXICommandDefaultBPP)
 			Common::parseString(args, _features.defaultBPP);
