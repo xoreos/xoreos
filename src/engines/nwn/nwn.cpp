@@ -218,7 +218,7 @@ void NWNEngine::initResources(LoadProgress &progress) {
 	indexMandatoryDirectory("data"        , 0, 0, 2);
 	indexMandatoryDirectory("nwm"         , 0, 0, 3);
 	indexMandatoryDirectory("modules"     , 0, 0, 4);
-	indexMandatoryDirectory("hak"         , 0, 0, 5);
+	indexOptionalDirectory ("hak"         , 0, 0, 5);
 	indexMandatoryDirectory("texturepacks", 0, 0, 6);
 
 	progress.step("Loading main KEY");
