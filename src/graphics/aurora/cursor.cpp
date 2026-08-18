@@ -113,7 +113,7 @@ void Cursor::load() {
 	_width  = image->getMipMap(0).width;
 	_height = image->getMipMap(0).height;
 
-	TXI *txi = new TXI();
+	std::unique_ptr<TXI> txi(new TXI());
 	txi->getFeatures().filter = false;
 
 	// If we need manual DeS3TC, we decompress the cursor image
@@ -121,7 +121,7 @@ void Cursor::load() {
 		image->decompress();
 	}
 
-	_texture = TextureMan.add(Texture::create(image.release(), type, txi), _name);
+	_texture = TextureMan.add(Texture::create(image.release(), type, std::move(txi)), _name);
 
 	_hotspotX = CLIP(_hotspotX, 0, _width  - 1);
 	_hotspotY = CLIP(_hotspotY, 0, _height - 1);

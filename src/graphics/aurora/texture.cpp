@@ -59,10 +59,10 @@ Texture::Texture() : _type(::Aurora::kFileTypeNone), _width(0), _height(0), _des
 }
 
 Texture::Texture(const Common::UString &name, ImageDecoder *image,
-                 ::Aurora::FileType type, TXI *txi, bool deswizzle) :
+                 ::Aurora::FileType type, std::unique_ptr<TXI> txi, bool deswizzle) :
 	_name(name), _type(type), _width(0), _height(0), _deswizzle(deswizzle) {
 
-	set(name, image, type, txi, deswizzle);
+	set(name, image, type, std::move(txi), deswizzle);
 	addToQueues();
 }
 
@@ -115,22 +115,20 @@ bool Texture::reload() {
 
 	::Aurora::FileType type = ::Aurora::kFileTypeNone;
 	ImageDecoder *image = 0;
-	TXI *txi = 0;
+	std::unique_ptr<TXI> txi;
 
 	try {
 
 		txi   = loadTXI  (_name);
-		image = loadImage(_name, type, txi, _deswizzle);
+		image = loadImage(_name, type, txi.get(), _deswizzle);
 
 	} catch (Common::Exception &e) {
-		delete txi;
-
 		e.add("Failed to reload texture \"%s\" (%d)", _name.c_str(), type);
 		throw;
 	}
 
 	removeFromQueues();
-	set(_name, image, type, txi, _deswizzle);
+	set(_name, image, type, std::move(txi), _deswizzle);
 	addToQueues();
 
 	return true;
@@ -324,7 +322,7 @@ Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 	::Aurora::FileType type = ::Aurora::kFileTypeNone;
 	ImageDecoder *image = 0;
 	ImageDecoder *layers[6] = { 0, 0, 0, 0, 0, 0 };
-	TXI *txi = 0;
+	std::unique_ptr<TXI> txi;
 
 	try {
 		txi = loadTXI(name);
@@ -339,7 +337,7 @@ Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 				if (!imageStream)
 					throw Common::Exception("No such cube side image resource \"%s\"", side.c_str());
 
-				layers[i] = loadImage(imageStream, type, txi, deswizzle);
+				layers[i] = loadImage(imageStream, type, txi.get(), deswizzle);
 			}
 
 			image = new CubeMapCombiner(layers);
@@ -350,17 +348,13 @@ Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 				throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
 			// PLT needs extra handling, since they're their own Texture class
-			if (type == ::Aurora::kFileTypePLT) {
-				delete txi;
-
+			if (type == ::Aurora::kFileTypePLT)
 				return createPLT(name, imageStream);
-			}
 
-			image = loadImage(imageStream, type, txi, deswizzle);
+			image = loadImage(imageStream, type, txi.get(), deswizzle);
 		}
 
 	} catch (Common::Exception &e) {
-		delete txi;
 		delete image;
 
 		for (size_t i = 0; i < ARRAYSIZE(layers); i++)
@@ -370,27 +364,27 @@ Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 		throw;
 	}
 
-	return new Texture(name, image, type, txi, deswizzle);
+	return new Texture(name, image, type, std::move(txi), deswizzle);
 }
 
-Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, TXI *txi, bool deswizzle) {
+Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, std::unique_ptr<TXI> txi, bool deswizzle) {
 	if (!image)
 		throw Common::Exception("Can't create a texture from an empty image");
 
 	if (image->getMipMapCount() < 1)
 		throw Common::Exception("Texture has no images");
 
-	return new Texture("", image, type, txi, deswizzle);
+	return new Texture("", image, type, std::move(txi), deswizzle);
 }
 
 void Texture::set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type,
-                  TXI *txi, bool deswizzle) {
+                  std::unique_ptr<TXI> txi, bool deswizzle) {
 
 	_name = name;
 	_type = type;
 
 	_image.reset(image);
-	_txi.reset(txi);
+	_txi = std::move(txi);
 
 	_width  = _image->getMipMap(0).width;
 	_height = _image->getMipMap(0).height;
@@ -420,11 +414,11 @@ void Texture::refresh() {
 }
 
 ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type, bool deswizzle) {
-	return loadImage(name, type, 0, deswizzle);
+	return loadImage(name, type, nullptr, deswizzle);
 }
 
 ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type,
-                                 TXI *txi, bool deswizzle) {
+                                 const TXI *txi, bool deswizzle) {
 
 	const bool isFileCubeMap = txi && txi->getFeatures().cube && (txi->getFeatures().fileRange == 6);
 	if (!isFileCubeMap) {
@@ -458,7 +452,7 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 }
 
 ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
-                                 TXI *txi, bool deswizzle) {
+                                 const TXI *txi, bool deswizzle) {
 
 	// Check for a cube map, but only those that don't use a file for each side
 	const bool isCubeMap = txi && txi->getFeatures().cube && (txi->getFeatures().fileRange == 0);
@@ -499,19 +493,18 @@ ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Auro
 	return image;
 }
 
-TXI *Texture::loadTXI(const Common::UString &name) {
-	Common::SeekableReadStream *txiStream = ResMan.getResource(name, ::Aurora::kFileTypeTXI);
+std::unique_ptr<TXI> Texture::loadTXI(const Common::UString &name) {
+	std::unique_ptr<Common::SeekableReadStream> txiStream(ResMan.getResource(name, ::Aurora::kFileTypeTXI));
 	if (!txiStream)
-		return 0;
+		return nullptr;
 
-	TXI *txi = 0;
+	std::unique_ptr<TXI> txi;
 	try {
-		txi = new TXI(*txiStream);
+		txi.reset(new TXI(*txiStream));
 	} catch (...) {
 		Common::exceptionDispatcherWarning("Failed loading TXI \"%s\"", name.c_str());
 	}
 
-	delete txiStream;
 	return txi;
 }
 

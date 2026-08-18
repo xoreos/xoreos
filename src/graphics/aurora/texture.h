@@ -80,7 +80,7 @@ public:
 	static Texture *create(const Common::UString &name, bool deswizzle = false);
 	/** Take over the image and create a texture from it. */
 	static Texture *create(ImageDecoder *image, ::Aurora::FileType type = ::Aurora::kFileTypeNone,
-	                       TXI *txi = 0, bool deswizzle = false);
+	                       std::unique_ptr<TXI> txi = nullptr, bool deswizzle = false);
 
 
 protected:
@@ -97,10 +97,10 @@ protected:
 
 
 	Texture();
-	Texture(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi = 0,
+	Texture(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, std::unique_ptr<TXI> txi = nullptr,
 	        bool deswizzle = false);
 
-	void set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi,
+	void set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, std::unique_ptr<TXI> txi,
 	         bool deswizzle = false);
 
 	void addToQueues();
@@ -122,11 +122,11 @@ protected:
 	void setMipMaps(GLenum target);
 	void setMipMapData(GLenum target, size_t layer, size_t mipMap);
 
-	static TXI *loadTXI(const Common::UString &name);
+	static std::unique_ptr<TXI> loadTXI(const Common::UString &name);
 	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
-	                               TXI *txi = 0, bool deswizzle = false);
+	                               const TXI *txi = nullptr, bool deswizzle = false);
 
-	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType &type, TXI *txi,
+	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType &type, const TXI *txi,
 	                               bool deswizzle = false);
 
 	static Texture *createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream);
