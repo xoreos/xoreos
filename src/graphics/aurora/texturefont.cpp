@@ -31,6 +31,7 @@
 #include "src/common/encoding.h"
 
 #include "src/aurora/language.h"
+#include "src/aurora/resman.h"
 
 #include "src/graphics/images/txi.h"
 
@@ -46,7 +47,9 @@ namespace Graphics {
 
 namespace Aurora {
 
-static uint32_t convertToUTF32(byte c, Common::Encoding encoding) {
+namespace {
+
+uint32_t convertToUTF32(byte c, Common::Encoding encoding) {
 	if ((encoding == Common::kEncodingInvalid) || (encoding == Common::kEncodingASCII))
 		return (uint32_t) c;
 
@@ -59,24 +62,54 @@ static uint32_t convertToUTF32(byte c, Common::Encoding encoding) {
 	return *str.begin();
 }
 
+uint32_t convertToUTF32(byte c1, byte c2, Common::Encoding encoding) {
+	if (c1 == 0)
+		return convertToUTF32(c2, encoding);
 
-// TODO: Multibyte fonts?
-TextureFont::TextureFont(const Common::UString &name) : _height(1.0f), _spaceR(0.0f), _spaceB(0.0f) {
-	_texture = TextureMan.get(name);
+	byte data[3] = { c1, c2, 0 };
 
-	load();
+	const Common::UString str = Common::readString(data, sizeof(data), encoding);
+	if (str.empty())
+		return 0;
 
-	_mesh = static_cast<Mesh::MeshFont *>(MeshMan.getMesh("defaultMeshFont"));
-	_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/text.frag", Shader::SHADER_FRAGMENT), "text");
-	Shader::ShaderSampler *sampler;
-	sampler = (Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
-	sampler->handle = _texture;
-	_renderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material, _mesh);
+	return *str.begin();
+}
+
+Common::Encoding mapCodePage(uint32_t codepage) {
+	switch (codepage) {
+	case 0:
+		// Many fonts don't have a codepage, so try to take a guess
+		switch (LangMan.getCurrentEncoding()) {
+		case Common::kEncodingCP932:
+		case Common::kEncodingCP936:
+		case Common::kEncodingCP949:
+		case Common::kEncodingCP950:
+			// For native CJK games, most use a codepage. Some are leftover European
+			// languages, so use CP1252 for those.
+			return Common::kEncodingCP1252;
+		default:
+			// For non-CJK games, go with the current encoding.
+			return LangMan.getCurrentEncoding();
+		}
+	case 932:
+		return Common::kEncodingCP932;
+	case 936:
+		return Common::kEncodingCP936;
+	case 949:
+		return Common::kEncodingCP949;
+	default:
+		throw Common::Exception("Unhandled texture font codepage %u", codepage);
+	}
+}
+
+} // End of anonymous namespace
+
+
+TextureFont::TextureFont(const Common::UString &name) : _height(1.0f), _spaceR(0.0f), _spaceB(0.0f), _mesh() {
+	load(name);
 }
 
 TextureFont::~TextureFont() {
-	delete _renderable;
-	delete _material;
 }
 
 float TextureFont::getWidth(uint32_t c) const {
@@ -121,7 +154,7 @@ void TextureFont::draw(uint32_t c) const {
 		return;
 	}
 
-	TextureMan.set(_texture);
+	TextureMan.set(_textures[cC->second.sheet]);
 
 	glBegin(GL_QUADS);
 	for (int i = 0; i < 4; i++) {
@@ -134,6 +167,9 @@ void TextureFont::draw(uint32_t c) const {
 }
 
 void TextureFont::renderBind(const glm::mat4 &transform) const {
+	if (!_renderable || !_material)
+		return;
+
 	glUseProgram(_renderable->getProgram()->glid);
 	_material->bindProgram(_renderable->getProgram(), 1.0f);
 	_material->bindGLState();
@@ -151,6 +187,11 @@ void TextureFont::renderBind(const glm::mat4 &transform) const {
 }
 
 void TextureFont::render(uint32_t c, float &x, float &y, float *rgba) const {
+	if (!_mesh)
+		return;
+
+	// FIXME: This does not support multiple sheets (see constructor)
+
 	std::map<uint32_t, Char>::const_iterator cC = _chars.find(c);
 
 	if (cC == _chars.end()) {
@@ -178,6 +219,9 @@ void TextureFont::render(uint32_t c, float &x, float &y, float *rgba) const {
 }
 
 void TextureFont::renderUnbind() const {
+	if (!_mesh || !_renderable || !_material)
+		return;
+
 	_mesh->renderUnbind();
 
 	_renderable->getSurface()->unbindGLState();
@@ -185,68 +229,169 @@ void TextureFont::renderUnbind() const {
 	glUseProgram(0);
 }
 
-void TextureFont::load() {
-	const Texture &texture = _texture.getTexture();
-	const TXI::Features &txiFeatures = texture.getTXI().getFeatures();
+void TextureFont::load(const Common::UString &name) {
+	// Load the TXI first
+	std::unique_ptr<Common::SeekableReadStream> txiStream(ResMan.getResource(name, ::Aurora::kFileTypeTXI));
+	if (!txiStream)
+		throw Common::Exception("Failed to find TXI %s", name.c_str());
+
+	std::unique_ptr<TXI> txi(new TXI(*txiStream));
+	const TXI::Features &txiFeatures = txi->getFeatures();
+	const std::vector<TXI::Coords> &uls = txiFeatures.upperLeftCoords;
+	const std::vector<TXI::Coords> &lrs = txiFeatures.lowerRightCoords;
 
 	// Number of characters
-	uint32_t charCount = txiFeatures.numChars;
+	const uint32_t charCount = txiFeatures.numChars;
 	if (charCount == 0)
 		throw Common::Exception("Texture defines no characters");
 
-	if ((charCount > 256) || (txiFeatures.fileRange > 1) || (txiFeatures.isDoubleByte))
-		throw Common::Exception("TODO: Multibyte texture font");
+	// Load in the actual textures
+	if (txiFeatures.isDoubleByte) {
+		// Validate the data
+		if (txiFeatures.numCharsPerSheet == 0)
+			throw Common::Exception("Double byte texture font has no chars per sheet");
+		if (txiFeatures.rows == 0)
+			throw Common::Exception("Font rows is missing");
+		if (txiFeatures.cols == 0)
+			throw Common::Exception("Font cols is missing");
+		if (txiFeatures.cols * txiFeatures.rows != txiFeatures.numCharsPerSheet)
+			throw Common::Exception("Font has mismatched number of characters per sheet");
+		if (txiFeatures.fileRange > 16) // Sanity check
+			throw Common::Exception("Too many font sheets %u", static_cast<unsigned int>(txiFeatures.fileRange));
+		if (txiFeatures.numCharsPerSheet * txiFeatures.fileRange < charCount)
+			throw Common::Exception("Not enough font sheets available");
+		if (txiFeatures.fontWidth == 0.0f)
+			throw Common::Exception("Font width is missing");
+		if (txiFeatures.fontHeight == 0.0f)
+			throw Common::Exception("Font height is missing");
 
-	// Character coordinates
-	const std::vector<TXI::Coords> &uls = txiFeatures.upperLeftCoords;
-	const std::vector<TXI::Coords> &lrs = txiFeatures.lowerRightCoords;
-	if ((uls.size() < charCount) || (lrs.size() < charCount))
-		throw Common::Exception("Texture defines not enough character coordinates");
+		// Load each of the textures
+		for (unsigned int i = 0; i < txiFeatures.fileRange; i++)
+			_textures.push_back(TextureMan.get(Common::String::format("%s%u", name.c_str(), i)));
+	} else {
+		// We can't support >=256 chars or multiple sheets
+		if (txiFeatures.fileRange > 1)
+			throw Common::Exception("Single byte texture only supports a single sheet");
+		if (charCount > 256)
+			throw Common::Exception("Single file texture fonts only support 256 characters");
+		// Character coordinates
+		if ((uls.size() < charCount) || (lrs.size() < charCount))
+			throw Common::Exception("Texture defines not enough character coordinates");
 
-	if ((texture.getWidth() == 0) || (texture.getHeight() == 0))
-		throw Common::Exception("Invalid texture dimensions (%dx%d)", texture.getWidth(), texture.getHeight());
+		// If there is no file range, we're looking for just the single texture
+		_textures.push_back(TextureMan.get(name));
+	}
 
-	double textureRatio = ((double) texture.getWidth()) / ((double) texture.getHeight());
+	const Texture &texture0 = _textures.front().getTexture();
+
+	if ((texture0.getWidth() == 0) || (texture0.getHeight() == 0))
+		throw Common::Exception("Invalid texture dimensions (%dx%d)", texture0.getWidth(), texture0.getHeight());
+
+	const double textureRatio = ((double) texture0.getWidth()) / ((double) texture0.getHeight());
 
 	// Get features
 	_height = txiFeatures.fontHeight * 100.0f;
 	_spaceR = txiFeatures.spacingR   * 100.0f;
 	_spaceB = txiFeatures.spacingB   * 100.0f;
 
-	const Common::Encoding encoding = LangMan.getCurrentEncoding();
+	// FIXME: Support with multiple textures (this does not currently compile)
+#if 0
+	_mesh = static_cast<Mesh::MeshFont *>(MeshMan.getMesh("defaultMeshFont"));
+	_material.reset(new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/text.frag", Shader::SHADER_FRAGMENT), "text"));
+	Shader::ShaderSampler *sampler;
+	sampler = (Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
+	sampler->handle = _texture;
+	_renderable.reset(new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material.get(), _mesh));
+#endif
+
+	const Common::Encoding encoding = mapCodePage(txiFeatures.codepage);
 
 	// Build the character texture and vertex coordinates
-	for (uint32_t i = 0; i < charCount; i++) {
-		if ((encoding != Common::kEncodingInvalid) && !Common::isValidCodepoint(encoding, i))
-			continue;
+	if (txiFeatures.isDoubleByte) {
+		for (uint32_t i = 0; i < txiFeatures.dbMapping.size(); i++) {
+			const uint16_t charIndex = txiFeatures.dbMapping[i];
+			if (charIndex == 0)
+				continue;
 
-		std::pair<std::map<uint32_t, Char>::iterator,bool> result;
+			if (charIndex > charCount)
+				throw Common::Exception("Found character %u > count %u", charIndex, charCount);
 
-		result = _chars.insert(std::make_pair(convertToUTF32((byte) i, encoding), Char()));
-		if (!result.second)
-			continue;
+			std::pair<std::map<uint32_t, Char>::iterator, bool> result;
 
-		TXI::Coords ul = uls[i];
-		TXI::Coords lr = lrs[i];
-		Char &c = result.first->second;
+			result = _chars.insert(std::make_pair(convertToUTF32(i >> 8, i & 0xFF, encoding), Char()));
+			if (!result.second)
+				continue;
 
-		// Texture coordinates, directly out of the TXI
-		c.tX[0] = ul.x; c.tY[0] = lr.y;
-		c.tX[1] = lr.x; c.tY[1] = lr.y;
-		c.tX[2] = lr.x; c.tY[2] = ul.y;
-		c.tX[3] = ul.x; c.tY[3] = ul.y;
+			Char &c = result.first->second;
 
-		double height = ABS(lr.y - ul.y);
-		double width  = ABS(lr.x - ul.x);
-		double ratio  = ((height != 0.0f) ? (width / height) : 0.0f) * textureRatio;
+			c.sheet                         = charIndex / txiFeatures.numCharsPerSheet;
+			const uint16_t charIndexInSheet = charIndex % txiFeatures.numCharsPerSheet;
 
-		// Vertex coordinates. Fixed height, width to fit the texture ratio
-		c.vX[0] = 0.00f;           c.vY[0] = 0.00f;
-		c.vX[1] = _height * ratio; c.vY[1] = 0.00f;
-		c.vX[2] = _height * ratio; c.vY[2] = _height;
-		c.vX[3] = 0.00f;           c.vY[3] = _height;
+			const double height = txiFeatures.fontHeight / txiFeatures.textureWidth;
+			const double width  = txiFeatures.fontWidth / txiFeatures.textureWidth;
 
-		c.width = c.vX[1] - c.vX[0];
+			// Calculate the row/col
+			const uint16_t row = charIndexInSheet / txiFeatures.cols;
+			const uint16_t col = charIndexInSheet % txiFeatures.cols;
+
+			// Texture coordinates, calculated
+			c.tX[0] = col * (txiFeatures.fontWidth / txiFeatures.textureWidth);
+			c.tY[0] = 1.0f - ((row + 1) * (txiFeatures.fontHeight / txiFeatures.textureWidth));
+
+			c.tX[1] = (col + 1) * (txiFeatures.fontWidth / txiFeatures.textureWidth);
+			c.tY[1] = 1.0f - ((row + 1) * (txiFeatures.fontHeight / txiFeatures.textureWidth));
+
+			c.tX[2] = (col + 1) * (txiFeatures.fontWidth / txiFeatures.textureWidth);
+			c.tY[2] = 1.0f - (row * (txiFeatures.fontHeight / txiFeatures.textureWidth));
+
+			c.tX[3] = col * (txiFeatures.fontWidth / txiFeatures.textureWidth);
+			c.tY[3] = 1.0f - (row * (txiFeatures.fontHeight / txiFeatures.textureWidth));
+
+			double ratio  = ((height != 0.0f) ? (width / height) : 0.0f) * textureRatio;
+
+			// Vertex coordinates. Fixed height, width to fit the texture ratio
+			c.vX[0] = 0.00f;           c.vY[0] = 0.00f;
+			c.vX[1] = _height * ratio; c.vY[1] = 0.00f;
+			c.vX[2] = _height * ratio; c.vY[2] = _height;
+			c.vX[3] = 0.00f;           c.vY[3] = _height;
+
+			c.width = c.vX[1] - c.vX[0];
+		}
+	} else {
+		for (uint32_t i = 0; i < charCount; i++) {
+			if ((encoding != Common::kEncodingInvalid) && !Common::isValidCodepoint(encoding, i))
+				continue;
+
+			std::pair<std::map<uint32_t, Char>::iterator, bool> result;
+
+			result = _chars.insert(std::make_pair(convertToUTF32(static_cast<byte>(i), encoding), Char()));
+			if (!result.second)
+				return;
+
+			const TXI::Coords &ul = uls[i];
+			const TXI::Coords &lr = lrs[i];
+			Char &c = result.first->second;
+
+			c.sheet = 0;
+
+			// Texture coordinates, directly out of the TXI
+			c.tX[0] = ul.x; c.tY[0] = lr.y;
+			c.tX[1] = lr.x; c.tY[1] = lr.y;
+			c.tX[2] = lr.x; c.tY[2] = ul.y;
+			c.tX[3] = ul.x; c.tY[3] = ul.y;
+
+			const double height = ABS(lr.y - ul.y);
+			const double width  = ABS(lr.x - ul.x);
+			const double ratio  = ((height != 0.0f) ? (width / height) : 0.0f) * textureRatio;
+
+			// Vertex coordinates. Fixed height, width to fit the texture ratio
+			c.vX[0] = 0.00f;           c.vY[0] = 0.00f;
+			c.vX[1] = _height * ratio; c.vY[1] = 0.00f;
+			c.vX[2] = _height * ratio; c.vY[2] = _height;
+			c.vX[3] = 0.00f;           c.vY[3] = _height;
+
+			c.width = c.vX[1] - c.vX[0];
+		}
 	}
 }
 
