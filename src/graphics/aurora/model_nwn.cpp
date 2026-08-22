@@ -1097,7 +1097,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 	debugC(kDebugGraphics, 5, "Node \"%s\" in state \"%s\"", _name.c_str(),
 	       ctx.state->name.c_str());
 
-	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin")) {
+	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin") || (type == "animmesh")) {
 		_mesh = new ModelNode::Mesh();
 		_mesh->hasTransparencyHint = true;
 		_mesh->render = true;
@@ -1146,9 +1146,11 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 			_orientation[3] = Common::rad2deg(_orientation[3]);
 		} else if (line[0] == "render") {
-			Common::parseString(line[1], _mesh->render);
+			if (_mesh)
+				Common::parseString(line[1], _mesh->render);
 		} else if (line[0] == "transparencyhint") {
-			Common::parseString(line[1], _mesh->transparencyHint);
+			if (_mesh)
+				Common::parseString(line[1], _mesh->transparencyHint);
 		} else if (line[0] == "danglymesh") {
 		} else if (line[0] == "constraints") {
 			uint32_t n;
@@ -1375,7 +1377,7 @@ struct FaceVertHash {
 };
 
 void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
-	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
+	if ((_mesh == nullptr) || (mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
 		return;
 
 	_render = _mesh->render;
