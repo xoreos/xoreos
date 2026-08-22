@@ -37,6 +37,8 @@
 
 namespace Graphics {
 
+class TXI;
+
 namespace Aurora {
 
 /** The global Aurora texture manager. */
@@ -78,6 +80,8 @@ public:
 	TextureHandle add(Texture *texture, Common::UString name = "");
 	/** Retrieve this named texture, loading it if it's not yet managed. */
 	TextureHandle get(Common::UString name);
+	/** Retrieve this named texture, loading it if it's not yet managed. */
+	TextureHandle get(Common::UString name, const TXI &txi);
 	/** Retrieve this named texture, returning an empty handle if it's not managed. */
 	TextureHandle getIfExist(const Common::UString &name);
 

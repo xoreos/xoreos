@@ -176,6 +176,32 @@ TextureHandle TextureManager::get(Common::UString name) {
 	return TextureHandle(texture);
 }
 
+TextureHandle TextureManager::get(Common::UString name, const TXI &txi) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
+
+	if (_bogusTextures.find(name) != _bogusTextures.end())
+		return TextureHandle();
+
+	TextureMap::iterator texture = _textures.find(name);
+	if (texture == _textures.end()) {
+		std::pair<TextureMap::iterator, bool> result;
+
+		ManagedTexture *managedTexture = new ManagedTexture(Texture::create(name, txi, _deswizzleSBM));
+
+		if (managedTexture->texture->isDynamic())
+			name = name + "#" + Common::generateIDRandomString();
+
+		result = _textures.insert(std::make_pair(name, managedTexture));
+
+		texture = result.first;
+	}
+
+	if (_recordNewTextures)
+		_newTextureNames.push_back(name);
+
+	return TextureHandle(texture);
+}
+
 TextureHandle TextureManager::getIfExist(const Common::UString &name) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 

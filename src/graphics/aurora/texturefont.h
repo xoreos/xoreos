@@ -43,6 +43,8 @@ namespace Common {
 
 namespace Graphics {
 
+struct TXICoords;
+
 namespace Aurora {
 
 class Texture;
@@ -72,12 +74,13 @@ public:
 private:
 	/** A font character. */
 	struct Char {
+		size_t sheet;
 		float width;
 		float tX[4], tY[4];
 		float vX[4], vY[4];
 	};
 
-	TextureHandle _texture;
+	std::vector<TextureHandle> _textures;
 
 	std::map<uint32_t, Char> _chars;
 
@@ -86,10 +89,10 @@ private:
 	float _spaceB;
 
 	Mesh::MeshFont *_mesh;
-	Shader::ShaderMaterial *_material;
-	Shader::ShaderRenderable *_renderable;
+	std::unique_ptr<Shader::ShaderMaterial> _material;
+	std::unique_ptr<Shader::ShaderRenderable> _renderable;
 
-	void load();
+	void load(const Common::UString &name);
 
 	void drawMissing() const;
 };

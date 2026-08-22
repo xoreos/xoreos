@@ -78,6 +78,8 @@ public:
 
 	/** Create a texture from this image resource. */
 	static Texture *create(const Common::UString &name, bool deswizzle = false);
+	/** Create a texture from this image resource, copying the given TXI. */
+	static Texture *create(const Common::UString &name, const TXI &txi, bool deswizzle = false);
 	/** Take over the image and create a texture from it. */
 	static Texture *create(ImageDecoder *image, ::Aurora::FileType type = ::Aurora::kFileTypeNone,
 	                       std::unique_ptr<TXI> txi = nullptr, bool deswizzle = false);

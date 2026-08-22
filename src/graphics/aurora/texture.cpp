@@ -367,6 +367,53 @@ Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 	return new Texture(name, image, type, std::move(txi), deswizzle);
 }
 
+Texture *Texture::create(const Common::UString &name, const TXI &txi, bool deswizzle) {
+	::Aurora::FileType type = ::Aurora::kFileTypeNone;
+	ImageDecoder *image = 0;
+	ImageDecoder *layers[6] = { 0, 0, 0, 0, 0, 0 };
+
+	try {
+		const bool isFileCubeMap = txi.getFeatures().cube && (txi.getFeatures().fileRange == 6);
+		if (isFileCubeMap) {
+			// A cube map with each side a separate image file
+
+			for (size_t i = 0; i < 6; i++) {
+				const Common::UString side = name + Common::composeString(i);
+				Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, side, &type);
+				if (!imageStream)
+					throw Common::Exception("No such cube side image resource \"%s\"", side.c_str());
+
+				layers[i] = loadImage(imageStream, type, &txi, deswizzle);
+			}
+
+			image = new CubeMapCombiner(layers);
+
+		} else {
+			Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
+			if (!imageStream)
+				throw Common::Exception("No such image resource \"%s\"", name.c_str());
+
+			// PLT needs extra handling, since they're their own Texture class
+			if (type == ::Aurora::kFileTypePLT)
+				return createPLT(name, imageStream);
+
+			image = loadImage(imageStream, type, &txi, deswizzle);
+		}
+
+	} catch (Common::Exception &e) {
+		delete image;
+
+		for (size_t i = 0; i < ARRAYSIZE(layers); i++)
+			delete layers[i];
+
+		e.add("Failed to create texture \"%s\" (%d)", name.c_str(), type);
+		throw;
+	}
+
+	std::unique_ptr<TXI> ownedTXI(new TXI(txi));
+	return new Texture(name, image, type, std::move(ownedTXI), deswizzle);
+}
+
 Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, std::unique_ptr<TXI> txi, bool deswizzle) {
 	if (!image)
 		throw Common::Exception("Can't create a texture from an empty image");
