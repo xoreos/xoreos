@@ -281,6 +281,8 @@ void NWNEngine::initResources(LoadProgress &progress) {
 	// with a Cyrillic one, the DDS file is still Latin.
 	ResMan.blacklist("fnt_galahad14", Aurora::kFileTypeDDS);
 
+	initCJKFont();
+
 	declareBogusTextures();
 }
 
@@ -451,6 +453,36 @@ void NWNEngine::initGameConfig() {
 	TokenMan.set("</Start>"        , "</c>");
 
 	// TODO: <PlayerName>
+}
+
+void NWNEngine::initCJKFont() {
+	// For CJK support, it looks like BioWare decided to just blanket replace the names instead of
+	// updating all of their .gui files. We're concentrating the replacement in a single location.
+
+	const char *dstFont;
+	switch (_language) {
+	case Aurora::kLanguageChineseTraditional:
+		dstFont = "fnt_chinatrad";
+		break;
+	case Aurora::kLanguageJapanese:
+		dstFont = "fnt_japanese";
+		break;
+	case Aurora::kLanguageKorean:
+		dstFont = "fnt_dbcs";
+		break;
+	default:
+		// Not a CJK font
+		return;
+	}
+
+	static constexpr const char *srcFonts[] = {
+		"fnt_dialog_big16",
+		"fnt_dialog16x16",
+		"fnt_galahad14"
+	};
+
+	for (const char *srcFont : srcFonts)
+		FontMan.addAlias(srcFont, dstFont);
 }
 
 void NWNEngine::checkConfig() {

@@ -83,6 +83,7 @@ private:
 	void declareBogusTextures();
 	void initCursors();
 	void initGameConfig();
+	void initCJKFont();
 
 	void deinit();
 
