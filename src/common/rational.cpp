@@ -47,7 +47,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "src/common/algorithm.h"
+#include <numeric>
+
 #include "src/common/error.h"
 #include "src/common/rational.h"
 
@@ -75,7 +76,7 @@ void Rational::cancel() {
 	// Cancel the fraction by dividing both the num and the denom
 	// by their greatest common divisor.
 
-	const int gcd = Common::gcd(_num, _denom);
+	const int gcd = std::gcd(_num, _denom);
 
 	_num   /= gcd;
 	_denom /= gcd;
@@ -91,7 +92,7 @@ Rational &Rational::operator=(int right) {
 Rational &Rational::operator+=(const Rational &right) {
 	// Cancel common factors to avoid unnecessary overflow.
 	// Note that the result is *not* always normalized.
-	const int gcd = Common::gcd(_denom, right._denom);
+	const int gcd = std::gcd(_denom, right._denom);
 
 	_num    = _num * (right._denom / gcd);
 	_denom  = _denom / gcd;
@@ -106,7 +107,7 @@ Rational &Rational::operator+=(const Rational &right) {
 Rational &Rational::operator-=(const Rational &right) {
 	// Cancel common factors to avoid unnecessary overflow.
 	// Note that the result is *not* always normalized.
-	const int gcd = Common::gcd(_denom, right._denom);
+	const int gcd = std::gcd(_denom, right._denom);
 
 	_num    = _num * (right._denom / gcd);
 	_denom  = _denom / gcd;
@@ -121,8 +122,8 @@ Rational &Rational::operator-=(const Rational &right) {
 Rational &Rational::operator*=(const Rational &right) {
 	// Cross-cancel to avoid unnecessary overflow;
 	// the result then is automatically normalized
-	const int gcd1 = gcd(_num, right._denom);
-	const int gcd2 = gcd(right._num, _denom);
+	const int gcd1 = std::gcd(_num, right._denom);
+	const int gcd2 = std::gcd(right._num, _denom);
 
 	_num   = (_num    / gcd1) * (right._num    / gcd2);
 	_denom = (_denom  / gcd2) * (right._denom  / gcd1);

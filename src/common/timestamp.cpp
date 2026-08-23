@@ -48,8 +48,8 @@
  */
 
 #include <cassert>
+#include <numeric>
 
-#include "src/common/algorithm.h"
 #include "src/common/error.h"
 #include "src/common/rational.h"
 #include "src/common/timestamp.h"
@@ -61,7 +61,7 @@ Timestamp::Timestamp(uint64_t ms, uint64_t fr) {
 		throw Exception("Invalid frame rate 0");
 
 	_secs = ms / 1000;
-	_framerateFactor = 1000 / gcd<uint64_t>(1000, fr);
+	_framerateFactor = 1000 / std::gcd<uint64_t>(1000, fr);
 	_framerate = fr * _framerateFactor;
 
 	// Note that _framerate is always divisible by 1000.
@@ -73,7 +73,7 @@ Timestamp::Timestamp(uint64_t s, uint64_t frames, uint64_t fr) {
 		throw Exception("Invalid frame rate 0");
 
 	_secs = s + (frames / fr);
-	_framerateFactor = 1000 / gcd<uint64_t>(1000, fr);
+	_framerateFactor = 1000 / std::gcd<uint64_t>(1000, fr);
 	_framerate = fr * _framerateFactor;
 	_numFrames = (frames % fr) * _framerateFactor;
 }
@@ -92,7 +92,7 @@ Timestamp::Timestamp(uint64_t s, uint64_t frames, const Rational &newFramerate) 
 	}
 
 	_secs = s + (frames / fr);
-	_framerateFactor = 1000 / gcd<uint64_t>(1000, fr);
+	_framerateFactor = 1000 / std::gcd<uint64_t>(1000, fr);
 	_framerate = fr * _framerateFactor;
 	_numFrames = (frames % fr) * _framerateFactor;
 }
@@ -104,10 +104,10 @@ Timestamp Timestamp::convertToFramerate(uint64_t newFramerate) const {
 	Timestamp ts(*this);
 
 	if (ts.framerate() != newFramerate) {
-		ts._framerateFactor = 1000 / gcd<uint64_t>(1000, newFramerate);
+		ts._framerateFactor = 1000 / std::gcd<uint64_t>(1000, newFramerate);
 		ts._framerate = newFramerate * ts._framerateFactor;
 
-		const uint64_t g = gcd(_framerate, ts._framerate);
+		const uint64_t g = std::gcd(_framerate, ts._framerate);
 		const uint64_t p = _framerate / g;
 		const uint64_t q = ts._framerate / g;
 
@@ -167,7 +167,7 @@ int64_t Timestamp::cmp(const Timestamp &ts) const {
 
 	int64_t delta = _secs - ts._secs;
 	if (!delta) {
-		const uint64_t g = gcd(_framerate, ts._framerate);
+		const uint64_t g = std::gcd(_framerate, ts._framerate);
 		const uint64_t p = _framerate / g;
 		const uint64_t q = ts._framerate / g;
 
@@ -246,7 +246,7 @@ int64_t Timestamp::frameDiff(const Timestamp &ts) const {
 		// We need to multiply by the quotient of the two framerates.
 		// We cancel the GCD in this fraction to reduce the risk of
 		// overflows.
-		const uint64_t g = gcd(_framerate, ts._framerate);
+		const uint64_t g = std::gcd(_framerate, ts._framerate);
 		const uint64_t p = _framerate / g;
 		const uint64_t q = ts._framerate / g;
 
