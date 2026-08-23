@@ -1444,10 +1444,10 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 		int n = *ptr++;
 
 		switch (n & 3) do {
-			XOREOS_FALLTHROUGH;
-			case 0: *q++ = iv; XOREOS_FALLTHROUGH;
-			case 3: *q++ = iv; XOREOS_FALLTHROUGH;
-			case 2: *q++ = iv; XOREOS_FALLTHROUGH;
+			[[fallthrough]];
+			case 0: *q++ = iv; [[fallthrough]];
+			case 3: *q++ = iv; [[fallthrough]];
+			case 2: *q++ = iv; [[fallthrough]];
 			case 1: *q++ = iv;
 		} while ((n -= 4) > 0);
 
@@ -1477,10 +1477,10 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 		int n = *ptr++;
 
 		switch (n & 3) do {
-			XOREOS_FALLTHROUGH;
-			case 0: *q++ = iv; XOREOS_FALLTHROUGH;
-			case 3: *q++ = iv; XOREOS_FALLTHROUGH;
-			case 2: *q++ = iv; XOREOS_FALLTHROUGH;
+			[[fallthrough]];
+			case 0: *q++ = iv; [[fallthrough]];
+			case 3: *q++ = iv; [[fallthrough]];
+			case 2: *q++ = iv; [[fallthrough]];
 			case 1: *q++ = iv;
 		} while ((n -= 4) > 0);
 

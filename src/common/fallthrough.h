@@ -25,41 +25,6 @@
 #ifndef COMMON_FALLTHROUGH_H
 #define COMMON_FALLTHROUGH_H
 
-/* XOREOS_FALLTHROUGH is an annotation to suppress compiler warnings about switch
- * cases that fall through without a break or return statement. XOREOS_FALLTHROUGH
- * is only needed on cases that have code.
- *
- * Based on Mozilla's MOZ_FALLTHROUGH and Boost's BOOST_FALLTHROUGH.
- *
- * switch (foo) {
- *   case 1: // These cases have no code. No fallthrough annotations are needed.
- *   case 2:
- *   case 3: // This case has code, so a fallthrough annotation is needed!
- *     foo++;
- *     XOREOS_FALLTHROUGH;
- *   case 4:
- *     return foo;
- * }
- */
-#ifndef __has_cpp_attribute
-	#define __has_cpp_attribute(x) 0
-#endif
-
-#if __has_cpp_attribute(clang::fallthrough)
-	#define XOREOS_FALLTHROUGH [[clang::fallthrough]]
-#elif __has_cpp_attribute(gnu::fallthrough)
-	#define XOREOS_FALLTHROUGH [[gnu::fallthrough]]
-#elif defined(_MSC_VER)
-	/*
-	 * MSVC's __fallthrough annotations are checked by /analyze (Code Analysis):
-	 * https://msdn.microsoft.com/en-us/library/ms235402%28VS.80%29.aspx
-	 */
-	#include <sal.h>
-	#define XOREOS_FALLTHROUGH __fallthrough
-#else
-	#define XOREOS_FALLTHROUGH // Fallthrough
-#endif
-
 #if defined(__clang__)
 	/* Macros to make clang ignore implicit fallthroughs in certain includes.
 	 *
