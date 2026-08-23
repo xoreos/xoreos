@@ -22,22 +22,23 @@
  *   Resolve a GDA column header hash back to its string.
  */
 
+#include <algorithm>
 #include <iterator>
-
-#include "src/common/util.h"
-#include "src/common/binsearch.h"
+#include <utility>
 
 #include "src/aurora/gdaheaders.h"
 
 namespace Aurora {
 
-typedef Common::BinSearchValue<uint32_t, const char *> GDAHeaderHash;
+namespace {
+
+typedef std::pair<uint32_t, const char *> GDAHeaderHash;
 
 /** All currently known GDA column header strings, together with their CRC32 hashes.
  *
  *  Note: For the binary search to work, this list needs to stay sorted by hash value!
  */
-static const GDAHeaderHash kGDAHeaderHashes[] = {
+static constexpr GDAHeaderHash kGDAHeaderHashes[] = {
 	{   1421660U, "AttackScatter"               },
 	{   3607720U, "DIScanCode"                  },
 	{   4376397U, "FPS"                         },
@@ -2245,12 +2246,24 @@ static const GDAHeaderHash kGDAHeaderHashes[] = {
 	{4294639615U, "CameraOffset"                }
 };
 
-const char *findGDAHeader(uint32_t hash) {
-	const GDAHeaderHash *header = Common::binarySearch(kGDAHeaderHashes, std::size(kGDAHeaderHashes), hash);
-	if (!header)
-		return 0;
+struct HeaderHashCompare {
+	constexpr bool operator()(const GDAHeaderHash& lhs, const uint32_t rhs) const {
+		return lhs.first < rhs;
+	}
 
-	return header->value;
+	constexpr bool operator()(const uint32_t lhs, const GDAHeaderHash& rhs) const {
+		return lhs < rhs.first;
+	}
+};
+
+} // End of anonymous namespace
+
+const char *findGDAHeader(uint32_t hash) {
+	auto it = std::lower_bound(std::begin(kGDAHeaderHashes), std::end(kGDAHeaderHashes), hash, HeaderHashCompare());
+	if (it == std::end(kGDAHeaderHashes) || it->first != hash)
+		return nullptr;
+
+	return it->second;
 }
 
 } // End of namespace Aurora
