@@ -2256,6 +2256,21 @@ struct HeaderHashCompare {
 	}
 };
 
+template<size_t N>
+constexpr bool isSorted(const GDAHeaderHash (&hashes)[N]) {
+	static_assert(N > 0);
+	if constexpr (N == 1)
+		return true;
+
+	for (size_t i = 0; i < N - 1; i++)
+		if (hashes[i].first >= hashes[i + 1].first)
+			return false;
+
+	return true;
+}
+
+static_assert(isSorted(kGDAHeaderHashes));
+
 } // End of anonymous namespace
 
 const char *findGDAHeader(uint32_t hash) {
