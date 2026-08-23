@@ -256,7 +256,7 @@ bool Game::isPremiumModule(const Common::UString &module) {
 		"Neverwinter Nights - Wyvern Crown of Cormyr.nwm"
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kPremiumModules); i++)
+	for (size_t i = 0; i < std::size(kPremiumModules); i++)
 		if (Common::FilePath::getFile(module).equalsIgnoreCase(kPremiumModules[i]))
 			return true;
 

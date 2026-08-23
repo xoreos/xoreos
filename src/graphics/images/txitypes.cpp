@@ -92,7 +92,7 @@ static const char * const kTXICommands[] = {
 	"xbox_downsample"
 };
 
-static Common::StringListMap kTXICommandMap(kTXICommands, ARRAYSIZE(kTXICommands), true);
+static Common::StringListMap kTXICommandMap(kTXICommands, std::size(kTXICommands), true);
 
 namespace Graphics {
 

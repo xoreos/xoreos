@@ -110,7 +110,7 @@ Common::UString getCreatureAnimationName(Animation animation, bool simple) {
 		{ kAnimationFireForgetSpasm           , "spasm"     , "cspasm"     }
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kAnimations); i++)
+	for (size_t i = 0; i < std::size(kAnimations); i++)
 		if (animation == kAnimations[i].animation)
 			return simple ? kAnimations[i].nameSimple : kAnimations[i].nameComplex;
 
@@ -126,7 +126,7 @@ Common::UString getCreatureTalkAnimationName(TalkAnimation animation) {
 		{ kTalkAnimationLaugh   , "tlklaugh" }
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kTalkAnimations); i++)
+	for (size_t i = 0; i < std::size(kTalkAnimations); i++)
 		if (animation == kTalkAnimations[i].animation)
 			return kTalkAnimations[i].name;
 
@@ -141,7 +141,7 @@ Common::UString getPlaceableAnimationName(Animation animation) {
 		{ kAnimationPlaceableClose            , "open2close", "" }
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kAnimations); i++)
+	for (size_t i = 0; i < std::size(kAnimations); i++)
 		if (animation == kAnimations[i].animation)
 			return kAnimations[i].nameComplex;
 
@@ -156,7 +156,7 @@ Common::UString getDoorAnimationName(Animation animation, bool alternate) {
 		{ kAnimationDoorDestroy               , "die"     , "die"      }
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kAnimations); i++)
+	for (size_t i = 0; i < std::size(kAnimations); i++)
 		if (animation == kAnimations[i].animation)
 			return alternate ? kAnimations[i].nameSimple : kAnimations[i].nameComplex;
 

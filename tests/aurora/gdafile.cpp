@@ -360,9 +360,9 @@ GTEST_TEST(GDAFile, add) {
 	gda.add(new Common::MemoryReadStream(kMGDA2));
 
 	EXPECT_EQ(gda.getColumnCount(), 2);
-	EXPECT_EQ(gda.getRowCount(), ARRAYSIZE(kIDs));
+	EXPECT_EQ(gda.getRowCount(), std::size(kIDs));
 
-	for (size_t i = 0; i < ARRAYSIZE(kIDs); i++) {
+	for (size_t i = 0; i < std::size(kIDs); i++) {
 		const size_t index = gda.findRow(kIDs[i]);
 		ASSERT_NE(index, Aurora::GDAFile::kInvalidRow);
 

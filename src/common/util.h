@@ -62,10 +62,6 @@
 	#undef MAX
 #endif
 
-#ifdef ARRAYSIZE
-	#undef ARRAYSIZE
-#endif
-
 template<typename T> inline T ABS (T x)      { return (x>=0) ? x : -x; }
 template<typename T> inline T MIN (T a, T b) { return (a<b)  ? a :  b; }
 template<typename T> inline T MAX (T a, T b) { return (a>b)  ? a :  b; }
@@ -119,14 +115,6 @@ template<> inline double MAX(double a, double b) { return fmax(a, b); }
 #ifdef HAVE_FMAXF
 template<> inline float MAX(float a, float b) { return fmaxf(a, b); }
 #endif
-
-/**
- * Determine the number of entries in a fixed size array.
- */
-template<typename T, std::size_t N>
-constexpr std::size_t ARRAYSIZE(const T (&)[N]) {
-	return N;
-}
 
 /** Print a warning message to both stderr and the global
  *  log file (if a global log file has been opened).

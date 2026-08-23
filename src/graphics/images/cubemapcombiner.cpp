@@ -33,11 +33,11 @@ namespace Graphics {
 
 CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
 	BOOST_SCOPE_EXIT(&sides) {
-		for (size_t i = 0; i < ARRAYSIZE(sides); i++)
+		for (size_t i = 0; i < std::size(sides); i++)
 			delete sides[i];
 	};
 
-	_layerCount = ARRAYSIZE(sides);
+	_layerCount = std::size(sides);
 	_isCubeMap  = true;
 
 	const size_t mipMapCount = sides[0] ? sides[0]->getMipMapCount() : 0;
@@ -54,7 +54,7 @@ CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
 	const int32_t width  = sides[0]->getMipMap(0).width;
 	const int32_t height = sides[0]->getMipMap(0).height;
 
-	for (size_t i = 0; i < ARRAYSIZE(sides); i++) {
+	for (size_t i = 0; i < std::size(sides); i++) {
 		if (!sides[i])
 			throw Common::Exception("CubeMapCombiner: Side %u is empty", (uint) i);
 

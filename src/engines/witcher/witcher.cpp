@@ -209,7 +209,7 @@ void WitcherEngine::declareLanguages() {
 		{ Aurora::kLanguageChineseSimplified , 22, Common::kEncodingUTF8, Common::kEncodingUTF8 }
 	};
 
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 }
 
 void WitcherEngine::initResources(LoadProgress &progress) {

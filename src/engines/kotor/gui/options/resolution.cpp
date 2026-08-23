@@ -63,7 +63,7 @@ OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : KotORBase::GUI(
 
 	// If we have no fullscreen, we add some other common resolutions.
 	if (!WindowMan.isFullScreen()) {
-		for (size_t i = 0; i < ARRAYSIZE(Graphics::kResolutions); ++i) {
+		for (size_t i = 0; i < std::size(Graphics::kResolutions); ++i) {
 			Graphics::DisplayMode mode;
 			mode.w = Graphics::kResolutions[i].width;
 			mode.h = Graphics::kResolutions[i].height;

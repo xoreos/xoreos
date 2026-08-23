@@ -2198,7 +2198,7 @@ const uint8_t wmv2ZigZag4x8[32] = {
 // I-Frame macroblock block pattern
 const Common::HuffmanTable wmv2HuffmanIMB = {
 	0,                              // Max code length, automatic
-	ARRAYSIZE(wmv2HuffmanIMBCodes), // Number of codes
+	std::size(wmv2HuffmanIMBCodes), // Number of codes
 	wmv2HuffmanIMBCodes,            // Codes
 	wmv2HuffmanIMBLengths,          // Lengths
 	0                               // Symbols, identical to codes
@@ -2211,7 +2211,7 @@ const Common::HuffmanTable wmv2HuffmanDC[2][2] = {
 		// Low motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanDC0LumaCodes),   // Number of codes
+			std::size(wmv2HuffmanDC0LumaCodes),   // Number of codes
 			wmv2HuffmanDC0LumaCodes,              // Codes
 			wmv2HuffmanDC0LumaLengths,            // Lengths
 			0                                     // Symbols, identical to codes
@@ -2220,7 +2220,7 @@ const Common::HuffmanTable wmv2HuffmanDC[2][2] = {
 		// High motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanDC1LumaCodes),   // Number of codes
+			std::size(wmv2HuffmanDC1LumaCodes),   // Number of codes
 			wmv2HuffmanDC1LumaCodes,              // Codes
 			wmv2HuffmanDC1LumaLengths,            // Lengths
 			0                                     // Symbols, identical to codes
@@ -2232,7 +2232,7 @@ const Common::HuffmanTable wmv2HuffmanDC[2][2] = {
 		// Low motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanDC0ChromaCodes), // Number of codes
+			std::size(wmv2HuffmanDC0ChromaCodes), // Number of codes
 			wmv2HuffmanDC0ChromaCodes,            // Codes
 			wmv2HuffmanDC0ChromaLengths,          // Lengths
 			0                                     // Symbols, identical to codes
@@ -2241,7 +2241,7 @@ const Common::HuffmanTable wmv2HuffmanDC[2][2] = {
 		// High motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanDC1ChromaCodes), // Number of codes
+			std::size(wmv2HuffmanDC1ChromaCodes), // Number of codes
 			wmv2HuffmanDC1ChromaCodes,            // Codes
 			wmv2HuffmanDC1ChromaLengths,          // Lengths
 			0                                     // Symbols, identical to codes
@@ -2253,7 +2253,7 @@ const Common::HuffmanTable wmv2HuffmanPMB[3] = {
 	// High rate
 	{
 		0,                               // Max code length, automatic
-		ARRAYSIZE(wmv2HuffmanPMB0Codes), // Number of codes
+		std::size(wmv2HuffmanPMB0Codes), // Number of codes
 		wmv2HuffmanPMB0Codes,            // Codes
 		wmv2HuffmanPMB0Lengths,          // Lengths
 		0                                // Symbols, identical to codes
@@ -2262,7 +2262,7 @@ const Common::HuffmanTable wmv2HuffmanPMB[3] = {
 	// Mid rate
 	{
 		0,                               // Max code length, automatic
-		ARRAYSIZE(wmv2HuffmanPMB1Codes), // Number of codes
+		std::size(wmv2HuffmanPMB1Codes), // Number of codes
 		wmv2HuffmanPMB1Codes,            // Codes
 		wmv2HuffmanPMB1Lengths,          // Lengths
 		0                                // Symbols, identical to codes
@@ -2271,7 +2271,7 @@ const Common::HuffmanTable wmv2HuffmanPMB[3] = {
 	// Low rate
 	{
 		0,                               // Max code length, automatic
-		ARRAYSIZE(wmv2HuffmanPMB2Codes), // Number of codes
+		std::size(wmv2HuffmanPMB2Codes), // Number of codes
 		wmv2HuffmanPMB2Codes,            // Codes
 		wmv2HuffmanPMB2Lengths,          // Lengths
 		0                                // Symbols, identical to codes
@@ -2284,7 +2284,7 @@ static const Common::HuffmanTable wmv2HuffmanAC[2][3] = {
 		// Low motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanAC0LumaCodes),   // Number of codes
+			std::size(wmv2HuffmanAC0LumaCodes),   // Number of codes
 			wmv2HuffmanAC0LumaCodes,              // Codes
 			wmv2HuffmanAC0LumaLengths,            // Lengths
 			0                                     // Symbols, identical to codes
@@ -2293,7 +2293,7 @@ static const Common::HuffmanTable wmv2HuffmanAC[2][3] = {
 		// High motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanAC1LumaCodes),   // Number of codes
+			std::size(wmv2HuffmanAC1LumaCodes),   // Number of codes
 			wmv2HuffmanAC1LumaCodes,              // Codes
 			wmv2HuffmanAC1LumaLengths,            // Lengths
 			0                                     // Symbols, identical to codes
@@ -2302,7 +2302,7 @@ static const Common::HuffmanTable wmv2HuffmanAC[2][3] = {
 		// Standard MPEG4
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanAC2LumaCodes),   // Number of codes
+			std::size(wmv2HuffmanAC2LumaCodes),   // Number of codes
 			wmv2HuffmanAC2LumaCodes,              // Codes
 			wmv2HuffmanAC2LumaLengths,            // Lengths
 			0                                     // Symbols, identical to codes
@@ -2314,7 +2314,7 @@ static const Common::HuffmanTable wmv2HuffmanAC[2][3] = {
 		// Low motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanAC0ChromaCodes), // Number of codes
+			std::size(wmv2HuffmanAC0ChromaCodes), // Number of codes
 			wmv2HuffmanAC0ChromaCodes,            // Codes
 			wmv2HuffmanAC0ChromaLengths,          // Lengths
 			0                                     // Symbols, identical to codes
@@ -2323,7 +2323,7 @@ static const Common::HuffmanTable wmv2HuffmanAC[2][3] = {
 		// High motion
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanAC1ChromaCodes), // Number of codes
+			std::size(wmv2HuffmanAC1ChromaCodes), // Number of codes
 			wmv2HuffmanAC1ChromaCodes,            // Codes
 			wmv2HuffmanAC1ChromaLengths,          // Lengths
 			0                                     // Symbols, identical to codes
@@ -2332,7 +2332,7 @@ static const Common::HuffmanTable wmv2HuffmanAC[2][3] = {
 		// Standard MPEG4
 		{
 			0,                                    // Max code length, automatic
-			ARRAYSIZE(wmv2HuffmanAC2ChromaCodes), // Number of codes
+			std::size(wmv2HuffmanAC2ChromaCodes), // Number of codes
 			wmv2HuffmanAC2ChromaCodes,            // Codes
 			wmv2HuffmanAC2ChromaLengths,          // Lengths
 			0                                     // Symbols, identical to codes
@@ -2345,7 +2345,7 @@ static const Common::HuffmanTable wmv2HuffmanMV[2] = {
 	// Low motion
 	{
 		0,                              // Max code length, automatic
-		ARRAYSIZE(wmv2HuffmanMV0Codes), // Number of codes
+		std::size(wmv2HuffmanMV0Codes), // Number of codes
 		wmv2HuffmanMV0Codes,            // Codes
 		wmv2HuffmanMV0Lengths,          // Lengths
 		0                               // Symbols, identical to codes
@@ -2354,7 +2354,7 @@ static const Common::HuffmanTable wmv2HuffmanMV[2] = {
 	// High motion
 	{
 		0,                              // Max code length, automatic
-		ARRAYSIZE(wmv2HuffmanMV1Codes), // Number of codes
+		std::size(wmv2HuffmanMV1Codes), // Number of codes
 		wmv2HuffmanMV1Codes,            // Codes
 		wmv2HuffmanMV1Lengths,          // Lengths
 		0                               // Symbols, identical to codes

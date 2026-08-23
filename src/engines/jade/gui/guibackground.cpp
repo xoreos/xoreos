@@ -109,7 +109,7 @@ void GUIBackground::update() {
 		return;
 	}
 
-	for (size_t i = 0; i < ARRAYSIZE(Graphics::kResolutions); i++) {
+	for (size_t i = 0; i < std::size(Graphics::kResolutions); i++) {
 		if (Graphics::kResolutions[i].width <= _screenWidth && Graphics::kResolutions[i].height <= _screenHeight) {
 			if (tryBackground(Graphics::kResolutions[i].width, Graphics::kResolutions[i].height)) {
 				return;

@@ -78,7 +78,7 @@ static GLenum kTextureUnit[] = {
 	GL_TEXTURE31_ARB
 };
 
-static const size_t kTextureUnitCount = ARRAYSIZE(kTextureUnit);
+static const size_t kTextureUnitCount = std::size(kTextureUnit);
 
 
 TextureManager::TextureManager() : _deswizzleSBM(false), _recordNewTextures(false) {
@@ -352,7 +352,7 @@ void TextureManager::set(const TextureHandle &handle, TextureMode mode) {
 }
 
 void TextureManager::activeTexture(size_t n) {
-	if ((n >= GfxMan.getMultipleTextureCount()) || (n >= ARRAYSIZE(kTextureUnit)))
+	if ((n >= GfxMan.getMultipleTextureCount()) || (n >= std::size(kTextureUnit)))
 		return;
 
 	glActiveTextureARB(kTextureUnit[n]);

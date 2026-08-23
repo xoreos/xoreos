@@ -37,9 +37,9 @@ static const byte kCypherText[] = { 0x2B, 0x9B, 0x10, 0x5F, 0xF2, 0x5B, 0x58, 0x
                                     0x20, 0xA8, 0xC2, 0xF8, 0x98, 0x1E, 0xA4, 0xE8 };
 
 static void createKey(std::vector<byte> &key) {
-	key.resize(ARRAYSIZE(kKey));
+	key.resize(std::size(kKey));
 
-	for (size_t i = 0; i < ARRAYSIZE(kKey); i++)
+	for (size_t i = 0; i < std::size(kKey); i++)
 		key[i] = kKey[i];
 }
 
@@ -50,9 +50,9 @@ GTEST_TEST(Blowfish, encrypt) {
 	createKey(key);
 
 	Common::MemoryReadStream *cipherText = Common::encryptBlowfishEBC(clearText, key);
-	ASSERT_EQ(cipherText->size(), ARRAYSIZE(kCypherText));
+	ASSERT_EQ(cipherText->size(), std::size(kCypherText));
 
-	for (size_t i = 0; i < ARRAYSIZE(kCypherText); i++)
+	for (size_t i = 0; i < std::size(kCypherText); i++)
 		EXPECT_EQ(cipherText->readByte(), kCypherText[i]) << "At index " << i;
 
 	delete cipherText;
@@ -65,9 +65,9 @@ GTEST_TEST(Blowfish, decrypt) {
 	createKey(key);
 
 	Common::MemoryReadStream *clearText = Common::decryptBlowfishEBC(cipherText, key);
-	ASSERT_GE(clearText->size(), ARRAYSIZE(kClearText));
+	ASSERT_GE(clearText->size(), std::size(kClearText));
 
-	for (size_t i = 0; i < ARRAYSIZE(kClearText); i++)
+	for (size_t i = 0; i < std::size(kClearText); i++)
 		EXPECT_EQ(clearText->readByte(), kClearText[i]) << "At index " << i;
 
 	delete clearText;

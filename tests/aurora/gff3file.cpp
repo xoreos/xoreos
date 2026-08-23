@@ -134,14 +134,14 @@ GTEST_TEST(GFF3Struct, getFieldCount) {
 	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
-	EXPECT_EQ(strct.getFieldCount(), ARRAYSIZE(kFieldNamesSingle));
+	EXPECT_EQ(strct.getFieldCount(), std::size(kFieldNamesSingle));
 }
 
 GTEST_TEST(GFF3Struct, hasField) {
 	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldNamesSingle); i++)
+	for (size_t i = 0; i < std::size(kFieldNamesSingle); i++)
 		EXPECT_TRUE(strct.hasField(kFieldNamesSingle[i])) << "At index " << i;
 
 	EXPECT_FALSE(strct.hasField("Nope"));
@@ -153,7 +153,7 @@ GTEST_TEST(GFF3Struct, getFieldNames) {
 
 	const std::vector<Common::UString> &fieldNames = strct.getFieldNames();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldNamesSingle); i++)
+	for (size_t i = 0; i < std::size(kFieldNamesSingle); i++)
 		EXPECT_STREQ(fieldNames[i].c_str(), kFieldNamesSingle[i]) << "At index " << i;
 }
 
@@ -161,7 +161,7 @@ GTEST_TEST(GFF3Struct, getFieldType) {
 	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldNamesSingle); i++)
+	for (size_t i = 0; i < std::size(kFieldNamesSingle); i++)
 		EXPECT_EQ(strct.getFieldType(kFieldNamesSingle[i]), kFieldTypesSingle[i]) << "At index " << i;
 }
 

@@ -69,7 +69,7 @@ CharacterGenerationMenu::CharacterGenerationMenu(KotORBase::Module *module,
 		"VIT_ARROW_LBL", "DEF_ARROW_LBL", "LBL_NAME"
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kEmptyLabels); i++) {
+	for (size_t i = 0; i < std::size(kEmptyLabels); i++) {
 		Odyssey::WidgetLabel *label = getLabel(kEmptyLabels[i]);
 		if (label)
 			label->setText("");
@@ -79,7 +79,7 @@ CharacterGenerationMenu::CharacterGenerationMenu(KotORBase::Module *module,
 		"NEW_LBL", "OLD_LBL", "LBL_LEVEL", "LBL_LEVEL_VAL"
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kInvisibleWidgets); i++) {
+	for (size_t i = 0; i < std::size(kInvisibleWidgets); i++) {
 		Widget *widget = getWidget(kInvisibleWidgets[i]);
 		if (widget)
 			widget->setInvisible(true);

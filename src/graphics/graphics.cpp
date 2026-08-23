@@ -332,17 +332,17 @@ static void outputGLDebug(GLenum source, GLenum type, GLuint id, GLenum severity
 	};
 
 	Common::DebugChannel debugChannel = Common::kDebugGLOther;
-	for (size_t i = 0; i < ARRAYSIZE(kSourceLookup); i += 2)
+	for (size_t i = 0; i < std::size(kSourceLookup); i += 2)
 		if (source == (GLenum) kSourceLookup[i + 0])
 			debugChannel = (Common::DebugChannel) kSourceLookup[i + 1];
 
 	Common::DebugGLType debugType = Common::kDebugGLTypeOther;
-	for (size_t i = 0; i < ARRAYSIZE(kTypeLookup); i += 2)
+	for (size_t i = 0; i < std::size(kTypeLookup); i += 2)
 		if (type == (GLenum) kTypeLookup[i + 0])
 			debugType = (Common::DebugGLType) kTypeLookup[i + 1];
 
 	uint32_t debugLevel = 5;
-	for (size_t i = 0; i < ARRAYSIZE(kLevelLookup); i += 2)
+	for (size_t i = 0; i < std::size(kLevelLookup); i += 2)
 		if (severity == (GLenum) kLevelLookup[i + 0])
 			debugLevel = kLevelLookup[i + 1];
 

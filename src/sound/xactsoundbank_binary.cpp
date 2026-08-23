@@ -484,7 +484,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 			case EventType::MixBins:
 				xsb.skip(2); // Unused
 
-				for (size_t j = 0; j < ARRAYSIZE(event.params.mixbins.bins) && parameterSize >= 4; j++, parameterSize -= 4) {
+				for (size_t j = 0; j < std::size(event.params.mixbins.bins) && parameterSize >= 4; j++, parameterSize -= 4) {
 					event.params.mixbins.bins[j].channel = xsb.readByte();
 
 					xsb.skip(1); // Unknown
@@ -537,7 +537,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 
 					parameterSize -= 4;
 
-					for (size_t j = 0; j < ARRAYSIZE(event.params.mixbinspan.bins) && parameterSize >= 4; j++, parameterSize -= 4) {
+					for (size_t j = 0; j < std::size(event.params.mixbinspan.bins) && parameterSize >= 4; j++, parameterSize -= 4) {
 						event.params.mixbinspan.bins[j].channel = xsb.readByte();
 
 						xsb.skip(1); // Unknown

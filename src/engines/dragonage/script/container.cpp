@@ -90,14 +90,14 @@ void ScriptContainer::clearScript() {
 void ScriptContainer::readScript(const Aurora::GFF3Struct &gff) {
 	clearScript();
 
-	for (size_t i = 0; i < ARRAYSIZE(kScriptNames); i++)
+	for (size_t i = 0; i < std::size(kScriptNames); i++)
 		_script = gff.getString(kScriptNames[i], _script);
 }
 
 void ScriptContainer::readScript(const Aurora::GFF4Struct &gff) {
 	clearScript();
 
-	for (size_t i = 0; i < ARRAYSIZE(kScriptFields); i++)
+	for (size_t i = 0; i < std::size(kScriptFields); i++)
 		_script = gff.getString(kScriptFields[i], _script);
 }
 

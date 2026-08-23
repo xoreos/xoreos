@@ -89,18 +89,18 @@ GTEST_TEST_F(LanguageManager, addLanguageDeclaration) {
 }
 
 GTEST_TEST_F(LanguageManager, addLanguages) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.getLanguage(kLanguageDeclarations[i].id), kLanguageDeclarations[i].language) <<
 			"At index " << i;
 }
 
 GTEST_TEST_F(LanguageManager, clear) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 	LangMan.clear();
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.getLanguage(kLanguageDeclarations[i].id), Aurora::kLanguageInvalid) <<
 			"At index " << i;
 }
@@ -120,17 +120,17 @@ GTEST_TEST_F(LanguageManager, getLanguages) {
 }
 
 GTEST_TEST_F(LanguageManager, getLanguageIDUngendered) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.getLanguageID(kLanguageDeclarations[i].language), kLanguageDeclarations[i].id) <<
 			"At index " << i;
 }
 
 GTEST_TEST_F(LanguageManager, getLanguageIDGendered) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++) {
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++) {
 		EXPECT_EQ(LangMan.getLanguageID(kLanguageDeclarations[i].language, Aurora::kLanguageGenderMale),
 		          2 * kLanguageDeclarations[i].id + 0) << "At index " << i;
 		EXPECT_EQ(LangMan.getLanguageID(kLanguageDeclarations[i].language, Aurora::kLanguageGenderFemale),
@@ -139,17 +139,17 @@ GTEST_TEST_F(LanguageManager, getLanguageIDGendered) {
 }
 
 GTEST_TEST_F(LanguageManager, getLanguageUngendered) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.getLanguage(kLanguageDeclarations[i].id), kLanguageDeclarations[i].language) <<
 			"At index " << i;
 }
 
 GTEST_TEST_F(LanguageManager, getLanguageGendered) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++) {
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++) {
 		Aurora::LanguageGender gender0 = Aurora::kLanguageGenderMAX;
 		EXPECT_EQ(LangMan.getLanguage(2 * kLanguageDeclarations[i].id + 0, gender0),
 		          kLanguageDeclarations[i].language) << "At index " << i;
@@ -165,9 +165,9 @@ GTEST_TEST_F(LanguageManager, getLanguageGendered) {
 }
 
 GTEST_TEST_F(LanguageManager, getLanguageGenderedThrowaway) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++) {
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++) {
 		EXPECT_EQ(LangMan.getLanguageGendered(2 * kLanguageDeclarations[i].id + 0),
 		          kLanguageDeclarations[i].language) << "At index " << i;
 
@@ -177,27 +177,27 @@ GTEST_TEST_F(LanguageManager, getLanguageGenderedThrowaway) {
 }
 
 GTEST_TEST_F(LanguageManager, getEncoding) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.getEncoding(kLanguageDeclarations[i].language),
 		          kLanguageDeclarations[i].encoding) << "At index " << i;
 }
 
 GTEST_TEST_F(LanguageManager, getEncodingLocString) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.getEncodingLocString(kLanguageDeclarations[i].language),
 		          kLanguageDeclarations[i].encodingLocString) << "At index " << i;
 }
 
 GTEST_TEST_F(LanguageManager, parseLanguage) {
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.parseLanguage(kLanguageNamesShort[i]), kLanguageDeclarations[i].language) <<
 			"At index " << i;
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.parseLanguage(kLanguageNamesLong[i]), kLanguageDeclarations[i].language) <<
 			"At index " << i;
 }
@@ -223,7 +223,7 @@ GTEST_TEST_F(LanguageManager, swapLanguageGender) {
 }
 
 GTEST_TEST_F(LanguageManager, setCurrentLanguageSingle) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
 	LangMan.setCurrentLanguage(kLanguageDeclarations[0].language);
 
@@ -232,7 +232,7 @@ GTEST_TEST_F(LanguageManager, setCurrentLanguageSingle) {
 }
 
 GTEST_TEST_F(LanguageManager, setCurrentLanguageDouble) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
 	LangMan.setCurrentLanguage(kLanguageDeclarations[0].language);
 	LangMan.setCurrentLanguage(kLanguageDeclarations[1].language, kLanguageDeclarations[2].language);
@@ -242,7 +242,7 @@ GTEST_TEST_F(LanguageManager, setCurrentLanguageDouble) {
 }
 
 GTEST_TEST_F(LanguageManager, setCurrentLanguageText) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
 	LangMan.setCurrentLanguage    (kLanguageDeclarations[0].language);
 	LangMan.setCurrentLanguageText(kLanguageDeclarations[1].language);
@@ -252,7 +252,7 @@ GTEST_TEST_F(LanguageManager, setCurrentLanguageText) {
 }
 
 GTEST_TEST_F(LanguageManager, setCurrentLanguageVoice) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
 	LangMan.setCurrentLanguage     (kLanguageDeclarations[0].language);
 	LangMan.setCurrentLanguageVoice(kLanguageDeclarations[1].language);
@@ -270,9 +270,9 @@ GTEST_TEST_F(LanguageManager, setCurrentGender) {
 }
 
 GTEST_TEST_F(LanguageManager, getCurrentEncoding) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++) {
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++) {
 		LangMan.setCurrentLanguage(kLanguageDeclarations[i].language);
 
 		EXPECT_EQ(LangMan.getCurrentEncoding(), kLanguageDeclarations[i].encoding) <<
@@ -281,9 +281,9 @@ GTEST_TEST_F(LanguageManager, getCurrentEncoding) {
 }
 
 GTEST_TEST_F(LanguageManager, getCurrentEncodingLocString) {
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++) {
+	for (size_t i = 0; i < std::size(kLanguageDeclarations); i++) {
 		LangMan.setCurrentLanguage(kLanguageDeclarations[i].language);
 
 		EXPECT_EQ(LangMan.getCurrentEncodingLocString(), kLanguageDeclarations[i].encodingLocString) <<

@@ -357,7 +357,7 @@ Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 	} catch (Common::Exception &e) {
 		delete image;
 
-		for (size_t i = 0; i < ARRAYSIZE(layers); i++)
+		for (size_t i = 0; i < std::size(layers); i++)
 			delete layers[i];
 
 		e.add("Failed to create texture \"%s\" (%d)", name.c_str(), type);
@@ -403,7 +403,7 @@ Texture *Texture::create(const Common::UString &name, const TXI &txi, bool deswi
 	} catch (Common::Exception &e) {
 		delete image;
 
-		for (size_t i = 0; i < ARRAYSIZE(layers); i++)
+		for (size_t i = 0; i < std::size(layers); i++)
 			delete layers[i];
 
 		e.add("Failed to create texture \"%s\" (%d)", name.c_str(), type);
@@ -491,7 +491,7 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 		return new CubeMapCombiner(layers);
 
 	} catch (...) {
-		for (size_t i = 0; i < ARRAYSIZE(layers); i++)
+		for (size_t i = 0; i < std::size(layers); i++)
 			delete layers[i];
 
 		throw;

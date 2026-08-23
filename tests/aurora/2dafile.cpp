@@ -103,14 +103,14 @@ GTEST_TEST(TwoDAFileASCII, getRowCount) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 }
 
 GTEST_TEST(TwoDAFileASCII, getColumnCount) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
 }
 
 GTEST_TEST(TwoDAFileASCII, getHeaders) {
@@ -118,9 +118,9 @@ GTEST_TEST(TwoDAFileASCII, getHeaders) {
 	const Aurora::TwoDAFile twoda(stream);
 
 	const std::vector<Common::UString> &headers = twoda.getHeaders();
-	ASSERT_EQ(headers.size(), ARRAYSIZE(kHeaders));
+	ASSERT_EQ(headers.size(), std::size(kHeaders));
 
-	for (size_t i = 0; i < ARRAYSIZE(kHeaders); i++)
+	for (size_t i = 0; i < std::size(kHeaders); i++)
 		EXPECT_STREQ(headers[i].c_str(), kHeaders[i]) << "At index " << i;
 }
 
@@ -128,7 +128,7 @@ GTEST_TEST(TwoDAFileASCII, headerToColumn) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kHeaders); i++)
+	for (size_t i = 0; i < std::size(kHeaders); i++)
 		EXPECT_EQ(twoda.headerToColumn(kHeaders[i]), i);
 
 	EXPECT_EQ(twoda.headerToColumn("STRINGVALUE"), 2);
@@ -141,8 +141,8 @@ GTEST_TEST(TwoDAFileASCII, getRow) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++) {
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++) {
+	for (size_t i = 0; i < std::size(kDataString); i++) {
+		for (size_t j = 0; j < std::size(kDataString[i]); j++) {
 			if (kDataString[i][j][0] == '\0')
 				continue;
 
@@ -174,14 +174,14 @@ GTEST_TEST(TwoDAFileBinary, getRowCount) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 }
 
 GTEST_TEST(TwoDAFileBinary, getColumnCount) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
 }
 
 GTEST_TEST(TwoDAFileBinary, getHeaders) {
@@ -189,9 +189,9 @@ GTEST_TEST(TwoDAFileBinary, getHeaders) {
 	const Aurora::TwoDAFile twoda(stream);
 
 	const std::vector<Common::UString> &headers = twoda.getHeaders();
-	ASSERT_EQ(headers.size(), ARRAYSIZE(kHeaders));
+	ASSERT_EQ(headers.size(), std::size(kHeaders));
 
-	for (size_t i = 0; i < ARRAYSIZE(kHeaders); i++)
+	for (size_t i = 0; i < std::size(kHeaders); i++)
 		EXPECT_STREQ(headers[i].c_str(), kHeaders[i]) << "At index " << i;
 }
 
@@ -199,7 +199,7 @@ GTEST_TEST(TwoDAFileBinary, headerToColumn) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kHeaders); i++)
+	for (size_t i = 0; i < std::size(kHeaders); i++)
 		EXPECT_EQ(twoda.headerToColumn(kHeaders[i]), i);
 
 	EXPECT_EQ(twoda.headerToColumn("STRINGVALUE"), 2);
@@ -212,8 +212,8 @@ GTEST_TEST(TwoDAFileBinary, getRow) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++) {
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++) {
+	for (size_t i = 0; i < std::size(kDataString); i++) {
+		for (size_t j = 0; j < std::size(kDataString[i]); j++) {
 			if (kDataString[i][j][0] == '\0')
 				continue;
 
@@ -245,8 +245,8 @@ GTEST_TEST(TwoDARowASCII, emptyN) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataEmpty); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataEmpty[i]); j++)
+	for (size_t i = 0; i < std::size(kDataEmpty); i++)
+		for (size_t j = 0; j < std::size(kDataEmpty[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).empty(i), kDataEmpty[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -258,8 +258,8 @@ GTEST_TEST(TwoDARowASCII, emptyStr) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataEmpty); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataEmpty[i]); j++)
+	for (size_t i = 0; i < std::size(kDataEmpty); i++)
+		for (size_t j = 0; j < std::size(kDataEmpty[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).empty(kHeaders[i]), kDataEmpty[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -271,8 +271,8 @@ GTEST_TEST(TwoDARowASCII, getStringN) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(i).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -284,8 +284,8 @@ GTEST_TEST(TwoDARowASCII, getStringStr) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -297,8 +297,8 @@ GTEST_TEST(TwoDARowASCII, getIntN) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataInt); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataInt[i]); j++)
+	for (size_t i = 0; i < std::size(kDataInt); i++)
+		for (size_t j = 0; j < std::size(kDataInt[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).getInt(i), kDataInt[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -310,8 +310,8 @@ GTEST_TEST(TwoDARowASCII, getIntStr) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataInt); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataInt[i]); j++)
+	for (size_t i = 0; i < std::size(kDataInt); i++)
+		for (size_t j = 0; j < std::size(kDataInt[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).getInt(kHeaders[i]), kDataInt[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -323,8 +323,8 @@ GTEST_TEST(TwoDARowASCII, getFloatN) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataFloat); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataFloat[i]); j++)
+	for (size_t i = 0; i < std::size(kDataFloat); i++)
+		for (size_t j = 0; j < std::size(kDataFloat[i]); j++)
 			EXPECT_FLOAT_EQ(twoda.getRow(j).getFloat(i), kDataFloat[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -336,8 +336,8 @@ GTEST_TEST(TwoDARowASCII, getFloatStr) {
 	Common::MemoryReadStream stream(k2DAASCII);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataFloat); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataFloat[i]); j++)
+	for (size_t i = 0; i < std::size(kDataFloat); i++)
+		for (size_t j = 0; j < std::size(kDataFloat[i]); j++)
 			EXPECT_FLOAT_EQ(twoda.getRow(j).getFloat(kHeaders[i]), kDataFloat[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -351,8 +351,8 @@ GTEST_TEST(TwoDARowBinary, emptyN) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataEmpty); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataEmpty[i]); j++)
+	for (size_t i = 0; i < std::size(kDataEmpty); i++)
+		for (size_t j = 0; j < std::size(kDataEmpty[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).empty(i), kDataEmpty[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -364,8 +364,8 @@ GTEST_TEST(TwoDARowBinary, emptyStr) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataEmpty); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataEmpty[i]); j++)
+	for (size_t i = 0; i < std::size(kDataEmpty); i++)
+		for (size_t j = 0; j < std::size(kDataEmpty[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).empty(kHeaders[i]), kDataEmpty[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -377,8 +377,8 @@ GTEST_TEST(TwoDARowBinary, getStringN) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(i).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -390,8 +390,8 @@ GTEST_TEST(TwoDARowBinary, getStringStr) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -403,8 +403,8 @@ GTEST_TEST(TwoDARowBinary, getIntN) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataInt); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataInt[i]); j++)
+	for (size_t i = 0; i < std::size(kDataInt); i++)
+		for (size_t j = 0; j < std::size(kDataInt[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).getInt(i), kDataInt[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -416,8 +416,8 @@ GTEST_TEST(TwoDARowBinary, getIntStr) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataInt); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataInt[i]); j++)
+	for (size_t i = 0; i < std::size(kDataInt); i++)
+		for (size_t j = 0; j < std::size(kDataInt[i]); j++)
 			EXPECT_EQ(twoda.getRow(j).getInt(kHeaders[i]), kDataInt[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -429,8 +429,8 @@ GTEST_TEST(TwoDARowBinary, getFloatN) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataFloat); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataFloat[i]); j++)
+	for (size_t i = 0; i < std::size(kDataFloat); i++)
+		for (size_t j = 0; j < std::size(kDataFloat[i]); j++)
 			EXPECT_FLOAT_EQ(twoda.getRow(j).getFloat(i), kDataFloat[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -442,8 +442,8 @@ GTEST_TEST(TwoDARowBinary, getFloatStr) {
 	Common::MemoryReadStream stream(k2DABinary);
 	const Aurora::TwoDAFile twoda(stream);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataFloat); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataFloat[i]); j++)
+	for (size_t i = 0; i < std::size(kDataFloat); i++)
+		for (size_t j = 0; j < std::size(kDataFloat[i]); j++)
 			EXPECT_FLOAT_EQ(twoda.getRow(j).getFloat(kHeaders[i]), kDataFloat[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -473,11 +473,11 @@ GTEST_TEST(TwoDAFileVariants, asciiTabs) {
 	Common::MemoryReadStream stream(k2DAASCIITabs);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -507,11 +507,11 @@ GTEST_TEST(TwoDAFileVariants, binaryTab) {
 	Common::MemoryReadStream stream(k2DABinaryTab);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -539,11 +539,11 @@ GTEST_TEST(TwoDAFileVariants, asciiMissingCells) {
 	Common::MemoryReadStream stream(k2DAASCIIMissingCells);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -571,11 +571,11 @@ GTEST_TEST(TwoDAFileVariants, asciiExtraCells) {
 	Common::MemoryReadStream stream(k2DAASCIIExtraCells);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -603,11 +603,11 @@ GTEST_TEST(TwoDAFileVariants, asciiWrongRowIndices) {
 	Common::MemoryReadStream stream(k2DAASCIIWrongRowIndices);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 
@@ -637,11 +637,11 @@ GTEST_TEST(TwoDAFileVariants, binaryWrongRowIndices) {
 	Common::MemoryReadStream stream(k2DABinaryWrongRowIndices);
 	const Aurora::TwoDAFile twoda(stream);
 
-	EXPECT_EQ(twoda.getColumnCount(), ARRAYSIZE(kHeaders));
-	EXPECT_EQ(twoda.getRowCount(), ARRAYSIZE(kDataString[0]));
+	EXPECT_EQ(twoda.getColumnCount(), std::size(kHeaders));
+	EXPECT_EQ(twoda.getRowCount(), std::size(kDataString[0]));
 
-	for (size_t i = 0; i < ARRAYSIZE(kDataString); i++)
-		for (size_t j = 0; j < ARRAYSIZE(kDataString[i]); j++)
+	for (size_t i = 0; i < std::size(kDataString); i++)
+		for (size_t j = 0; j < std::size(kDataString[i]); j++)
 			EXPECT_STREQ(twoda.getRow(j).getString(kHeaders[i]).c_str(), kDataString[i][j]) <<
 				"At index " << j << "." << i;
 

@@ -67,9 +67,9 @@ GTEST_TEST(SSFFile, getSoundFileNWNV10) {
 	Common::MemoryReadStream stream(kSSFNWNV10);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWNV10_Files));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWNV10_Files));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWNV10_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFNWNV10_Files); i++)
 		EXPECT_STREQ(ssf.getSoundFile(i).c_str(), kSSFNWNV10_Files[i]) << "At index " << i;
 }
 
@@ -77,9 +77,9 @@ GTEST_TEST(SSFFile, getStrRefNWNV10) {
 	Common::MemoryReadStream stream(kSSFNWNV10);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWNV10_StrRefs));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWNV10_StrRefs));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWNV10_StrRefs); i++)
+	for (size_t i = 0; i < std::size(kSSFNWNV10_StrRefs); i++)
 		EXPECT_EQ(ssf.getStrRef(i), kSSFNWNV10_StrRefs[i]) << "At index " << i;
 }
 
@@ -87,10 +87,10 @@ GTEST_TEST(SSFFile, getSoundNWNV10) {
 	Common::MemoryReadStream stream(kSSFNWNV10);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWNV10_Files));
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWNV10_StrRefs));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWNV10_Files));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWNV10_StrRefs));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWNV10_Files); i++) {
+	for (size_t i = 0; i < std::size(kSSFNWNV10_Files); i++) {
 		Common::UString soundFile;
 		uint32_t strRef;
 
@@ -104,7 +104,7 @@ GTEST_TEST(SSFFile, getSoundNWNV10) {
 GTEST_TEST(SSFFile, determineVersionForGameNWNV10) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWNV10_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFNWNV10_Files); i++)
 		ssf.setSound(i, kSSFNWNV10_Files[i], kSSFNWNV10_StrRefs[i]);
 
 	EXPECT_EQ(ssf.determineVersionForGame(Aurora::kGameIDNWN ), Aurora::SSFFile::kVersion10_NWN);
@@ -114,7 +114,7 @@ GTEST_TEST(SSFFile, determineVersionForGameNWNV10) {
 GTEST_TEST(SSFFile, writeSSFsetSoundNWNV10) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWNV10_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFNWNV10_Files); i++)
 		ssf.setSound(i, kSSFNWNV10_Files[i], kSSFNWNV10_StrRefs[i]);
 
 	Common::MemoryWriteStreamDynamic writeStream(true);
@@ -126,7 +126,7 @@ GTEST_TEST(SSFFile, writeSSFsetSoundNWNV10) {
 GTEST_TEST(SSFFile, writeSSFsetFileStrRefNWNV10) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWNV10_Files); i++) {
+	for (size_t i = 0; i < std::size(kSSFNWNV10_Files); i++) {
 		ssf.setSoundFile(i, kSSFNWNV10_Files[i]);
 		ssf.setStrRef(i, kSSFNWNV10_StrRefs[i]);
 	}
@@ -171,9 +171,9 @@ GTEST_TEST(SSFFile, getSoundFileNWN2V11) {
 	Common::MemoryReadStream stream(kSSFNWN2V11);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWN2V11_Files));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWN2V11_Files));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWN2V11_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFNWN2V11_Files); i++)
 		EXPECT_STREQ(ssf.getSoundFile(i).c_str(), kSSFNWN2V11_Files[i]) << "At index " << i;
 }
 
@@ -181,9 +181,9 @@ GTEST_TEST(SSFFile, getStrRefNWN2V11) {
 	Common::MemoryReadStream stream(kSSFNWN2V11);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWN2V11_StrRefs));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWN2V11_StrRefs));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWN2V11_StrRefs); i++)
+	for (size_t i = 0; i < std::size(kSSFNWN2V11_StrRefs); i++)
 		EXPECT_EQ(ssf.getStrRef(i), kSSFNWN2V11_StrRefs[i]) << "At index " << i;
 }
 
@@ -191,10 +191,10 @@ GTEST_TEST(SSFFile, getSoundNWN2V11) {
 	Common::MemoryReadStream stream(kSSFNWN2V11);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWN2V11_Files));
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFNWN2V11_StrRefs));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWN2V11_Files));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFNWN2V11_StrRefs));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWN2V11_Files); i++) {
+	for (size_t i = 0; i < std::size(kSSFNWN2V11_Files); i++) {
 		Common::UString soundFile;
 		uint32_t strRef;
 
@@ -208,7 +208,7 @@ GTEST_TEST(SSFFile, getSoundNWN2V11) {
 GTEST_TEST(SSFFile, determineVersionForGameNWN2V11) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWN2V11_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFNWN2V11_Files); i++)
 		ssf.setSound(i, kSSFNWN2V11_Files[i], kSSFNWN2V11_StrRefs[i]);
 
 	EXPECT_EQ(ssf.determineVersionForGame(Aurora::kGameIDNWN2), Aurora::SSFFile::kVersion11_NWN2);
@@ -217,7 +217,7 @@ GTEST_TEST(SSFFile, determineVersionForGameNWN2V11) {
 GTEST_TEST(SSFFile, writeSSFsetSoundNWN2V11) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWN2V11_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFNWN2V11_Files); i++)
 		ssf.setSound(i, kSSFNWN2V11_Files[i], kSSFNWN2V11_StrRefs[i]);
 
 	Common::MemoryWriteStreamDynamic writeStream(true);
@@ -229,7 +229,7 @@ GTEST_TEST(SSFFile, writeSSFsetSoundNWN2V11) {
 GTEST_TEST(SSFFile, writeSSFsetFileStrRefNWN2V11) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFNWN2V11_Files); i++) {
+	for (size_t i = 0; i < std::size(kSSFNWN2V11_Files); i++) {
 		ssf.setSoundFile(i, kSSFNWN2V11_Files[i]);
 		ssf.setStrRef(i, kSSFNWN2V11_StrRefs[i]);
 	}
@@ -261,9 +261,9 @@ GTEST_TEST(SSFFile, getSoundFileKotORV11) {
 	Common::MemoryReadStream stream(kSSFKotORV11);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFKotORV11_Files));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFKotORV11_Files));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFKotORV11_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFKotORV11_Files); i++)
 		EXPECT_STREQ(ssf.getSoundFile(i).c_str(), kSSFKotORV11_Files[i]) << "At index " << i;
 }
 
@@ -271,9 +271,9 @@ GTEST_TEST(SSFFile, getStrRefKotORV11) {
 	Common::MemoryReadStream stream(kSSFKotORV11);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFKotORV11_StrRefs));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFKotORV11_StrRefs));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFKotORV11_StrRefs); i++)
+	for (size_t i = 0; i < std::size(kSSFKotORV11_StrRefs); i++)
 		EXPECT_EQ(ssf.getStrRef(i), kSSFKotORV11_StrRefs[i]) << "At index " << i;
 }
 
@@ -281,10 +281,10 @@ GTEST_TEST(SSFFile, getSoundKotORV11) {
 	Common::MemoryReadStream stream(kSSFKotORV11);
 	const Aurora::SSFFile ssf(stream);
 
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFKotORV11_Files));
-	ASSERT_EQ(ssf.getSoundCount(), ARRAYSIZE(kSSFKotORV11_StrRefs));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFKotORV11_Files));
+	ASSERT_EQ(ssf.getSoundCount(), std::size(kSSFKotORV11_StrRefs));
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFKotORV11_Files); i++) {
+	for (size_t i = 0; i < std::size(kSSFKotORV11_Files); i++) {
 		Common::UString soundFile;
 		uint32_t strRef;
 
@@ -298,7 +298,7 @@ GTEST_TEST(SSFFile, getSoundKotORV11) {
 GTEST_TEST(SSFFile, determineVersionForGameKotORV11) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFKotORV11_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFKotORV11_Files); i++)
 		ssf.setSound(i, kSSFKotORV11_Files[i], kSSFKotORV11_StrRefs[i]);
 
 	EXPECT_EQ(ssf.determineVersionForGame(Aurora::kGameIDKotOR ), Aurora::SSFFile::kVersion11_KotOR);
@@ -308,7 +308,7 @@ GTEST_TEST(SSFFile, determineVersionForGameKotORV11) {
 GTEST_TEST(SSFFile, writeSSFsetSoundKotORV11) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFKotORV11_Files); i++)
+	for (size_t i = 0; i < std::size(kSSFKotORV11_Files); i++)
 		ssf.setSound(i, kSSFKotORV11_Files[i], kSSFKotORV11_StrRefs[i]);
 
 	Common::MemoryWriteStreamDynamic writeStream(true);
@@ -320,7 +320,7 @@ GTEST_TEST(SSFFile, writeSSFsetSoundKotORV11) {
 GTEST_TEST(SSFFile, writeSSFsetFileStrRefKotORV11) {
 	Aurora::SSFFile ssf;
 
-	for (size_t i = 0; i < ARRAYSIZE(kSSFKotORV11_Files); i++) {
+	for (size_t i = 0; i < std::size(kSSFKotORV11_Files); i++) {
 		ssf.setSoundFile(i, kSSFKotORV11_Files[i]);
 		ssf.setStrRef(i, kSSFKotORV11_StrRefs[i]);
 	}

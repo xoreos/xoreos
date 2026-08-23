@@ -93,7 +93,7 @@ void ScriptContainer::readScripts(const Aurora::GFF3Struct &gff) {
 
 	if (gff.hasField("Scripts")) {
 		const Aurora::GFF3Struct &scripts = gff.getStruct("Scripts");
-		for (size_t i = 0; i < ARRAYSIZE(kScriptNames); i++) {
+		for (size_t i = 0; i < std::size(kScriptNames); i++) {
 			const Script script = kScriptNames[i].script;
 			const char *name = kScriptNames[i].name;
 

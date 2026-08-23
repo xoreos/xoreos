@@ -318,7 +318,7 @@ void HUD::setPartyMember2(KotORBase::Creature *creature) {
 void HUD::update(int width, int height) {
 	std::set<Resolution> availableRes;
 
-	for (size_t i = 0; i < ARRAYSIZE(kResolution); i++)
+	for (size_t i = 0; i < std::size(kResolution); i++)
 		if (ResMan.hasResource(kResolution[i].gui, Aurora::kFileTypeGUI))
 			availableRes.insert(kResolution[i]);
 
@@ -348,7 +348,7 @@ void HUD::update(int width, int height) {
 	init();
 
 	// Make all the widgets invisible and scale them if needed.
-	for (size_t i = 0; i < ARRAYSIZE(kKnownWidgets); i++) {
+	for (size_t i = 0; i < std::size(kKnownWidgets); i++) {
 		Widget *widget = getWidget(kKnownWidgets[i].name);
 		if (!widget)
 			continue;

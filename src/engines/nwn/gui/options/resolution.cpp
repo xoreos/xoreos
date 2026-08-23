@@ -105,7 +105,7 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 
 	// Find the max allowed resolution in the list
 	size_t maxRes = 0;
-	for (size_t i = 0; i < ARRAYSIZE(Graphics::kResolutions); i++) {
+	for (size_t i = 0; i < std::size(Graphics::kResolutions); i++) {
 		if ((Graphics::kResolutions[i].width <= maxWidth) && (Graphics::kResolutions[i].height <= maxHeight)) {
 			maxRes = i;
 			break;
@@ -114,7 +114,7 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 
 	// Find the current resolution in the list
 	size_t currentResolution = SIZE_MAX;
-	for (size_t i = maxRes; i < ARRAYSIZE(Graphics::kResolutions); i++) {
+	for (size_t i = maxRes; i < std::size(Graphics::kResolutions); i++) {
 		if ((Graphics::kResolutions[i].width == curWidth) && (Graphics::kResolutions[i].height == curHeight)) {
 			currentResolution = i - maxRes;
 			break;
@@ -131,7 +131,7 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 	}
 
 	// Put the rest of the useable resolutions into the list
-	for (size_t i = maxRes; i < ARRAYSIZE(Graphics::kResolutions); i++)
+	for (size_t i = maxRes; i < std::size(Graphics::kResolutions); i++)
 		_useableResolutions.push_back(Graphics::kResolutions[i]);
 
 

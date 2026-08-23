@@ -166,7 +166,7 @@ Common::UString Creature::createModelPrefix(const Aurora::GDAFile &gda, size_t r
 	static const char * const kGenderChars[4] = { "N", "M", "F", "N" };
 
 	Common::UString genderChar = gda.getString(row, "ModelGenderOverride");
-	if (genderChar.empty() && (gender < ARRAYSIZE(kGenderChars)))
+	if (genderChar.empty() && (gender < std::size(kGenderChars)))
 		genderChar = kGenderChars[gender];
 
 	const Common::UString modelRace = gda.getString(row, "ModelRace");

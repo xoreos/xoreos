@@ -366,7 +366,7 @@ UString FilePath::getHumanReadableSize(size_t size) {
 	double s = size;
 	size_t n = 0;
 
-	while ((s >= 1024) && ((n + 1) < ARRAYSIZE(sizes))) {
+	while ((s >= 1024) && ((n + 1) < std::size(sizes))) {
 		n++;
 		s /= 1024;
 	}

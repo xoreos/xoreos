@@ -34,7 +34,7 @@ GTEST_TEST(BitStream, skip) {
 	Common::BitStream8MSB bitStream(stream);
 
 	EXPECT_EQ(bitStream.pos(), 0);
-	EXPECT_EQ(bitStream.size(), 8 * ARRAYSIZE(data));
+	EXPECT_EQ(bitStream.size(), 8 * std::size(data));
 
 	bitStream.skip(1);
 	bitStream.skip(2);
@@ -63,7 +63,7 @@ static void testBitStream(Common::BitStream &bitStream, const byte (&compValues)
 	byte data[11];
 	readBitStream(bitStream, data);
 
-	for (size_t i = 0; i < ARRAYSIZE(compValues); i++)
+	for (size_t i = 0; i < std::size(compValues); i++)
 		EXPECT_EQ(data[i], compValues[i]) << "At index " << i;
 }
 

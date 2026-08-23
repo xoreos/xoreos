@@ -1380,12 +1380,12 @@ struct WMACoefHuffmanParam {
 };
 
 static const WMACoefHuffmanParam coefHuffmanParam[6] = {
-	{ ARRAYSIZE(coef0Huffbits), ARRAYSIZE(levels0), coef0Huffcodes, coef0Huffbits, levels0 },
-	{ ARRAYSIZE(coef1Huffbits), ARRAYSIZE(levels1), coef1Huffcodes, coef1Huffbits, levels1 },
-	{ ARRAYSIZE(coef2Huffbits), ARRAYSIZE(levels2), coef2Huffcodes, coef2Huffbits, levels2 },
-	{ ARRAYSIZE(coef3Huffbits), ARRAYSIZE(levels3), coef3Huffcodes, coef3Huffbits, levels3 },
-	{ ARRAYSIZE(coef4Huffbits), ARRAYSIZE(levels4), coef4Huffcodes, coef4Huffbits, levels4 },
-	{ ARRAYSIZE(coef5Huffbits), ARRAYSIZE(levels5), coef5Huffcodes, coef5Huffbits, levels5 }
+	{ std::size(coef0Huffbits), std::size(levels0), coef0Huffcodes, coef0Huffbits, levels0 },
+	{ std::size(coef1Huffbits), std::size(levels1), coef1Huffcodes, coef1Huffbits, levels1 },
+	{ std::size(coef2Huffbits), std::size(levels2), coef2Huffcodes, coef2Huffbits, levels2 },
+	{ std::size(coef3Huffbits), std::size(levels3), coef3Huffcodes, coef3Huffbits, levels3 },
+	{ std::size(coef4Huffbits), std::size(levels4), coef4Huffcodes, coef4Huffbits, levels4 },
+	{ std::size(coef5Huffbits), std::size(levels5), coef5Huffcodes, coef5Huffbits, levels5 }
 };
 
 const uint32_t hgainHuffCodes[37] = {
