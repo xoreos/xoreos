@@ -60,10 +60,10 @@ GTEST_TEST(UString, constructorCString) {
 	EXPECT_STRNE(str.c_str(), kTestString2);
 
 	EXPECT_FALSE(str.empty());
-	ASSERT_EQ(str.size(), ARRAYSIZE(kTestString1) - 1);
+	ASSERT_EQ(str.size(), std::size(kTestString1) - 1);
 
 	EXPECT_EQ(*str.begin(), kTestString1[0]);
-	EXPECT_EQ(*(--str.end()), kTestString1[ARRAYSIZE(kTestString1) - 2]);
+	EXPECT_EQ(*(--str.end()), kTestString1[std::size(kTestString1) - 2]);
 }
 
 GTEST_TEST(UString, constructorCopy) {
@@ -79,9 +79,9 @@ GTEST_TEST(UString, constructorCopy) {
 }
 
 GTEST_TEST(UString, constructorCopyLength) {
-	const Common::UString str(kTestString1, ARRAYSIZE(kTestStringSub1) - 1);
+	const Common::UString str(kTestString1, std::size(kTestStringSub1) - 1);
 
-	EXPECT_EQ(str.size(), ARRAYSIZE(kTestStringSub1) - 1);
+	EXPECT_EQ(str.size(), std::size(kTestStringSub1) - 1);
 	EXPECT_STREQ(str.c_str(), kTestStringSub1);
 }
 
@@ -103,11 +103,11 @@ GTEST_TEST(UString, constructorCopyIterators) {
 GTEST_TEST(UString, iteratorsASCII) {
 	const Common::UString str(kTestString1);
 
-	ASSERT_EQ(str.size(), ARRAYSIZE(kTestString1) - 1);
+	ASSERT_EQ(str.size(), std::size(kTestString1) - 1);
 
 	Common::UString::iterator it = str.begin();
 
-	for (size_t i = 0; i < (ARRAYSIZE(kTestString1) - 1); i++, ++it) {
+	for (size_t i = 0; i < (std::size(kTestString1) - 1); i++, ++it) {
 		EXPECT_NE(it, str.end()) << "At index " << i;
 		EXPECT_EQ(*it, kTestString1[i]) << "At index " << i;
 	}
@@ -118,11 +118,11 @@ GTEST_TEST(UString, iteratorsASCII) {
 GTEST_TEST(UString, iteratorsUTF8) {
 	const Common::UString str(reinterpret_cast<const char *>(kTestStringUTF8));
 
-	ASSERT_EQ(str.size(), ARRAYSIZE(kTestStringUTF32) - 1);
+	ASSERT_EQ(str.size(), std::size(kTestStringUTF32) - 1);
 
 	Common::UString::iterator it = str.begin();
 
-	for (size_t i = 0; i < (ARRAYSIZE(kTestStringUTF32) - 1); i++, ++it) {
+	for (size_t i = 0; i < (std::size(kTestStringUTF32) - 1); i++, ++it) {
 		EXPECT_NE(it, str.end()) << "At index " << i;
 		EXPECT_EQ(*it, kTestStringUTF32[i]) << "At index " << i;
 	}

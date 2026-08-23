@@ -72,17 +72,17 @@ GTEST_TEST(MemoryReadStream, read) {
 	EXPECT_FALSE(stream.eos());
 
 	size_t readCount;
-	byte readData[ARRAYSIZE(data)] = { 1 };
+	byte readData[std::size(data)] = { 1 };
 
-	readCount = stream.read(readData, ARRAYSIZE(data));
+	readCount = stream.read(readData, std::size(data));
 
-	EXPECT_EQ(readCount, ARRAYSIZE(data));
+	EXPECT_EQ(readCount, std::size(data));
 	EXPECT_FALSE(stream.eos());
 
-	for (size_t i = 0; i < ARRAYSIZE(data); i++)
+	for (size_t i = 0; i < std::size(data); i++)
 		EXPECT_EQ(readData[i], data[i]) << "At index " << i;
 
-	readCount = stream.read(readData, ARRAYSIZE(data));
+	readCount = stream.read(readData, std::size(data));
 
 	EXPECT_EQ(readCount, 0);
 	EXPECT_TRUE(stream.eos());
@@ -92,24 +92,24 @@ GTEST_TEST(MemoryReadStream, readStream) {
 	static const byte data[3] = { 0x12, 0x34, 0x56 };
 	Common::MemoryReadStream stream(data);
 
-	Common::MemoryReadStream *streamRead = stream.readStream(ARRAYSIZE(data));
+	Common::MemoryReadStream *streamRead = stream.readStream(std::size(data));
 
-	EXPECT_EQ(streamRead->size(), ARRAYSIZE(data));
-	for (size_t i = 0; i < ARRAYSIZE(data); i++)
+	EXPECT_EQ(streamRead->size(), std::size(data));
+	for (size_t i = 0; i < std::size(data); i++)
 		EXPECT_EQ(streamRead->readByte(), data[i]) << "At index " << i;
 
 	delete streamRead;
 
 	stream.seek(0);
 
-	EXPECT_THROW(stream.readStream(ARRAYSIZE(data) + 1), Common::Exception);
+	EXPECT_THROW(stream.readStream(std::size(data) + 1), Common::Exception);
 }
 
 GTEST_TEST(MemoryReadStream, readChar) {
 	static const byte data[3] = { 0x12, 0x34, 0x56 };
 	Common::MemoryReadStream stream(data);
 
-	for (size_t i = 0; i < ARRAYSIZE(data); i++)
+	for (size_t i = 0; i < std::size(data); i++)
 		EXPECT_EQ(stream.readChar(), data[i]) << "At index " << i;
 
 	EXPECT_EQ(stream.readChar(), Common::MemoryReadStream::kEOF);

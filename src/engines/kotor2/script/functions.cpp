@@ -49,10 +49,10 @@ Functions::~Functions() {
 }
 
 void Functions::registerFunctions() {
-	assert(ARRAYSIZE(kFunctionPointers) == ARRAYSIZE(kFunctionSignatures));
-	assert(ARRAYSIZE(kFunctionPointers) == ARRAYSIZE(kFunctionDefaults));
+	assert(std::size(kFunctionPointers) == std::size(kFunctionSignatures));
+	assert(std::size(kFunctionPointers) == std::size(kFunctionDefaults));
 
-	for (size_t i = 0; i < ARRAYSIZE(kFunctionPointers); i++) {
+	for (size_t i = 0; i < std::size(kFunctionPointers); i++) {
 		const FunctionPointer   &fPtr = kFunctionPointers[i];
 		const FunctionSignature &fSig = kFunctionSignatures[i];
 		const FunctionDefaults  &fDef = kFunctionDefaults[i];
@@ -63,7 +63,7 @@ void Functions::registerFunctions() {
 
 		Aurora::NWScript::Signature signature;
 		signature.push_back(fSig.returnType);
-		for (size_t j = 0; j < ARRAYSIZE(fSig.parameters); j++) {
+		for (size_t j = 0; j < std::size(fSig.parameters); j++) {
 			if (fSig.parameters[j] == kTypeVoid)
 				break;
 
@@ -71,7 +71,7 @@ void Functions::registerFunctions() {
 		}
 
 		Aurora::NWScript::Parameters defaults;
-		for (size_t j = 0; j < ARRAYSIZE(fDef.defaults); j++) {
+		for (size_t j = 0; j < std::size(fDef.defaults); j++) {
 			if (!fDef.defaults[j])
 				break;
 

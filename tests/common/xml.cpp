@@ -83,7 +83,7 @@ GTEST_TEST_F(XML, getChildren) {
 	const Common::XMLNode::Children &children = rootNode.getChildren();
 
 	for (Common::XMLNode::Children::const_iterator c = children.begin(); c != children.end(); ++c)
-		EXPECT_TRUE(isInList(kFirstChildNodes, ARRAYSIZE(kFirstChildNodes), (*c)->getName().c_str())) <<
+		EXPECT_TRUE(isInList(kFirstChildNodes, std::size(kFirstChildNodes), (*c)->getName().c_str())) <<
 			"With node \"" << (*c)->getName().c_str() << "\"";
 }
 

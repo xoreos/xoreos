@@ -207,7 +207,7 @@ void NWNEngine::declareLanguages() {
 		{ Aurora::kLanguageJapanese          , 131, Common::kEncodingCP932 , Common::kEncodingCP932  }
 	};
 
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 }
 
 void NWNEngine::initResources(LoadProgress &progress) {
@@ -317,7 +317,7 @@ void NWNEngine::declareBogusTextures() {
 		"torso_g"
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(kBogusTextures); i++)
+	for (size_t i = 0; i < std::size(kBogusTextures); i++)
 		TextureMan.addBogusTexture(kBogusTextures[i]);
 }
 

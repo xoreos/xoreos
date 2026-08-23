@@ -268,8 +268,8 @@ Language LanguageManager::parseLanguage(const Common::UString &str) {
 
 	Common::UString lowerStr = str.toLower();
 
-	for (size_t i = 0; i < ARRAYSIZE(kLanguageStrings); i++) {
-		for (size_t j = 0; j < ARRAYSIZE(kLanguageStrings[i].strings); j++) {
+	for (size_t i = 0; i < std::size(kLanguageStrings); i++) {
+		for (size_t j = 0; j < std::size(kLanguageStrings[i].strings); j++) {
 			if (!kLanguageStrings[i].strings[j])
 				break;
 

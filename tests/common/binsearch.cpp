@@ -36,14 +36,14 @@ static const TestBinSearch kTestBinSearch[] = {
 };
 
 GTEST_TEST(BinSearch, positive) {
-	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, ARRAYSIZE(kTestBinSearch), (uint8_t) 6);
+	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, std::size(kTestBinSearch), (uint8_t) 6);
 
 	ASSERT_NE(entry, static_cast<const TestBinSearch *>(0));
 	EXPECT_EQ(entry->value, 42);
 }
 
 GTEST_TEST(BinSearch, negative) {
-	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, ARRAYSIZE(kTestBinSearch), (uint8_t) 42);
+	const TestBinSearch *entry = Common::binarySearch(kTestBinSearch, std::size(kTestBinSearch), (uint8_t) 42);
 
 	ASSERT_EQ(entry, static_cast<const TestBinSearch *>(0));
 }

@@ -22,6 +22,8 @@
  *   Resolve a GDA column header hash back to its string.
  */
 
+#include <iterator>
+
 #include "src/common/util.h"
 #include "src/common/binsearch.h"
 
@@ -2244,7 +2246,7 @@ static const GDAHeaderHash kGDAHeaderHashes[] = {
 };
 
 const char *findGDAHeader(uint32_t hash) {
-	const GDAHeaderHash *header = Common::binarySearch(kGDAHeaderHashes, ARRAYSIZE(kGDAHeaderHashes), hash);
+	const GDAHeaderHash *header = Common::binarySearch(kGDAHeaderHashes, std::size(kGDAHeaderHashes), hash);
 	if (!header)
 		return 0;
 

@@ -148,14 +148,14 @@ GTEST_TEST(GFF4StructSingle, getFieldCount) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4SingleValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	EXPECT_EQ(strct.getFieldCount(), ARRAYSIZE(kFieldLabelsSingle));
+	EXPECT_EQ(strct.getFieldCount(), std::size(kFieldLabelsSingle));
 }
 
 GTEST_TEST(GFF4StructSingle, hasField) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4SingleValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsSingle); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsSingle); i++)
 		EXPECT_TRUE(strct.hasField(kFieldLabelsSingle[i])) << "At index " << i;
 
 	EXPECT_FALSE(strct.hasField(9999));
@@ -168,7 +168,7 @@ GTEST_TEST(GFF4StructSingle, getFieldLabels) {
 	std::vector<uint32_t> labels = strct.getFieldLabels();
 	std::sort(labels.begin(), labels.end());
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsSingle); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsSingle); i++)
 		EXPECT_EQ(labels[i], kFieldLabelsSingle[i]) << "At index " << i;
 }
 
@@ -176,7 +176,7 @@ GTEST_TEST(GFF4StructSingle, getFieldType) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4SingleValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsSingle); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsSingle); i++)
 		EXPECT_EQ(strct.getFieldType(kFieldLabelsSingle[i]), kFieldTypesSingle[i]) << "At index " << i;
 
 	EXPECT_EQ(strct.getFieldType(9999), Aurora::GFF4Struct::kFieldTypeNone);
@@ -186,7 +186,7 @@ GTEST_TEST(GFF4StructSingle, getFieldTypeList) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4SingleValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsSingle); i++) {
+	for (size_t i = 0; i < std::size(kFieldLabelsSingle); i++) {
 		bool isList;
 
 		EXPECT_EQ(strct.getFieldType(kFieldLabelsSingle[i], isList), kFieldTypesSingle[i]) << "At index " << i;
@@ -201,7 +201,7 @@ GTEST_TEST(GFF4StructSingle, getFieldProperties) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4SingleValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsSingle); i++) {
+	for (size_t i = 0; i < std::size(kFieldLabelsSingle); i++) {
 		Aurora::GFF4Struct::FieldType type;
 		uint32_t label;
 		bool isList;
@@ -1172,14 +1172,14 @@ GTEST_TEST(GFF4StructList, getFieldCount) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4ListValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	EXPECT_EQ(strct.getFieldCount(), ARRAYSIZE(kFieldLabelsList));
+	EXPECT_EQ(strct.getFieldCount(), std::size(kFieldLabelsList));
 }
 
 GTEST_TEST(GFF4StructList, hasField) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4ListValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsList); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsList); i++)
 		EXPECT_TRUE(strct.hasField(kFieldLabelsList[i])) << "At index " << i;
 
 	EXPECT_FALSE(strct.hasField(9999));
@@ -1192,7 +1192,7 @@ GTEST_TEST(GFF4StructList, getFieldLabels) {
 	std::vector<uint32_t> labels = strct.getFieldLabels();
 	std::sort(labels.begin(), labels.end());
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsList); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsList); i++)
 		EXPECT_EQ(labels[i], kFieldLabelsList[i]) << "At index " << i;
 }
 
@@ -1200,7 +1200,7 @@ GTEST_TEST(GFF4StructList, getFieldType) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4ListValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsList); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsList); i++)
 		EXPECT_EQ(strct.getFieldType(kFieldLabelsList[i]), kFieldTypesList[i]) << "At index " << i;
 
 	EXPECT_EQ(strct.getFieldType(9999), Aurora::GFF4Struct::kFieldTypeNone);
@@ -1210,7 +1210,7 @@ GTEST_TEST(GFF4StructList, getFieldTypeList) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4ListValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsList); i++) {
+	for (size_t i = 0; i < std::size(kFieldLabelsList); i++) {
 		bool isList;
 
 		EXPECT_EQ(strct.getFieldType(kFieldLabelsList[i], isList), kFieldTypesList[i]) << "At index " << i;
@@ -1225,7 +1225,7 @@ GTEST_TEST(GFF4StructList, getFieldProperties) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4ListValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsList); i++) {
+	for (size_t i = 0; i < std::size(kFieldLabelsList); i++) {
 		Aurora::GFF4Struct::FieldType type;
 		uint32_t label;
 		bool isList;
@@ -1960,14 +1960,14 @@ GTEST_TEST(GFF4StructRef, getFieldCount) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4RefValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	EXPECT_EQ(strct.getFieldCount(), ARRAYSIZE(kFieldLabelsRef));
+	EXPECT_EQ(strct.getFieldCount(), std::size(kFieldLabelsRef));
 }
 
 GTEST_TEST(GFF4StructRef, hasField) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4RefValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsRef); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsRef); i++)
 		EXPECT_TRUE(strct.hasField(kFieldLabelsRef[i])) << "At index " << i;
 
 	EXPECT_FALSE(strct.hasField(9999));
@@ -1980,7 +1980,7 @@ GTEST_TEST(GFF4StructRef, getFieldLabels) {
 	std::vector<uint32_t> labels = strct.getFieldLabels();
 	std::sort(labels.begin(), labels.end());
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsRef); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsRef); i++)
 		EXPECT_EQ(labels[i], kFieldLabelsRef[i]) << "At index " << i;
 }
 
@@ -1988,7 +1988,7 @@ GTEST_TEST(GFF4StructRef, getFieldType) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4RefValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsRef); i++)
+	for (size_t i = 0; i < std::size(kFieldLabelsRef); i++)
 		EXPECT_EQ(strct.getFieldType(kFieldLabelsRef[i]), kFieldTypesRef[i]) << "At index " << i;
 
 	EXPECT_EQ(strct.getFieldType(9999), Aurora::GFF4Struct::kFieldTypeNone);
@@ -1998,7 +1998,7 @@ GTEST_TEST(GFF4StructRef, getFieldTypeList) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4RefValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsRef); i++) {
+	for (size_t i = 0; i < std::size(kFieldLabelsRef); i++) {
 		bool isList;
 
 		EXPECT_EQ(strct.getFieldType(kFieldLabelsRef[i], isList), kFieldTypesRef[i]) << "At index " << i;
@@ -2013,7 +2013,7 @@ GTEST_TEST(GFF4StructRef, getFieldProperties) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4RefValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	for (size_t i = 0; i < ARRAYSIZE(kFieldLabelsRef); i++) {
+	for (size_t i = 0; i < std::size(kFieldLabelsRef); i++) {
 		Aurora::GFF4Struct::FieldType type;
 		uint32_t label;
 		bool isList;

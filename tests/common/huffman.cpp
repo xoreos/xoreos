@@ -44,9 +44,9 @@ GTEST_TEST(Huffman, getSymbolSymbols) {
 	Common::MemoryReadStream byteStream(kHuffmanData);
 	Common::BitStream8MSB    bitStream (byteStream);
 
-	Common::Huffman huffman(kMaxLength, ARRAYSIZE(kCodes), kCodes, kLengths, kSymbols);
+	Common::Huffman huffman(kMaxLength, std::size(kCodes), kCodes, kLengths, kSymbols);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDeHuffmanDataSymbols); i++)
+	for (size_t i = 0; i < std::size(kDeHuffmanDataSymbols); i++)
 		EXPECT_EQ(huffman.getSymbol(bitStream), kDeHuffmanDataSymbols[i]) << "At index " << i;
 }
 
@@ -54,9 +54,9 @@ GTEST_TEST(Huffman, getSymbolCodes) {
 	Common::MemoryReadStream byteStream(kHuffmanData);
 	Common::BitStream8MSB    bitStream (byteStream);
 
-	Common::Huffman huffman(kMaxLength, ARRAYSIZE(kCodes), kCodes, kLengths, 0);
+	Common::Huffman huffman(kMaxLength, std::size(kCodes), kCodes, kLengths, 0);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDeHuffmanDataCodes); i++)
+	for (size_t i = 0; i < std::size(kDeHuffmanDataCodes); i++)
 		EXPECT_EQ(huffman.getSymbol(bitStream), kDeHuffmanDataCodes[i]) << "At index " << i;
 }
 
@@ -64,9 +64,9 @@ GTEST_TEST(Huffman, eos) {
 	Common::MemoryReadStream byteStream(kHuffmanData);
 	Common::BitStream8MSB    bitStream (byteStream);
 
-	Common::Huffman huffman(kMaxLength, ARRAYSIZE(kCodes), kCodes, kLengths, kSymbols);
+	Common::Huffman huffman(kMaxLength, std::size(kCodes), kCodes, kLengths, kSymbols);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDeHuffmanDataSymbols); i++)
+	for (size_t i = 0; i < std::size(kDeHuffmanDataSymbols); i++)
 		huffman.getSymbol(bitStream);
 
 	EXPECT_THROW(huffman.getSymbol(bitStream), Common::Exception);
@@ -76,9 +76,9 @@ GTEST_TEST(Huffman, searchMaxLength) {
 	Common::MemoryReadStream byteStream(kHuffmanData);
 	Common::BitStream8MSB    bitStream (byteStream);
 
-	Common::Huffman huffman(0, ARRAYSIZE(kCodes), kCodes, kLengths, kSymbols);
+	Common::Huffman huffman(0, std::size(kCodes), kCodes, kLengths, kSymbols);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDeHuffmanDataSymbols); i++)
+	for (size_t i = 0; i < std::size(kDeHuffmanDataSymbols); i++)
 		EXPECT_EQ(huffman.getSymbol(bitStream), kDeHuffmanDataSymbols[i]) << "At index " << i;
 }
 
@@ -86,21 +86,21 @@ GTEST_TEST(Huffman, setSymbols) {
 	Common::MemoryReadStream byteStream(kHuffmanData);
 	Common::BitStream8MSB    bitStream (byteStream);
 
-	Common::Huffman huffman(kMaxLength, ARRAYSIZE(kCodes), kCodes, kLengths, kSymbols);
+	Common::Huffman huffman(kMaxLength, std::size(kCodes), kCodes, kLengths, kSymbols);
 
-	for (size_t i = 0; i < ARRAYSIZE(kDeHuffmanDataSymbols); i++)
+	for (size_t i = 0; i < std::size(kDeHuffmanDataSymbols); i++)
 		EXPECT_EQ(huffman.getSymbol(bitStream), kDeHuffmanDataSymbols[i]) << "At index " << i;
 
 	huffman.setSymbols(0);
 	bitStream.rewind();
 
-	for (size_t i = 0; i < ARRAYSIZE(kDeHuffmanDataCodes); i++)
+	for (size_t i = 0; i < std::size(kDeHuffmanDataCodes); i++)
 		EXPECT_EQ(huffman.getSymbol(bitStream), kDeHuffmanDataCodes[i]) << "At index " << i;
 
 	huffman.setSymbols(kSymbols);
 	bitStream.rewind();
 
-	for (size_t i = 0; i < ARRAYSIZE(kDeHuffmanDataSymbols); i++)
+	for (size_t i = 0; i < std::size(kDeHuffmanDataSymbols); i++)
 		EXPECT_EQ(huffman.getSymbol(bitStream), kDeHuffmanDataSymbols[i]) << "At index " << i;
 }
 
@@ -114,7 +114,7 @@ GTEST_TEST(Huffman, invalidSymbol) {
 	Common::MemoryReadStream byteStream(kInvalidHuffmanData);
 	Common::BitStream8MSB    bitStream (byteStream);
 
-	Common::Huffman huffman(kInvalidMaxLength, ARRAYSIZE(kInvalidCodes), kInvalidCodes, kInvalidLengths, 0);
+	Common::Huffman huffman(kInvalidMaxLength, std::size(kInvalidCodes), kInvalidCodes, kInvalidLengths, 0);
 
 	EXPECT_EQ(huffman.getSymbol(bitStream), 0);
 

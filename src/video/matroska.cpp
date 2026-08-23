@@ -548,7 +548,7 @@ bool isValidDocType(const std::string &docType) {
 		"webm"
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(matroskaDocTypes); i++)
+	for (size_t i = 0; i < std::size(matroskaDocTypes); i++)
 		if (docType == matroskaDocTypes[i])
 			return true;
 

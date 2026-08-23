@@ -642,7 +642,7 @@ void WMACodec::initNoise() {
 		_noiseTable[i] = (float)((int)seed) * norm;
 	}
 
-	_hgainHuffman = std::make_unique<Common::Huffman>(0, ARRAYSIZE(hgainHuffCodes), hgainHuffCodes, hgainHuffBits);
+	_hgainHuffman = std::make_unique<Common::Huffman>(0, std::size(hgainHuffCodes), hgainHuffCodes, hgainHuffBits);
 }
 
 void WMACodec::initCoefHuffman(float bps) {
@@ -678,7 +678,7 @@ void WMACodec::initMDCT() {
 
 void WMACodec::initExponents() {
 	if (_useExpHuffman)
-		_expHuffman = std::make_unique<Common::Huffman>(0, ARRAYSIZE(scaleHuffCodes), scaleHuffCodes, scaleHuffBits);
+		_expHuffman = std::make_unique<Common::Huffman>(0, std::size(scaleHuffCodes), scaleHuffCodes, scaleHuffBits);
 	else
 		initLSPToCurve();
 }
@@ -1463,7 +1463,7 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 
 		// NOTE: This offset is the same as MPEG4 AAC!
 		lastExp += code - 60;
-		if ((unsigned) lastExp + 60 >= ARRAYSIZE(powTab)) {
+		if ((unsigned) lastExp + 60 >= std::size(powTab)) {
 			warning("WMACodec::decodeExpHuffman(): Exponent out of range: %d", lastExp);
 			return false;
 		}

@@ -124,7 +124,7 @@ void Placeable::load(const Aurora::GFF4Struct &placeable) {
 	_typeID      = placeable.getUint(40018, 0xFFFFFFFF);
 
 	_appearanceID = 0xFFFFFFFF;
-	if (_typeID < ARRAYSIZE(kTypeAppearances))
+	if (_typeID < std::size(kTypeAppearances))
 		_appearanceID = kTypeAppearances[_typeID];
 
 	if (_appearanceID != 0xFFFFFFFF) {

@@ -470,7 +470,7 @@ int16_t Ima_ADPCMStream::decodeIMA(byte code, int channel) {
 
 	_status.ima_ch[channel].last = samp;
 	_status.ima_ch[channel].stepIndex += stepAdjust(code);
-	_status.ima_ch[channel].stepIndex = CLIP<int32_t>(_status.ima_ch[channel].stepIndex, 0, ARRAYSIZE(imaStepTable) - 1);
+	_status.ima_ch[channel].stepIndex = CLIP<int32_t>(_status.ima_ch[channel].stepIndex, 0, std::size(imaStepTable) - 1);
 
 	return samp;
 }

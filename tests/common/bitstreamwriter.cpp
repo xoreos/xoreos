@@ -53,7 +53,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter8MSB) {
 	Common::BitStreamWriter8MSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter8LSB) {
@@ -64,7 +64,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter8LSB) {
 	Common::BitStreamWriter8LSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter16LEMSB) {
@@ -75,7 +75,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter16LEMSB) {
 	Common::BitStreamWriter16LEMSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter16LELSB) {
@@ -86,7 +86,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter16LELSB) {
 	Common::BitStreamWriter16LELSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter16BEMSB) {
@@ -97,7 +97,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter16BEMSB) {
 	Common::BitStreamWriter16BEMSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter16BELSB) {
@@ -108,7 +108,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter16BELSB) {
 	Common::BitStreamWriter16BELSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter32LEMSB) {
@@ -119,7 +119,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter32LEMSB) {
 	Common::BitStreamWriter32LEMSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter32LELSB) {
@@ -130,7 +130,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter32LELSB) {
 	Common::BitStreamWriter32LELSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter32BEMSB) {
@@ -141,7 +141,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter32BEMSB) {
 	Common::BitStreamWriter32BEMSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter32BELSB) {
@@ -152,7 +152,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter32BELSB) {
 	Common::BitStreamWriter32BELSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter64LEMSB) {
@@ -163,7 +163,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter64LEMSB) {
 	Common::BitStreamWriter64LEMSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter64LELSB) {
@@ -174,7 +174,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter64LELSB) {
 	Common::BitStreamWriter64LELSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter64BEMSB) {
@@ -185,7 +185,7 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter64BEMSB) {
 	Common::BitStreamWriter64BEMSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }
 
 GTEST_TEST(BitStreamWriter, BitStreamWriter64BELSB) {
@@ -196,5 +196,5 @@ GTEST_TEST(BitStreamWriter, BitStreamWriter64BELSB) {
 	Common::BitStreamWriter64BELSB bitStream(stream);
 
 	writeBitStream(bitStream, data);
-	testBitStream(stream.getData(), stream.size(), comp, ARRAYSIZE(comp));
+	testBitStream(stream.getData(), stream.size(), comp, std::size(comp));
 }

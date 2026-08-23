@@ -105,7 +105,7 @@ void Console::updateCampaigns() {
 	_campaigns.clear();
 	_campaignModules.clear();
 
-	_campaigns.reserve(ARRAYSIZE(kCampaignNames));
+	_campaigns.reserve(std::size(kCampaignNames));
 
 	// Base game
 	for (int i = 0; i < 5; i++) {

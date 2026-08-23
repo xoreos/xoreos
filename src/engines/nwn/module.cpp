@@ -232,7 +232,7 @@ void Module::setPCTokens() {
 
 	TokenMan.set("<Deity>", _pc->getDeity());
 
-	for (size_t i = 0; i < ARRAYSIZE(kGenderTokens); i++) {
+	for (size_t i = 0; i < std::size(kGenderTokens); i++) {
 		const uint32_t strRef = _pc->isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
 
 		TokenMan.set(kGenderTokens[i].token, TalkMan.getString(strRef));
@@ -262,7 +262,7 @@ void Module::removePCTokens() {
 
 	TokenMan.remove("<Deity>");
 
-	for (size_t i = 0; i < ARRAYSIZE(kGenderTokens); i++)
+	for (size_t i = 0; i < std::size(kGenderTokens); i++)
 		TokenMan.remove(kGenderTokens[i].token);
 }
 

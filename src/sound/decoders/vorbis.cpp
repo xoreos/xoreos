@@ -151,7 +151,7 @@ protected:
 
 VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
 	_inStream(inStream, dispose),
-	_bufferEnd(_buffer + ARRAYSIZE(_buffer)),
+	_bufferEnd(_buffer + std::size(_buffer)),
 	_length(kInvalidLength) {
 
 	int res = ov_open_callbacks(inStream, &_ovFile, 0, 0, g_stream_wrap);

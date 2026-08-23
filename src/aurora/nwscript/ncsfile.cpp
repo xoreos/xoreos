@@ -269,7 +269,7 @@ void NCSFile::setupOpcodes() {
 	};
 
 	_opcodes = opcodes;
-	_opcodeListSize = ARRAYSIZE(opcodes);
+	_opcodeListSize = std::size(opcodes);
 }
 
 #undef OPCODE

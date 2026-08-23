@@ -118,7 +118,7 @@ static Common::UString convertShortToLongOption(uint32_t shortOption) {
 		"q", "lang"
 	};
 
-	for (size_t i = 0; i < (ARRAYSIZE(kOptions) / 2); i++)
+	for (size_t i = 0; i < (std::size(kOptions) / 2); i++)
 		if (((uint32_t) kOptions[2 * i + 0][0]) == shortOption)
 			return kOptions[2 * i + 1];
 

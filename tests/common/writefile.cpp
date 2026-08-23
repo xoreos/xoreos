@@ -69,12 +69,12 @@ GTEST_TEST_F(WriteFile, write) {
 	ASSERT_TRUE(file.isOpen());
 
 	const size_t writeCount1 = file.write(data, sizeof(data));
-	EXPECT_EQ(writeCount1, ARRAYSIZE(data));
+	EXPECT_EQ(writeCount1, std::size(data));
 
 	const size_t writeCount2 = file.write(data, sizeof(data));
-	EXPECT_EQ(writeCount2, ARRAYSIZE(data));
+	EXPECT_EQ(writeCount2, std::size(data));
 
-	EXPECT_EQ(file.size(), 2 * ARRAYSIZE(data));
+	EXPECT_EQ(file.size(), 2 * std::size(data));
 
 	file.flush();
 	file.close();
@@ -84,14 +84,14 @@ GTEST_TEST_F(WriteFile, write) {
 
 	boost::filesystem::ifstream testFile(kFilePath, std::ofstream::binary);
 
-	byte readData[ARRAYSIZE(data)] = { 0 };
+	byte readData[std::size(data)] = { 0 };
 
-	testFile.read(reinterpret_cast<char *>(readData), ARRAYSIZE(readData));
+	testFile.read(reinterpret_cast<char *>(readData), std::size(readData));
 	ASSERT_FALSE(testFile.fail());
 
 	testFile.close();
 
-	for (size_t i = 0; i < ARRAYSIZE(data); i++)
+	for (size_t i = 0; i < std::size(data); i++)
 		EXPECT_EQ(readData[i], data[i]) << "At index " << i;
 }
 

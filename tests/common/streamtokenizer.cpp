@@ -48,7 +48,7 @@ GTEST_TEST(StreamTokenizer, getToken) {
 	Common::StreamTokenizer tokenizer;
 	tokenizer.addSeparator(',');
 
-	for (size_t i = 0; i < ARRAYSIZE(kTokens); i++)
+	for (size_t i = 0; i < std::size(kTokens); i++)
 		EXPECT_STREQ(tokenizer.getToken(stream).c_str(), kTokens[i]) << "At index " << i;
 }
 
@@ -97,9 +97,9 @@ GTEST_TEST(StreamTokenizer, consecutiveHeed) {
 	tokenizer.addSeparator('.');
 
 	std::vector<Common::UString> tokens;
-	ASSERT_EQ(tokenizer.getTokens(stream, tokens), ARRAYSIZE(kTokens));
+	ASSERT_EQ(tokenizer.getTokens(stream, tokens), std::size(kTokens));
 
-	compareList(kTokens, ARRAYSIZE(kTokens), tokens);
+	compareList(kTokens, std::size(kTokens), tokens);
 }
 
 GTEST_TEST(StreamTokenizer, consecutiveIgnoreSame) {
@@ -113,9 +113,9 @@ GTEST_TEST(StreamTokenizer, consecutiveIgnoreSame) {
 	tokenizer.addSeparator('.');
 
 	std::vector<Common::UString> tokens;
-	ASSERT_EQ(tokenizer.getTokens(stream, tokens), ARRAYSIZE(kTokens));
+	ASSERT_EQ(tokenizer.getTokens(stream, tokens), std::size(kTokens));
 
-	compareList(kTokens, ARRAYSIZE(kTokens), tokens);
+	compareList(kTokens, std::size(kTokens), tokens);
 }
 
 GTEST_TEST(StreamTokenizer, consecutiveIgnoreAll) {
@@ -129,9 +129,9 @@ GTEST_TEST(StreamTokenizer, consecutiveIgnoreAll) {
 	tokenizer.addSeparator('.');
 
 	std::vector<Common::UString> tokens;
-	ASSERT_EQ(tokenizer.getTokens(stream, tokens), ARRAYSIZE(kTokens));
+	ASSERT_EQ(tokenizer.getTokens(stream, tokens), std::size(kTokens));
 
-	compareList(kTokens, ARRAYSIZE(kTokens), tokens);
+	compareList(kTokens, std::size(kTokens), tokens);
 }
 
 GTEST_TEST(StreamTokenizer, findFirstToken) {

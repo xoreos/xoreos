@@ -113,12 +113,6 @@ GTEST_TEST(Util, NEXTPOWER2) {
 	EXPECT_EQ(NEXTPOWER2((uint32_t) 16), 16);
 }
 
-GTEST_TEST(Util, ARRAYSIZE) {
-	static const uint32_t kArray[5] = { 0 };
-
-	EXPECT_EQ(ARRAYSIZE(kArray), 5);
-}
-
 GTEST_TEST(Util, convertIEEEFloatToFloat) {
 	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32_t) 0x00000000),   0.00f);
 	EXPECT_FLOAT_EQ(convertIEEEFloat((uint32_t) 0x3F800000),   1.00f);

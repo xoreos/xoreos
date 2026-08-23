@@ -222,7 +222,7 @@ void SonicEngine::declareLanguages() {
 		{ Aurora::kLanguageJapanese, Aurora::kLanguageInvalid, Common::kEncodingUTF8  , Common::kEncodingUTF8   }
 	};
 
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 }
 
 void SonicEngine::initResources(LoadProgress &progress) {
@@ -247,7 +247,7 @@ void SonicEngine::initResources(LoadProgress &progress) {
 }
 
 void SonicEngine::declareResources() {
-	for (size_t i = 0; i < ARRAYSIZE(kFiles); i++)
+	for (size_t i = 0; i < std::size(kFiles); i++)
 		ResMan.declareResource(kFiles[i]);
 }
 

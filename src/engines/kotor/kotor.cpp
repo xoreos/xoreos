@@ -198,7 +198,7 @@ void KotOREngine::declareLanguages() {
 		{ Aurora::kLanguageJapanese          , 131, Common::kEncodingCP932 , Common::kEncodingCP932  }
 	};
 
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 }
 
 void KotOREngine::initResources(LoadProgress &progress) {

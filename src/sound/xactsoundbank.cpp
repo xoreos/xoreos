@@ -123,7 +123,7 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			break;
 
 		case EventType::MixBins:
-			for (size_t i = 0; i < ARRAYSIZE(params.mixbins.bins); i++) {
+			for (size_t i = 0; i < std::size(params.mixbins.bins); i++) {
 				params.mixbins.bins[i].channel = 0;
 				params.mixbins.bins[i].volume  = -64.0f;
 			}
@@ -157,7 +157,7 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 
 			params.mixbinspan.speakerChannelCount = 5;
 
-			for (size_t i = 0; i < ARRAYSIZE(params.mixbinspan.bins); i++) {
+			for (size_t i = 0; i < std::size(params.mixbinspan.bins); i++) {
 				params.mixbinspan.bins[i].channel = 0;
 				params.mixbinspan.bins[i].volume  = -64.0f;
 			}

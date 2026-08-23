@@ -109,7 +109,7 @@ static const float kTestClass1[27] = {
 };
 
 GTEST_TEST(TestTrigger, contains_part_1) {
-	size_t size = ARRAYSIZE(kTestClass1);
+	size_t size = std::size(kTestClass1);
 	UtilTrigger trigger(kTestClass1, size);
 	const size_t num = 8;
 	bool result[num] = {
@@ -181,7 +181,7 @@ static const float kTestClass2[54] = {
 };
 
 GTEST_TEST(TestTrigger, contains_part_2) {
-	size_t size = ARRAYSIZE(kTestClass2);
+	size_t size = std::size(kTestClass2);
 	UtilTrigger trigger(kTestClass2, size);
 	const size_t num = 8;
 	bool result[num] = {
@@ -253,7 +253,7 @@ static const float kTestClass3[48] = {
 };
 
 GTEST_TEST(TestTrigger, contains_part_3) {
-	size_t size = ARRAYSIZE(kTestClass3);
+	size_t size = std::size(kTestClass3);
 	UtilTrigger trigger(kTestClass3, size);
 	const size_t num = 10;
 	bool result[num] = {
@@ -323,7 +323,7 @@ static const float kTestClass4[42] = {
 };
 
 GTEST_TEST(TestTrigger, contains_part_4) {
-	size_t size = ARRAYSIZE(kTestClass4);
+	size_t size = std::size(kTestClass4);
 	UtilTrigger trigger(kTestClass4, size);
 	const size_t num = 10;
 	bool result[num] = {

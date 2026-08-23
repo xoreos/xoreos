@@ -83,7 +83,7 @@ protected:
 
 		boost::filesystem::ofstream testFile(kFilePath, std::ofstream::binary);
 
-		testFile.write(buf, ARRAYSIZE(buf));
+		testFile.write(buf, std::size(buf));
 		testFile.flush();
 		ASSERT_FALSE(testFile.fail());
 

@@ -204,7 +204,7 @@ void DragonAgeEngine::declareLanguages() {
 		{ Aurora::kLanguageJapanese , 10, Common::kEncodingUTF16LE, Common::kEncodingCP932  }
 	};
 
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 }
 
 void DragonAgeEngine::initResources(LoadProgress &progress) {

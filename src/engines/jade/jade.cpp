@@ -231,7 +231,7 @@ void JadeEngine::declareLanguages() {
 		{ Aurora::kLanguageRussian          , 132, Common::kEncodingUTF8, Common::kEncodingCP1251 }
 	};
 
-	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
+	LangMan.addLanguages(kLanguageDeclarations, std::size(kLanguageDeclarations));
 }
 
 /** Figure out which localization in an Android installation contains the voices. */

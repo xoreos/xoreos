@@ -517,7 +517,7 @@ static const DefaultAnim kDefaultAnims[] = {
 };
 
 void Model_NWN::populateDefaultAnimations() {
-	for (size_t i = 0; i < ARRAYSIZE(kDefaultAnims); i++) {
+	for (size_t i = 0; i < std::size(kDefaultAnims); i++) {
 		Animation *anim = getAnimation(kDefaultAnims[i].name);
 		if (!anim)
 			continue;
