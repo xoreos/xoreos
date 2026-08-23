@@ -55,7 +55,6 @@
 
 #include "src/common/system.h"
 #include "src/common/types.h"
-#include "src/common/deallocator.h"
 
 namespace Common {
 
@@ -83,13 +82,13 @@ public:
 
 	~DisposablePtrBase() {
 		if (_dispose)
-			Deallocator::destroy(_pointer);
+			Deallocator()(_pointer);
 	}
 
 	/** Resets the pointer with the new value. The old object will be destroyed. */
 	void reset(PointerType o = 0) {
 		if (_dispose)
-			Deallocator::destroy(_pointer);
+			Deallocator()(_pointer);
 
 		_pointer = o;
 	}
@@ -105,7 +104,7 @@ public:
 
 	/** Unconditionally dispose of the pointer, destroying the old object. */
 	void dispose() {
-		Deallocator::destroy(_pointer);
+		Deallocator()(_pointer);
 		_pointer = 0;
 	}
 
@@ -116,7 +115,7 @@ private:
 };
 
 /** A disposable plain pointer, allowing pointer-y access and normal deletion. */
-template<typename T, class Deallocator = DeallocatorDefault>
+template<typename T, class Deallocator = std::default_delete<T>>
 class DisposablePtr : public DisposablePtrBase<T, Deallocator> {
 public:
 	explicit DisposablePtr(typename DisposablePtrBase<T, Deallocator>::PointerType o, bool d) :
@@ -133,7 +132,7 @@ public:
 };
 
 /** A disposable array pointer, allowing array-y access and array deletion. */
-template<typename T, class Deallocator = DeallocatorArray>
+template<typename T, class Deallocator = std::default_delete<T[]>>
 class DisposableArray : public DisposablePtrBase<T, Deallocator> {
 public:
 	explicit DisposableArray(typename DisposablePtrBase<T, Deallocator>::PointerType o, bool d) :
