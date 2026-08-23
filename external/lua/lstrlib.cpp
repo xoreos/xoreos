@@ -13,8 +13,6 @@
 
 #define lstrlib_c
 
-#include "src/common/fallthrough.h"
-
 #include "lua.h"
 
 #include "lauxlib.h"

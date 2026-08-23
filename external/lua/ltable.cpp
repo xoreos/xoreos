@@ -25,8 +25,6 @@
 
 #define ltable_c
 
-#include "src/common/fallthrough.h"
-
 #include "lua.h"
 
 #include "ldebug.h"
@@ -478,7 +476,7 @@ const TObject *luaH_get (Table *t, const TObject *key) {
       if (cast(lua_Number, k) == nvalue(key))  /* is an integer index? */
         return luaH_getnum(t, k);  /* use specialized version */
     }
-    XOREOS_FALLTHROUGH;
+    [[fallthrough]];
     default: return luaH_getany(t, key);
   }
 }

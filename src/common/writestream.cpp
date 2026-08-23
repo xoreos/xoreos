@@ -108,7 +108,7 @@ size_t SeekableWriteStream::evalSeek(ptrdiff_t offset, SeekableWriteStream::Orig
 	switch (whence) {
 		case kOriginEnd:
 			offset = size + offset;
-			XOREOS_FALLTHROUGH;
+			[[fallthrough]];
 		case kOriginBegin:
 			return begin + offset;
 		case kOriginCurrent:

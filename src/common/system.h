@@ -54,8 +54,6 @@
 	#include "config.h"
 #endif
 
-#include "src/common/fallthrough.h"
-
 #if defined(_MSC_VER)
 
 	#include <cstdarg>

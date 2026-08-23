@@ -10,8 +10,6 @@
 
 #define ldebug_c
 
-#include "src/common/fallthrough.h"
-
 #include "lua.h"
 
 #include "lapi.h"
@@ -378,10 +376,10 @@ static Instruction luaG_symbexec (const Proto *pt, int lastpc, int reg) {
       case OP_TFORLOOP:
         checkreg(pt, a+c+5);
         if (reg >= a) last = pc;  /* affect all registers above base */
-        XOREOS_FALLTHROUGH;
+        [[fallthrough]];
       case OP_FORLOOP:
         checkreg(pt, a+2);
-        XOREOS_FALLTHROUGH;
+        [[fallthrough]];
       case OP_JMP: {
         int dest = pc+1+b;
 	check(0 <= dest && dest < pt->sizecode);

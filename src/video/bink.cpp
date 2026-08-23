@@ -1156,7 +1156,7 @@ void Bink::BinkVideoTrack::readDCTCoeffs(VideoFrame &video, int16_t *block, bool
 			case 0:
 				coefList[listPos] = ccoef + 4;
 				modeList[listPos] = 1;
-				XOREOS_FALLTHROUGH;
+				[[fallthrough]];
 			case 2:
 				if (mode == 2) {
 					coefList[listPos]   = 0;
@@ -1264,7 +1264,7 @@ void Bink::BinkVideoTrack::readResidue(VideoFrame &video, int16_t *block, int ma
 			case 0:
 				coefList[listPos] = ccoef + 4;
 				modeList[listPos] = 1;
-				XOREOS_FALLTHROUGH;
+				[[fallthrough]];
 			case 2:
 				if (mode == 2) {
 					coefList[listPos]   = 0;
