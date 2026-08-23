@@ -27,7 +27,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/fallthrough.h \
     src/common/types.h \
     src/common/endianness.h \
-    src/common/deallocator.h \
     src/common/disposableptr.h \
     src/common/singleton.h \
     src/common/maths.h \
