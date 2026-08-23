@@ -64,7 +64,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/writefile.h \
     src/common/filepath.h \
     src/common/filelist.h \
-    src/common/binsearch.h \
     src/common/bitstream.h \
     src/common/bitstreamwriter.h \
     src/common/huffman.h \

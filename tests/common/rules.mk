@@ -45,11 +45,6 @@ tests_common_test_strutil_SOURCES  = tests/common/strutil.cpp
 tests_common_test_strutil_LDADD    = $(common_LIBS)
 tests_common_test_strutil_CXXFLAGS = $(test_CXXFLAGS)
 
-check_PROGRAMS                      += tests/common/test_binsearch
-tests_common_test_binsearch_SOURCES  = tests/common/binsearch.cpp
-tests_common_test_binsearch_LDADD    = $(common_LIBS)
-tests_common_test_binsearch_CXXFLAGS = $(test_CXXFLAGS)
-
 check_PROGRAMS                     += tests/common/test_datetime
 tests_common_test_datetime_SOURCES  = tests/common/datetime.cpp
 tests_common_test_datetime_LDADD    = $(common_LIBS)
