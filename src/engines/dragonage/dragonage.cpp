@@ -80,7 +80,7 @@ Common::UString DragonAgeEngine::getLanguageString(Aurora::Language language) {
 		case Aurora::kLanguageKorean:
 			return "ko-ko";
 		case Aurora::kLanguageJapanese:
-			return "ja-ja";
+			return "ja-jp";
 		default:
 			break;
 	}
