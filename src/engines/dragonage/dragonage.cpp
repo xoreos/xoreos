@@ -334,6 +334,15 @@ void DragonAgeEngine::deinit() {
 
 void DragonAgeEngine::playIntroVideos() {
 	playVideo("dragon_age_ea_logo");
+
+	const Common::UString spikeLogo = "spike_logo_720";
+	if (ResMan.hasResource(spikeLogo, Aurora::kResourceVideo))
+		playVideo(spikeLogo);
+
+	const Common::UString edgeLogo = "edge_logo_withaudio";
+	if (ResMan.hasResource(edgeLogo, Aurora::kResourceVideo))
+		playVideo(edgeLogo);
+
 	playVideo("dragon_age_main");
 }
 
