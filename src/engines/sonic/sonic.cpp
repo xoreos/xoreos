@@ -115,15 +115,24 @@ bool SonicEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::USt
 		Aurora::NDSFile nds(target);
 
 		for (size_t i = 0; i < Aurora::kLanguageMAX; i++) {
-			Common::UString herf = getLanguageHERF((Aurora::Language) i);
-			Common::UString tlk  = getLanguageTLK ((Aurora::Language) i);
+			const Aurora::Language language = (Aurora::Language) i;
+
+			Common::UString herf = getLanguageHERF(language);
+			Common::UString tlk  = getLanguageTLK (language);
 			if (herf.empty() || tlk.empty())
 				continue;
 
 			if (!nds.hasResource(herf + ".herf") || !nds.hasResource(tlk + ".tlk"))
 				continue;
 
-			languages.push_back((Aurora::Language) i);
+			// In the Japanese ROM, only the English one is complete, so ignore the rest.
+			if (language == Aurora::kLanguageJapanese) {
+				languages.clear();
+				languages.push_back(language);
+				break;
+			}
+
+			languages.push_back(language);
 		}
 
 	} catch (...) {
