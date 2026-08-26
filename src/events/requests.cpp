@@ -68,7 +68,8 @@ void RequestManager::dispatch(RequestID request) {
 
 	if (Common::isMainThread())
 		// If we're currently in the main thread, to avoid a dead-lock, process events now
-		EventMan.processEvents();
+		while ((*request)->_hasReply.getValue() == 0)
+			EventMan.processEvents();
 }
 
 void RequestManager::waitReply(RequestID request) {
