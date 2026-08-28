@@ -80,7 +80,7 @@ private:
 		Entry(const GFF4Struct *s) : strct(s) { }
 	};
 
-	typedef std::map<uint32_t, std::unique_ptr<Entry>> Entries;
+	typedef std::map<uint32_t, Entry> Entries;
 
 
 	std::unique_ptr<GFF4File> _gff;
