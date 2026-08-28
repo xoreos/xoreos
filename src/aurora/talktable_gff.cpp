@@ -62,9 +62,9 @@ const Common::UString &TalkTable_GFF::getString(uint32_t strRef) const {
 	if (e == _entries.end())
 		return kEmptyString;
 
-	readString(*e->second);
+	readString(e->second);
 
-	return e->second->text;
+	return e->second.text;
 }
 
 const Common::UString &TalkTable_GFF::getSoundResRef(uint32_t UNUSED(strRef)) const {
@@ -112,7 +112,7 @@ void TalkTable_GFF::load02(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		_entries[strRef] = std::make_unique<Entry>(*s);
+		_entries.try_emplace(strRef, *s);
 	}
 }
 
@@ -132,7 +132,7 @@ void TalkTable_GFF::load05(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		_entries[strRef] = std::make_unique<Entry>(*s);
+		_entries.try_emplace(strRef, *s);
 	}
 }
 
