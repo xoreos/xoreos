@@ -1620,6 +1620,15 @@ if test x$boost_cv_inc_path != xno; then
   # I'm not sure about my test for `il' (be careful: Intel's ICC pre-defines
   # the same defines as GCC's).
   for i in \
+    "defined __clang__ && __clang_major__ == 23 && __clang_minor__ == 1 @ clang231" \
+    "defined __clang__ && __clang_major__ == 22 && __clang_minor__ == 1 @ clang221" \
+    "defined __clang__ && __clang_major__ == 21 && __clang_minor__ == 1 @ clang211" \
+    "defined __clang__ && __clang_major__ == 20 && __clang_minor__ == 1 @ clang201" \
+    "defined __clang__ && __clang_major__ == 19 && __clang_minor__ == 1 @ clang191" \
+    "defined __clang__ && __clang_major__ == 18 && __clang_minor__ == 1 @ clang181" \
+    "defined __clang__ && __clang_major__ == 17 && __clang_minor__ == 0 @ clang170" \
+    "defined __clang__ && __clang_major__ == 16 && __clang_minor__ == 0 @ clang160" \
+    "defined __clang__ && __clang_major__ == 15 && __clang_minor__ == 0 @ clang150" \
     "defined __clang__ && __clang_major__ == 14 && __clang_minor__ == 0 @ clang140" \
     "defined __clang__ && __clang_major__ == 13 && __clang_minor__ == 0 @ clang130" \
     "defined __clang__ && __clang_major__ == 12 && __clang_minor__ == 0 @ clang120" \
@@ -1635,9 +1644,14 @@ if test x$boost_cv_inc_path != xno; then
     "defined __clang__ && __clang_major__ == 3 && __clang_minor__ == 9 @ clang39" \
     "defined __clang__ && __clang_major__ == 3 && __clang_minor__ == 8 @ clang38" \
     "defined __clang__ && __clang_major__ == 3 && __clang_minor__ == 7 @ clang37" \
+    _BOOST_gcc_test(16, 2) \
+    _BOOST_gcc_test(16, 1) \
+    _BOOST_gcc_test(16, 0) \
+    _BOOST_gcc_test(15, 3) \
     _BOOST_gcc_test(15, 2) \
     _BOOST_gcc_test(15, 1) \
     _BOOST_gcc_test(15, 0) \
+    _BOOST_gcc_test(14, 4) \
     _BOOST_gcc_test(14, 3) \
     _BOOST_gcc_test(14, 2) \
     _BOOST_gcc_test(14, 1) \
