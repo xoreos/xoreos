@@ -24,6 +24,7 @@
 
 #include <sstream>
 #include <atomic>
+#include <algorithm>
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
