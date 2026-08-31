@@ -122,6 +122,10 @@ public:
 		DisposablePtrBase<T, Deallocator>(o, d) {
 	}
 
+	explicit DisposablePtr(std::unique_ptr<T, Deallocator> o) :
+		DisposablePtrBase<T, Deallocator>(o.release(), true) {
+	}
+
 	typename DisposablePtrBase<T, Deallocator>::ReferenceType operator*() const {
 		return *DisposablePtrBase<T, Deallocator>::get();
 	}
