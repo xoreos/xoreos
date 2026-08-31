@@ -43,7 +43,7 @@ namespace Common {
 
 namespace Graphics {
 
-struct TXICoords;
+class TXI;
 
 namespace Aurora {
 
@@ -93,6 +93,8 @@ private:
 	std::unique_ptr<Shader::ShaderRenderable> _renderable;
 
 	void load(const Common::UString &name);
+	void loadTXI(const Common::UString &name, std::unique_ptr<TXI> txi);
+	void loadSingleTexture(const Common::UString &name, std::unique_ptr<TXI> srcTxi = nullptr);
 
 	void drawMissing() const;
 };
