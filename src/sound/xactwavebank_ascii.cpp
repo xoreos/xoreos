@@ -36,6 +36,7 @@
 
 #include "src/sound/xactwavebank_ascii.h"
 
+#include "src/sound/audiostream.h"
 #include "src/sound/decoders/vorbis.h"
 
 namespace Sound {
@@ -52,7 +53,7 @@ size_t XACTWaveBank_ASCII::getWaveCount() const {
 	return _waves.size();
 }
 
-RewindableAudioStream *XACTWaveBank_ASCII::getWave(size_t index) const {
+std::unique_ptr<RewindableAudioStream> XACTWaveBank_ASCII::getWave(size_t index) const {
 	if (index >= _waves.size())
 		throw Common::Exception("XACTWaveBank_ASCII::getWave(): Index out of range (%s >= %s)",
 		                        Common::composeString(index).c_str(),
@@ -65,7 +66,7 @@ RewindableAudioStream *XACTWaveBank_ASCII::getWave(size_t index) const {
 		throw Common::Exception("XACTWaveBank_ASCII::getWave(): No such resource \"%s\"", wave.name.c_str());
 
 #ifdef ENABLE_VORBIS
-	return makeVorbisStream(dataStream.release(), true);
+	return makeVorbisStream(std::move(dataStream));
 #else
 	throw Common::Exception("XACTWaveBank_ASCII::getWave(): Vorbis decoding disabled when building without libvorbis");
 #endif

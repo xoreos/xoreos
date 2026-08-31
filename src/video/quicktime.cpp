@@ -740,7 +740,7 @@ bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
 	return false;
 }
 
-Sound::PacketizedAudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream() const {
+std::unique_ptr<Sound::PacketizedAudioStream> QuickTimeDecoder::AudioSampleDesc::createAudioStream() const {
 	switch (_codecTag) {
 	case MKTAG('t', 'w', 'o', 's'):
 	case MKTAG('r', 'a', 'w', ' '): {
@@ -832,7 +832,7 @@ QuickTimeDecoder::QuickTimeAudioTrack::QuickTimeAudioTrack(QuickTimeDecoder *dec
 		_parentTrack->sampleSize = (entry->_bitsPerSample / 8) * entry->_channels;
 
 	// Create the new packetized audio stream
-	_stream.reset(static_cast<AudioSampleDesc *>(_parentTrack->sampleDescs[0].get())->createAudioStream());
+	_stream = static_cast<AudioSampleDesc *>(_parentTrack->sampleDescs[0].get())->createAudioStream();
 	_skipAACPrimer = true;
 }
 
@@ -848,7 +848,7 @@ void QuickTimeDecoder::QuickTimeAudioTrack::queueAudio(const Common::Timestamp &
 		_curChunk++;
 
 		// Queue up the packet
-		_stream->queuePacket(stream.release());
+		_stream->queuePacket(std::move(stream));
 		_samplesQueued += chunkLength.convertToFramerate(getRate()).totalNumberOfFrames();
 	} while (!allAudioQueued() && Common::Timestamp(0, _samplesQueued, getRate()) < length);
 

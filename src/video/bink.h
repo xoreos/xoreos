@@ -357,7 +357,6 @@ private:
 	class BinkAudioTrack : public AudioTrack {
 	public:
 		BinkAudioTrack(size_t index, AudioInfo &audio);
-		~BinkAudioTrack();
 
 		bool canBufferData() const;
 
@@ -370,7 +369,7 @@ private:
 	private:
 		size_t _index;
 		AudioInfo &_info;
-		Sound::PacketizedAudioStream *_audioStream;
+		std::unique_ptr<Sound::PacketizedAudioStream> _audioStream;
 		uint32_t _curFrame;
 		Common::Timestamp _audioBuffered;
 

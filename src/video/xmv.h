@@ -94,7 +94,7 @@ private:
 		XMVAudioTrack(const AudioInfo &info);
 
 		/** Queue audio stream data belonging to this track. */
-		void queueAudio(Common::SeekableReadStream *stream);
+		void queueAudio(std::unique_ptr<Common::SeekableReadStream> stream);
 
 		/** Mark the stream as finished. */
 		void finish();
@@ -106,7 +106,7 @@ private:
 	private:
 		AudioInfo _info;
 		std::unique_ptr<Sound::PacketizedAudioStream> _audioStream;
-		Sound::PacketizedAudioStream *createStream() const;
+		std::unique_ptr<Sound::PacketizedAudioStream> createStream() const;
 	};
 
 	/** An XMV 5.1 audio track. */

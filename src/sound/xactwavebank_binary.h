@@ -70,7 +70,7 @@ public:
 	size_t getWaveCount() const override;
 
 	/** Return the audio stream of a wave. */
-	RewindableAudioStream *getWave(size_t index) const override;
+	std::unique_ptr<RewindableAudioStream> getWave(size_t index) const override;
 
 private:
 	/** The codec of a wave within the wavebank. */

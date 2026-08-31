@@ -59,6 +59,7 @@
 
 #include "src/sound/xactwavebank_binary.h"
 
+#include "src/sound/audiostream.h"
 #include "src/sound/decoders/pcm.h"
 #include "src/sound/decoders/adpcm.h"
 #include "src/sound/decoders/asf.h"
@@ -90,7 +91,7 @@ size_t XACTWaveBank_Binary::getWaveCount() const {
 	return _waves.size();
 }
 
-RewindableAudioStream *XACTWaveBank_Binary::getWave(size_t index) const {
+std::unique_ptr<RewindableAudioStream> XACTWaveBank_Binary::getWave(size_t index) const {
 	if (index >= _waves.size())
 		throw Common::Exception("XACTWaveBank_Binary::getWave(): Index out of range (%s >= %s)",
 		                        Common::composeString(index).c_str(),
@@ -103,16 +104,16 @@ RewindableAudioStream *XACTWaveBank_Binary::getWave(size_t index) const {
 
 	switch (wave.codec) {
 		case Codec::PCM:
-			return makePCMStream(dataStream.release(), wave.samplingRate,
+			return makePCMStream(std::move(dataStream), wave.samplingRate,
 			                     (wave.bitRate == 16) ? (FLAG_16BITS | FLAG_LITTLE_ENDIAN) : FLAG_UNSIGNED,
 			                     wave.channels);
 
 		case Codec::ADPCM:
-			return makeADPCMStream(dataStream.release(), true, dataStream->size(),
-			                       kADPCMXbox, wave.samplingRate,  wave.channels);
+			return makeADPCMStream(std::move(dataStream), dataStream->size(),
+			                       kADPCMXbox, wave.samplingRate, wave.channels);
 
 		case Codec::WMA:
-			return makeASFStream(dataStream.release());
+			return makeASFStream(std::move(dataStream));
 
 		default:
 			throw Common::Exception("XACTWaveBank_Binary::getWave(): Unknown encoding %u",

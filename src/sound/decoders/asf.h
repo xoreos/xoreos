@@ -32,14 +32,11 @@ namespace Sound {
  * from that data.
  *
  * @param stream          The SeekableReadStream from which to read the ASF data.
- * @param disposeAfterUse Whether to delete the stream after use.
  *
  * @return A new RewindableAudioStream, or 0, if an error occurred.
  */
 
-RewindableAudioStream *makeASFStream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse = true);
+std::unique_ptr<RewindableAudioStream> makeASFStream(std::unique_ptr<Common::SeekableReadStream> stream);
 
 } // End of namespace Sound
 

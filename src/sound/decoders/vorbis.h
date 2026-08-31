@@ -71,13 +71,10 @@ class RewindableAudioStream;
  * Create a new RewindableAudioStream from the Ogg Vorbis data in the given stream.
  *
  * @param stream          The RewindableAudioStream from which to read the Ogg Vorbis data.
- * @param disposeAfterUse Whether to delete the stream after use.
  *
  * @return A new RewindableAudioStream, or 0, if an error occurred.
  */
-RewindableAudioStream *makeVorbisStream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse);
+std::unique_ptr<RewindableAudioStream> makeVorbisStream(std::unique_ptr<Common::SeekableReadStream> stream);
 
 /**
  * Create a new PacketizedAudioStream capable of decoding vorbis audio data.
@@ -87,7 +84,7 @@ RewindableAudioStream *makeVorbisStream(
  *    containers.
  * @return a new PacketizedAudioStream, or NULL if an error occurred
  */
-PacketizedAudioStream *makePacketizedVorbisStream(
+std::unique_ptr<PacketizedAudioStream> makePacketizedVorbisStream(
 	Common::SeekableReadStream &extraData);
 
 /**
@@ -101,7 +98,7 @@ PacketizedAudioStream *makePacketizedVorbisStream(
  *    The third vorbis header, as used in ogg
  * @return a new PacketizedAudioStream, or NULL if an error occurred
  */
-PacketizedAudioStream *makePacketizedVorbisStream(
+std::unique_ptr<PacketizedAudioStream> makePacketizedVorbisStream(
 	Common::SeekableReadStream &packet1,
 	Common::SeekableReadStream &packet2,
 	Common::SeekableReadStream &packet3);

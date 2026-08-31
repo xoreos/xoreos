@@ -69,7 +69,7 @@ Module &Game::getModule() {
 
 void Game::run() {
 	try {
-		_musicBank.reset(Sound::XACTSoundBank::load("musicbank"));
+		_musicBank = Sound::XACTSoundBank::load("musicbank");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();
 	}

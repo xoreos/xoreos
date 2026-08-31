@@ -56,6 +56,8 @@
 
 #ifdef ENABLE_MAD
 
+#include <memory>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -72,13 +74,10 @@ class RewindableAudioStream;
  * Allows for seeking (which is why we require a SeekableReadStream).
  *
  * @param stream          The SeekableReadStream from which to read the MP3 data.
- * @param disposeAfterUse Whether to delete the stream after use.
  *
  * @return A new SeekableAudioStream, or 0, if an error occurred.
  */
-RewindableAudioStream *makeMP3Stream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse);
+std::unique_ptr<RewindableAudioStream> makeMP3Stream(std::unique_ptr<Common::SeekableReadStream> stream);
 
 } // End of namespace Sound
 

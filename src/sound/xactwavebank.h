@@ -25,6 +25,8 @@
 #ifndef SOUND_XACTWAVEBANK_H
 #define SOUND_XACTWAVEBANK_H
 
+#include <memory>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -59,7 +61,7 @@ public:
 	virtual size_t getWaveCount() const = 0;
 
 	/** Return the audio stream of a wave. */
-	virtual RewindableAudioStream *getWave(size_t index) const = 0;
+	virtual std::unique_ptr<RewindableAudioStream> getWave(size_t index) const = 0;
 
 	/** Load an XACT WaveBank, of either ASCII or Binary format. */
 	static XACTWaveBank *load(const Common::UString &name);

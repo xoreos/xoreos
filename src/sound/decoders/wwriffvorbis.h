@@ -29,8 +29,7 @@ namespace Sound {
 
 class RewindableAudioStream;
 
-Sound::RewindableAudioStream *makeWwRIFFVorbisStream(Common::SeekableReadStream *wwRIFFVorbis,
-                                                     bool disposeAfterUse);
+std::unique_ptr<Sound::RewindableAudioStream> makeWwRIFFVorbisStream(std::unique_ptr<Common::SeekableReadStream> wwRIFFVorbis);
 
 } // End of namespace Sound
 

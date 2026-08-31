@@ -35,7 +35,7 @@
 
 namespace Sound {
 
-RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
+std::unique_ptr<RewindableAudioStream> makeWAVStream(std::unique_ptr<Common::SeekableReadStream> stream) {
 	uint32_t riffTag = stream->readUint32BE();
 	if (riffTag != MKTAG('R', 'I', 'F', 'F'))
 		throw Common::Exception("makeWAVStream(): No 'RIFF' header (%s)", Common::debugTag(riffTag).c_str());
@@ -77,7 +77,9 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 	}
 
 	uint32_t size = stream->readUint32LE();
-	Common::SeekableSubReadStream *subStream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + size, disposeAfterUse);
+	const size_t pos = stream->pos();
+
+	stream = std::make_unique<Common::SeekableSubReadStream>(std::move(stream), pos, pos + size);
 
 	// Return the decoder we need
 	switch (compression) {
@@ -92,13 +94,13 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, bool di
 		else
 			throw Common::Exception("makeWAVStream(): Unsupported PCM bits per sample %d", bitsPerSample);
 
-		return makePCMStream(subStream, sampleRate, flags, channels, true);
+		return makePCMStream(std::move(stream), sampleRate, flags, channels);
 	}
 	case kWaveMSIMAADPCM:
 	case kWaveMSIMAADPCM2:
-		return makeADPCMStream(subStream, true, size, kADPCMMSIma, sampleRate, channels, blockAlign);
+		return makeADPCMStream(std::move(stream), size, kADPCMMSIma, sampleRate, channels, blockAlign);
 	case kWaveMSADPCM:
-		return makeADPCMStream(subStream, true, size, kADPCMMS, sampleRate, channels, blockAlign);
+		return makeADPCMStream(std::move(stream), size, kADPCMMS, sampleRate, channels, blockAlign);
 	}
 
 	throw Common::Exception("makeWAVStream(): Unhandled wave type 0x%04x", compression);

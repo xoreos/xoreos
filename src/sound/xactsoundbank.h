@@ -66,7 +66,7 @@ public:
 	virtual ~XACTSoundBank() = default;
 
 	/** Load an XACT SoundBank, of either ASCII or Binary format. */
-	static XACTSoundBank *load(const Common::UString &name);
+	static std::unique_ptr<XACTSoundBank> load(const Common::UString &name);
 
 	/** Return the internal name of the SoundBank. */
 	const Common::UString &getName() { return _name; }

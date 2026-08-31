@@ -62,9 +62,9 @@ public:
 	bool hasSample(const Common::UString &name) const;
 
 	/** Return the audio stream of a sample, by index. */
-	RewindableAudioStream *getSample(size_t index) const;
+	std::unique_ptr<RewindableAudioStream> getSample(size_t index) const;
 	/** Return the audio stream of a sample, by name. */
-	RewindableAudioStream *getSample(const Common::UString &name) const;
+	std::unique_ptr<RewindableAudioStream> getSample(const Common::UString &name) const;
 
 private:
 	struct Sample {
@@ -105,7 +105,7 @@ private:
 
 	void load(Common::SeekableReadStream &fsb);
 
-	RewindableAudioStream *getSample(const Sample &sample) const;
+	std::unique_ptr<RewindableAudioStream> getSample(const Sample &sample) const;
 };
 
 } // End of namespace Sound

@@ -68,8 +68,8 @@ public:
 	/** Return the index of a sound from its ID, or SIZE_MAX if not found. */
 	size_t findSoundByID(uint32_t id) const;
 
-	RewindableAudioStream *getFile(size_t index) const;
-	RewindableAudioStream *getSound(size_t index) const;
+	std::unique_ptr<RewindableAudioStream> getFile(size_t index) const;
+	std::unique_ptr<RewindableAudioStream> getSound(size_t index) const;
 
 private:
 	/** An embedded sound file within the SoundBank. */
@@ -123,8 +123,8 @@ private:
 	bool isEmptyFile(size_t index) const;
 	bool isEmptySound(size_t index) const;
 
-	Common::SeekableReadStream *getFileData(size_t index) const;
-	Common::SeekableReadStream *getSoundData(size_t index) const;
+	std::unique_ptr<Common::SeekableReadStream> getFileData(size_t index) const;
+	std::unique_ptr<Common::SeekableReadStream> getSoundData(size_t index) const;
 };
 
 } // End of namespace Sound

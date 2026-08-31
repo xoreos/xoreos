@@ -51,7 +51,6 @@
 #include <cstring>
 
 #include "src/common/endianness.h"
-#include "src/common/disposableptr.h"
 
 #include "src/sound/decoders/adpcm.h"
 #include "src/sound/audiostream.h"
@@ -60,7 +59,7 @@ namespace Sound {
 
 class ADPCMStream : public RewindableAudioStream {
 protected:
-	Common::DisposablePtr<Common::SeekableReadStream> _stream;
+	std::unique_ptr<Common::SeekableReadStream> _stream;
 	const size_t _size;
 	const size_t _startpos;
 	const size_t _endpos;
@@ -83,7 +82,7 @@ protected:
 	int16_t stepAdjust(byte);
 
 public:
-	ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32_t blockAlign);
+	ADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, size_t size, int rate, int channels, uint32_t blockAlign);
 	~ADPCMStream();
 
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
@@ -101,10 +100,10 @@ public:
 // In addition, also MS IMA ADPCM is supported. See
 //   <http://wiki.multimedia.cx/index.php?title=Microsoft_IMA_ADPCM>.
 
-ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32_t blockAlign)
-	: _stream(stream, disposeAfterUse),
+ADPCMStream::ADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, size_t size, int rate, int channels, uint32_t blockAlign)
+	: _stream(std::move(stream)),
 		_size(size),
-		_startpos(stream->pos()),
+		_startpos(_stream->pos()),
 		_endpos(_startpos + _size),
 		_channels(channels),
 		_blockAlign(blockAlign),
@@ -134,8 +133,8 @@ protected:
 	int16_t decodeIMA(byte code, int channel = 0); // Default to using the left channel/using one channel
 
 public:
-	Ima_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
-		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
+	Ima_ADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, uint32_t size, int rate, int channels, uint32_t blockAlign)
+		: ADPCMStream(std::move(stream), size, rate, channels, blockAlign) {
 		std::memset(&_status, 0, sizeof(_status));
 
 		// 2 samples per input byte
@@ -175,8 +174,8 @@ protected:
 	}
 
 public:
-	Apple_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
-		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
+	Apple_ADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, uint32_t size, int rate, int channels, uint32_t blockAlign)
+		: Ima_ADPCMStream(std::move(stream), size, rate, channels, blockAlign) {
 		_chunkPos[0] = 0;
 		_chunkPos[1] = 0;
 		_streamPos[0] = 0;
@@ -255,8 +254,8 @@ size_t Apple_ADPCMStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 
 class MSIma_ADPCMStream : public Ima_ADPCMStream {
 public:
-	MSIma_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
-		: Ima_ADPCMStream(stream, disposeAfterUse, size - (size % ((blockAlign == 0) ? 1 : blockAlign)),
+	MSIma_ADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, uint32_t size, int rate, int channels, uint32_t blockAlign)
+		: Ima_ADPCMStream(std::move(stream), size - (size % ((blockAlign == 0) ? 1 : blockAlign)),
 		                  rate, channels, blockAlign) {
 
 		if (blockAlign == 0)
@@ -365,8 +364,8 @@ protected:
 	}
 
 public:
-	MS_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
-		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
+	MS_ADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, uint32_t size, int rate, int channels, uint32_t blockAlign)
+		: ADPCMStream(std::move(stream), size, rate, channels, blockAlign) {
 		if (blockAlign == 0)
 			error("MS_ADPCMStream(): blockAlign isn't specified for MS ADPCM");
 		std::memset(&_status, 0, sizeof(_status));
@@ -504,8 +503,8 @@ int16_t Ima_ADPCMStream::decodeIMA(byte code, int channel) {
  */
 class Xbox_ADPCMStream : public ADPCMStream {
 public:
-	Xbox_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, int rate, int channels, uint32_t blockAlign)
-		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign == 0 ? 36 : blockAlign) {
+	Xbox_ADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, uint32_t size, int rate, int channels, uint32_t blockAlign)
+		: ADPCMStream(std::move(stream), size, rate, channels, blockAlign == 0 ? 36 : blockAlign) {
 		std::memset(&_status, 0, sizeof(_status));
 
 		if (_blockAlign != 36)
@@ -637,16 +636,16 @@ size_t Xbox_ADPCMStream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	return samples;
 }
 
-RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32_t size, ADPCMTypes type, int rate, int channels, uint32_t blockAlign) {
+std::unique_ptr<RewindableAudioStream> makeADPCMStream(std::unique_ptr<Common::SeekableReadStream> stream, uint32_t size, ADPCMTypes type, int rate, int channels, uint32_t blockAlign) {
 	switch (type) {
 	case kADPCMMSIma:
-		return new MSIma_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+		return std::make_unique<MSIma_ADPCMStream>(std::move(stream), size, rate, channels, blockAlign);
 	case kADPCMMS:
-		return new MS_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+		return std::make_unique<MS_ADPCMStream>(std::move(stream), size, rate, channels, blockAlign);
 	case kADPCMApple:
-		return new Apple_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+		return std::make_unique<Apple_ADPCMStream>(std::move(stream), size, rate, channels, blockAlign);
 	case kADPCMXbox:
-		return new Xbox_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+		return std::make_unique<Xbox_ADPCMStream>(std::move(stream), size, rate, channels, blockAlign);
 	default:
 		error("Unsupported ADPCM encoding");
 		break;
@@ -659,19 +658,19 @@ public:
 		StatelessPacketizedAudioStream(rate, channels), _type(type), _blockAlign(blockAlign) {}
 
 protected:
-	AudioStream *makeStream(Common::SeekableReadStream *data);
+	std::unique_ptr<AudioStream> makeStream(std::unique_ptr<Common::SeekableReadStream> data);
 
 private:
 	ADPCMTypes _type;
 	uint32_t _blockAlign;
 };
 
-AudioStream *PacketizedADPCMStream::makeStream(Common::SeekableReadStream *data) {
-	return makeADPCMStream(data, true, data->size(), _type, getRate(), getChannels(), _blockAlign);
+std::unique_ptr<AudioStream> PacketizedADPCMStream::makeStream(std::unique_ptr<Common::SeekableReadStream> data) {
+	return makeADPCMStream(std::move(data), data->size(), _type, getRate(), getChannels(), _blockAlign);
 }
 
-PacketizedAudioStream *makePacketizedADPCMStream(ADPCMTypes type, int rate, int channels, uint32_t blockAlign) {
-	return new PacketizedADPCMStream(type, rate, channels, blockAlign);
+std::unique_ptr<PacketizedAudioStream> makePacketizedADPCMStream(ADPCMTypes type, int rate, int channels, uint32_t blockAlign) {
+	return std::make_unique<PacketizedADPCMStream>(type, rate, channels, blockAlign);
 }
 
 } // End of namespace Sound

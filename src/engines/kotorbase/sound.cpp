@@ -66,9 +66,9 @@ SoundObject::SoundObject(const Aurora::GFF3Struct &sound) {
 	if (_random)
 		soundFile = _soundFiles[RNG.getNext(0, _soundFiles.size())];
 
-	Common::SeekableReadStream *soundStream = ResMan.getResource(Aurora::kResourceSound, soundFile);
+	std::unique_ptr<Common::SeekableReadStream> soundStream(ResMan.getResource(Aurora::kResourceSound, soundFile));
 
-	_sound = SoundMan.playSoundFile(soundStream, Sound::kSoundTypeSFX, _looping);
+	_sound = SoundMan.playSoundFile(std::move(soundStream), Sound::kSoundTypeSFX, _looping);
 
 	_name = gff.getString("Tag");
 

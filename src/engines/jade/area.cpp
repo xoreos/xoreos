@@ -87,7 +87,7 @@ void Area::load() {
 	loadSAV(sav.getTopLevel());
 
 	try {
-		_musicBank.reset(Sound::XACTSoundBank::load("musicbank"));
+		_musicBank = Sound::XACTSoundBank::load("musicbank");
 	} catch (...) {
 	}
 }

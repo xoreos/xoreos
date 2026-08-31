@@ -31,6 +31,8 @@
 
 #ifdef ENABLE_FAAD
 
+#include <memory>
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -45,7 +47,7 @@ class PacketizedAudioStream;
  * @param extraData  The stream containing the extra data needed for initialization
  * @return             A new PacketizedAudioStream, or NULL on error
  */
-PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData);
+std::unique_ptr<PacketizedAudioStream> makeAACStream(Common::SeekableReadStream &extraData);
 
 } // End of namespace Sound
 

@@ -26,6 +26,7 @@
 #include <cstring>
 
 #include "src/common/error.h"
+#include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
 #include "src/sound/interleaver.h"
@@ -134,13 +135,13 @@ bool Interleaver::endOfStream() const {
 }
 
 
-AudioStream *makeInterleaver(int rate, const std::vector<AudioStream *> &streams,
-                             bool disposeAfterUse) {
+std::unique_ptr<AudioStream> makeInterleaver(int rate, const std::vector<AudioStream *> &streams,
+                                             bool disposeAfterUse) {
 
 	if (streams.empty())
 		throw Common::Exception("makeInterleaver(): No streams");
 
-	return new Interleaver(rate, streams, disposeAfterUse);
+	return std::make_unique<Interleaver>(rate, streams, disposeAfterUse);
 }
 
 

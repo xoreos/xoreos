@@ -25,6 +25,8 @@
 #ifndef SOUND_DECODERS_WMA_H
 #define SOUND_DECODERS_WMA_H
 
+#include <memory>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -41,7 +43,7 @@ class PacketizedAudioStream;
  * @param extraData  The stream containing the extra data needed for initialization
  * @return             A new PacketizedAudioStream, or NULL on error
  */
-PacketizedAudioStream *makeWMAStream(int version, uint32_t sampleRate, uint8_t channels,
+std::unique_ptr<PacketizedAudioStream> makeWMAStream(int version, uint32_t sampleRate, uint8_t channels,
 	uint32_t bitRate, uint32_t blockAlign, Common::SeekableReadStream &extraData);
 
 } // End of namespace Sound

@@ -58,7 +58,6 @@
 
 #include <boost/scope_exit.hpp>
 
-#include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 #include "src/common/mutex.h"
@@ -118,7 +117,7 @@ static ov_callbacks g_stream_wrap = {
 
 class VorbisStream : public RewindableAudioStream {
 protected:
-	Common::DisposablePtr<Common::SeekableReadStream> _inStream;
+	std::unique_ptr<Common::SeekableReadStream> _inStream;
 
 	bool _isStereo;
 	int _rate;
@@ -133,7 +132,7 @@ protected:
 
 public:
 	// startTime / duration are in milliseconds
-	VorbisStream(Common::SeekableReadStream *inStream, bool dispose);
+	VorbisStream(std::unique_ptr<Common::SeekableReadStream> inStream);
 	~VorbisStream();
 
 	size_t readBuffer(int16_t *buffer, const size_t numSamples);
@@ -149,12 +148,12 @@ protected:
 	bool refill();
 };
 
-VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
-	_inStream(inStream, dispose),
+VorbisStream::VorbisStream(std::unique_ptr<Common::SeekableReadStream> inStream) :
+	_inStream(std::move(inStream)),
 	_bufferEnd(_buffer + std::size(_buffer)),
 	_length(kInvalidLength) {
 
-	int res = ov_open_callbacks(inStream, &_ovFile, 0, 0, g_stream_wrap);
+	int res = ov_open_callbacks(_inStream.get(), &_ovFile, 0, 0, g_stream_wrap);
 	if (res < 0) {
 		warning("Could not create Vorbis stream (%d)", res);
 		_pos = _bufferEnd;
@@ -274,7 +273,7 @@ public:
 	bool endOfStream() const;
 
 	// PacketizedAudioStream API
-	void queuePacket(Common::SeekableReadStream *packet);
+	void queuePacket(std::unique_ptr<Common::SeekableReadStream> packet) override;
 	void finish();
 	bool isFinished() const;
 
@@ -288,7 +287,7 @@ private:
 	bool _init;
 
 	mutable std::recursive_mutex _mutex;
-	std::queue<Common::SeekableReadStream *> _queue;
+	std::queue<std::unique_ptr<Common::SeekableReadStream> > _queue;
 	bool _finished;
 	bool _hasData;
 };
@@ -310,12 +309,6 @@ PacketizedVorbisStream::~PacketizedVorbisStream() {
 
 	vorbis_info_clear(&_vorbisInfo);
 	vorbis_comment_clear(&_comment);
-
-	// Remove anything from the queue
-	while (!_queue.empty()) {
-		delete _queue.front();
-		_queue.pop();
-	}
 }
 
 bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) {
@@ -461,7 +454,7 @@ size_t PacketizedVorbisStream::readBuffer(int16_t *buffer, const size_t numSampl
 				return samples;
 
 			// Feed the next packet into the beast
-			std::unique_ptr<Common::SeekableReadStream> stream(_queue.front());
+			std::unique_ptr<Common::SeekableReadStream> stream = std::move(_queue.front());
 			_queue.pop();
 			std::unique_ptr<byte[]> data = std::make_unique<byte[]>(stream->size());
 			stream->read(data.get(), stream->size());
@@ -513,10 +506,10 @@ bool PacketizedVorbisStream::endOfStream() const {
 	return _finished && endOfData();
 }
 
-void PacketizedVorbisStream::queuePacket(Common::SeekableReadStream *packet) {
+void PacketizedVorbisStream::queuePacket(std::unique_ptr<Common::SeekableReadStream> packet) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	assert(!_finished);
-	_queue.push(packet);
+	_queue.emplace(std::move(packet));
 }
 
 void PacketizedVorbisStream::finish() {
@@ -529,28 +522,28 @@ bool PacketizedVorbisStream::isFinished() const {
 	return _finished;
 }
 
-RewindableAudioStream *makeVorbisStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	std::unique_ptr<RewindableAudioStream> s = std::make_unique<VorbisStream>(stream, disposeAfterUse);
+std::unique_ptr<RewindableAudioStream> makeVorbisStream(std::unique_ptr<Common::SeekableReadStream> stream) {
+	std::unique_ptr<RewindableAudioStream> s = std::make_unique<VorbisStream>(std::move(stream));
 	if (s && s->endOfData())
 		return 0;
 
-	return s.release();
+	return s;
 }
 
-PacketizedAudioStream *makePacketizedVorbisStream(Common::SeekableReadStream &extraData) {
+std::unique_ptr<PacketizedAudioStream> makePacketizedVorbisStream(Common::SeekableReadStream &extraData) {
 	std::unique_ptr<PacketizedVorbisStream> stream = std::make_unique<PacketizedVorbisStream>();
 	if (!stream->parseExtraData(extraData))
 		return 0;
 
-	return stream.release();
+	return stream;
 }
 
-PacketizedAudioStream *makePacketizedVorbisStream(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3) {
+std::unique_ptr<PacketizedAudioStream> makePacketizedVorbisStream(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3) {
 	std::unique_ptr<PacketizedVorbisStream> stream = std::make_unique<PacketizedVorbisStream>();
 	if (!stream->parseExtraData(packet1, packet2, packet3))
 		return 0;
 
-	return stream.release();
+	return stream;
 }
 
 } // End of namespace Sound

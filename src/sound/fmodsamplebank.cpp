@@ -56,6 +56,7 @@
 
 #include "src/aurora/resman.h"
 
+#include "src/sound/audiostream.h"
 #include "src/sound/fmodsamplebank.h"
 
 #ifdef ENABLE_MAD
@@ -99,14 +100,14 @@ bool FMODSampleBank::hasSample(const Common::UString &name) const {
 static constexpr uint32_t kSampleFlagMP3      = 0x00000200;
 static constexpr uint32_t kSampleFlagIMAADPCM = 0x00400000;
 
-RewindableAudioStream *FMODSampleBank::getSample(const Sample &sample) const {
+std::unique_ptr<RewindableAudioStream> FMODSampleBank::getSample(const Sample &sample) const {
 	_fsb->seek(sample.offset);
 	std::unique_ptr<Common::SeekableReadStream> dataStream(_fsb->readStream(sample.size));
 
 	if (sample.flags & kSampleFlagMP3) {
 		warning("MP3");
 #ifdef ENABLE_MAD
-		return makeMP3Stream(dataStream.release(), true);
+		return makeMP3Stream(std::move(dataStream));
 #else
 		throw Common::Exception("MP3 decoding disabled when building without libmad");
 #endif
@@ -114,14 +115,14 @@ RewindableAudioStream *FMODSampleBank::getSample(const Sample &sample) const {
 
 	if (sample.flags & kSampleFlagIMAADPCM) {
 		warning("APCM");
-		return makeADPCMStream(dataStream.release(), true, dataStream->size(),
+		return makeADPCMStream(std::move(dataStream), dataStream->size(),
 		                       kADPCMMSIma, sample.defFreq, sample.channels, 36 * sample.channels);
 	}
 
 	throw Common::Exception("FMODSampleBank::getSample(): Unknown format (0x%08X)", sample.flags);
 }
 
-RewindableAudioStream *FMODSampleBank::getSample(size_t index) const {
+std::unique_ptr<RewindableAudioStream> FMODSampleBank::getSample(size_t index) const {
 	if (index >= _samples.size())
 		throw Common::Exception("FMODSampleBank::getSampleName(): Index out of range (%s >= %s)",
 		                        Common::composeString(index).c_str(),
@@ -130,7 +131,7 @@ RewindableAudioStream *FMODSampleBank::getSample(size_t index) const {
 	return getSample(_samples[index]);
 }
 
-RewindableAudioStream *FMODSampleBank::getSample(const Common::UString &name) const {
+std::unique_ptr<RewindableAudioStream> FMODSampleBank::getSample(const Common::UString &name) const {
 	std::map<Common::UString, const Sample *>::const_iterator s = _sampleMap.find(name);
 	if (s == _sampleMap.end())
 		throw Common::Exception("FMODSampleBank::getSampleName(): No such sample \"%s\"", name.c_str());
