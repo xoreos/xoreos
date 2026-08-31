@@ -51,6 +51,7 @@
 #define COMMON_READSTREAM_H
 
 #include <cstddef>
+#include <memory>
 
 #include "src/common/types.h"
 #include "src/common/endianness.h"
@@ -330,6 +331,7 @@ public:
  */
 class SubReadStream : virtual public ReadStream {
 public:
+	SubReadStream(std::unique_ptr<ReadStream> parentStream, size_t end);
 	SubReadStream(ReadStream *parentStream, size_t end, bool disposeParentStream = false);
 	~SubReadStream();
 
@@ -356,6 +358,7 @@ protected:
  */
 class SeekableSubReadStream : public SubReadStream, public SeekableReadStream {
 public:
+	SeekableSubReadStream(std::unique_ptr<SeekableReadStream> parentStream, size_t begin, size_t end);
 	SeekableSubReadStream(SeekableReadStream *parentStream, size_t begin, size_t end,
 	                      bool disposeParentStream = false);
 	~SeekableSubReadStream();
