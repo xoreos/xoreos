@@ -60,6 +60,10 @@ std::vector<int> PartyController::getPartyMembers() const {
 	return partyMembers;
 }
 
+int PartyController::getPartyLeaderID() const {
+	return _party[0].first;
+}
+
 bool PartyController::isObjectPartyMember(Creature *object) const {
 	for (auto partyMember : _party) {
 		if (partyMember.second == object)
@@ -86,6 +90,14 @@ void PartyController::addPartyMember(int npc, Creature *creature) {
 		_module->getCurrentArea()->addCreature(creature);
 		creature->show();
 	}
+}
+
+void PartyController::removePartyMember(int npc) {
+	const auto memberFinder = [=](const std::pair<int, Creature *> &member){
+		return member.first == npc;
+	};
+
+	_party.erase(std::find_if(_party.begin(), _party.end(), memberFinder));
 }
 
 void PartyController::setPartyLeader(int npc) {
