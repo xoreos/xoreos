@@ -100,6 +100,12 @@ size_t SeekableReadStream::evalSeek(ptrdiff_t offset, Origin whence, size_t pos,
 }
 
 
+SubReadStream::SubReadStream(std::unique_ptr<ReadStream> parentStream, size_t end) :
+	_parentStream(std::move(parentStream)), _pos(), _end(end), _eos(false) {
+
+	assert(_parentStream);
+}
+
 SubReadStream::SubReadStream(ReadStream *parentStream, size_t end, bool disposeParentStream) :
 	_parentStream(parentStream, disposeParentStream), _pos(0), _end(end), _eos(false) {
 
@@ -125,6 +131,16 @@ size_t SubReadStream::read(void *dataPtr, size_t dataSize) {
 	return dataSize;
 }
 
+
+SeekableSubReadStream::SeekableSubReadStream(std::unique_ptr<SeekableReadStream> parentStream, size_t begin, size_t end) :
+	SubReadStream(std::move(parentStream), end),
+	_parentStream(&dynamic_cast<Common::SeekableReadStream&>(*SubReadStream::_parentStream)), _begin(begin) {
+
+	assert(_begin <= _end);
+
+	_pos = begin;
+	_parentStream->seek(_pos);
+}
 
 SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, size_t begin,
                                              size_t end, bool disposeParentStream) :
