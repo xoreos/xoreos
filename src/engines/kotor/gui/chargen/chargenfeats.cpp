@@ -19,39 +19,50 @@
  */
 
 /** @file
- *  The panel to customize a quick character.
+ *  The menu for modifying the feats of the character.
  */
 
-#ifndef ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
-#define ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/label.h"
 
-#include "src/engines/kotorbase/gui/gui.h"
+#include "src/engines/kotorbase/gui/chargeninfo.h"
 
-#include "src/engines/kotor/gui/chargen/charactergeneration.h"
+#include "src/engines/kotor/gui/chargen/chargenfeats.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class CustomCharPanel : public KotORBase::GUI {
-public:
-	CustomCharPanel(CharacterGenerationMenu *charGenMenu, Console *console = 0);
+CharacterGenerationFeatsMenu::CharacterGenerationFeatsMenu(KotORBase::CharacterGenerationInfo &info,
+                                                                 Console *console) :
+		CharacterGenerationBaseMenu(info, console) {
 
-private:
-	CharacterGenerationMenu *_charGen;
+	load("ftchrgen");
 
-	virtual void callbackActive(Widget &widget);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
-	/**
-	 * @brief Update the appearance of the buttons for the individual steps
-	 *
-	 * This function is called after each step (forwards or backwards)
-	 */
-	void updateButtons();
-};
+	// TODO set lables and fields
+	//       - description
+	//       - remaining feats
+	//       - description
+}
+
+void CharacterGenerationFeatsMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_BACK") {
+		_returnCode = 1;
+		return;
+	}
+	if (widget.getTag() == "BTN_ACCEPT") {
+		accept();
+		_returnCode = 1;
+		return;
+	}
+
+	// TODO implement buttons
+	//       - add
+	//       - recommended
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
