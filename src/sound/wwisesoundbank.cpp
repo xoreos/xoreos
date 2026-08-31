@@ -121,20 +121,18 @@ size_t WwiseSoundBank::findSoundByID(uint32_t id) const {
 	return index->second;
 }
 
-RewindableAudioStream *WwiseSoundBank::getFile(size_t index) const {
+std::unique_ptr<RewindableAudioStream> WwiseSoundBank::getFile(size_t index) const {
 	if (isEmptyFile(index))
-		return new EmptyAudioStream;
+		return std::make_unique<EmptyAudioStream>();
 
-	std::unique_ptr<Common::SeekableReadStream> wwData(getFileData(index));
-	return makeWwRIFFVorbisStream(wwData.release(), true);
+	return makeWwRIFFVorbisStream(getFileData(index));
 }
 
-RewindableAudioStream *WwiseSoundBank::getSound(size_t index) const {
+std::unique_ptr<RewindableAudioStream> WwiseSoundBank::getSound(size_t index) const {
 	if (isEmptySound(index))
-		return new EmptyAudioStream;
+		return std::make_unique<EmptyAudioStream>();
 
-	std::unique_ptr<Common::SeekableReadStream> wwData(getSoundData(index));
-	return makeWwRIFFVorbisStream(wwData.release(), true);
+	return makeWwRIFFVorbisStream(getSoundData(index));
 }
 
 bool WwiseSoundBank::isEmptyFile(size_t index) const {
@@ -147,7 +145,7 @@ bool WwiseSoundBank::isEmptySound(size_t index) const {
 	return sound.isEmbedded && (sound.fileSize == 0);
 }
 
-Common::SeekableReadStream *WwiseSoundBank::getFileData(size_t index) const {
+std::unique_ptr<Common::SeekableReadStream> WwiseSoundBank::getFileData(size_t index) const {
 	const File &file = getFileStruct(index);
 
 	if (_dataOffset == SIZE_MAX)
@@ -155,10 +153,10 @@ Common::SeekableReadStream *WwiseSoundBank::getFileData(size_t index) const {
 
 	_bnk->seek(_dataOffset + file.offset);
 
-	return _bnk->readStream(file.size);
+	return std::unique_ptr<Common::SeekableReadStream>(_bnk->readStream(file.size));
 }
 
-Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
+std::unique_ptr<Common::SeekableReadStream> WwiseSoundBank::getSoundData(size_t index) const {
 	const Sound &sound = getSoundStruct(index);
 
 	if (!sound.isEmbedded) {
@@ -171,7 +169,7 @@ Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
 			throw Common::Exception("WwiseSoundBank::getSoundData(): No such OGG file (%s, %u, %u)",
 			                        Common::composeString(index).c_str(), sound.id, sound.fileID);
 
-		return data;
+		return std::unique_ptr<Common::SeekableReadStream>(data);
 	}
 
 	if (sound.fileSource == _bankID) {
@@ -179,7 +177,7 @@ Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
 
 		_bnk->seek(sound.fileOffset);
 
-		return _bnk->readStream(sound.fileSize);
+		return std::unique_ptr<Common::SeekableReadStream>(_bnk->readStream(sound.fileSize));
 	}
 
 	// Sound file is embedded in another bank
@@ -198,7 +196,7 @@ Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
 
 	bank->seek(sound.fileOffset);
 
-	return bank->readStream(sound.fileSize);
+	return std::unique_ptr<Common::SeekableReadStream>(bank->readStream(sound.fileSize));
 }
 
 static constexpr uint32_t kSectionBankHeader  = MKTAG('B', 'K', 'H', 'D');

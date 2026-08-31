@@ -116,7 +116,7 @@ public:
 	// PacketizedAudioStream API
 	void finish() { _audStream->finish(); }
 	bool isFinished() const { return _audStream->isFinished(); }
-	void queuePacket(Common::SeekableReadStream *data);
+	void queuePacket(std::unique_ptr<Common::SeekableReadStream> data) override;
 
 private:
 	static const int kChannelsMax = 2; ///< Max number of channels we support.
@@ -255,10 +255,10 @@ private:
 
 	// Decoding
 
-	Common::SeekableReadStream *decodeSuperFrame(Common::SeekableReadStream &data);
+	std::unique_ptr<Common::SeekableReadStream> decodeSuperFrame(Common::SeekableReadStream &data);
 	bool decodeFrame(Common::BitStream &bits, int16_t *outputData);
 	int decodeBlock(Common::BitStream &bits);
-	AudioStream *decodeFrame(Common::SeekableReadStream &data);
+	std::unique_ptr<AudioStream> decodeFrame(Common::SeekableReadStream &data);
 
 	// Decoding helpers
 
@@ -322,7 +322,7 @@ WMACodec::WMACodec(int version, uint32_t sampleRate, uint8_t channels,
 
 	init(extraData);
 
-	_audStream.reset(makeQueuingAudioStream(getRate(), getChannels()));
+	_audStream = makeQueuingAudioStream(getRate(), getChannels());
 }
 
 WMACodec::~WMACodec() {
@@ -748,15 +748,15 @@ void WMACodec::initLSPToCurve() {
 	}
 }
 
-AudioStream *WMACodec::decodeFrame(Common::SeekableReadStream &data) {
-	Common::SeekableReadStream *stream = decodeSuperFrame(data);
+std::unique_ptr<AudioStream> WMACodec::decodeFrame(Common::SeekableReadStream &data) {
+	std::unique_ptr<Common::SeekableReadStream> stream = decodeSuperFrame(data);
 	if (!stream)
-		return 0;
+		return nullptr;
 
-	return makePCMStream(stream, _sampleRate, _audioFlags, _channels, true);
+	return makePCMStream(std::move(stream), _sampleRate, _audioFlags, _channels);
 }
 
-Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStream &data) {
+std::unique_ptr<Common::SeekableReadStream> WMACodec::decodeSuperFrame(Common::SeekableReadStream &data) {
 	uint32_t size = data.size();
 	if (size < _blockAlign) {
 		warning("WMACodec::decodeSuperFrame(): size < _blockAlign");
@@ -886,7 +886,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		return 0;
 
 	// TODO: This might be a problem alignment-wise?
-	return new Common::MemoryReadStream(reinterpret_cast<byte *>(outputData.release()), outputDataSize * 2, true);
+	return std::make_unique<Common::MemoryReadStream>(reinterpret_cast<byte *>(outputData.release()), outputDataSize * 2, true);
 }
 
 bool WMACodec::decodeFrame(Common::BitStream &bits, int16_t *outputData) {
@@ -1716,15 +1716,14 @@ uint32_t WMACodec::getLargeVal(Common::BitStream &bits) {
 	return bits.getBits(count);
 }
 
-void WMACodec::queuePacket(Common::SeekableReadStream *data) {
-	std::unique_ptr<Common::SeekableReadStream> capture(data);
-	AudioStream* stream = decodeFrame(*data);
+void WMACodec::queuePacket(std::unique_ptr<Common::SeekableReadStream> data) {
+	std::unique_ptr<AudioStream> stream = decodeFrame(*data);
 	if (stream)
-		_audStream->queueAudioStream(stream);
+		_audStream->queueAudioStream(std::move(stream));
 }
 
-PacketizedAudioStream *makeWMAStream(int version, uint32_t sampleRate, uint8_t channels, uint32_t bitRate, uint32_t blockAlign, Common::SeekableReadStream &extraData) {
-	return new WMACodec(version, sampleRate, channels, bitRate, blockAlign, &extraData);
+std::unique_ptr<PacketizedAudioStream> makeWMAStream(int version, uint32_t sampleRate, uint8_t channels, uint32_t bitRate, uint32_t blockAlign, Common::SeekableReadStream &extraData) {
+	return std::make_unique<WMACodec>(version, sampleRate, channels, bitRate, blockAlign, &extraData);
 }
 
 } // End of namespace Sound

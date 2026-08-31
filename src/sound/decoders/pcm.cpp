@@ -47,7 +47,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "src/common/disposableptr.h"
 #include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
@@ -77,13 +76,13 @@ protected:
 
 	uint64_t _length;
 
-	Common::DisposablePtr<Common::SeekableReadStream> _stream; ///< Stream to read data from.
+	std::unique_ptr<Common::SeekableReadStream> _stream; ///< Stream to read data from.
 
 public:
-	PCMStream(int rate, int channels, bool disposeStream, Common::SeekableReadStream *stream)
-		: _rate(rate), _channels(channels), _stream(stream, disposeStream) {
+	PCMStream(int rate, int channels, std::unique_ptr<Common::SeekableReadStream> stream)
+		: _rate(rate), _channels(channels), _stream(std::move(stream)) {
 
-		_length = stream->size() / _channels / (is16Bit ? 2 : 1);
+		_length = _stream->size() / _channels / (is16Bit ? 2 : 1);
 	}
 
 	virtual ~PCMStream() {
@@ -130,16 +129,15 @@ bool PCMStream<is16Bit, isUnsigned, isLE>::rewind() {
 #define MAKE_RAW_STREAM(UNSIGNED) \
 	if (is16Bit) { \
 		if (isLE) \
-			return new PCMStream<true, UNSIGNED, true>(rate, channels, disposeAfterUse, stream); \
+			return std::make_unique<PCMStream<true, UNSIGNED, true>>(rate, channels, std::move(stream)); \
 		else  \
-			return new PCMStream<true, UNSIGNED, false>(rate, channels, disposeAfterUse, stream); \
+			return std::make_unique<PCMStream<true, UNSIGNED, false>>(rate, channels, std::move(stream)); \
 	} else \
-		return new PCMStream<false, UNSIGNED, false>(rate, channels, disposeAfterUse, stream)
+		return std::make_unique<PCMStream<false, UNSIGNED, false>>(rate, channels, std::move(stream))
 
 
-RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
-                                   int rate, byte flags, int channels,
-                                   bool disposeAfterUse) {
+std::unique_ptr<RewindableAudioStream> makePCMStream(std::unique_ptr<Common::SeekableReadStream> stream,
+                                                     int rate, byte flags, int channels) {
 
 	const bool is16Bit    = (flags & FLAG_16BITS) != 0;
 	const bool isUnsigned = (flags & FLAG_UNSIGNED) != 0;
@@ -158,18 +156,18 @@ public:
 		StatelessPacketizedAudioStream(rate, channels), _flags(flags) {}
 
 protected:
-	AudioStream *makeStream(Common::SeekableReadStream *data);
+	std::unique_ptr<AudioStream> makeStream(std::unique_ptr<Common::SeekableReadStream> data) override;
 
 private:
 	byte _flags;
 };
 
-AudioStream *PacketizedPCMStream::makeStream(Common::SeekableReadStream *data) {
-	return makePCMStream(data, getRate(), _flags, getChannels());
+std::unique_ptr<AudioStream> PacketizedPCMStream::makeStream(std::unique_ptr<Common::SeekableReadStream> data) {
+	return makePCMStream(std::move(data), getRate(), _flags, getChannels());
 }
 
-PacketizedAudioStream *makePacketizedPCMStream(int rate, byte flags, int channels) {
-	return new PacketizedPCMStream(rate, flags, channels);
+std::unique_ptr<PacketizedAudioStream> makePacketizedPCMStream(int rate, byte flags, int channels) {
+	return std::make_unique<PacketizedPCMStream>(rate, flags, channels);
 }
 
 } // End of namespace Sound

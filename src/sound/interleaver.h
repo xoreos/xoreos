@@ -25,6 +25,7 @@
 #ifndef SOUND_INTERLEAVER_H
 #define SOUND_INTERLEAVER_H
 
+#include <memory>
 #include <vector>
 
 namespace Sound {
@@ -45,8 +46,8 @@ class AudioStream;
  *
  * @return A new AudioStream.
  */
-AudioStream *makeInterleaver(int rate, const std::vector<AudioStream *> &streams,
-                             bool disposeAfterUse = true);
+std::unique_ptr<AudioStream> makeInterleaver(int rate, const std::vector<AudioStream *> &streams,
+                                             bool disposeAfterUse = true);
 
 } // End of namespace Sound
 

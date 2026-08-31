@@ -89,11 +89,11 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 	Sound::ChannelHandle channel;
 
 	try {
-		Common::SeekableReadStream *soundStream = ResMan.getResource(resType, sound);
+		std::unique_ptr<Common::SeekableReadStream> soundStream(ResMan.getResource(resType, sound));
 		if (!soundStream)
 			return channel;
 
-		channel = SoundMan.playSoundFile(soundStream, soundType, loop);
+		channel = SoundMan.playSoundFile(std::move(soundStream), soundType, loop);
 
 		debugC(Common::kDebugEngineSound, 1, "Playing sound \"%s\" in %s",
 		       sound.c_str(), SoundMan.formatChannel(channel).c_str());

@@ -51,13 +51,14 @@
 
 #include "src/common/error.h"
 #include "src/common/mutex.h"
+#include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
 
 namespace Sound {
 
-LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, size_t loops, bool disposeAfterUse)
-    : _parent(stream, disposeAfterUse), _loops(loops), _completeIterations(0) {
+LoopingAudioStream::LoopingAudioStream(std::unique_ptr<RewindableAudioStream> stream, size_t loops)
+    : _parent(std::move(stream)), _loops(loops), _completeIterations(0) {
 }
 
 LoopingAudioStream::~LoopingAudioStream() {
@@ -98,11 +99,11 @@ bool LoopingAudioStream::endOfData() const {
 	return (_loops != 0 && (_completeIterations == _loops));
 }
 
-AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, size_t loops) {
-	if (loops != 1)
-		return new LoopingAudioStream(stream, loops);
-	else
+std::unique_ptr<AudioStream> makeLoopingAudioStream(std::unique_ptr<RewindableAudioStream> stream, size_t loops) {
+	if (loops == 1)
 		return stream;
+
+	return std::make_unique<LoopingAudioStream>(std::move(stream), loops);
 }
 
 bool LoopingAudioStream::rewind() {
@@ -146,21 +147,6 @@ uint64_t LoopingAudioStream::getDurationOnce() const {
 class QueuingAudioStreamImpl : public QueuingAudioStream {
 private:
 	/**
-	 * We queue a number of (pointers to) audio stream objects.
-	 * In addition, we need to remember for each stream whether
-	 * to dispose it after all data has been read from it.
-	 * Hence, we don't store pointers to stream objects directly,
-	 * but rather StreamHolder structs.
-	 */
-	struct StreamHolder {
-		AudioStream *_stream;
-		bool _disposeAfterUse;
-		StreamHolder(AudioStream *stream, bool disposeAfterUse)
-		    : _stream(stream),
-		      _disposeAfterUse(disposeAfterUse) {}
-	};
-
-	/**
 	 * The sampling rate of this audio stream.
 	 */
 	const int _rate;
@@ -184,12 +170,11 @@ private:
 	/**
 	 * The queue of audio streams.
 	 */
-	std::queue<StreamHolder> _queue;
+	std::queue<std::unique_ptr<AudioStream>> _queue;
 
 public:
 	QueuingAudioStreamImpl(int rate, int channels)
 	    : _rate(rate), _channels(channels), _finished(false) {}
-	~QueuingAudioStreamImpl();
 
 	// Implement the AudioStream API
 	virtual size_t readBuffer(int16_t *buffer, const size_t numSamples);
@@ -205,7 +190,7 @@ public:
 	}
 
 	// Implement the QueuingAudioStream API
-	virtual void queueAudioStream(AudioStream *stream, bool disposeAfterUse);
+	void queueAudioStream(std::unique_ptr<AudioStream> stream) override;
 
 	virtual void finish() {
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
@@ -223,16 +208,7 @@ public:
 	}
 };
 
-QueuingAudioStreamImpl::~QueuingAudioStreamImpl() {
-	while (!_queue.empty()) {
-		StreamHolder tmp = _queue.front();
-		_queue.pop();
-		if (tmp._disposeAfterUse)
-			delete tmp._stream;
-	}
-}
-
-void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, bool disposeAfterUse) {
+void QueuingAudioStreamImpl::queueAudioStream(std::unique_ptr<AudioStream> stream) {
 	if (_finished)
 		throw Common::Exception("QueuingAudioStreamImpl::queueAudioStream(): Trying to queue another audio stream, but the QueuingAudioStream is finished.");
 
@@ -240,7 +216,7 @@ void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, bool disposeA
 		throw Common::Exception("QueuingAudioStreamImpl::queueAudioStream(): stream has mismatched parameters");
 
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
-	_queue.push(StreamHolder(stream, disposeAfterUse));
+	_queue.emplace(std::move(stream));
 }
 
 size_t QueuingAudioStreamImpl::readBuffer(int16_t *buffer, const size_t numSamples) {
@@ -248,27 +224,23 @@ size_t QueuingAudioStreamImpl::readBuffer(int16_t *buffer, const size_t numSampl
 	size_t samplesDecoded = 0;
 
 	while (samplesDecoded < numSamples && !_queue.empty()) {
-		AudioStream *stream = _queue.front()._stream;
+		AudioStream &stream = *_queue.front();
 
-		const size_t n = stream->readBuffer(buffer + samplesDecoded, numSamples - samplesDecoded);
+		const size_t n = stream.readBuffer(buffer + samplesDecoded, numSamples - samplesDecoded);
 		if (n == kSizeInvalid)
 			return kSizeInvalid;
 
 		samplesDecoded += n;
 
-		if (stream->endOfData()) {
-			StreamHolder tmp = _queue.front();
+		if (stream.endOfData())
 			_queue.pop();
-			if (tmp._disposeAfterUse)
-				delete stream;
-		}
 	}
 
 	return samplesDecoded;
 }
 
-QueuingAudioStream *makeQueuingAudioStream(int rate, int channels) {
-	return new QueuingAudioStreamImpl(rate, channels);
+std::unique_ptr<QueuingAudioStream> makeQueuingAudioStream(int rate, int channels) {
+	return std::make_unique<QueuingAudioStreamImpl>(rate, channels);
 }
 
 } // End of namespace Sound

@@ -25,6 +25,8 @@
 #ifndef SOUND_DECODERS_WAVE_H
 #define SOUND_DECODERS_WAVE_H
 
+#include <memory>
+
 #include "src/common/types.h"
 
 namespace Common { class SeekableReadStream; }
@@ -39,13 +41,10 @@ class RewindableAudioStream;
  * raw PCM data, MS IMA ADPCM and MS ADPCM (uses makeADPCMStream internally).
  *
  * @param stream          The SeekableReadStream from which to read the WAVE data.
- * @param disposeAfterUse Whether to delete the stream after use.
  *
  * @return A new RewindableAudioStream, or 0, if an error occurred.
  */
-RewindableAudioStream *makeWAVStream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse);
+std::unique_ptr<RewindableAudioStream> makeWAVStream(std::unique_ptr<Common::SeekableReadStream> stream);
 
 } // End of namespace Sound
 

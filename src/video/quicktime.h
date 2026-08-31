@@ -136,7 +136,7 @@ private:
 		AudioSampleDesc(QuickTimeTrack *parentTrack, uint32_t codecTag);
 
 		bool isAudioCodecSupported() const;
-		Sound::PacketizedAudioStream *createAudioStream() const;
+		std::unique_ptr<Sound::PacketizedAudioStream> createAudioStream() const;
 
 		// TODO: Make private in the long run
 		uint16_t _bitsPerSample;

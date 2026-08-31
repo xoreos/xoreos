@@ -54,7 +54,6 @@
 
 #include <mad.h>
 
-#include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 
@@ -74,7 +73,7 @@ protected:
 		MP3_STATE_EOS    // end of data reached (may need to loop)
 	};
 
-	Common::DisposablePtr<Common::SeekableReadStream> _inStream;
+	std::unique_ptr<Common::SeekableReadStream> _inStream;
 
 	size_t _posInFrame;
 	State _state;
@@ -99,8 +98,7 @@ protected:
 	byte _buf[BUFFER_SIZE + MAD_BUFFER_GUARD];
 
 public:
-	MP3Stream(Common::SeekableReadStream *inStream,
-	               bool dispose);
+	MP3Stream(std::unique_ptr<Common::SeekableReadStream> inStream);
 	~MP3Stream();
 
 	size_t readBuffer(int16_t *buffer, const size_t numSamples);
@@ -121,8 +119,8 @@ protected:
 	void deinitStream();
 };
 
-MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
-	_inStream(inStream, dispose),
+MP3Stream::MP3Stream(std::unique_ptr<Common::SeekableReadStream> inStream) :
+	_inStream(std::move(inStream)),
 	_posInFrame(0),
 	_state(MP3_STATE_INIT),
 	_totalTime(timer_zero),
@@ -351,12 +349,12 @@ size_t MP3Stream::readBuffer(int16_t *buffer, const size_t numSamples) {
 	return samples;
 }
 
-RewindableAudioStream *makeMP3Stream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	std::unique_ptr<RewindableAudioStream> s = std::make_unique<MP3Stream>(stream, disposeAfterUse);
+std::unique_ptr<RewindableAudioStream> makeMP3Stream(std::unique_ptr<Common::SeekableReadStream> stream) {
+	std::unique_ptr<RewindableAudioStream> s = std::make_unique<MP3Stream>(std::move(stream));
 	if (s && s->endOfData())
 		return 0;
 
-	return s.release();
+	return s;
 }
 
 } // End of namespace Sound

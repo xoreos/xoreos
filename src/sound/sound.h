@@ -55,6 +55,7 @@ namespace Common {
 namespace Sound {
 
 class AudioStream;
+class RewindableAudioStream;
 
 /** The sound manager. */
 class SoundManager : public Common::Singleton<SoundManager>, public Common::Thread {
@@ -96,12 +97,12 @@ public:
 	 *  This only allocate a channel for the sound, to actually start playing it,
 	 *  call startChannel().
 	 *
-	 *  @param  wavStream The stream to play. Will be taken over.
+	 *  @param  wavStream The stream to play.
 	 *  @param  type The type of the sound.
 	 *  @param  loop Should the sound loop?
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
-	ChannelHandle playSoundFile(Common::SeekableReadStream *wavStream,
+	ChannelHandle playSoundFile(std::unique_ptr<Common::SeekableReadStream> wavStream,
 	                            SoundType type, bool loop = false);
 
 	/** Play an audio stream.
@@ -116,6 +117,18 @@ public:
 	 */
 	ChannelHandle playAudioStream(AudioStream *audStream,
 	                              SoundType type, bool disposeAfterUse = true);
+
+	/** Play an audio stream.
+	 *
+	 *  This only allocate a channel for the sound, to actually start playing it,
+	 *  call startChannel().
+	 *
+	 *  @param  audStream The stream to play.
+	 *  @param  type The type of the sound.
+	 *  @return The channel the sound has been assigned to, or -1 on error.
+	 */
+	ChannelHandle playAudioStream(std::unique_ptr<AudioStream> audStream, SoundType type);
+
 	// '---
 
 	// .--- Starting/Pausing/Stopping channels
@@ -175,12 +188,8 @@ public:
 	// '---
 
 	// .--- Utility methods
-	/** Create an audio stream from this data stream.
-	 *
-	 *  The ownership of the data stream is transferred to the audio stream
-	 *  if one was created without an exception being thrown.
-	 */
-	static AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
+	/** Create an audio stream from this data stream. */
+	static std::unique_ptr<RewindableAudioStream> makeAudioStream(std::unique_ptr<Common::SeekableReadStream> stream);
 
 	/** Return a string representing the channel referenced by this handle. */
 	Common::UString formatChannel(const ChannelHandle &handle) const;

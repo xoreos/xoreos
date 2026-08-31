@@ -74,7 +74,6 @@ enum ADPCMTypes {
  * an RewindableAudioStream from that.
  *
  * @param stream            The SeekableReadStream from which to read the ADPCM data.
- * @param disposeAfterUse   Whether to delete the stream after use.
  * @param size              How many bytes to read from the stream (0 = all).
  * @param type              The compression type used.
  * @param rate              The sampling rate.
@@ -83,9 +82,8 @@ enum ADPCMTypes {
  *
  * @return A new RewindableAudioStream, or 0, if an error occurred.
  */
-RewindableAudioStream *makeADPCMStream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse,
+std::unique_ptr<RewindableAudioStream> makeADPCMStream(
+	std::unique_ptr<Common::SeekableReadStream> stream,
 	uint32_t size, ADPCMTypes type,
 	int rate,
 	int channels,
@@ -105,7 +103,7 @@ RewindableAudioStream *makeADPCMStream(
  * @param blockAlign        block alignment ???
  * @return The new PacketizedAudioStream or NULL, if the type isn't supported.
  */
-PacketizedAudioStream *makePacketizedADPCMStream(
+std::unique_ptr<PacketizedAudioStream> makePacketizedADPCMStream(
 	ADPCMTypes type,
 	int rate,
 	int channels,

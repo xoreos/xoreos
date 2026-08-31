@@ -62,7 +62,6 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
-#include "src/common/disposableptr.h"
 #include "src/common/bitstream.h"
 #include "src/common/bitstreamwriter.h"
 #include "src/common/memreadstream.h"
@@ -314,8 +313,8 @@ void CodebookLibrary::copy(Common::BitStream &bis, Common::BitStreamWriter &bos)
 
 class WwRIFFVorbisStream : public Sound::RewindableAudioStream {
 public:
-	WwRIFFVorbisStream(Common::SeekableReadStream *inStream, bool disposeStream,
-	                   Common::SeekableReadStream *codebooks, bool disposeCodebooks,
+	WwRIFFVorbisStream(std::unique_ptr<Common::SeekableReadStream> inStream,
+	                   std::unique_ptr<Common::SeekableReadStream> codebooks,
 	                   bool fullSetup);
 
 	size_t readBuffer(int16_t *buffer, const size_t numSamples);
@@ -331,8 +330,8 @@ public:
 private:
 	std::unique_ptr<Sound::PacketizedAudioStream> _vorbis;
 
-	Common::DisposablePtr<Common::SeekableReadStream> _inStream;
-	Common::DisposablePtr<Common::SeekableReadStream> _codebooks;
+	std::unique_ptr<Common::SeekableReadStream> _inStream;
+	std::unique_ptr<Common::SeekableReadStream> _codebooks;
 
 	bool _fullSetup;
 	bool _headerTriadPresent;
@@ -406,10 +405,10 @@ private:
 };
 
 
-WwRIFFVorbisStream::WwRIFFVorbisStream(Common::SeekableReadStream *inStream, bool disposeStream,
-                                       Common::SeekableReadStream *codebooks, bool disposeCodebooks,
-                                       bool fullSetup) :
-		_inStream(inStream, disposeStream), _codebooks(codebooks, disposeCodebooks),
+WwRIFFVorbisStream::WwRIFFVorbisStream(std::unique_ptr<Common::SeekableReadStream> inStream,
+	                                   std::unique_ptr<Common::SeekableReadStream> codebooks,
+	                                   bool fullSetup) :
+		_inStream(std::move(inStream)), _codebooks(std::move(codebooks)),
 		_fullSetup(fullSetup), _headerTriadPresent(false), _oldPacketHeaders(false),
 		_noGranule(false), _modPackets(false),
 		_dataOffset(SIZE_MAX), _dataSize(SIZE_MAX), _currentOffset(SIZE_MAX),
@@ -453,7 +452,7 @@ bool WwRIFFVorbisStream::rewind() {
 	std::unique_ptr<Common::SeekableReadStream> headerSetup(generateHeaderSetup());
 
 #ifdef ENABLE_VORBIS
-	_vorbis.reset(Sound::makePacketizedVorbisStream(*headerIdentification, *headerComment, *headerSetup));
+	_vorbis = Sound::makePacketizedVorbisStream(*headerIdentification, *headerComment, *headerSetup);
 #else
 	throw Common::Exception("Vorbis decoding disabled when building without libvorbis");
 #endif
@@ -483,7 +482,7 @@ size_t WwRIFFVorbisStream::readBuffer(int16_t *buffer, const size_t numSamples) 
 				break;
 			}
 
-			_vorbis->queuePacket(packet.release());
+			_vorbis->queuePacket(std::move(packet));
 		}
 	}
 
@@ -1038,12 +1037,10 @@ Common::SeekableReadStream *WwRIFFVorbisStream::createPacket() {
 }
 
 
-Sound::RewindableAudioStream *makeWwRIFFVorbisStream(Common::SeekableReadStream *wwRIFFVorbis,
-                                                     bool disposeAfterUse) {
+std::unique_ptr<Sound::RewindableAudioStream> makeWwRIFFVorbisStream(std::unique_ptr<Common::SeekableReadStream> wwRIFFVorbis) {
+	std::unique_ptr<Common::MemoryReadStream> codebook = std::make_unique<Common::MemoryReadStream>(kCodeBook, sizeof(kCodeBook), false);
 
-	Common::MemoryReadStream *codebook = new Common::MemoryReadStream(kCodeBook, sizeof(kCodeBook), false);
-
-	return new WwRIFFVorbisStream(wwRIFFVorbis, disposeAfterUse, codebook, true, false);
+	return std::make_unique<WwRIFFVorbisStream>(std::move(wwRIFFVorbis), std::move(codebook), false);
 }
 
 } // End of namespace Sound

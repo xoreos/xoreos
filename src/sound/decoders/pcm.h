@@ -90,13 +90,11 @@ enum PCMFlags {
  * @param flags    Audio flags combination.
  * @param channels Number of channels
  * @see RawFlags
- * @param disposeAfterUse Whether to delete the stream after use.
  *
  * @return The new SeekableAudioStream (or 0 on failure).
  */
-RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
-                                   int rate, byte flags, int channels,
-                                   bool disposeAfterUse = true);
+std::unique_ptr<RewindableAudioStream> makePCMStream(std::unique_ptr<Common::SeekableReadStream> stream,
+                                                     int rate, byte flags, int channels);
 
 /**
  * Creates a PacketizedAudioStream that will automatically queue
@@ -107,7 +105,7 @@ RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
  * @see PCMFlags
  * @return The new PacketizedAudioStream.
  */
-PacketizedAudioStream *makePacketizedPCMStream(int rate, byte flags, int channels);
+std::unique_ptr<PacketizedAudioStream> makePacketizedPCMStream(int rate, byte flags, int channels);
 
 } // End of namespace Sound
 

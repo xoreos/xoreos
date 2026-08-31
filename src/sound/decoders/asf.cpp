@@ -49,7 +49,6 @@
 
 #include <memory>
 
-#include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
@@ -107,7 +106,7 @@ static const ASFGUID s_asfStreamBitRate  = ASFGUID(0xce, 0x75, 0xf8, 0x7b, 0x8d,
 
 class ASFStream : public RewindableAudioStream {
 public:
-	ASFStream(Common::SeekableReadStream *stream, bool dispose);
+	explicit ASFStream(std::unique_ptr<Common::SeekableReadStream> stream);
 	~ASFStream();
 
 	size_t readBuffer(int16_t *buffer, const size_t numSamples);
@@ -124,7 +123,6 @@ private:
 	// Packet data
 	struct Packet {
 		Packet();
-		~Packet();
 
 		byte flags;
 		byte segmentType;
@@ -136,20 +134,20 @@ private:
 			byte streamID;
 			byte sequenceNumber;
 			bool isKeyframe;
-			std::vector<Common::SeekableReadStream *> data;
+			std::vector<std::unique_ptr<Common::SeekableReadStream>> data;
 		};
 
 		std::vector<Segment> segments;
 	};
 
-	Common::DisposablePtr<Common::SeekableReadStream> _stream;
+	std::unique_ptr<Common::SeekableReadStream> _stream;
 
 	void load();
 
 	void parseStreamHeader();
 	void parseFileHeader();
 	Packet *readPacket();
-	PacketizedAudioStream *createAudioStream();
+	std::unique_ptr<PacketizedAudioStream> createAudioStream();
 	void feedAudioData();
 	bool allDataLoaded() const;
 
@@ -177,13 +175,7 @@ private:
 ASFStream::Packet::Packet() {
 }
 
-ASFStream::Packet::~Packet() {
-	for (size_t i = 0; i < segments.size(); i++)
-		for (size_t j = 0; j < segments[i].data.size(); j++)
-				delete segments[i].data[j];
-}
-
-ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream, dispose) {
+ASFStream::ASFStream(std::unique_ptr<Common::SeekableReadStream> stream) : _stream(std::move(stream)) {
 	_curPacket = 0;
 	_curSequenceNumber = 1; // They always start at one
 
@@ -293,7 +285,7 @@ void ASFStream::parseStreamHeader() {
 		_extraData.reset(_stream->readStream(cbSize));
 	}
 
-	_curAudioStream.reset(createAudioStream());
+	_curAudioStream = createAudioStream();
 }
 
 uint64_t ASFStream::getLength() const {
@@ -312,7 +304,7 @@ bool ASFStream::rewind() {
 	_curPacket = 0;
 
 	// Reset our underlying stream
-	_curAudioStream.reset(createAudioStream());
+	_curAudioStream = createAudioStream();
 
 	// Reset this too
 	_curSequenceNumber = 1;
@@ -377,7 +369,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 			size_t startObjectPos = _stream->pos();
 
 			while (_stream->pos() < dataLength + startObjectPos)
-				segment.data.push_back(_stream->readStream(_stream->readByte()));
+				segment.data.emplace_back(_stream->readStream(_stream->readByte()));
 		} else if (flags == 8) {
 			/* uint32_t objectLength = */ _stream->readUint32LE();
 			/* uint32_t objectStartTime = */ _stream->readUint32LE();
@@ -391,7 +383,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 				dataLength = _stream->readUint16LE();
 
 			_stream->skip(fragmentOffset);
-			segment.data.push_back(_stream->readStream(dataLength));
+			segment.data.emplace_back(_stream->readStream(dataLength));
 		} else
 			throw Common::Exception("ASFStream::readPacket(): Unknown packet flags 0x%02x", flags);
 	}
@@ -408,7 +400,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 	return packet;
 }
 
-PacketizedAudioStream *ASFStream::createAudioStream() {
+std::unique_ptr<PacketizedAudioStream> ASFStream::createAudioStream() {
 	switch (_compression) {
 	case kWaveWMAv2:
 		return makeWMAStream(2, _sampleRate, _channels, _bitRate, _blockAlign, *_extraData);
@@ -443,10 +435,7 @@ void ASFStream::feedAudioData() {
 	if (segment.data.size() != 1)
 		throw Common::Exception("ASFStream::feedAudioData(): Packet grouping not supported");
 
-	_curAudioStream->queuePacket(segment.data[0]);
-
-	// The PacketizedAudioStream has taken ownership of the pointer; reset it here
-	segment.data[0] = 0;
+	_curAudioStream->queuePacket(std::move(segment.data[0]));
 }
 
 size_t ASFStream::readBuffer(int16_t *buffer, const size_t numSamples) {
@@ -480,8 +469,8 @@ bool ASFStream::endOfData() const {
 	return allDataLoaded() && _curAudioStream->endOfData();
 }
 
-RewindableAudioStream *makeASFStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	return new ASFStream(stream, disposeAfterUse);
+std::unique_ptr<RewindableAudioStream> makeASFStream(std::unique_ptr<Common::SeekableReadStream> stream) {
+	return std::make_unique<ASFStream>(std::move(stream));
 }
 
 } // End of namespace Sound

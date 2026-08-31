@@ -54,7 +54,6 @@
 
 #include "src/common/util.h"
 #include "src/common/types.h"
-#include "src/common/disposableptr.h"
 
 namespace Common {
 class SeekableReadStream;
@@ -186,7 +185,7 @@ public:
 	 * @param loops How often to loop (0 = infinite)
 	 * @param disposeAfterUse Destroy the stream after the LoopingAudioStream has finished playback.
 	 */
-	LoopingAudioStream(RewindableAudioStream *stream, size_t loops, bool disposeAfterUse = true);
+	LoopingAudioStream(std::unique_ptr<RewindableAudioStream> stream, size_t loops);
 	~LoopingAudioStream();
 
 	size_t readBuffer(int16_t *buffer, const size_t numSamples);
@@ -209,7 +208,7 @@ public:
 	uint64_t getDurationOnce() const;
 
 private:
-	Common::DisposablePtr<RewindableAudioStream> _parent;
+	std::unique_ptr<RewindableAudioStream> _parent;
 
 	size_t _loops;
 	size_t _completeIterations;
@@ -227,7 +226,7 @@ private:
  * @param loops How often to loop (0 = infinite)
  * @return A new AudioStream, which offers the desired functionality.
  */
-AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, size_t loops);
+std::unique_ptr<AudioStream> makeLoopingAudioStream(std::unique_ptr<RewindableAudioStream> stream, size_t loops);
 
 class QueuingAudioStream : public AudioStream {
 public:
@@ -238,7 +237,7 @@ public:
 	 * DisposeAfterUse::YES, then the queued stream is deleted after all data
 	 * contained in it has been played.
 	 */
-	virtual void queueAudioStream(AudioStream *audStream, bool disposeAfterUse = true) = 0;
+	virtual void queueAudioStream(std::unique_ptr<AudioStream> audStream) = 0;
 
 	/**
 	 * Mark this stream as finished. That is, signal that no further data
@@ -262,7 +261,7 @@ public:
 /**
  * Factory function for an QueuingAudioStream.
  */
-QueuingAudioStream *makeQueuingAudioStream(int rate, int channels);
+std::unique_ptr<QueuingAudioStream> makeQueuingAudioStream(int rate, int channels);
 
 /**
  * An AudioStream designed to work in terms of packets.
@@ -278,7 +277,7 @@ public:
 	/**
 	 * Queue the next packet to be decoded.
 	 */
-	virtual void queuePacket(Common::SeekableReadStream *data) = 0;
+	virtual void queuePacket(std::unique_ptr<Common::SeekableReadStream> data) = 0;
 
 	/**
 	 * Mark this stream as finished. That is, signal that no further data
@@ -314,7 +313,7 @@ public:
 	bool endOfStream() const { return _stream->endOfStream(); }
 
 	// PacketizedAudioStream API
-	void queuePacket(Common::SeekableReadStream *data) { _stream->queueAudioStream(makeStream(data)); }
+	void queuePacket(std::unique_ptr<Common::SeekableReadStream> data) override { _stream->queueAudioStream(makeStream(std::move(data))); }
 	void finish() { _stream->finish(); }
 	bool isFinished() const { return _stream->isFinished(); }
 
@@ -322,7 +321,7 @@ protected:
 	/**
 	 * Make the AudioStream for a given packet
 	 */
-	virtual AudioStream *makeStream(Common::SeekableReadStream *data) = 0;
+	virtual std::unique_ptr<AudioStream> makeStream(std::unique_ptr<Common::SeekableReadStream> data) = 0;
 
 private:
 	int _rate;

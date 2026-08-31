@@ -28,7 +28,6 @@
 
 #include <neaacdec.h>
 
-#include "src/common/disposableptr.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 
@@ -54,7 +53,7 @@ public:
 	// PacketizedAudioStream API
 	void finish() { _audStream->finish(); }
 	bool isFinished() const { return _audStream->isFinished(); }
-	void queuePacket(Common::SeekableReadStream *data);
+	void queuePacket(std::unique_ptr<Common::SeekableReadStream> data) override;
 
 private:
 	NeAACDecHandle _handle;
@@ -64,7 +63,7 @@ private:
 	// Backing stream for PacketizedAudioStream
 	std::unique_ptr<QueuingAudioStream> _audStream;
 
-	AudioStream *decodeFrame(Common::SeekableReadStream &stream);
+	std::unique_ptr<AudioStream> decodeFrame(Common::SeekableReadStream &stream);
 };
 
 AACDecoder::AACDecoder(Common::SeekableReadStream &extraData) {
@@ -91,14 +90,14 @@ AACDecoder::AACDecoder(Common::SeekableReadStream &extraData) {
 		throw Common::Exception("Could not initialize AAC decoder: %s", NeAACDecGetErrorMessage(err));
 	}
 
-	_audStream.reset(makeQueuingAudioStream(_rate, _channels));
+	_audStream = makeQueuingAudioStream(_rate, _channels);
 }
 
 AACDecoder::~AACDecoder() {
 	NeAACDecClose(_handle);
 }
 
-AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
+std::unique_ptr<AudioStream> AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	// read everything into a buffer
 	size_t inBufferPos = 0;
 	size_t inBufferSize = stream.size();
@@ -107,7 +106,7 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	if (stream.read(inBuffer.get(), inBufferSize) != inBufferSize)
 		throw Common::Exception(Common::kReadError);
 
-	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels);
+	std::unique_ptr<QueuingAudioStream> audioStream = makeQueuingAudioStream(_rate, _channels);
 
 	// Decode until we have enough samples (or there's no more left)
 	while (inBufferPos < inBufferSize) {
@@ -122,7 +121,8 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 
 		static const byte flags = FLAG_16BITS | FLAG_NATIVE_ENDIAN;
 
-		audioStream->queueAudioStream(makePCMStream(new Common::MemoryReadStream(buffer, frameInfo.samples * 2, true), _rate, flags, _channels, true), true);
+		std::unique_ptr<Common::SeekableReadStream> srcStream = std::make_unique<Common::MemoryReadStream>(buffer, frameInfo.samples * 2, true);
+		audioStream->queueAudioStream(makePCMStream(std::move(srcStream), _rate, flags, _channels));
 
 		inBufferPos += frameInfo.bytesconsumed;
 	}
@@ -131,13 +131,12 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	return audioStream;
 }
 
-void AACDecoder::queuePacket(Common::SeekableReadStream *data) {
-	std::unique_ptr<Common::SeekableReadStream> capture(data);
+void AACDecoder::queuePacket(std::unique_ptr<Common::SeekableReadStream> data) {
 	_audStream->queueAudioStream(decodeFrame(*data));
 }
 
-PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData) {
-	return new AACDecoder(extraData);
+std::unique_ptr<PacketizedAudioStream> makeAACStream(Common::SeekableReadStream &extraData) {
+	return std::make_unique<AACDecoder>(extraData);
 }
 
 } // End of namespace Sound

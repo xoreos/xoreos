@@ -253,13 +253,14 @@ bool SoundManager::isPaused(const ChannelHandle &handle) {
 	return _channels[handle.channel]->state == AL_PAUSED;
 }
 
-AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
+std::unique_ptr<RewindableAudioStream> SoundManager::makeAudioStream(std::unique_ptr<Common::SeekableReadStream> stream) {
 	bool isMP3 = false;
 	uint32_t tag = stream->readUint32BE();
 
 	if (tag == 0xfff360c4) {
 		// Modified WAVE file (used in streamsounds folder, at least in KotOR 1/2)
-		stream = new Common::SeekableSubReadStream(stream, 0x1D6, stream->size(), true);
+		const size_t size = stream->size();
+		stream = std::make_unique<Common::SeekableSubReadStream>(std::move(stream), 0x1D6, size);
 
 	} else if (tag == MKTAG('R', 'I', 'F', 'F')) {
 		stream->seek(12);
@@ -286,7 +287,11 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		uint32_t dataSize = stream->readUint32LE();
 		if (dataSize == 0) {
 			isMP3 = true;
-			stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
+
+			const size_t pos = stream->pos();
+			const size_t size = stream->size();
+
+			stream = std::make_unique<Common::SeekableSubReadStream>(std::move(stream), pos, size);
 		} else
 			// Just a regular WAVE
 			stream->seek(0);
@@ -296,13 +301,17 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 
 		// BMU files: MP3 with extra header
 		isMP3 = true;
-		stream = new Common::SeekableSubReadStream(stream, stream->pos(), stream->size(), true);
+
+		const size_t pos = stream->pos();
+		const size_t size = stream->size();
+
+		stream = std::make_unique<Common::SeekableSubReadStream>(std::move(stream), pos, size);
 
 	} else if (tag == MKTAG('O', 'g', 'g', 'S')) {
 
 #ifdef ENABLE_VORBIS
 		stream->seek(0);
-		return makeVorbisStream(stream, true);
+		return makeVorbisStream(std::move(stream));
 #else
 		throw Common::Exception("Vorbis decoding disabled when building without libvorbis");
 #endif
@@ -311,7 +320,7 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 
 		// ASF (most probably with WMAv2)
 		stream->seek(0);
-		return makeASFStream(stream, true);
+		return makeASFStream(std::move(stream));
 
 	} else if (((tag & 0xFFFFFF00) | 0x20) == MKTAG('I', 'D', '3', ' ')) {
 
@@ -331,12 +340,12 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 
 	if (isMP3)
 #ifdef ENABLE_MAD
-		return makeMP3Stream(stream, true);
+		return makeMP3Stream(std::move(stream));
 #else
 		throw Common::Exception("MP3 decoding disabled when building without libmad");
 #endif
 
-	return makeWAVStream(stream, true);
+	return makeWAVStream(std::move(stream));
 }
 
 ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType type, bool disposeAfterUse) {
@@ -411,26 +420,28 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 	return handle;
 }
 
-ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream, SoundType type, bool loop) {
+ChannelHandle SoundManager::playAudioStream(std::unique_ptr<AudioStream> audStream, SoundType type) {
+	return playAudioStream(audStream.release(), type, true);
+}
+
+ChannelHandle SoundManager::playSoundFile(std::unique_ptr<Common::SeekableReadStream> wavStream, SoundType type, bool loop) {
 	checkReady();
 
 	if (!wavStream)
 		throw Common::Exception("No stream");
 
-	AudioStream *audioStream = makeAudioStream(wavStream);
+	std::unique_ptr<RewindableAudioStream> audioStream = makeAudioStream(std::move(wavStream));
 
 	if (!audioStream)
 		throw Common::Exception("No audio stream");
 
-	if (loop) {
-		RewindableAudioStream *reAudStream = dynamic_cast<RewindableAudioStream *>(audioStream);
-		if (!reAudStream)
-			warning("SoundManager::playSoundFile(): The input stream cannot be rewound, this will not loop.");
-		else
-			audioStream = makeLoopingAudioStream(reAudStream, 0);
-	}
+	std::unique_ptr<AudioStream> playStream;
+	if (loop)
+		playStream = makeLoopingAudioStream(std::move(audioStream), 0);
+	else
+		playStream = std::move(audioStream);
 
-	return playAudioStream(audioStream, type);
+	return playAudioStream(std::move(playStream), type);
 }
 
 const SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) const {

@@ -689,7 +689,7 @@ void Matroska::checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endT
 		}
 
 		// Decode the packet
-		audioTrack.queueAudio(packet.release());
+		audioTrack.queueAudio(std::move(packet));
 
 		// Update the timestamp
 		audioTrack.setLastTimestamp(nextTimestamp);
@@ -832,16 +832,15 @@ Common::Timestamp Matroska::MatroskaVideoTrack::getNextFrameStartTime() const {
 	return makeTimestamp(_timestamp);
 }
 
-Matroska::MatroskaAudioTrack::MatroskaAudioTrack(uint64_t trackNumber, uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData) : _trackNumber(trackNumber), _lastTimestamp(0) {
-	_audioStream.reset(createStream(channelCount, sampleRate, codec, extraData));
+Matroska::MatroskaAudioTrack::MatroskaAudioTrack(uint64_t trackNumber, uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData) : _trackNumber(trackNumber), _lastTimestamp(0), _audioStream(createStream(channelCount, sampleRate, codec, extraData)) {
 }
 
 bool Matroska::MatroskaAudioTrack::canBufferData() const {
 	return !_audioStream->endOfStream();
 }
 
-void Matroska::MatroskaAudioTrack::queueAudio(Common::SeekableReadStream *stream) {
-	_audioStream->queuePacket(stream);
+void Matroska::MatroskaAudioTrack::queueAudio(std::unique_ptr<Common::SeekableReadStream> stream) {
+	_audioStream->queuePacket(std::move(stream));
 }
 
 void Matroska::MatroskaAudioTrack::finish() {
@@ -852,7 +851,7 @@ Sound::AudioStream *Matroska::MatroskaAudioTrack::getAudioStream() const {
 	return _audioStream.get();
 }
 
-Sound::PacketizedAudioStream *Matroska::MatroskaAudioTrack::createStream(uint32_t UNUSED(channelCount), uint32_t UNUSED(sampleRate), const std::string &codec, Common::SeekableReadStream *extraData) const {
+std::unique_ptr<Sound::PacketizedAudioStream> Matroska::MatroskaAudioTrack::createStream(uint32_t UNUSED(channelCount), uint32_t UNUSED(sampleRate), const std::string &codec, Common::SeekableReadStream *extraData) {
 	if (codec == "A_VORBIS") {
 		if (!extraData)
 			throw Common::Exception("Missing Vorbis extra data");

@@ -169,15 +169,15 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 }
 
 
-XACTSoundBank *XACTSoundBank::load(const Common::UString &name) {
+std::unique_ptr<XACTSoundBank> XACTSoundBank::load(const Common::UString &name) {
 	try {
 		std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(name, Aurora::kFileTypeXSB));
 		if (stream)
-			return new XACTSoundBank_Binary(*stream);
+			return std::make_unique<XACTSoundBank_Binary>(*stream);
 
 		stream.reset(ResMan.getResource(name + "_xsb", Aurora::kFileTypeTXT));
 		if (stream)
-			return new XACTSoundBank_ASCII(*stream);
+			return std::make_unique<XACTSoundBank_ASCII>(*stream);
 
 		throw Common::Exception("No such SoundBank");
 
@@ -250,10 +250,7 @@ ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &sound, SoundTy
 		if (event.type == EventType::Loop)
 			loops = (event.params.loop.count == kLoopCountInfinite) ? 0 : (event.params.loop.count + 1);
 
-	if (loops == 1)
-		return SoundMan.playAudioStream(stream.release(), soundType);
-
-	return SoundMan.playAudioStream(new LoopingAudioStream(stream.release(), loops), soundType);
+	return SoundMan.playAudioStream(makeLoopingAudioStream(std::move(stream), loops), soundType);
 }
 
 const XACTWaveBank &XACTSoundBank::getWaveBank(const Common::UString &name) {

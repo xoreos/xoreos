@@ -1322,12 +1322,8 @@ Bink::BinkAudioTrack::BinkAudioTrack(size_t index, Bink::AudioInfo &audio) :
 	_audioBuffered(0, _info.sampleRate) {
 }
 
-Bink::BinkAudioTrack::~BinkAudioTrack() {
-	delete _audioStream;
-}
-
 Sound::AudioStream *Bink::BinkAudioTrack::getAudioStream() const {
-	return _audioStream;
+	return _audioStream.get();
 }
 
 void Bink::BinkAudioTrack::decodeAudio(Common::SeekableReadStream& bink, const std::vector<VideoFrame>& frames, const std::vector<AudioInfo>& audioTracks, const Common::Timestamp& endTime) {
@@ -1373,7 +1369,7 @@ void Bink::BinkAudioTrack::decodeAudio(Common::SeekableReadStream& bink, const s
 
 			audioBlock(bits, out.get());
 
-			_audioStream->queuePacket(new Common::MemoryReadStream(reinterpret_cast<byte *>(out.release()), _info.blockSize * 2, true));
+			_audioStream->queuePacket(std::make_unique<Common::MemoryReadStream>(reinterpret_cast<byte *>(out.release()), _info.blockSize * 2, true));
 
 			if (bits.pos() & 0x1F) // next data block starts at a 32-byte boundary
 				bits.skip(32 - (bits.pos() & 0x1F));

@@ -114,7 +114,7 @@ private:
 		MatroskaAudioTrack(uint64_t trackNumber, uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData);
 
 		/** Queue audio stream data belonging to this track. */
-		void queueAudio(Common::SeekableReadStream *stream);
+		void queueAudio(std::unique_ptr<Common::SeekableReadStream> stream);
 
 		/** Mark the stream as finished. */
 		void finish();
@@ -136,7 +136,7 @@ private:
 		uint64_t _trackNumber;
 		uint64_t _lastTimestamp;
 		std::unique_ptr<Sound::PacketizedAudioStream> _audioStream;
-		Sound::PacketizedAudioStream *createStream(uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData) const;
+		static std::unique_ptr<Sound::PacketizedAudioStream> createStream(uint32_t channelCount, uint32_t sampleRate, const std::string &codec, Common::SeekableReadStream *extraData);
 	};
 
 	std::unique_ptr<Common::SeekableReadStream> _fd;

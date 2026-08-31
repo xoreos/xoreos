@@ -69,7 +69,7 @@ void XboxMediaVideo::queueNewAudio(PacketAudio &audioPacket) {
 	_xmv->seek(audioPacket.dataOffset);
 
 	// Read and queue it
-	audioPacket.track->queueAudio(_xmv->readStream(audioPacket.dataSize));
+	audioPacket.track->queueAudio(std::unique_ptr<Common::SeekableReadStream>(_xmv->readStream(audioPacket.dataSize)));
 
 	audioPacket.newSlice = false;
 }
@@ -367,16 +367,15 @@ Common::Timestamp XboxMediaVideo::XMVVideoTrack::getNextFrameStartTime() const {
 	return Common::Timestamp(0, _timestamp, 1000);
 }
 
-XboxMediaVideo::XMVAudioTrack::XMVAudioTrack(const XboxMediaVideo::AudioInfo &info) : _info(info) {
-	_audioStream.reset(createStream());
+XboxMediaVideo::XMVAudioTrack::XMVAudioTrack(const XboxMediaVideo::AudioInfo &info) : _info(info), _audioStream(createStream()) {
 }
 
 bool XboxMediaVideo::XMVAudioTrack::canBufferData() const {
 	return !_audioStream->endOfStream();
 }
 
-void XboxMediaVideo::XMVAudioTrack::queueAudio(Common::SeekableReadStream *stream) {
-	_audioStream->queuePacket(stream);
+void XboxMediaVideo::XMVAudioTrack::queueAudio(std::unique_ptr<Common::SeekableReadStream> stream) {
+	_audioStream->queuePacket(std::move(stream));
 }
 
 void XboxMediaVideo::XMVAudioTrack::finish() {
@@ -387,7 +386,7 @@ Sound::AudioStream *XboxMediaVideo::XMVAudioTrack::getAudioStream() const {
 	return _audioStream.get();
 }
 
-Sound::PacketizedAudioStream *XboxMediaVideo::XMVAudioTrack::createStream() const {
+std::unique_ptr<Sound::PacketizedAudioStream> XboxMediaVideo::XMVAudioTrack::createStream() const {
 	// Check some parameters
 	if (_info.channels == 0 || _info.channels > 2)
 		throw Common::Exception("Invalid channel count: %d", _info.channels);
@@ -424,7 +423,7 @@ XboxMediaVideo::XMVAudioTrack51::XMVAudioTrack51(XMVAudioTrack *track1, XMVAudio
 	for (int i = 0; i < 3; i++)
 		interleavedStreams.push_back(_realTracks[i]->getAudioStream());
 
-	_interleaved.reset(Sound::makeInterleaver(interleavedStreams[0]->getRate(), interleavedStreams, false));
+	_interleaved = Sound::makeInterleaver(interleavedStreams[0]->getRate(), interleavedStreams, false);
 }
 
 bool XboxMediaVideo::XMVAudioTrack51::canBufferData() const {
