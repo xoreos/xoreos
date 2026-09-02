@@ -47,15 +47,13 @@ SavedGame::~SavedGame() {
 
 void SavedGame::load(const Common::UString &dir, bool loadSav) {
 	Common::UString nfoPath(Common::FilePath::normalize(dir + "/savenfo.res"));
-	Common::ReadFile *nfoFile = new Common::ReadFile(nfoPath);
-	Aurora::GFF3File nfoGff(nfoFile);
+	Aurora::GFF3File nfoGff(std::make_unique<Common::ReadFile>(nfoPath));
 
 	fillFromNFO(nfoGff);
 
 	if (loadSav) {
 		Common::UString savPath(Common::FilePath::normalize(dir + "/SAVEGAME.sav"));
-		Common::ReadFile *savFile = new Common::ReadFile(savPath);
-		Aurora::ERFFile savErf(savFile);
+		Aurora::ERFFile savErf(std::make_unique<Common::ReadFile>(savPath));
 		fillFromSAV(savErf, _moduleName);
 	}
 }

@@ -122,27 +122,16 @@ namespace Aurora {
 
 Model_KotOR::ParserContext::ParserContext(const Common::UString &name,
                                           const Common::UString &t, bool k2, bool x) :
-	mdl(0), mdx(0), state(0), texture(t), kotor2(k2), xbox(x), mdxStructSize(0), vertexCount(0),
+	state(0), texture(t), kotor2(k2), xbox(x), mdxStructSize(0), vertexCount(0),
 	offNodeData(0) {
 
-	try {
-
-		if (!(mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL)))
-			throw Common::Exception("No such MDL \"%s\"", name.c_str());
-		if (!(mdx = ResMan.getResource(name, ::Aurora::kFileTypeMDX)))
-			throw Common::Exception("No such MDX \"%s\"", name.c_str());
-
-	} catch (...) {
-		delete mdl;
-		delete mdx;
-		throw;
-	}
+	if (!(mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL)))
+		throw Common::Exception("No such MDL \"%s\"", name.c_str());
+	if (!(mdx = ResMan.getResource(name, ::Aurora::kFileTypeMDX)))
+		throw Common::Exception("No such MDX \"%s\"", name.c_str());
 }
 
 Model_KotOR::ParserContext::~ParserContext() {
-	delete mdl;
-	delete mdx;
-
 	clear();
 }
 

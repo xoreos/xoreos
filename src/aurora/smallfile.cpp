@@ -268,31 +268,29 @@ void Small::decompress(Common::ReadStream &small, Common::WriteStream &out) {
 
 }
 
-Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small) {
-	std::unique_ptr<Common::SeekableReadStream> in(small);
-
-	assert(in);
+std::unique_ptr<Common::SeekableReadStream> Small::decompress(std::unique_ptr<Common::SeekableReadStream> small) {
+	assert(small);
 
 	uint32_t type, size;
-	readSmallHeader(*in, type, size);
+	readSmallHeader(*small, type, size);
 
-	const size_t pos = in->pos();
+	const size_t pos = small->pos();
 
 	if (type == 0x00)
 		// Uncompressed. Just return a sub stream for the raw data
-		return new Common::SeekableSubReadStream(in.release(), pos, pos + size, true);
+		return std::make_unique<Common::SeekableSubReadStream>(std::move(small), pos, pos + size);
 
 	Common::MemoryWriteStreamDynamic out(true, size);
 
 	try {
-		::Aurora::decompress(*in, out, type, size);
+		::Aurora::decompress(*small, out, type, size);
 	} catch (Common::Exception &e) {
 		e.add("Failed to decompress \"small\" file");
 		throw e;
 	}
 
 	out.setDisposable(false);
-	return new Common::MemoryReadStream(out.getData(), out.size(), true);
+	return std::make_unique<Common::MemoryReadStream>(out.getData(), out.size(), true);
 }
 
 Common::SeekableReadStream *Small::decompress(Common::ReadStream &small) {

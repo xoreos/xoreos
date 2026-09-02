@@ -86,15 +86,13 @@ static const byte kZIPFile[] = {
 };
 
 GTEST_TEST(ZIPFile, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kZIPFile);
-	const Aurora::ZIPFile zip(stream);
+	const Aurora::ZIPFile zip(std::make_unique<Common::MemoryReadStream>(kZIPFile));
 
 	EXPECT_EQ(zip.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ZIPFile, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kZIPFile);
-	const Aurora::ZIPFile zip(stream);
+	const Aurora::ZIPFile zip(std::make_unique<Common::MemoryReadStream>(kZIPFile));
 
 	const Aurora::ZIPFile::ResourceList &resources = zip.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -108,8 +106,7 @@ GTEST_TEST(ZIPFile, getResources) {
 }
 
 GTEST_TEST(ZIPFile, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kZIPFile);
-	const Aurora::ZIPFile zip(stream);
+	const Aurora::ZIPFile zip(std::make_unique<Common::MemoryReadStream>(kZIPFile));
 
 	EXPECT_EQ(zip.getResourceSize(0), strlen(kFileData));
 
@@ -117,15 +114,13 @@ GTEST_TEST(ZIPFile, getResourceSize) {
 }
 
 GTEST_TEST(ZIPFile, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kZIPFile);
-	const Aurora::ZIPFile zip(stream);
+	const Aurora::ZIPFile zip(std::make_unique<Common::MemoryReadStream>(kZIPFile));
 
 	EXPECT_EQ(zip.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ZIPFile, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kZIPFile);
-	const Aurora::ZIPFile zip(stream);
+	const Aurora::ZIPFile zip(std::make_unique<Common::MemoryReadStream>(kZIPFile));
 
 	EXPECT_EQ(zip.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -135,22 +130,19 @@ GTEST_TEST(ZIPFile, findResourceName) {
 }
 
 GTEST_TEST(ZIPFile, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kZIPFile);
-	const Aurora::ZIPFile zip(stream);
+	const Aurora::ZIPFile zip(std::make_unique<Common::MemoryReadStream>(kZIPFile));
 
-	Common::SeekableReadStream *file = zip.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = zip.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(ZIPFile, brokenZIP) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kZIPFile, sizeof(kZIPFile) / 2);
+	std::unique_ptr<Common::SeekableReadStream> stream = std::make_unique<Common::MemoryReadStream>(kZIPFile, sizeof(kZIPFile) / 2);
 
-	EXPECT_THROW(Aurora::ZIPFile zip(stream), Common::Exception);
+	EXPECT_THROW(Aurora::ZIPFile zip(std::move(stream)), Common::Exception);
 }

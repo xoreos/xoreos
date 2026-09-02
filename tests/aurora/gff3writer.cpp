@@ -40,15 +40,13 @@ GTEST_TEST(GFF3Writer, WriteEmptyStruct) {
 	Aurora::GFF3Writer writer(MKTAG('G', 'F', 'F', ' '), MKTAG('V', '3', '.', '2'));
 	writer.getTopLevel()->addStruct("EmptyStruct");
 
-	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
-	writer.write(*writeStream);
+	Common::MemoryWriteStreamDynamic writeStream(true);
+	writer.write(writeStream);
 
-	Aurora::GFF3File gff(new Common::MemoryReadStream(writeStream->getData(), writeStream->size()));
+	Aurora::GFF3File gff(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size()));
 
 	EXPECT_TRUE(gff.getTopLevel().hasField("EmptyStruct"));
 	EXPECT_EQ(gff.getID(), MKTAG('G', 'F', 'F', ' '));
-
-	delete writeStream;
 }
 
 GTEST_TEST(GFF3Writer, WriteMultipleEmptyStructs) {
@@ -58,10 +56,10 @@ GTEST_TEST(GFF3Writer, WriteMultipleEmptyStructs) {
 	Aurora::GFF3WriterStructPtr strct = writer.getTopLevel()->addStruct("EmptyStruct3");
 	strct->addStruct("EmptyStruct3_1");
 
-	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
-	writer.write(*writeStream);
+	Common::MemoryWriteStreamDynamic writeStream(true);
+	writer.write(writeStream);
 
-	Aurora::GFF3File gff(new Common::MemoryReadStream(writeStream->getData(), writeStream->size()));
+	Aurora::GFF3File gff(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size()));
 
 	EXPECT_EQ(gff.getID(), MKTAG('G', 'F', 'F', ' '));
 
@@ -69,8 +67,6 @@ GTEST_TEST(GFF3Writer, WriteMultipleEmptyStructs) {
 	EXPECT_TRUE(gff.getTopLevel().hasField("EmptyStruct2"));
 	EXPECT_TRUE(gff.getTopLevel().hasField("EmptyStruct3"));
 	EXPECT_TRUE(gff.getTopLevel().getStruct("EmptyStruct3").hasField("EmptyStruct3_1"));
-
-	delete writeStream;
 }
 
 GTEST_TEST(GFF3Writer, WriteSingleStruct) {
@@ -93,7 +89,7 @@ GTEST_TEST(GFF3Writer, WriteSingleStruct) {
 	writer.getTopLevel()->addExoString("FieldExoString", "NiceString");
 	writer.getTopLevel()->addStrRef("FieldStrRef", 20);
 	writer.getTopLevel()->addResRef("FieldResRef", "file.txt");
-	writer.getTopLevel()->addVoid("FieldVoid", new Common::MemoryReadStream(vData));
+	writer.getTopLevel()->addVoid("FieldVoid", std::make_unique<Common::MemoryReadStream>(vData));
 	writer.getTopLevel()->addVector("FieldVector", glm::vec3(1.0f, 2.0f, 2.5f));
 	writer.getTopLevel()->addOrientation("FieldOrientation", glm::vec4(1.0f, 4.0f, 2.5f, 1.5f));
 
@@ -102,10 +98,10 @@ GTEST_TEST(GFF3Writer, WriteSingleStruct) {
 	locString.setString(Aurora::kLanguageGerman, Aurora::kLanguageGenderMale, "Lokalisierter Test String");
 	writer.getTopLevel()->addLocString("FieldLocString", locString);
 
-	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
-	writer.write(*writeStream);
+	Common::MemoryWriteStreamDynamic writeStream(true);
+	writer.write(writeStream);
 
-	Aurora::GFF3File gff(new Common::MemoryReadStream(writeStream->getData(), writeStream->size()));
+	Aurora::GFF3File gff(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size()));
 
 	EXPECT_EQ(gff.getID(), MKTAG('G', 'F', 'F', ' '));
 	EXPECT_EQ(gff.getVersion(), MKTAG('V', '3', '.', '2'));
@@ -141,11 +137,12 @@ GTEST_TEST(GFF3Writer, WriteSingleStruct) {
 	EXPECT_EQ(gff.getTopLevel().getString("FieldResRef"), "file.txt");
 	EXPECT_STREQ(gff.getTopLevel().getString("FieldExoString").c_str(), "NiceString");
 
-	Common::SeekableReadStream *data = gff.getTopLevel().getData("FieldVoid");
-	char voidData[8];
-	data->read(voidData, 8);
-	EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
-	delete data;
+	{
+		std::unique_ptr<Common::SeekableReadStream> data = gff.getTopLevel().getData("FieldVoid");
+		char voidData[8];
+		data->read(voidData, 8);
+		EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
+	}
 
 	float x, y, z, w;
 	gff.getTopLevel().getVector("FieldVector", x, y, z);
@@ -163,8 +160,6 @@ GTEST_TEST(GFF3Writer, WriteSingleStruct) {
 	gff.getTopLevel().getLocString("FieldLocString", locString2);
 	EXPECT_STREQ(locString2.getString(Aurora::kLanguageEnglish).c_str(), "Localized Test String");
 	EXPECT_STREQ(locString2.getString(Aurora::kLanguageGerman).c_str(), "Lokalisierter Test String");
-
-	delete writeStream;
 }
 
 GTEST_TEST(GFF3Writer, WriteList) {
@@ -176,10 +171,10 @@ GTEST_TEST(GFF3Writer, WriteList) {
 	Aurora::GFF3WriterListPtr list2 = empty3->addList("FieldList2");
 	list2->addStruct("EmptyStruct4");
 
-	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
-	writer.write(*writeStream);
+	Common::MemoryWriteStreamDynamic writeStream(true);
+	writer.write(writeStream);
 
-	Aurora::GFF3File gff(new Common::MemoryReadStream(writeStream->getData(), writeStream->size()));
+	Aurora::GFF3File gff(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size()));
 
 	EXPECT_EQ(gff.getID(), MKTAG('G', 'F', 'F', ' '));
 	EXPECT_EQ(gff.getVersion(), MKTAG('V', '3', '.', '2'));
@@ -188,8 +183,6 @@ GTEST_TEST(GFF3Writer, WriteList) {
 	EXPECT_EQ(gff.getTopLevel().getList("FieldList1").size(), 3);
 	EXPECT_TRUE(gff.getTopLevel().getList("FieldList1")[2]->hasField("FieldList2"));
 	EXPECT_EQ(gff.getTopLevel().getList("FieldList1")[2]->getList("FieldList2").size(), 1);
-
-	delete writeStream;
 }
 
 GTEST_TEST(GFF3Writer, WriteNestedStructs) {
@@ -207,10 +200,10 @@ GTEST_TEST(GFF3Writer, WriteNestedStructs) {
 	struct2->addSint16("FieldSint16_1", 3);
 	struct2->addSint16("FieldSint16_2", -3);
 
-	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
-	writer.write(*writeStream);
+	Common::MemoryWriteStreamDynamic writeStream(true);
+	writer.write(writeStream);
 
-	Aurora::GFF3File gff(new Common::MemoryReadStream(writeStream->getData(), writeStream->size()));
+	Aurora::GFF3File gff(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size()));
 
 	EXPECT_EQ(gff.getID(), MKTAG('G', 'F', 'F', ' '));
 	EXPECT_EQ(gff.getVersion(), MKTAG('V', '3', '.', '2'));
@@ -231,8 +224,6 @@ GTEST_TEST(GFF3Writer, WriteNestedStructs) {
 	EXPECT_EQ(gff.getTopLevel().getStruct("Struct2").getSint("FieldSint16_2"), -3);
 	EXPECT_EQ(gff.getTopLevel().getStruct("Struct2").getStruct("Struct3").getUint("FieldUint64_1"), 214453251);
 	EXPECT_EQ(gff.getTopLevel().getStruct("Struct2").getStruct("Struct3").getUint("FieldUint64_2"), 343251);
-
-	delete writeStream;
 }
 
 GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
@@ -262,8 +253,8 @@ GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
 	strct->addLocString("FieldLocString_1", locString);
 	strct->addLocString("FieldLocString_2", locString);
 
-	writer.getTopLevel()->addVoid("FieldVoid_1", new Common::MemoryReadStream(vData));
-	writer.getTopLevel()->addVoid("FieldVoid_2", new Common::MemoryReadStream(vData));
+	writer.getTopLevel()->addVoid("FieldVoid_1", std::make_unique<Common::MemoryReadStream>(vData));
+	writer.getTopLevel()->addVoid("FieldVoid_2", std::make_unique<Common::MemoryReadStream>(vData));
 
 	writer.getTopLevel()->addVector("FieldVector_1", glm::vec3(0.0f, -13.5f, 42.75f));
 	writer.getTopLevel()->addVector("FieldVector_2", glm::vec3(0.0f, -13.5f, 42.75f));
@@ -271,10 +262,10 @@ GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
 	writer.getTopLevel()->addOrientation("FieldOrient_1", glm::vec4(0.0f, -13.5f, 42.75f, 51.875f));
 	writer.getTopLevel()->addOrientation("FieldOrient_2", glm::vec4(0.0f, -13.5f, 42.75f, 51.875f));
 
-	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
-	writer.write(*writeStream);
+	Common::MemoryWriteStreamDynamic writeStream(true);
+	writer.write(writeStream);
 
-	Aurora::GFF3File gff(new Common::MemoryReadStream(writeStream->getData(), writeStream->size()));
+	Aurora::GFF3File gff(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size()));
 
 	EXPECT_EQ(gff.getID(), MKTAG('G', 'F', 'F', ' '));
 	EXPECT_EQ(gff.getVersion(), MKTAG('V', '3', '.', '2'));
@@ -309,15 +300,15 @@ GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
 	EXPECT_EQ(loc1, locString);
 	EXPECT_EQ(loc2, locString);
 
-	Common::SeekableReadStream *data1 = gff.getTopLevel().getData("FieldVoid_1");
-	Common::SeekableReadStream *data2 = gff.getTopLevel().getData("FieldVoid_2");
-	char voidData[8];
-	data1->read(voidData, 8);
-	EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
-	data2->read(voidData, 8);
-	EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
-	delete data1;
-	delete data2;
+	{
+		std::unique_ptr<Common::SeekableReadStream> data1 = gff.getTopLevel().getData("FieldVoid_1");
+		std::unique_ptr<Common::SeekableReadStream> data2 = gff.getTopLevel().getData("FieldVoid_2");
+		char voidData[8];
+		data1->read(voidData, 8);
+		EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
+		data2->read(voidData, 8);
+		EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
+	}
 
 	float x, y, z, w;
 	x = 0.0f; y = 0.0f; z = 0.0f;
@@ -345,6 +336,4 @@ GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
 	EXPECT_EQ(y, -13.5f);
 	EXPECT_EQ(z, 42.75f);
 	EXPECT_EQ(w, 51.875f);
-
-	delete writeStream;
 }

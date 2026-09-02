@@ -32,10 +32,10 @@
 
 namespace Aurora {
 
-ZIPFile::ZIPFile(Common::SeekableReadStream *zip) {
+ZIPFile::ZIPFile(std::unique_ptr<Common::SeekableReadStream> zip) {
 	assert(zip);
 
-	_zipFile = std::make_unique<Common::ZipFile>(zip);
+	_zipFile = std::make_unique<Common::ZipFile>(std::move(zip));
 
 	load();
 }
@@ -51,7 +51,7 @@ uint32_t ZIPFile::getResourceSize(uint32_t index) const {
 	return _zipFile->getFileSize(index);
 }
 
-Common::SeekableReadStream *ZIPFile::getResource(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> ZIPFile::getResource(uint32_t index, bool tryNoCopy) const {
 	return _zipFile->getFile(index, tryNoCopy);
 }
 

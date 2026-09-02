@@ -98,11 +98,11 @@ void IFOFile::unload() {
 	clear();
 }
 
-void IFOFile::load(Common::SeekableReadStream *stream, bool repairNWNPremium) {
+void IFOFile::load(std::unique_ptr<Common::SeekableReadStream> stream, bool repairNWNPremium) {
 	unload();
 
 	assert(stream);
-	_gff = std::make_unique<GFF3File>(stream, MKTAG('I', 'F', 'O', ' '), repairNWNPremium);
+	_gff = std::make_unique<GFF3File>(std::move(stream), MKTAG('I', 'F', 'O', ' '), repairNWNPremium);
 
 	const GFF3Struct &ifoTop = _gff->getTopLevel();
 
@@ -229,11 +229,11 @@ void IFOFile::load(Common::SeekableReadStream *stream, bool repairNWNPremium) {
 void IFOFile::load(bool repairNWNPremium) {
 	unload();
 
-	Common::SeekableReadStream *stream = ResMan.getResource("module", kFileTypeIFO);
+	std::unique_ptr<Common::SeekableReadStream> stream = ResMan.getResource("module", kFileTypeIFO);
 	if (!stream)
 		throw Common::Exception("No module.ifo available");
 
-	load(stream, repairNWNPremium);
+	load(std::move(stream), repairNWNPremium);
 }
 
 void IFOFile::parseVersion(const Common::UString &version) {

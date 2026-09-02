@@ -43,7 +43,7 @@ namespace Aurora {
 class ZIPFile : public Archive {
 public:
 	/** Take over this stream and read a ZIP file out of it. */
-	ZIPFile(Common::SeekableReadStream *zip);
+	ZIPFile(std::unique_ptr<Common::SeekableReadStream> zip);
 	~ZIPFile();
 
 	/** Return the list of resources. */
@@ -53,7 +53,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 private:
 	/** The actual zip file. */

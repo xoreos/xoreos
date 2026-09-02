@@ -58,7 +58,7 @@ namespace Sound {
  */
 class XACTWaveBank_Binary : public XACTWaveBank {
 public:
-	XACTWaveBank_Binary(Common::SeekableReadStream *xwb);
+	XACTWaveBank_Binary(std::unique_ptr<Common::SeekableReadStream> xwb);
 	virtual ~XACTWaveBank_Binary() = default;
 
 	/** Return the internal name of the WaveBank. */

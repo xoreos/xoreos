@@ -45,14 +45,14 @@ namespace Aurora {
 class PEFile : public Archive {
 public:
 	/** Take over this stream and read a PE file out of it. */
-	PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap);
+	PEFile(std::unique_ptr<Common::SeekableReadStream> exe, const std::vector<Common::UString> &remap);
 	~PEFile();
 
 	/** Return the list of resources. */
 	const ResourceList &getResources() const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 private:
 	/** The actual exe. */

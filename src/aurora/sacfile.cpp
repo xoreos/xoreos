@@ -29,7 +29,7 @@
 
 namespace Aurora {
 
-SACFile::SACFile(Common::SeekableReadStream *stream) : GFF3File(load(stream)), _stream(stream) {
+SACFile::SACFile(std::unique_ptr<Common::SeekableReadStream> stream) : GFF3File(load(std::move(stream))) {
 	if (getType() != MKTAG('S', 'A', 'V', ' '))
 		throw Common::Exception("Invalid GFF ID");
 }
@@ -38,7 +38,7 @@ Common::UString SACFile::getLevelFile() const {
 	return _levelFile;
 }
 
-Common::SeekableReadStream *SACFile::load(Common::SeekableReadStream *stream) {
+std::unique_ptr<Common::SeekableReadStream> SACFile::load(std::unique_ptr<Common::SeekableReadStream> stream) {
 	stream->skip(4); // Unknown value, probably a version header?
 	const uint32_t nameLength = stream->readUint32LE(); // Length of the level identifier.
 
@@ -46,7 +46,10 @@ Common::SeekableReadStream *SACFile::load(Common::SeekableReadStream *stream) {
 
 	stream->skip(4); // Unknown value, probably a checksum?
 
-	return new Common::SeekableSubReadStream(stream, stream->pos(), stream->size());
+	const size_t pos  = stream->pos();
+	const size_t size = stream->size();
+
+	return std::make_unique<Common::SeekableSubReadStream>(std::move(stream), pos, size);
 }
 
 } // End of namespace Aurora

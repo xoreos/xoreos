@@ -976,11 +976,11 @@ uint8_t Creature::getReputation(Object *source) const {
 	return repute;
 }
 
-Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {
+std::unique_ptr<Aurora::GFF3File> Creature::openPC(const Common::UString &bic, bool local) {
 	const Common::UString pcDir  = ConfigMan.getString(local ? "NWN2_localPCDir" : "NWN2_serverPCDir");
 	const Common::UString pcFile = pcDir + "/" + bic + ".bic";
 
-	return new Aurora::GFF3File(new Common::ReadFile(pcFile), kBICID);
+	return std::make_unique<Aurora::GFF3File>(std::make_unique<Common::ReadFile>(pcFile), kBICID);
 }
 
 } // End of namespace NWN2

@@ -25,6 +25,8 @@
 #ifndef COMMON_DEFLATE_H
 #define COMMON_DEFLATE_H
 
+#include <memory>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -54,8 +56,8 @@ static const int kWindowBitsMaxRaw = -kWindowBitsMax;
  *                     inflateInit2() for details.
  *  @return The decompressed data.
  */
-byte *decompressDeflate(const byte *data, size_t inputSize,
-                        size_t outputSize, int windowBits);
+std::unique_ptr<byte[]> decompressDeflate(const byte *data, size_t inputSize,
+                                          size_t outputSize, int windowBits);
 
 /** Decompress (inflate) using zlib's DEFLATE algorithm without knowing the output size.
  *
@@ -68,8 +70,8 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
  *  @param frameSize   The size of the extracted frames, defaults to 4096.
  *  @return The decompressed data
  */
-byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, size_t &outputSize,
-                                         int windowBits, unsigned int frameSize = 4096);
+std::unique_ptr<byte[]> decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, size_t &outputSize,
+                                                           int windowBits, unsigned int frameSize = 4096);
 
 /** Decompress (inflate) using zlib's DEFLATE algorithm.
  *
@@ -84,8 +86,8 @@ byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, siz
  *                     inflateInit2() for details.
  *  @return A stream of the decompressed data.
  */
-SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
-                                      size_t outputSize, int windowBits);
+std::unique_ptr<SeekableReadStream> decompressDeflate(ReadStream &input, size_t inputSize,
+                                                      size_t outputSize, int windowBits);
 
 /** Decompress (inflate) using zlib's DEFLATE algorithm without knowing the output size.
  *
@@ -97,8 +99,8 @@ SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
  *  @param frameSize   The size of the extracted frames, defaults to 4096.
  *  @return A stream of the decompressed data.
  */
-SeekableReadStream *decompressDeflateWithoutOutputSize(ReadStream &input, size_t inputSize,
-                                                       int windowBits, unsigned int frameSize = 4096);
+std::unique_ptr<SeekableReadStream> decompressDeflateWithoutOutputSize(ReadStream &input, size_t inputSize,
+                                                                       int windowBits, unsigned int frameSize = 4096);
 
 /** Decompress (inflate) using zlib's DEFLATE algorithm, until a stream end marker was reached.
  *

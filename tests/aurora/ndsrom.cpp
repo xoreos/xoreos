@@ -4787,22 +4787,19 @@ static const byte kNDSFile[] = {
 };
 
 GTEST_TEST(NDSFile, getTitle) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	EXPECT_STREQ(nds.getTitle().c_str(), "xoreos test");
 }
 
 GTEST_TEST(NDSFile, getCode) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	EXPECT_STREQ(nds.getCode().c_str(), "xor!");
 }
 
 GTEST_TEST(NDSFile, getMaker) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	EXPECT_STREQ(nds.getMaker().c_str(), "x!");
 }
@@ -4819,15 +4816,13 @@ GTEST_TEST(NDSFile, isNDS) {
 }
 
 GTEST_TEST(NDSFile, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	EXPECT_EQ(nds.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(NDSFile, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	const Aurora::NDSFile::ResourceList &resources = nds.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -4841,8 +4836,7 @@ GTEST_TEST(NDSFile, getResources) {
 }
 
 GTEST_TEST(NDSFile, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	EXPECT_EQ(nds.getResourceSize(0), strlen(kFileData));
 
@@ -4850,15 +4844,13 @@ GTEST_TEST(NDSFile, getResourceSize) {
 }
 
 GTEST_TEST(NDSFile, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	EXPECT_EQ(nds.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(NDSFile, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
 	EXPECT_EQ(nds.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -4868,16 +4860,13 @@ GTEST_TEST(NDSFile, findResourceName) {
 }
 
 GTEST_TEST(NDSFile, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kNDSFile);
-	const Aurora::NDSFile nds(stream);
+	const Aurora::NDSFile nds(std::make_unique<Common::MemoryReadStream>(kNDSFile));
 
-	Common::SeekableReadStream *file = nds.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = nds.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }

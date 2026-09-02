@@ -25,6 +25,7 @@
 #ifndef COMMON_BLOWFISH_H
 #define COMMON_BLOWFISH_H
 
+#include <memory>
 #include <vector>
 
 #include "src/common/types.h"
@@ -32,12 +33,11 @@
 namespace Common {
 
 class SeekableReadStream;
-class MemoryReadStream;
 
 /** Encrypt the stream with the Blowfish algorithm in EBC mode. */
-MemoryReadStream *encryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key);
+std::unique_ptr<SeekableReadStream> encryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key);
 /** Decrypt the stream with the Blowfish algorithm in EBC mode. */
-MemoryReadStream *decryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key);
+std::unique_ptr<SeekableReadStream> decryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key);
 
 } // End of namespace Common
 

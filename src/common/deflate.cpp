@@ -85,8 +85,8 @@ static void initDeflateZStream(z_stream &strm, int windowBits, size_t size, cons
 		throw Exception("Could not initialize zlib deflate: %s (%d)", zError(zResult), zResult);
 }
 
-byte *decompressDeflate(const byte *data, size_t inputSize,
-                        size_t outputSize, int windowBits) {
+std::unique_ptr<byte[]> decompressDeflate(const byte *data, size_t inputSize,
+                                          size_t outputSize, int windowBits) {
 
 	std::unique_ptr<byte[]> decompressedData = std::make_unique<byte[]>(outputSize);
 
@@ -115,11 +115,11 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 		throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
 	}
 
-	return decompressedData.release();
+	return decompressedData;
 }
 
-byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, size_t &outputSize,
-                                         int windowBits, unsigned int frameSize) {
+std::unique_ptr<byte[]> decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, size_t &outputSize,
+                                                           int windowBits, unsigned int frameSize) {
 	z_stream strm;
 	BOOST_SCOPE_EXIT(&strm) {
 		inflateEnd(&strm);
@@ -149,31 +149,32 @@ byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, siz
 		std::memcpy(decompressedData.get() + i * frameSize, buffers[i].get(), MIN<size_t>(size, frameSize));
 
 	outputSize = strm.total_out;
-	return decompressedData.release();
+	return decompressedData;
 }
 
-SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
-                                      size_t outputSize, int windowBits) {
+std::unique_ptr<SeekableReadStream> decompressDeflate(ReadStream &input, size_t inputSize,
+                                                      size_t outputSize, int windowBits) {
 
 	std::unique_ptr<byte[]> compressedData = std::make_unique<byte[]>(inputSize);
 	if (input.read(compressedData.get(), inputSize) != inputSize)
 		throw Exception(kReadError);
 
-	const byte *decompressedData = decompressDeflate(compressedData.get(), inputSize, outputSize, windowBits);
+	std::unique_ptr<byte[]> decompressedData = decompressDeflate(compressedData.get(), inputSize, outputSize, windowBits);
 
-	return new MemoryReadStream(decompressedData, outputSize, true);
+	return std::make_unique<MemoryReadStream>(std::move(decompressedData), outputSize);
 }
 
-SeekableReadStream *decompressDeflateWithoutOutputSize(ReadStream &input, size_t inputSize,
-                                                       int windowBits, unsigned int frameSize) {
+std::unique_ptr<SeekableReadStream> decompressDeflateWithoutOutputSize(ReadStream &input, size_t inputSize,
+                                                                       int windowBits, unsigned int frameSize) {
 	std::unique_ptr<byte[]> compressedData = std::make_unique<byte[]>(inputSize);
 	if (input.read(compressedData.get(), inputSize) != inputSize)
 		throw Exception(kReadError);
 
 	size_t size = 0;
-	byte *decompressedData = decompressDeflateWithoutOutputSize(compressedData.get(), inputSize, size, windowBits, frameSize);
+	std::unique_ptr<byte[]> decompressedData =
+		decompressDeflateWithoutOutputSize(compressedData.get(), inputSize, size, windowBits, frameSize);
 
-	return new MemoryReadStream(decompressedData, size, true);
+	return std::make_unique<MemoryReadStream>(std::move(decompressedData), size);
 }
 
 size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits,

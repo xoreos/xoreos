@@ -36,7 +36,7 @@
 
 namespace Aurora {
 
-HERFFile::HERFFile(Common::SeekableReadStream *herf) : _herf(herf), _dictOffset(0xFFFFFFFF), _dictSize(0) {
+HERFFile::HERFFile(std::unique_ptr<Common::SeekableReadStream> herf) : _herf(std::move(herf)), _dictOffset(0xFFFFFFFF), _dictSize(0) {
 	assert(_herf);
 
 	load(*_herf);
@@ -156,11 +156,11 @@ uint32_t HERFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *HERFFile::getResource(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> HERFFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy)
-		return new Common::SeekableSubReadStream(_herf.get(), res.offset, res.offset + res.size);
+		return std::make_unique<Common::SeekableSubReadStream>(_herf.get(), res.offset, res.offset + res.size);
 
 	_herf->seek(res.offset);
 

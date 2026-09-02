@@ -32,17 +32,15 @@
 
 namespace Sound {
 
-XACTWaveBank *XACTWaveBank::load(const Common::UString &name) {
+std::unique_ptr<XACTWaveBank> XACTWaveBank::load(const Common::UString &name) {
 	try {
-		Common::SeekableReadStream *stream = nullptr;
-
-		stream = ResMan.getResource(name, Aurora::kFileTypeXWB);
+		std::unique_ptr<Common::SeekableReadStream> stream = ResMan.getResource(name, Aurora::kFileTypeXWB);
 		if (stream)
-			return new XACTWaveBank_Binary(stream);
+			return std::make_unique<XACTWaveBank_Binary>(std::move(stream));
 
 		stream = ResMan.getResource(name + "_xwb", Aurora::kFileTypeTXT);
 		if (stream)
-			return new XACTWaveBank_ASCII(stream);
+			return std::make_unique<XACTWaveBank_ASCII>(std::move(stream));
 
 		throw Common::Exception("No such WaveBank");
 

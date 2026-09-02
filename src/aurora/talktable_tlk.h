@@ -53,7 +53,7 @@ namespace Aurora {
 class TalkTable_TLK : public AuroraFile, public TalkTable {
 public:
 	/** Take over this stream and read a TLK out of it. */
-	TalkTable_TLK(Common::SeekableReadStream *tlk, Common::Encoding encoding);
+	TalkTable_TLK(std::unique_ptr<Common::SeekableReadStream> tlk, Common::Encoding encoding);
 	~TalkTable_TLK();
 
 	/** Return the language ID (ungendered) of the talk table. */

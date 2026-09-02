@@ -182,7 +182,7 @@ void Factions::loadFac() {
 	if (!stream)
 		throw Common::Exception("No repute.FAC available");
 
-	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('F', 'A', 'C', ' '));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(std::move(stream), MKTAG('F', 'A', 'C', ' '));
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
 
 	// Insert the factions

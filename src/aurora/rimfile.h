@@ -61,7 +61,7 @@ namespace Aurora {
 class RIMFile : public Archive, public AuroraFile {
 public:
 	/** Take over this stream and read a RIM file out of it. */
-	RIMFile(Common::SeekableReadStream *rim);
+	RIMFile(std::unique_ptr<Common::SeekableReadStream> rim);
 	~RIMFile();
 
 	/** Return the list of resources. */
@@ -71,7 +71,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 private:
 	/** Internal resource information. */

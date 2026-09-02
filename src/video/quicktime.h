@@ -246,7 +246,7 @@ private:
 		int32_t _curFrame;
 		uint32_t _nextFrameStartTime;
 
-		Common::SeekableReadStream *getNextFramePacket(uint32_t &descId);
+		std::unique_ptr<Common::SeekableReadStream> getNextFramePacket(uint32_t &descId);
 		uint32_t getFrameDuration();
 	};
 

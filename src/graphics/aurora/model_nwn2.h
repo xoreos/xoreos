@@ -59,7 +59,7 @@ private:
 	};
 
 	struct ParserContext {
-		Common::SeekableReadStream *mdb;
+		std::unique_ptr<Common::SeekableReadStream> mdb;
 
 		Common::UString mdlName;
 

@@ -85,7 +85,7 @@ unsigned char kNFOFile[] = {
 };
 
 GTEST_TEST(NFOFile, getPortrait) {
-	const Aurora::NFOFile nfo(new Common::MemoryReadStream(kNFOFile));
+	const Aurora::NFOFile nfo(std::make_unique<Common::MemoryReadStream>(kNFOFile));
 
 	EXPECT_STREQ(nfo.getPortrait0().c_str(), "po_pmha4");
 	EXPECT_TRUE(nfo.getPortrait1().empty());
@@ -93,20 +93,20 @@ GTEST_TEST(NFOFile, getPortrait) {
 }
 
 GTEST_TEST(NFOFile, getTimePlayed) {
-	const Aurora::NFOFile nfo(new Common::MemoryReadStream(kNFOFile));
+	const Aurora::NFOFile nfo(std::make_unique<Common::MemoryReadStream>(kNFOFile));
 
 	EXPECT_EQ(nfo.getTimePlayed(), 72);
 }
 
 
 GTEST_TEST(NFOFile, getAreaName) {
-	const Aurora::NFOFile nfo(new Common::MemoryReadStream(kNFOFile));
+	const Aurora::NFOFile nfo(std::make_unique<Common::MemoryReadStream>(kNFOFile));
 
 	EXPECT_STREQ(nfo.getAreaName().c_str(), "Endar Spire - Kommandomodul");
 }
 
 GTEST_TEST(NFOFile, getSaveName) {
-	const Aurora::NFOFile nfo(new Common::MemoryReadStream(kNFOFile));
+	const Aurora::NFOFile nfo(std::make_unique<Common::MemoryReadStream>(kNFOFile));
 
 	EXPECT_STREQ(nfo.getSaveName().c_str(), "test");
 }

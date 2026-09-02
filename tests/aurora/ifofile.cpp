@@ -247,7 +247,7 @@ protected:
 
 GTEST_TEST_F(IFOFile, unload) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	ifo.unload();
 
@@ -256,7 +256,7 @@ GTEST_TEST_F(IFOFile, unload) {
 
 GTEST_TEST_F(IFOFile, getGFF) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const Aurora::GFF3Struct *gff = ifo.getGFF();
 	ASSERT_NE(gff, static_cast<const Aurora::GFF3Struct *>(0));
@@ -264,56 +264,56 @@ GTEST_TEST_F(IFOFile, getGFF) {
 
 GTEST_TEST_F(IFOFile, getVersion) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getVersion(), 3);
 }
 
 GTEST_TEST_F(IFOFile, getCreatorID) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getCreatorID(), 2);
 }
 
 GTEST_TEST_F(IFOFile, isSave) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_FALSE(ifo.isSave());
 }
 
 GTEST_TEST_F(IFOFile, getTag) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_STREQ(ifo.getTag().c_str(), "MODULE");
 }
 
 GTEST_TEST_F(IFOFile, getName) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_STREQ(ifo.getName().getString().c_str(), "A module name");
 }
 
 GTEST_TEST_F(IFOFile, getDescription) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_STREQ(ifo.getDescription().getString().c_str(), "Mod description");
 }
 
 GTEST_TEST_F(IFOFile, getTLK) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_STREQ(ifo.getTLK().c_str(), "tlk");
 }
 
 GTEST_TEST_F(IFOFile, getMinVersion) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	int major, minor;
 	ifo.getMinVersion(major, minor);
@@ -324,14 +324,14 @@ GTEST_TEST_F(IFOFile, getMinVersion) {
 
 GTEST_TEST_F(IFOFile, getExpansions) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getExpansions(), 1);
 }
 
 GTEST_TEST_F(IFOFile, getHAKs) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const std::vector<Common::UString> &haks = ifo.getHAKs();
 	ASSERT_EQ(haks.size(), 3);
@@ -343,21 +343,21 @@ GTEST_TEST_F(IFOFile, getHAKs) {
 
 GTEST_TEST_F(IFOFile, getStartMovie) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_STREQ(ifo.getStartMovie().c_str(), "movie");
 }
 
 GTEST_TEST_F(IFOFile, getEntryArea) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_STREQ(ifo.getEntryArea().c_str(), "area1");
 }
 
 GTEST_TEST_F(IFOFile, getEntryPosition) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	float x, y, z;
 	ifo.getEntryPosition(x, y, z);
@@ -369,7 +369,7 @@ GTEST_TEST_F(IFOFile, getEntryPosition) {
 
 GTEST_TEST_F(IFOFile, getEntryDirection) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	float x, y;
 	ifo.getEntryDirection(x, y);
@@ -380,7 +380,7 @@ GTEST_TEST_F(IFOFile, getEntryDirection) {
 
 GTEST_TEST_F(IFOFile, getAreas) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const std::vector<Common::UString> &areas = ifo.getAreas();
 	ASSERT_EQ(areas.size(), 3);
@@ -392,7 +392,7 @@ GTEST_TEST_F(IFOFile, getAreas) {
 
 GTEST_TEST_F(IFOFile, getNSSCache) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const std::vector<Common::UString> &nss = ifo.getNSSCache();
 	ASSERT_EQ(nss.size(), 3);
@@ -404,7 +404,7 @@ GTEST_TEST_F(IFOFile, getNSSCache) {
 
 GTEST_TEST_F(IFOFile, getQuests) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const std::vector<Common::UString> &quests = ifo.getQuests();
 	ASSERT_EQ(quests.size(), 3);
@@ -416,7 +416,7 @@ GTEST_TEST_F(IFOFile, getQuests) {
 
 GTEST_TEST_F(IFOFile, getQuestDBs) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const std::vector<Common::UString> &questdbs = ifo.getQuestDBs();
 	ASSERT_EQ(questdbs.size(), 3);
@@ -428,7 +428,7 @@ GTEST_TEST_F(IFOFile, getQuestDBs) {
 
 GTEST_TEST_F(IFOFile, getStoryNPCs) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const std::vector<Common::UString> &storynpcs = ifo.getStoryNPCs();
 	ASSERT_EQ(storynpcs.size(), 3);
@@ -440,7 +440,7 @@ GTEST_TEST_F(IFOFile, getStoryNPCs) {
 
 GTEST_TEST_F(IFOFile, getMonsterNPCs) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	const std::vector<Common::UString> &monsternpcs = ifo.getMonsterNPCs();
 	ASSERT_EQ(monsternpcs.size(), 3);
@@ -452,7 +452,7 @@ GTEST_TEST_F(IFOFile, getMonsterNPCs) {
 
 GTEST_TEST_F(IFOFile, getStartTime) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	uint8_t hour, day, month;
 	uint32_t year;
@@ -467,42 +467,42 @@ GTEST_TEST_F(IFOFile, getStartTime) {
 
 GTEST_TEST_F(IFOFile, getMinutesPerHour) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getMinutesPerHour(), 2);
 }
 
 GTEST_TEST_F(IFOFile, getMinWeatherIntensity) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getMinWeatherIntensity(), 24);
 }
 
 GTEST_TEST_F(IFOFile, getMaxWeatherIntensity) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getMaxWeatherIntensity(), 23);
 }
 
 GTEST_TEST_F(IFOFile, getRainChance) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getRainChance(), 25);
 }
 
 GTEST_TEST_F(IFOFile, getSnowChance) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_EQ(ifo.getSnowChance(), 26);
 }
 
 GTEST_TEST_F(IFOFile, getXPScale) {
 	Aurora::IFOFile ifo;
-	ifo.load(new Common::MemoryReadStream(kIFOFile));
+	ifo.load(std::make_unique<Common::MemoryReadStream>(kIFOFile));
 
 	EXPECT_FLOAT_EQ(ifo.getXPScale(), 0.1f);
 }

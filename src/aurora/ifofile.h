@@ -79,7 +79,7 @@ public:
 	 *  repairNWNPremium indicates whether we want to try to repair such
 	 *  mangled module.ifo files.
 	 */
-	void load(Common::SeekableReadStream *stream, bool repairNWNPremium = false);
+	void load(std::unique_ptr<Common::SeekableReadStream> stream, bool repairNWNPremium = false);
 	/** Load the currently available module.ifo.
 	 *
 	 *  Since this is a GFF3 file, which might be found in a Neverwinter

@@ -44,7 +44,7 @@ NDSFile::NDSFile(const Common::UString &fileName) {
 	load(*_nds);
 }
 
-NDSFile::NDSFile(Common::SeekableReadStream *nds) : _nds(nds) {
+NDSFile::NDSFile(std::unique_ptr<Common::SeekableReadStream> nds) : _nds(std::move(nds)) {
 	assert(_nds);
 
 	load(*_nds);
@@ -163,13 +163,13 @@ uint32_t NDSFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *NDSFile::getResource(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> NDSFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	_nds->seek(res.offset);
 
 	if (tryNoCopy)
-		return new Common::SeekableSubReadStream(_nds.get(), res.offset, res.offset + res.size);
+		return std::make_unique<Common::SeekableSubReadStream>(_nds.get(), res.offset, res.offset + res.size);
 
 	_nds->seek(res.offset);
 

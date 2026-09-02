@@ -79,7 +79,7 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 		if (!str)
 			continue;
 
-		ncgrs[i].reset(ResMan.getResource(name + Common::UString(str), ::Aurora::kFileTypeNCGR));
+		ncgrs[i] = ResMan.getResource(name + Common::UString(str), ::Aurora::kFileTypeNCGR);
 		if (!ncgrs[i])
 			throw Common::Exception("No such NCGR \"%s\"", (name + Common::UString(str)).c_str());
 	}

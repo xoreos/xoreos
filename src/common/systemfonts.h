@@ -25,12 +25,14 @@
 #ifndef COMMON_SYSTEMFONTS_H
 #define COMMON_SYSTEMFONTS_H
 
+#include <memory>
+
 namespace Common {
 
 class SeekableReadStream;
 
 /** Return a stream of the monospaced system font TTF. */
-SeekableReadStream *getSystemFontMono();
+std::unique_ptr<SeekableReadStream> getSystemFontMono();
 
 } // End of namespace Common
 

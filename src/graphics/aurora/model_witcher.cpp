@@ -88,15 +88,13 @@ enum NodeTrimeshControllerType {
 };
 
 
-Model_Witcher::ParserContext::ParserContext(const Common::UString &name) : mdb(0), state(0) {
+Model_Witcher::ParserContext::ParserContext(const Common::UString &name) : state(0) {
 	mdb = ResMan.getResource(name, ::Aurora::kFileTypeMDB);
 	if (!mdb)
 		throw Common::Exception("No such MDB \"%s\"", name.c_str());
 }
 
 Model_Witcher::ParserContext::~ParserContext() {
-	delete mdb;
-
 	clear();
 }
 

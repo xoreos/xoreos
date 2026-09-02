@@ -95,11 +95,14 @@ void ScriptManager::executeFile(const Common::UString &path) {
 		throw Common::Exception("No such LUC \"%s\"", fileName.c_str());
 	}
 
-	std::unique_ptr<Common::MemoryReadStream> memStream(stream->readStream(stream->size()));
-	const char *data = reinterpret_cast<const char *>(memStream->getData());
-	const int dataSize = memStream->size();
+	const size_t streamSize = stream->size();
+	if (streamSize > static_cast<size_t>(std::numeric_limits<int>::max()))
+		throw Common::Exception("LUC file too large: %zu", streamSize);
 
-	const int execResult = lua_dobuffer(_luaState, data, dataSize, path.c_str());
+	std::unique_ptr<char[]> buffer = std::make_unique<char[]>(streamSize);
+	stream->readChecked(buffer.get(), streamSize);
+
+	const int execResult = lua_dobuffer(_luaState, buffer.get(), static_cast<int>(streamSize), path.c_str());
 	if (execResult != 0) {
 		const Common::UString fileName = TypeMan.setFileType(path, kFileTypeLUC);
 		throw Common::Exception("Failed to execute Lua file: %s", fileName.c_str());

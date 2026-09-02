@@ -43,12 +43,12 @@ static const uint32_t kDLGID = MKTAG('D', 'L', 'G', ' ');
 
 namespace Aurora {
 
-DLGFile::DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner, bool repairNWNPremium) :
+DLGFile::DLGFile(std::unique_ptr<Common::SeekableReadStream> dlg, NWScript::Object *owner, bool repairNWNPremium) :
 	_owner(owner), _ended(true) {
 
 	assert(dlg);
 
-	GFF3File gff(dlg, kDLGID, repairNWNPremium);
+	GFF3File gff(std::move(dlg), kDLGID, repairNWNPremium);
 
 	load(gff.getTopLevel());
 

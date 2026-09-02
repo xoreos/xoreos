@@ -408,7 +408,7 @@ GTEST_TEST(TheWitcherSaveWriter, WriteEmpty) {
 	Aurora::TheWitcherSaveWriter twsWriter("Test Area", writeStream);
 	twsWriter.finish();
 
-	const Aurora::TheWitcherSaveFile tws(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::TheWitcherSaveFile tws(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_STREQ(tws.getAreaName().c_str(), "Test Area");
 	EXPECT_EQ(tws.getResources().size(), 0);
@@ -423,7 +423,7 @@ GTEST_TEST(TheWitcherSaveWriter, WriteFile) {
 	twsWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
 	twsWriter.finish();
 
-	const Aurora::TheWitcherSaveFile tws(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::TheWitcherSaveFile tws(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_STREQ(tws.getAreaName().c_str(), "Test Area");
 	EXPECT_EQ(tws.getResources().size(), 1);
@@ -431,7 +431,7 @@ GTEST_TEST(TheWitcherSaveWriter, WriteFile) {
 	EXPECT_EQ(tws.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 	EXPECT_EQ(tws.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream = tws.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream = tws.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
 
 	std::unique_ptr<byte[]> fileData = std::make_unique<byte[]>(readStream->size());
@@ -440,8 +440,6 @@ GTEST_TEST(TheWitcherSaveWriter, WriteFile) {
 	for (size_t i = 0; i < kFileDataSize; ++i) {
 		EXPECT_EQ(fileData[i], kFileData[i]);
 	}
-
-	delete readStream;
 }
 
 GTEST_TEST(TheWitcherSaveWriter, WriteMultipleFiles) {
@@ -459,7 +457,7 @@ GTEST_TEST(TheWitcherSaveWriter, WriteMultipleFiles) {
 	twsWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
 	twsWriter.finish();
 
-	const Aurora::TheWitcherSaveFile tws(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::TheWitcherSaveFile tws(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_STREQ(tws.getAreaName().c_str(), "Test Area");
 	EXPECT_EQ(tws.getResources().size(), 3);
@@ -471,11 +469,11 @@ GTEST_TEST(TheWitcherSaveWriter, WriteMultipleFiles) {
 	EXPECT_EQ(tws.findResource("logo", Aurora::kFileTypeBMP), 2);
 	EXPECT_EQ(tws.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream1 = tws.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream1 = tws.getResource(0);
 	ASSERT_EQ(readStream1->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream2 = tws.getResource(1);
+	std::unique_ptr<Common::SeekableReadStream> readStream2 = tws.getResource(1);
 	ASSERT_EQ(readStream2->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream3 = tws.getResource(2);
+	std::unique_ptr<Common::SeekableReadStream> readStream3 = tws.getResource(2);
 	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
 	std::unique_ptr<byte[]> fileData1 = std::make_unique<byte[]>(readStream1->size());
@@ -494,8 +492,4 @@ GTEST_TEST(TheWitcherSaveWriter, WriteMultipleFiles) {
 	for (size_t i = 0; i < kLogoDataSize; ++i) {
 		EXPECT_EQ(fileData3[i], kLogoData[i]);
 	}
-
-	delete readStream1;
-	delete readStream2;
-	delete readStream3;
 }

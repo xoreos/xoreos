@@ -583,7 +583,7 @@ Common::UString Module::getName(const Common::UString &module) {
 	try {
 		const Common::FileList modules(ConfigMan.getString("NWN2_moduleDir"));
 
-		const Aurora::ERFFile mod(new Common::ReadFile(modules.findFirst(module + ".mod", true)));
+		const Aurora::ERFFile mod(std::make_unique<Common::ReadFile>(modules.findFirst(module + ".mod", true)));
 		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
@@ -600,7 +600,7 @@ Common::UString Module::getDescription(const Common::UString &module) {
 	try {
 		const Common::FileList modules(ConfigMan.getString("NWN2_moduleDir"));
 
-		const Aurora::ERFFile mod(new Common::ReadFile(modules.findFirst(module + ".mod", true)));
+		const Aurora::ERFFile mod(std::make_unique<Common::ReadFile>(modules.findFirst(module + ".mod", true)));
 		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));

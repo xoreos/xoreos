@@ -1010,7 +1010,7 @@ Common::UString Module::getName(const Common::UString &module, const Common::USt
 	try {
 		const Common::FileList modules(ConfigMan.getString(moduleDirOptionName));
 
-		const Aurora::RIMFile rim(new Common::ReadFile(modules.findFirst(module + ".rim", true)));
+		const Aurora::RIMFile rim(std::make_unique<Common::ReadFile>(modules.findFirst(module + ".rim", true)));
 		const uint32_t ifoIndex = rim.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(rim.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));

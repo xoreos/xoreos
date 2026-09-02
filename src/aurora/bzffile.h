@@ -55,7 +55,7 @@ class KEYFile;
 class BZFFile : public KEYDataFile, public AuroraFile {
 public:
 	/** Take over this stream and read a BZF file out of it. */
-	BZFFile(Common::SeekableReadStream *bzf);
+	BZFFile(std::unique_ptr<Common::SeekableReadStream> bzf);
 	~BZFFile();
 
 	/** Return the list of resources. */
@@ -65,7 +65,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 	/** Merge information from the KEY into the data file.
 	 *

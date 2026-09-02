@@ -72,7 +72,7 @@ public:
 	 *  @param  tryNoCopy Try to return a SeekableSubReadStream of the archive instead of copying.
 	 *  @return A (sub)stream of the resource's contents.
 	 */
-	virtual Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const = 0;
+	virtual std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const = 0;
 
 	/** Return with which algorithm the name is hashed. */
 	virtual Common::HashAlgo getNameHashAlgo() const;

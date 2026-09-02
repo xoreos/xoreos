@@ -66,7 +66,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 private:
 	/** Internal resource information. */
@@ -89,7 +89,7 @@ private:
 	void load(Common::SeekableReadStream &obb);
 	void readResList(Common::SeekableReadStream &index);
 
-	Common::SeekableReadStream *getIndex(Common::SeekableReadStream &obb);
+	std::unique_ptr<Common::SeekableReadStream> getIndex(Common::SeekableReadStream &obb);
 
 	const IResource &getIResource(uint32_t index) const;
 };

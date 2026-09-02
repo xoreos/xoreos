@@ -52,7 +52,7 @@ WwiseSoundBank::WwiseSoundBank(Common::SeekableReadStream *bnk) : _bnk(bnk), _ba
 }
 
 WwiseSoundBank::WwiseSoundBank(const Common::UString &name) : _bankID(0), _dataOffset(SIZE_MAX) {
-	_bnk.reset(ResMan.getResource(name, Aurora::kFileTypeBNK));
+	_bnk = ResMan.getResource(name, Aurora::kFileTypeBNK);
 	if (!_bnk)
 		throw Common::Exception("No such BNK resource \"%s\"", name.c_str());
 
@@ -60,7 +60,7 @@ WwiseSoundBank::WwiseSoundBank(const Common::UString &name) : _bankID(0), _dataO
 }
 
 WwiseSoundBank::WwiseSoundBank(uint64_t hash) : _bankID(0), _dataOffset(SIZE_MAX) {
-	_bnk.reset(ResMan.getResource(hash));
+	_bnk = ResMan.getResource(hash);
 	if (!_bnk)
 		throw Common::Exception("No such BNK resource \"%s\"", Common::formatHash(hash).c_str());
 
@@ -162,14 +162,14 @@ std::unique_ptr<Common::SeekableReadStream> WwiseSoundBank::getSoundData(size_t 
 	if (!sound.isEmbedded) {
 		// Streaming => loose OGG file
 
-		Common::SeekableReadStream *data =
+		std::unique_ptr<Common::SeekableReadStream> data =
 			ResMan.getResource(Common::composeString(sound.fileID), Aurora::kFileTypeOGG);
 
 		if (!data)
 			throw Common::Exception("WwiseSoundBank::getSoundData(): No such OGG file (%s, %u, %u)",
 			                        Common::composeString(index).c_str(), sound.id, sound.fileID);
 
-		return std::unique_ptr<Common::SeekableReadStream>(data);
+		return data;
 	}
 
 	if (sound.fileSource == _bankID) {
@@ -177,7 +177,7 @@ std::unique_ptr<Common::SeekableReadStream> WwiseSoundBank::getSoundData(size_t 
 
 		_bnk->seek(sound.fileOffset);
 
-		return std::unique_ptr<Common::SeekableReadStream>(_bnk->readStream(sound.fileSize));
+		return _bnk->readStream(sound.fileSize);
 	}
 
 	// Sound file is embedded in another bank
@@ -188,7 +188,7 @@ std::unique_ptr<Common::SeekableReadStream> WwiseSoundBank::getSoundData(size_t 
 		                        "without a bank name", Common::composeString(index).c_str(),
 		                        sound.id, sound.fileID, sound.fileSource);
 
-	std::unique_ptr<Common::SeekableReadStream> bank(ResMan.getResource(bankName->second, Aurora::kFileTypeBNK));
+	std::unique_ptr<Common::SeekableReadStream> bank = ResMan.getResource(bankName->second, Aurora::kFileTypeBNK);
 	if (!bank)
 		throw Common::Exception("WwiseSoundBank::getSoundData(): Bank \"%s\" for externally embedded file "
 		                        "(%s, %u, %u) does not exist", bankName->second.c_str(),
@@ -196,7 +196,7 @@ std::unique_ptr<Common::SeekableReadStream> WwiseSoundBank::getSoundData(size_t 
 
 	bank->seek(sound.fileOffset);
 
-	return std::unique_ptr<Common::SeekableReadStream>(bank->readStream(sound.fileSize));
+	return bank->readStream(sound.fileSize);
 }
 
 static constexpr uint32_t kSectionBankHeader  = MKTAG('B', 'K', 'H', 'D');

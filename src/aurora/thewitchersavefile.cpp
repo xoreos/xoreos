@@ -31,8 +31,8 @@ namespace Aurora {
 
 static const uint32_t kRGMHID = MKTAG('R', 'G', 'M', 'H');
 
-TheWitcherSaveFile::TheWitcherSaveFile(Common::SeekableReadStream *tws) : _tws(tws) {
-	assert(tws);
+TheWitcherSaveFile::TheWitcherSaveFile(std::unique_ptr<Common::SeekableReadStream> tws) : _tws(std::move(tws)) {
+	assert(_tws);
 
 	load();
 }
@@ -45,16 +45,14 @@ const Archive::ResourceList &TheWitcherSaveFile::getResources() const {
 	return _resourceList;
 }
 
-Common::SeekableReadStream *TheWitcherSaveFile::getResource(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> TheWitcherSaveFile::getResource(uint32_t index, bool tryNoCopy) const {
 	IResource resource = _resources[index];
 
 	if (tryNoCopy)
-		return new Common::SeekableSubReadStream(_tws.get(), resource.offset, resource.offset + resource.length);
-	else {
-		_tws->seek(resource.offset);
-		Common::SeekableReadStream *readStream = _tws->readStream(resource.length);
-		return readStream;
-	}
+		return std::make_unique<Common::SeekableSubReadStream>(_tws.get(), resource.offset, resource.offset + resource.length);
+
+	_tws->seek(resource.offset);
+	return _tws->readStream(resource.length);
 }
 
 void TheWitcherSaveFile::load() {

@@ -44,7 +44,7 @@ namespace Aurora {
 
 class NFTRFont : public Graphics::Font, public ::Aurora::NitroFile {
 public:
-	NFTRFont(Common::SeekableReadStream *nftr, bool invertPalette = false);
+	NFTRFont(std::unique_ptr<Common::SeekableReadStream> nftr, bool invertPalette = false);
 	NFTRFont(const Common::UString &name, bool invertPalette = false);
 	~NFTRFont();
 

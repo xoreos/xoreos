@@ -57,7 +57,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_NWN2::ParserContext::ParserContext(const Common::UString &name) : mdb(0), state(0) {
+Model_NWN2::ParserContext::ParserContext(const Common::UString &name) : state(0) {
 	mdb = ResMan.getResource(name, ::Aurora::kFileTypeMDB);
 	if (!mdb)
 		throw Common::Exception("No such MDB \"%s\"", name.c_str());
@@ -65,8 +65,6 @@ Model_NWN2::ParserContext::ParserContext(const Common::UString &name) : mdb(0), 
 }
 
 Model_NWN2::ParserContext::~ParserContext() {
-	delete mdb;
-
 	clear();
 }
 

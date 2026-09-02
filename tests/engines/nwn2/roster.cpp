@@ -42,7 +42,7 @@ public:
 		std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataRoster);
 		if (!stream)
 			throw Common::Exception("No test data available");
-		std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('R', 'S', 'T', ' '));
+		std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(std::move(stream), MKTAG('R', 'S', 'T', ' '));
 		const Aurora::GFF3Struct &top = gff->getTopLevel();
 
 		// Insert the roster members

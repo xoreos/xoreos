@@ -41,7 +41,7 @@ namespace Aurora {
  */
 class TheWitcherSaveFile : public Archive {
 public:
-	TheWitcherSaveFile(Common::SeekableReadStream *tws);
+	TheWitcherSaveFile(std::unique_ptr<Common::SeekableReadStream> tws);
 
 	/** Get the area name of this save file. */
 	const Common::UString &getAreaName() const;
@@ -53,7 +53,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 private:
 	void load();

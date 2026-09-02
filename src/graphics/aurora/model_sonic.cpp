@@ -80,17 +80,15 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model_Sonic::ParserContext::ParserContext(const Common::UString &name) : nsbmd(0), state(0) {
-	Common::SeekableReadStream *stream = ResMan.getResource(name, ::Aurora::kFileTypeNSBMD);
+Model_Sonic::ParserContext::ParserContext(const Common::UString &name) : state(0) {
+	std::unique_ptr<Common::SeekableReadStream> stream = ResMan.getResource(name, ::Aurora::kFileTypeNSBMD);
 	if (!stream)
 		throw Common::Exception("No such NSBMD \"%s\"", name.c_str());
 
-	nsbmd = ::Aurora::NitroFile::open(stream);
+	nsbmd = ::Aurora::NitroFile::open(std::move(stream));
 }
 
 Model_Sonic::ParserContext::~ParserContext() {
-	delete nsbmd;
-
 	clear();
 }
 

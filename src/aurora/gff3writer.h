@@ -87,7 +87,7 @@ private:
 
 		VoidData() { }
 
-		VoidData(Common::SeekableReadStream *stream);
+		VoidData(std::unique_ptr<Common::SeekableReadStream> stream);
 
 		VoidData(const VoidData &voidData) { *this = voidData; }
 
@@ -243,15 +243,15 @@ public:
 	/** Add a new ExoString. */
 	void addExoString(const Common::UString &label, const Common::UString &value);
 	/** Add a new ExoString. */
-	void addExoString(const Common::UString &label, Common::SeekableReadStream *value);
+	void addExoString(const Common::UString &label, std::unique_ptr<Common::SeekableReadStream> value);
 	/** Add a new String reference. */
 	void addStrRef(const Common::UString &label, uint32_t value);
 	/** Add a new Resource reference. */
 	void addResRef(const Common::UString &label, const Common::UString &value);
 	/** Add a new Resource reference. */
-	void addResRef(const Common::UString &label, Common::SeekableReadStream *value);
+	void addResRef(const Common::UString &label, std::unique_ptr<Common::SeekableReadStream> value);
 	/** Add new void data. Data will be copied. */
-	void addVoid(const Common::UString &label, Common::SeekableReadStream *value);
+	void addVoid(const Common::UString &label, std::unique_ptr<Common::SeekableReadStream> value);
 	/** Add a new Vector. */
 	void addVector(const Common::UString &label, glm::vec3 value);
 	/** Add a new Orientation. */

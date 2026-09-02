@@ -51,7 +51,7 @@ class SeekableReadStream;
  *  @param noEndMarker The compressed stream has no end marker.
  *  @return The decompressed data.
  */
-byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, bool noEndMarker = false);
+std::unique_ptr<byte[]> decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, bool noEndMarker = false);
 
 /** Decompress using the LZMA1 algorithm.
  *
@@ -64,7 +64,7 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
  *  @param noEndMarker The compressed stream has no end marker.
  *  @return A stream of the decompressed data.
  */
-SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker = false);
+std::unique_ptr<SeekableReadStream> decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker = false);
 
 /** Decompress using the ERF LZMA algorithm.
  *

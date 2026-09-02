@@ -43,10 +43,10 @@ static const uint32_t kVersion05 = MKTAG('V', '0', '.', '5');
 
 namespace Aurora {
 
-TalkTable_GFF::TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding) :
+TalkTable_GFF::TalkTable_GFF(std::unique_ptr<Common::SeekableReadStream> tlk, Common::Encoding encoding) :
 	TalkTable(encoding) {
 
-	load(tlk);
+	load(std::move(tlk));
 }
 
 TalkTable_GFF::~TalkTable_GFF() {
@@ -75,11 +75,11 @@ uint32_t TalkTable_GFF::getSoundID(uint32_t UNUSED(strRef)) const {
 	return kFieldIDInvalid;
 }
 
-void TalkTable_GFF::load(Common::SeekableReadStream *tlk) {
+void TalkTable_GFF::load(std::unique_ptr<Common::SeekableReadStream> tlk) {
 	assert(tlk);
 
 	try {
-		_gff = std::make_unique<GFF4File>(tlk, kTLKID);
+		_gff = std::make_unique<GFF4File>(std::move(tlk), kTLKID);
 
 		const GFF4Struct &top = _gff->getTopLevel();
 

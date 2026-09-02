@@ -63,8 +63,8 @@ void GFF3File::Header::read(Common::SeekableReadStream &gff3) {
 }
 
 
-GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32_t id, bool repairNWNPremium) :
-	_stream(gff3), _repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
+GFF3File::GFF3File(std::unique_ptr<Common::SeekableReadStream> gff3, uint32_t id, bool repairNWNPremium) :
+	_stream(std::move(gff3)), _repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
 
 	assert(_stream);
 
@@ -74,7 +74,7 @@ GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32_t id, bool repairNWN
 GFF3File::GFF3File(const Common::UString &gff3, FileType type, uint32_t id, bool repairNWNPremium) :
 	_repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
 
-	_stream.reset(ResMan.getResource(gff3, type));
+	_stream = ResMan.getResource(gff3, type);
 	if (!_stream)
 		throw Common::Exception("No such GFF3 \"%s\"", TypeMan.setFileType(gff3, type).c_str());
 
@@ -632,10 +632,10 @@ bool GFF3Struct::getLocString(const Common::UString &field, LocString &str) cons
 	return true;
 }
 
-Common::SeekableReadStream *GFF3Struct::getData(const Common::UString &field) const {
+std::unique_ptr<Common::SeekableReadStream> GFF3Struct::getData(const Common::UString &field) const {
 	const Field *f = getField(field);
 	if (!f)
-		return 0;
+		return nullptr;
 	if ((f->type != kFieldTypeVoid) &&
 	    (f->type != kFieldTypeExoString) &&
 	    (f->type != kFieldTypeResRef))

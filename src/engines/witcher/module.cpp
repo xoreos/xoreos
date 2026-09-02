@@ -515,7 +515,7 @@ void Module::delayScript(const Common::UString &script,
 
 Common::UString Module::getName(const Common::UString &module) {
 	try {
-		const Aurora::ERFFile mod(new Common::ReadFile(findModule(module, false)));
+		const Aurora::ERFFile mod(std::make_unique<Common::ReadFile>(findModule(module, false)));
 		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
@@ -530,7 +530,7 @@ Common::UString Module::getName(const Common::UString &module) {
 
 Common::UString Module::getDescription(const Common::UString &module) {
 	try {
-		const Aurora::ERFFile mod(new Common::ReadFile(findModule(module, false)));
+		const Aurora::ERFFile mod(std::make_unique<Common::ReadFile>(findModule(module, false)));
 		const uint32_t ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
 
 		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));

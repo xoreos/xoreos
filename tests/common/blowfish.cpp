@@ -49,13 +49,11 @@ GTEST_TEST(Blowfish, encrypt) {
 	std::vector<byte> key;
 	createKey(key);
 
-	Common::MemoryReadStream *cipherText = Common::encryptBlowfishEBC(clearText, key);
+	std::unique_ptr<Common::SeekableReadStream> cipherText = Common::encryptBlowfishEBC(clearText, key);
 	ASSERT_EQ(cipherText->size(), std::size(kCypherText));
 
 	for (size_t i = 0; i < std::size(kCypherText); i++)
 		EXPECT_EQ(cipherText->readByte(), kCypherText[i]) << "At index " << i;
-
-	delete cipherText;
 }
 
 GTEST_TEST(Blowfish, decrypt) {
@@ -64,13 +62,11 @@ GTEST_TEST(Blowfish, decrypt) {
 	std::vector<byte> key;
 	createKey(key);
 
-	Common::MemoryReadStream *clearText = Common::decryptBlowfishEBC(cipherText, key);
+	std::unique_ptr<Common::SeekableReadStream> clearText = Common::decryptBlowfishEBC(cipherText, key);
 	ASSERT_GE(clearText->size(), std::size(kClearText));
 
 	for (size_t i = 0; i < std::size(kClearText); i++)
 		EXPECT_EQ(clearText->readByte(), kClearText[i]) << "At index " << i;
-
-	delete clearText;
 }
 
 GTEST_TEST(Blowfish, misalign) {

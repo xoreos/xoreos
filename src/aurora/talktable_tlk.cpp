@@ -43,8 +43,8 @@ static const uint32_t kVersion4 = MKTAG('V', '4', '.', '0');
 
 namespace Aurora {
 
-TalkTable_TLK::TalkTable_TLK(Common::SeekableReadStream *tlk, Common::Encoding encoding) :
-	TalkTable(encoding), _tlk(tlk) {
+TalkTable_TLK::TalkTable_TLK(std::unique_ptr<Common::SeekableReadStream> tlk, Common::Encoding encoding) :
+	TalkTable(encoding), _tlk(std::move(tlk)) {
 
 	assert(_tlk);
 
@@ -126,8 +126,8 @@ void TalkTable_TLK::readString(Entry &entry) const {
 	if (length == 0)
 		return;
 
-	std::unique_ptr<Common::MemoryReadStream> data(_tlk->readStream(length));
-	std::unique_ptr<Common::MemoryReadStream> parsed(LangMan.preParseColorCodes(*data));
+	std::unique_ptr<Common::SeekableReadStream> data = _tlk->readStream(length);
+	std::unique_ptr<Common::SeekableReadStream> parsed(LangMan.preParseColorCodes(*data));
 
 	if (_encoding != Common::kEncodingInvalid)
 		entry.text = Common::readString(*parsed, _encoding);

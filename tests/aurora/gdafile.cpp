@@ -88,19 +88,19 @@ static const int32_t      kDataBool    [kRowCount] = { 0        , 0        , 1  
 static const char * const kDataResource[kRowCount] = { "foo.bar", "bar.foo", "qux.qux" };
 
 GTEST_TEST(GDAFile, getColumnCount) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	EXPECT_EQ(gda.getColumnCount(), kColumnCount);
 }
 
 GTEST_TEST(GDAFile, getRowCount) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	EXPECT_EQ(gda.getRowCount(), kRowCount);
 }
 
 GTEST_TEST(GDAFile, hasRow) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kRowCount; i++)
 		EXPECT_TRUE(gda.hasRow(i));
@@ -109,21 +109,21 @@ GTEST_TEST(GDAFile, hasRow) {
 }
 
 GTEST_TEST(GDAFile, getRow) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kRowCount; i++) {
 		const Aurora::GFF4Struct *row = gda.getRow(i);
-		ASSERT_NE(row, static_cast<Aurora::GFF4Struct *>(0));
+		ASSERT_NE(row, nullptr);
 
 		EXPECT_EQ(row->getLabel(), MKTAG('r', 'o', 'w', 's'));
 		EXPECT_EQ(row->getSint(kFields[0]), kDataID[i]);
 	}
 
-	EXPECT_EQ(gda.getRow(kRowCount + 1), static_cast<Aurora::GFF4Struct *>(0));
+	EXPECT_EQ(gda.getRow(kRowCount + 1), nullptr);
 }
 
 GTEST_TEST(GDAFile, findRow) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kRowCount; i++)
 		EXPECT_EQ(gda.findRow(kDataID[i]), i);
@@ -132,7 +132,7 @@ GTEST_TEST(GDAFile, findRow) {
 }
 
 GTEST_TEST(GDAFile, findColumnName) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kColumnCount; i++)
 		EXPECT_EQ(gda.findColumn(kHeaders[i]), kFields[i]);
@@ -141,7 +141,7 @@ GTEST_TEST(GDAFile, findColumnName) {
 }
 
 GTEST_TEST(GDAFile, findColumnHash) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kColumnCount; i++)
 		EXPECT_EQ(gda.findColumn(Common::hashStringCRC32(kHeadersLow[i], Common::kEncodingUTF16LE)), kFields[i]);
@@ -150,7 +150,7 @@ GTEST_TEST(GDAFile, findColumnHash) {
 }
 
 GTEST_TEST(GDAFile, getStringName) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kRowCount; i++) {
 		EXPECT_STREQ(gda.getString(i, kHeaders[1]).c_str(), kDataString[i]);
@@ -167,7 +167,7 @@ GTEST_TEST(GDAFile, getStringName) {
 }
 
 GTEST_TEST(GDAFile, getStringHash) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	const uint32_t hash0 = Common::hashStringCRC32(kHeadersLow[0], Common::kEncodingUTF16LE);
 	const uint32_t hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
@@ -188,7 +188,7 @@ GTEST_TEST(GDAFile, getStringHash) {
 }
 
 GTEST_TEST(GDAFile, getIntName) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kRowCount; i++) {
 		EXPECT_EQ(gda.getInt(i, kHeaders[0]), kDataID[i]);
@@ -206,7 +206,7 @@ GTEST_TEST(GDAFile, getIntName) {
 }
 
 GTEST_TEST(GDAFile, getIntHash) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	const uint32_t hash0 = Common::hashStringCRC32(kHeadersLow[0], Common::kEncodingUTF16LE);
 	const uint32_t hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
@@ -229,7 +229,7 @@ GTEST_TEST(GDAFile, getIntHash) {
 }
 
 GTEST_TEST(GDAFile, getFloatName) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	for (size_t i = 0; i < kRowCount; i++)
 		EXPECT_FLOAT_EQ(gda.getFloat(i, kHeaders[3]), kDataFloat[i]);
@@ -244,7 +244,7 @@ GTEST_TEST(GDAFile, getFloatName) {
 }
 
 GTEST_TEST(GDAFile, getFloatHash) {
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAFile));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAFile));
 
 	const uint32_t hash1 = Common::hashStringCRC32(kHeadersLow[1], Common::kEncodingUTF16LE);
 	const uint32_t hash3 = Common::hashStringCRC32(kHeadersLow[3], Common::kEncodingUTF16LE);
@@ -291,14 +291,14 @@ GTEST_TEST(GDAFile, v02) {
 		0x00,0x71,0x00,0x75,0x00,0x78,0x00
 	};
 
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDAv02));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDAv02));
 
 	EXPECT_EQ(gda.getColumnCount(), kColumnCount);
 	EXPECT_EQ(gda.getRowCount(), kRowCount);
 
 	for (size_t i = 0; i < kRowCount; i++) {
 		const Aurora::GFF4Struct *row = gda.getRow(i);
-		ASSERT_NE(row, static_cast<Aurora::GFF4Struct *>(0));
+		ASSERT_NE(row, nullptr);
 
 		EXPECT_EQ(row->getLabel(), MKTAG('r', 'o', 'w', 's'));
 		EXPECT_EQ(row->getSint(kFields[0]), kDataID[i]);
@@ -354,10 +354,10 @@ GTEST_TEST(GDAFile, add) {
 
 	static const int32_t kIDs[9] = { 0, 1, 2, 10, 11, 12, 20, 21, 22 };
 
-	Aurora::GDAFile gda(new Common::MemoryReadStream(kMGDA1));
+	Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kMGDA1));
 
-	gda.add(new Common::MemoryReadStream(kMGDA3));
-	gda.add(new Common::MemoryReadStream(kMGDA2));
+	gda.add(std::make_unique<Common::MemoryReadStream>(kMGDA3));
+	gda.add(std::make_unique<Common::MemoryReadStream>(kMGDA2));
 
 	EXPECT_EQ(gda.getColumnCount(), 2);
 	EXPECT_EQ(gda.getRowCount(), std::size(kIDs));

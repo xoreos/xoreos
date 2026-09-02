@@ -153,8 +153,8 @@ bool ERFFile::ERFHeader::isSensible(size_t fileSize) {
 }
 
 
-ERFFile::ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &password) :
-	_erf(erf), _password(password) {
+ERFFile::ERFFile(std::unique_ptr<Common::SeekableReadStream> erf, const std::vector<byte> &password) :
+	_erf(std::move(erf)), _password(password) {
 
 	assert(_erf);
 
@@ -310,7 +310,7 @@ void ERFFile::decryptNWNPremium() {
 
 	_erf->seek(0);
 
-	_erf.reset(decrypt(*_erf, kEncryptionBlowfishNWN, _password));
+	_erf = decrypt(*_erf, kEncryptionBlowfishNWN, _password);
 
 	_header.encryption = kEncryptionNone;
 }
@@ -715,26 +715,26 @@ uint32_t ERFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).unpackedSize;
 }
 
-Common::SeekableReadStream *ERFFile::getResource(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> ERFFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy && (_header.encryption == kEncryptionNone) && (_header.compression == kCompressionNone))
-		return new Common::SeekableSubReadStream(_erf.get(), res.offset, res.offset + res.packedSize);
+		return std::make_unique<Common::SeekableSubReadStream>(_erf.get(), res.offset, res.offset + res.packedSize);
 
 	_erf->seek(res.offset);
 
 	// Read
-	Common::MemoryReadStream *stream = _erf->readStream(res.packedSize);
+	std::unique_ptr<Common::SeekableReadStream> stream = _erf->readStream(res.packedSize);
 
 	// Decrypt
 	if (_header.encryption != kEncryptionNone)
-		stream = decrypt(stream, _header.encryption, _password);
+		stream = decrypt(*stream, _header.encryption, _password);
 
 	// Decompress
-	return decompress(stream, res.unpackedSize);
+	return decompress(std::move(stream), res.unpackedSize);
 }
 
-Common::MemoryReadStream *ERFFile::decrypt(Common::SeekableReadStream &cryptStream,
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decrypt(Common::SeekableReadStream &cryptStream,
                                            Encryption encryption, const std::vector<byte> &password) {
 	switch (encryption) {
 		case kEncryptionBlowfishDAO:
@@ -747,54 +747,43 @@ Common::MemoryReadStream *ERFFile::decrypt(Common::SeekableReadStream &cryptStre
 	}
 }
 
-Common::MemoryReadStream *ERFFile::decrypt(Common::SeekableReadStream *cryptStream,
-                                           Encryption encryption, const std::vector<byte> &password) {
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decrypt(Common::SeekableReadStream &erf, size_t pos, size_t size,
+                                                             Encryption encryption, const std::vector<byte> &password) {
 
-	assert(cryptStream);
-
-	std::unique_ptr<Common::SeekableReadStream> stream(cryptStream);
-
-	return decrypt(*stream, encryption, password);
+	Common::SeekableSubReadStream subStream(&erf, pos, pos + size);
+	return decrypt(subStream, encryption, password);
 }
 
-Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, size_t pos, size_t size,
-                                             Encryption encryption, const std::vector<byte> &password) {
-
-	return decrypt(new Common::SeekableSubReadStream(&erf, pos, pos + size), encryption, password);
-}
-
-Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, size_t size,
-                                             Encryption encryption, const std::vector<byte> &password) {
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decrypt(Common::SeekableReadStream &erf, size_t size,
+                                                             Encryption encryption, const std::vector<byte> &password) {
 
 	return decrypt(erf, erf.pos(), size, encryption, password);
 }
 
-Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
-                                                uint32_t unpackedSize) const {
-
-	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decompress(std::unique_ptr<Common::SeekableReadStream> stream,
+                                                                uint32_t unpackedSize) const {
 
 	switch (_header.compression) {
 		case kCompressionNone:
 			if (stream->size() == unpackedSize)
-				return stream.release();
+				return stream;
 
-			return new Common::SeekableSubReadStream(stream.release(), 0, unpackedSize, true);
+			return std::make_unique<Common::SeekableSubReadStream>(std::move(stream), 0, unpackedSize);
 
 		case kCompressionLZMA:
-			return decompressLZMA(std::move(stream), unpackedSize).release();
+			return decompressLZMA(std::move(stream), unpackedSize);
 
 		case kCompressionXboxLZX:
-			return decompressXboxLZX(std::move(stream), unpackedSize).release();
+			return decompressXboxLZX(std::move(stream), unpackedSize);
 
 		case kCompressionBioWareZlib:
-			return decompressBiowareZlib(stream.release(), unpackedSize);
+			return decompressBiowareZlib(*stream, stream->size(), unpackedSize);
 
 		case kCompressionHeaderlessZlib:
-			return decompressHeaderlessZlib(stream.release(), unpackedSize);
+			return decompressHeaderlessZlib(*stream, stream->size(), unpackedSize);
 
 		case kCompressionStandardZlib:
-			return decompressStandardZlib(stream.release(), unpackedSize);
+			return decompressStandardZlib(*stream, stream->size(), unpackedSize);
 
 		default:
 			break;
@@ -803,58 +792,40 @@ Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packed
 	throw Common::Exception("Invalid ERF compression %u", (uint) _header.compression);
 }
 
-Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStream *packedStream,
-                                                           uint32_t unpackedSize) const {
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decompressBiowareZlib(Common::ReadStream &stream,
+                                                                           size_t packedSize,
+                                                                           size_t unpackedSize) const {
 
 	/* Decompress using raw inflate. An extra one byte header specifies the window size. */
 
-	assert(packedStream);
+	const byte windowSize = stream.readByte() >> 4;
 
-	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
-
-	const byte * const compressedData = stream->getData();
-	const uint32_t packedSize = stream->size();
-
-	return decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
+	return decompressZlib(stream, packedSize - 1, unpackedSize, windowSize);
 }
 
-Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
-                                                              uint32_t unpackedSize) const {
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decompressHeaderlessZlib(Common::ReadStream &stream,
+                                                                              size_t packedSize,
+                                                                              size_t unpackedSize) const {
 
 	/* Decompress using raw inflate. Use the default maximum window size (15). */
 
-	assert(packedStream);
-
-	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
-
-	const byte * const compressedData = stream->getData();
-	const uint32_t packedSize = stream->size();
-
-	return decompressZlib(compressedData, packedSize, unpackedSize, Common::kWindowBitsMax);
+	return decompressZlib(stream, packedSize, unpackedSize, Common::kWindowBitsMax);
 }
 
-Common::SeekableReadStream *ERFFile::decompressStandardZlib(Common::MemoryReadStream *packedStream,
-                                                            uint32_t unpackedSize) const {
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decompressStandardZlib(Common::ReadStream &stream,
+                                                                            size_t packedSize,
+                                                                            size_t unpackedSize) const {
 
 	/* Decompress using raw inflate. Use the default maximum window size (15), and with zlib header. */
 
-	assert(packedStream);
-
-	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
-
-	const byte * const compressedData = stream->getData();
-	const uint32_t packedSize = stream->size();
-
-	return decompressZlib(compressedData, packedSize, unpackedSize, -Common::kWindowBitsMax);
+	return decompressZlib(stream, packedSize, unpackedSize, -Common::kWindowBitsMax);
 }
 
-Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, uint32_t packedSize,
-                                                    uint32_t unpackedSize, int windowBits) const {
+std::unique_ptr<Common::SeekableReadStream> ERFFile::decompressZlib(Common::ReadStream &stream, size_t packedSize,
+                                                                    size_t unpackedSize, int windowBits) const {
 
 	// Decompress. Negative window size to signal not to look for a gzip header.
-	const byte *data = Common::decompressDeflate(compressedData, packedSize, unpackedSize, -windowBits);
-
-	return new Common::MemoryReadStream(data, unpackedSize, true);
+	return Common::decompressDeflate(stream, packedSize, unpackedSize, -windowBits);
 }
 
 std::unique_ptr<Common::SeekableReadStream> ERFFile::decompressLZMA(std::unique_ptr<Common::SeekableReadStream> packedStream,

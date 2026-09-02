@@ -64,7 +64,7 @@ public:
 	virtual std::unique_ptr<RewindableAudioStream> getWave(size_t index) const = 0;
 
 	/** Load an XACT WaveBank, of either ASCII or Binary format. */
-	static XACTWaveBank *load(const Common::UString &name);
+	static std::unique_ptr<XACTWaveBank> load(const Common::UString &name);
 };
 
 } // End of namespace Sound

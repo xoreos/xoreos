@@ -389,7 +389,7 @@ private:
 	/** The count of frames in this gfx file. */
 	unsigned short _frameCount;
 
-	void load(Common::SeekableReadStream *gfx, Aurora::ActionScript::AVM &avm);
+	void load(std::unique_ptr<Common::SeekableReadStream> gfx, Aurora::ActionScript::AVM &avm);
 
 	/** Load all header information. */
 	void readHeader();

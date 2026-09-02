@@ -138,14 +138,14 @@ void Campaign::loadModule(const Common::UString &module) {
 	loadCampaign(module, true);
 }
 
-Common::SeekableReadStream *Campaign::openMMD(const Common::UString &campaign) {
+std::unique_ptr<Common::SeekableReadStream> Campaign::openMMD(const Common::UString &campaign) {
 	const Common::FileList mmdFiles(ConfigMan.getString("WITCHER_moduleDir"), -1);
 
 	for (Common::FileList::const_iterator c = mmdFiles.begin(); c != mmdFiles.end(); ++c) {
 		if (!Common::FilePath::getFile(*c).equalsIgnoreCase(campaign + ".mmd"))
 			continue;
 
-		return new Common::ReadFile(*c);
+		return std::make_unique<Common::ReadFile>(*c);
 	}
 
 	throw Common::Exception("No such campaign \"%s\"", campaign.c_str());

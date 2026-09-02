@@ -87,12 +87,12 @@ NFTRFont::Glyph::~Glyph() {
 }
 
 
-NFTRFont::NFTRFont(Common::SeekableReadStream *nftr, bool invertPalette) :
+NFTRFont::NFTRFont(std::unique_ptr<Common::SeekableReadStream> nftr, bool invertPalette) :
 	_invertPalette(invertPalette), _surface(0) {
 
 	assert(nftr);
 
-	std::unique_ptr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
+	std::unique_ptr<Common::SeekableSubReadStreamEndian> nftrEndian(open(std::move(nftr)));
 
 	load(*nftrEndian);
 }
@@ -100,11 +100,11 @@ NFTRFont::NFTRFont(Common::SeekableReadStream *nftr, bool invertPalette) :
 NFTRFont::NFTRFont(const Common::UString &name, bool invertPalette) :
 	_invertPalette(invertPalette), _surface(0) {
 
-	Common::SeekableReadStream *nftr = ResMan.getResource(name, ::Aurora::kFileTypeNFTR);
+	std::unique_ptr<Common::SeekableReadStream> nftr = ResMan.getResource(name, ::Aurora::kFileTypeNFTR);
 	if (!nftr)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 
-	std::unique_ptr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
+	std::unique_ptr<Common::SeekableSubReadStreamEndian> nftrEndian(open(std::move(nftr)));
 
 	load(*nftrEndian);
 }

@@ -45,7 +45,7 @@ namespace Aurora {
 class NSBTXFile : public Archive, public NitroFile {
 public:
 	/** Take over this stream and read an NSBTX file out of it. */
-	NSBTXFile(Common::SeekableReadStream *nsbtx);
+	NSBTXFile(std::unique_ptr<Common::SeekableReadStream> nsbtx);
 	~NSBTXFile();
 
 	/** Return the list of resources. */
@@ -55,7 +55,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 private:
 	enum Format {

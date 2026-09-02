@@ -32,8 +32,8 @@ static const uint32_t kNFOID = MKTAG('N', 'F', 'O', ' ');
 
 namespace Aurora {
 
-NFOFile::NFOFile(Common::SeekableReadStream *stream) : _timePlayed(0) {
-	GFF3File gff(stream, kNFOID);
+NFOFile::NFOFile(std::unique_ptr<Common::SeekableReadStream> stream) : _timePlayed(0) {
+	GFF3File gff(std::move(stream), kNFOID);
 
 	load(gff.getTopLevel());
 }

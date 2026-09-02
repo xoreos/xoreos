@@ -33,10 +33,10 @@
 
 namespace Aurora {
 
-PEFile::PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap) {
+PEFile::PEFile(std::unique_ptr<Common::SeekableReadStream> exe, const std::vector<Common::UString> &remap) {
 	assert(exe);
 
-	_peFile = std::make_unique<Common::PEResources>(exe);
+	_peFile = std::make_unique<Common::PEResources>(std::move(exe));
 
 	load(remap);
 }
@@ -48,7 +48,7 @@ const Archive::ResourceList &PEFile::getResources() const {
 	return _resources;
 }
 
-Common::SeekableReadStream *PEFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
+std::unique_ptr<Common::SeekableReadStream> PEFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	ResourceList::const_iterator iter = _resources.begin();
 	if (index >= _resources.size())
 		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_resources.size());
@@ -69,7 +69,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32_t index, bool UNUSED(tryN
 			bmp.writeStream(*stream);
 
 			bmp.setDisposable(false);
-			return new Common::MemoryReadStream(bmp.getData(), bmp.size(), true);
+			return std::make_unique<Common::MemoryReadStream>(bmp.getData(), bmp.size(), true);
 		}
 
 		case kFileTypeCUR: {
@@ -108,7 +108,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32_t index, bool UNUSED(tryN
 				cursorGroup->readUint32LE();                    // data size
 				uint16_t id = cursorGroup->readUint16LE();
 
-				cursorStreams[i].reset(_peFile->getResource(Common::kPECursor, id));
+				cursorStreams[i] = _peFile->getResource(Common::kPECursor, id);
 				if (!cursorStreams[i])
 					throw Common::Exception("Could not get cursor resource %d", id);
 
@@ -123,11 +123,11 @@ Common::SeekableReadStream *PEFile::getResource(uint32_t index, bool UNUSED(tryN
 				out.writeStream(*cursorStreams[i], cursorStreams[i]->size() - 4);
 
 			out.setDisposable(false);
-			return new Common::MemoryReadStream(out.getData(), out.size(), true);
+			return std::make_unique<Common::MemoryReadStream>(out.getData(), out.size(), true);
 		}
 
 		default:
-			return 0;
+			return nullptr;
 	}
 }
 

@@ -37,7 +37,7 @@ static const uint32_t kVersion1  = MKTAG('V', '1', '.', '0');
 
 namespace Aurora {
 
-RIMFile::RIMFile(Common::SeekableReadStream *rim) : _rim(rim) {
+RIMFile::RIMFile(std::unique_ptr<Common::SeekableReadStream> rim) : _rim(std::move(rim)) {
 	assert(_rim);
 
 	load(*_rim);
@@ -105,11 +105,11 @@ uint32_t RIMFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *RIMFile::getResource(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> RIMFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy)
-		return new Common::SeekableSubReadStream(_rim.get(), res.offset, res.offset + res.size);
+		return std::make_unique<Common::SeekableSubReadStream>(_rim.get(), res.offset, res.offset + res.size);
 
 	_rim->seek(res.offset);
 

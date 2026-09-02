@@ -302,7 +302,7 @@ private:
 	bool loadHeadModel(uint8_t appearance);
 	bool loadHairModel(uint8_t appearance);
 
-	static Aurora::GFF3File *openPC(const Common::UString &bic, bool local);
+	static std::unique_ptr<Aurora::GFF3File> openPC(const Common::UString &bic, bool local);
 };
 
 } // End of namespace NWN2

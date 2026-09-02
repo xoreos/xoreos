@@ -46,10 +46,10 @@ namespace Aurora {
 const size_t GDAFile::kInvalidColumn;
 const size_t GDAFile::kInvalidRow;
 
-GDAFile::GDAFile(Common::SeekableReadStream *gda) : _columns(0), _rowCount(0) {
+GDAFile::GDAFile(std::unique_ptr<Common::SeekableReadStream> gda) : _columns(0), _rowCount(0) {
 	assert(gda);
 
-	load(gda);
+	load(std::move(gda));
 }
 
 GDAFile::~GDAFile() {
@@ -272,9 +272,9 @@ GDAFile::Type GDAFile::identifyType(const Columns &columns, const Row &rows, siz
 	return kTypeEmpty;
 }
 
-void GDAFile::load(Common::SeekableReadStream *gda) {
+void GDAFile::load(std::unique_ptr<Common::SeekableReadStream> gda) {
 	try {
-		_gff4s.emplace_back(std::make_unique<GFF4File>(gda, kG2DAID));
+		_gff4s.emplace_back(std::make_unique<GFF4File>(std::move(gda), kG2DAID));
 
 		const uint32_t version = _gff4s.back()->getTypeVersion();
 		if ((version != kVersion01) && (version != kVersion02))
@@ -304,9 +304,9 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 	}
 }
 
-void GDAFile::add(Common::SeekableReadStream *gda) {
+void GDAFile::add(std::unique_ptr<Common::SeekableReadStream> gda) {
 	try {
-		_gff4s.emplace_back(std::make_unique<GFF4File>(gda, kG2DAID));
+		_gff4s.emplace_back(std::make_unique<GFF4File>(std::move(gda), kG2DAID));
 
 		const uint32_t version = _gff4s.back()->getTypeVersion();
 		if ((version != kVersion01) && (version != kVersion02))

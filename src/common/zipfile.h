@@ -48,7 +48,7 @@ public:
 
 	typedef std::list<File> FileList;
 
-	ZipFile(SeekableReadStream *zip);
+	ZipFile(std::unique_ptr<SeekableReadStream> zip);
 	~ZipFile();
 
 	ZipFile(const ZipFile &) = delete;
@@ -61,7 +61,7 @@ public:
 	size_t getFileSize(uint32_t index) const;
 
 	/** Return a stream of the file's contents. */
-	SeekableReadStream *getFile(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<SeekableReadStream> getFile(uint32_t index, bool tryNoCopy = false) const;
 
 private:
 	/** Internal file information. */
@@ -82,7 +82,7 @@ private:
 
 	void load(SeekableReadStream &zip);
 
-	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32_t method,
+	static std::unique_ptr<SeekableReadStream> decompressFile(SeekableReadStream &zip, uint32_t method,
 			uint32_t compSize, uint32_t realSize);
 
 	const IFile &getIFile(uint32_t index) const;

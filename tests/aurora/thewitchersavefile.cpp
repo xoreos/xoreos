@@ -731,15 +731,13 @@ static const byte kTheWitcherSaveFile[] = {
 };
 
 GTEST_TEST(TheWitcherSaveFile, getAreaName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kTheWitcherSaveFile);
-	const Aurora::TheWitcherSaveFile tws(stream);
+	const Aurora::TheWitcherSaveFile tws(std::make_unique<Common::MemoryReadStream>(kTheWitcherSaveFile));
 
 	EXPECT_STREQ(tws.getAreaName().c_str(), "Test Area");
 }
 
 GTEST_TEST(TheWitcherSaveFile, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kTheWitcherSaveFile);
-	const Aurora::TheWitcherSaveFile tws(stream);
+	const Aurora::TheWitcherSaveFile tws(std::make_unique<Common::MemoryReadStream>(kTheWitcherSaveFile));
 
 	const Aurora::Archive::ResourceList &list = tws.getResources();
 
@@ -752,17 +750,13 @@ GTEST_TEST(TheWitcherSaveFile, getResources) {
 }
 
 GTEST_TEST(TheWitcherSaveFile, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kTheWitcherSaveFile);
-	const Aurora::TheWitcherSaveFile tws(stream);
+	const Aurora::TheWitcherSaveFile tws(std::make_unique<Common::MemoryReadStream>(kTheWitcherSaveFile));
 
-	Common::SeekableReadStream *test1 = tws.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> test1 = tws.getResource(0);
 	Common::UString test1_text = Common::readString(*test1, Common::kEncodingASCII);
-	Common::SeekableReadStream *test2 = tws.getResource(1);
+	std::unique_ptr<Common::SeekableReadStream> test2 = tws.getResource(1);
 	Common::UString test2_text = Common::readString(*test2, Common::kEncodingASCII);
 
 	EXPECT_STREQ(test1_text.c_str(), "This is a text file with a simple text.");
 	EXPECT_STREQ(test2_text.c_str(), "This is another text file containing a slightly different text.");
-
-	delete test1;
-	delete test2;
 }

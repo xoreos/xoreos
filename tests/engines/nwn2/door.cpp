@@ -44,7 +44,7 @@ Engines::NWN2::Door *getDoor(const unsigned int index) {
 	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataDoor);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('G', 'I', 'T', ' '));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(std::move(stream), MKTAG('G', 'I', 'T', ' '));
 
 	// Get the door list
 	const Aurora::GFF3Struct &top = gff->getTopLevel();

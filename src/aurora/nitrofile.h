@@ -37,7 +37,7 @@ protected:
 	/** Treat this stream as a Nitro file and return an endian'd stream according to its BOM. */
 	static Common::SeekableSubReadStreamEndian *open(Common::SeekableReadStream &stream);
 	/** Treat this stream as a Nitro file, take it over and return an endian'd stream according to its BOM. */
-	static Common::SeekableSubReadStreamEndian *open(Common::SeekableReadStream *stream);
+	static std::unique_ptr<Common::SeekableSubReadStreamEndian> open(std::unique_ptr<Common::SeekableReadStream> stream);
 };
 
 } // End of namespace Aurora

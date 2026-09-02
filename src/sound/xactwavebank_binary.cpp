@@ -77,7 +77,7 @@ static constexpr uint32_t kWaveFlagsLoopCache      = 0x00000002; ///< Audio file
 static constexpr uint32_t kWaveFlagsRemoveLoopTail = 0x00000004; ///< Ignore the data after the looping section.
 static constexpr uint32_t kWaveFlagsIgnoreLoop     = 0x00000008; ///< Don't loop this sound.
 
-XACTWaveBank_Binary::XACTWaveBank_Binary(Common::SeekableReadStream *xwb) : _xwb(xwb) {
+XACTWaveBank_Binary::XACTWaveBank_Binary(std::unique_ptr<Common::SeekableReadStream> xwb) : _xwb(std::move(xwb)) {
 	assert(_xwb);
 
 	load(*_xwb);

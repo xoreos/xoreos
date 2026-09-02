@@ -117,19 +117,19 @@ static const byte kERFFile10[] = {
 };
 
 GTEST_TEST(ERFFile10, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile10, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile10, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -137,7 +137,7 @@ GTEST_TEST(ERFFile10, getBuildDay) {
 GTEST_TEST(ERFFile10, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -161,7 +161,7 @@ GTEST_TEST(ERFFile10, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile10, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -175,7 +175,7 @@ GTEST_TEST(ERFFile10, getResources) {
 }
 
 GTEST_TEST(ERFFile10, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -183,13 +183,13 @@ GTEST_TEST(ERFFile10, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile10, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile10, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -199,17 +199,15 @@ GTEST_TEST(ERFFile10, findResourceName) {
 }
 
 GTEST_TEST(ERFFile10, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile10));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile10));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(ERFFile10, typeMOD) {
@@ -226,7 +224,7 @@ GTEST_TEST(ERFFile10, typeMOD) {
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -248,7 +246,7 @@ GTEST_TEST(ERFFile10, typeHAK) {
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -270,7 +268,7 @@ GTEST_TEST(ERFFile10, typeSAV) {
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -341,21 +339,21 @@ static const byte kERF11NWNPassword[] = {
 
 GTEST_TEST(ERFFile11NWN, getNameHashAlgo) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile11NWN, getBuildYear) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile11NWN, getBuildDay) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -364,7 +362,7 @@ GTEST_TEST(ERFFile11NWN, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -389,7 +387,7 @@ GTEST_TEST(ERFFile11NWN, getDescriptionStatic) {
 
 GTEST_TEST(ERFFile11NWN, getResources) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -404,7 +402,7 @@ GTEST_TEST(ERFFile11NWN, getResources) {
 
 GTEST_TEST(ERFFile11NWN, getResourceSize) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -413,14 +411,14 @@ GTEST_TEST(ERFFile11NWN, getResourceSize) {
 
 GTEST_TEST(ERFFile11NWN, findResourceHash) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile11NWN, findResourceName) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -431,17 +429,15 @@ GTEST_TEST(ERFFile11NWN, findResourceName) {
 
 GTEST_TEST(ERFFile11NWN, getResource) {
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN), password);
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(ERFFile11NWN, typeMOD) {
@@ -459,7 +455,7 @@ GTEST_TEST(ERFFile11NWN, typeMOD) {
 	};
 
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -482,7 +478,7 @@ GTEST_TEST(ERFFile11NWN, typeHAK) {
 	};
 
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -505,7 +501,7 @@ GTEST_TEST(ERFFile11NWN, typeSAV) {
 	};
 
 	PasswordStore password(kERF11NWNPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -574,19 +570,19 @@ static const byte kERFFile11NWN2[] = {
 };
 
 GTEST_TEST(ERFFile11NWN2, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile11NWN2, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile11NWN2, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -594,7 +590,7 @@ GTEST_TEST(ERFFile11NWN2, getBuildDay) {
 GTEST_TEST(ERFFile11NWN2, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -618,7 +614,7 @@ GTEST_TEST(ERFFile11NWN2, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile11NWN2, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -632,7 +628,7 @@ GTEST_TEST(ERFFile11NWN2, getResources) {
 }
 
 GTEST_TEST(ERFFile11NWN2, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -640,13 +636,13 @@ GTEST_TEST(ERFFile11NWN2, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile11NWN2, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile11NWN2, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -656,17 +652,15 @@ GTEST_TEST(ERFFile11NWN2, findResourceName) {
 }
 
 GTEST_TEST(ERFFile11NWN2, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile11NWN2));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile11NWN2));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(ERFFile11NWN2, typeMOD) {
@@ -683,7 +677,7 @@ GTEST_TEST(ERFFile11NWN2, typeMOD) {
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -705,7 +699,7 @@ GTEST_TEST(ERFFile11NWN2, typeHAK) {
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -727,7 +721,7 @@ GTEST_TEST(ERFFile11NWN2, typeSAV) {
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -788,19 +782,19 @@ static const byte kERFFile20[] = {
 };
 
 GTEST_TEST(ERFFile20, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile20, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile20, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -808,7 +802,7 @@ GTEST_TEST(ERFFile20, getBuildDay) {
 GTEST_TEST(ERFFile20, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -832,7 +826,7 @@ GTEST_TEST(ERFFile20, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile20, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -846,7 +840,7 @@ GTEST_TEST(ERFFile20, getResources) {
 }
 
 GTEST_TEST(ERFFile20, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -854,13 +848,13 @@ GTEST_TEST(ERFFile20, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile20, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile20, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -870,17 +864,15 @@ GTEST_TEST(ERFFile20, findResourceName) {
 }
 
 GTEST_TEST(ERFFile20, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile20));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile20));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(ERFFile20, typeMOD) {
@@ -889,7 +881,7 @@ GTEST_TEST(ERFFile20, typeMOD) {
 		0x00,0x00,0x00,0x00,0x64,0x00,0x00,0x00,0x17,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -903,7 +895,7 @@ GTEST_TEST(ERFFile20, typeHAK) {
 		0x00,0x00,0x00,0x00,0x64,0x00,0x00,0x00,0x17,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -917,7 +909,7 @@ GTEST_TEST(ERFFile20, typeSAV) {
 		0x00,0x00,0x00,0x00,0x64,0x00,0x00,0x00,0x17,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF
 	};
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERF));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERF));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 	EXPECT_EQ(erf.getBuildYear(), 2000);
@@ -980,19 +972,19 @@ static const byte kERFFile22Plain[] = {
 };
 
 GTEST_TEST(ERFFile22Plain, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile22Plain, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile22Plain, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -1000,7 +992,7 @@ GTEST_TEST(ERFFile22Plain, getBuildDay) {
 GTEST_TEST(ERFFile22Plain, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -1024,7 +1016,7 @@ GTEST_TEST(ERFFile22Plain, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile22Plain, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -1038,7 +1030,7 @@ GTEST_TEST(ERFFile22Plain, getResources) {
 }
 
 GTEST_TEST(ERFFile22Plain, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -1046,13 +1038,13 @@ GTEST_TEST(ERFFile22Plain, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile22Plain, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile22Plain, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -1062,17 +1054,15 @@ GTEST_TEST(ERFFile22Plain, findResourceName) {
 }
 
 GTEST_TEST(ERFFile22Plain, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22Plain));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V2.2 (DEFLATE, with header) ---
@@ -1114,19 +1104,19 @@ static const byte kERFFile22DH[] = {
 };
 
 GTEST_TEST(ERFFile22DeflateHeader, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile22DeflateHeader, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile22DeflateHeader, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -1134,7 +1124,7 @@ GTEST_TEST(ERFFile22DeflateHeader, getBuildDay) {
 GTEST_TEST(ERFFile22DeflateHeader, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -1158,7 +1148,7 @@ GTEST_TEST(ERFFile22DeflateHeader, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile22DeflateHeader, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -1172,7 +1162,7 @@ GTEST_TEST(ERFFile22DeflateHeader, getResources) {
 }
 
 GTEST_TEST(ERFFile22DeflateHeader, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -1180,13 +1170,13 @@ GTEST_TEST(ERFFile22DeflateHeader, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile22DeflateHeader, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile22DeflateHeader, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -1196,17 +1186,15 @@ GTEST_TEST(ERFFile22DeflateHeader, findResourceName) {
 }
 
 GTEST_TEST(ERFFile22DeflateHeader, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DH));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V2.2 (DEFLATE, raw) ---
@@ -1248,19 +1236,19 @@ static const byte kERFFile22DR[] = {
 };
 
 GTEST_TEST(ERFFile22DeflateRaw, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile22DeflateRaw, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile22DeflateRaw, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -1268,7 +1256,7 @@ GTEST_TEST(ERFFile22DeflateRaw, getBuildDay) {
 GTEST_TEST(ERFFile22DeflateRaw, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -1292,7 +1280,7 @@ GTEST_TEST(ERFFile22DeflateRaw, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile22DeflateRaw, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -1306,7 +1294,7 @@ GTEST_TEST(ERFFile22DeflateRaw, getResources) {
 }
 
 GTEST_TEST(ERFFile22DeflateRaw, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -1314,13 +1302,13 @@ GTEST_TEST(ERFFile22DeflateRaw, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile22DeflateRaw, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile22DeflateRaw, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -1330,17 +1318,15 @@ GTEST_TEST(ERFFile22DeflateRaw, findResourceName) {
 }
 
 GTEST_TEST(ERFFile22DeflateRaw, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22DR));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V2.2 (Blowfish) ---
@@ -1401,21 +1387,21 @@ static const byte kERF22BPassword[] = { 0x32,0x33,0x34,0x32,0x35 };
 
 GTEST_TEST(ERFFile22Blowfish, getNameHashAlgo) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile22Blowfish, getBuildYear) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile22Blowfish, getBuildDay) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -1424,7 +1410,7 @@ GTEST_TEST(ERFFile22Blowfish, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -1449,7 +1435,7 @@ GTEST_TEST(ERFFile22Blowfish, getDescriptionStatic) {
 
 GTEST_TEST(ERFFile22Blowfish, getResources) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -1464,7 +1450,7 @@ GTEST_TEST(ERFFile22Blowfish, getResources) {
 
 GTEST_TEST(ERFFile22Blowfish, getResourceSize) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -1473,14 +1459,14 @@ GTEST_TEST(ERFFile22Blowfish, getResourceSize) {
 
 GTEST_TEST(ERFFile22Blowfish, findResourceHash) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile22Blowfish, findResourceName) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -1491,17 +1477,16 @@ GTEST_TEST(ERFFile22Blowfish, findResourceName) {
 
 GTEST_TEST(ERFFile22Blowfish, getResource) {
 	PasswordStore password(kERF22BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22B), password);
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
 
-	delete file;
 }
 
 // --- ERF V2.2 (Blowfish + raw DEFLATE) ---
@@ -1546,21 +1531,21 @@ static const byte kERF22BDRPassword[] = { 0x32,0x33,0x34,0x32,0x35 };
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, getNameHashAlgo) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, getBuildYear) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	EXPECT_EQ(erf.getBuildYear(), 2000);
 }
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, getBuildDay) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 23);
 }
@@ -1569,7 +1554,7 @@ GTEST_TEST(ERFFile22BlowfishDeflateRaw, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -1594,7 +1579,7 @@ GTEST_TEST(ERFFile22BlowfishDeflateRaw, getDescriptionStatic) {
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, getResources) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -1609,7 +1594,7 @@ GTEST_TEST(ERFFile22BlowfishDeflateRaw, getResources) {
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, getResourceSize) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -1618,14 +1603,14 @@ GTEST_TEST(ERFFile22BlowfishDeflateRaw, getResourceSize) {
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, findResourceHash) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	EXPECT_EQ(erf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, findResourceName) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -1636,17 +1621,15 @@ GTEST_TEST(ERFFile22BlowfishDeflateRaw, findResourceName) {
 
 GTEST_TEST(ERFFile22BlowfishDeflateRaw, getResource) {
 	PasswordStore password(kERF22BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile22BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile22BDR), password);
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V3.0 (plain) ---
@@ -1701,19 +1684,19 @@ static const byte kERFFile30Plain[] = {
 };
 
 GTEST_TEST(ERFFile30Plain, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashFNV64);
 }
 
 GTEST_TEST(ERFFile30Plain, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	EXPECT_EQ(erf.getBuildYear(), 0);
 }
 
 GTEST_TEST(ERFFile30Plain, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	EXPECT_EQ(erf.getBuildDay(), 0);
 }
@@ -1721,7 +1704,7 @@ GTEST_TEST(ERFFile30Plain, getBuildDay) {
 GTEST_TEST(ERFFile30Plain, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -1745,7 +1728,7 @@ GTEST_TEST(ERFFile30Plain, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile30Plain, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -1759,7 +1742,7 @@ GTEST_TEST(ERFFile30Plain, getResources) {
 }
 
 GTEST_TEST(ERFFile30Plain, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -1767,7 +1750,7 @@ GTEST_TEST(ERFFile30Plain, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile30Plain, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	EXPECT_EQ(erf.findResource(Common::hashString("ozymandias.txt", Common::kHashFNV64)), 0);
 
@@ -1775,7 +1758,7 @@ GTEST_TEST(ERFFile30Plain, findResourceHash) {
 }
 
 GTEST_TEST(ERFFile30Plain, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -1785,17 +1768,15 @@ GTEST_TEST(ERFFile30Plain, findResourceName) {
 }
 
 GTEST_TEST(ERFFile30Plain, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30Plain));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30Plain));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V3.0 (without filenames) ---
@@ -1849,19 +1830,19 @@ static const byte kERFFile30NoFilenames[] = {
 };
 
 GTEST_TEST(ERFFile30NoFilenames, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashFNV64);
 }
 
 GTEST_TEST(ERFFile30NoFilenames, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	EXPECT_EQ(erf.getBuildYear(), 0);
 }
 
 GTEST_TEST(ERFFile30NoFilenames, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	EXPECT_EQ(erf.getBuildDay(), 0);
 }
@@ -1869,7 +1850,7 @@ GTEST_TEST(ERFFile30NoFilenames, getBuildDay) {
 GTEST_TEST(ERFFile30NoFilenames, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -1893,7 +1874,7 @@ GTEST_TEST(ERFFile30NoFilenames, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile30NoFilenames, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -1907,7 +1888,7 @@ GTEST_TEST(ERFFile30NoFilenames, getResources) {
 }
 
 GTEST_TEST(ERFFile30NoFilenames, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -1915,7 +1896,7 @@ GTEST_TEST(ERFFile30NoFilenames, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile30NoFilenames, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	EXPECT_EQ(erf.findResource(Common::hashString("ozymandias.txt", Common::kHashFNV64)), 0);
 
@@ -1923,7 +1904,7 @@ GTEST_TEST(ERFFile30NoFilenames, findResourceHash) {
 }
 
 GTEST_TEST(ERFFile30NoFilenames, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
@@ -1932,17 +1913,15 @@ GTEST_TEST(ERFFile30NoFilenames, findResourceName) {
 }
 
 GTEST_TEST(ERFFile30NoFilenames, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30NoFilenames));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30NoFilenames));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V3.0 (DEFLATE, with header) ---
@@ -1982,19 +1961,19 @@ static const byte kERFFile30DH[] = {
 };
 
 GTEST_TEST(ERFFile30DeflateHeader, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashFNV64);
 }
 
 GTEST_TEST(ERFFile30DeflateHeader, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	EXPECT_EQ(erf.getBuildYear(), 0);
 }
 
 GTEST_TEST(ERFFile30DeflateHeader, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	EXPECT_EQ(erf.getBuildDay(), 0);
 }
@@ -2002,7 +1981,7 @@ GTEST_TEST(ERFFile30DeflateHeader, getBuildDay) {
 GTEST_TEST(ERFFile30DeflateHeader, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -2026,7 +2005,7 @@ GTEST_TEST(ERFFile30DeflateHeader, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile30DeflateHeader, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -2040,7 +2019,7 @@ GTEST_TEST(ERFFile30DeflateHeader, getResources) {
 }
 
 GTEST_TEST(ERFFile30DeflateHeader, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -2048,7 +2027,7 @@ GTEST_TEST(ERFFile30DeflateHeader, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile30DeflateHeader, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	EXPECT_EQ(erf.findResource(Common::hashString("ozymandias.txt", Common::kHashFNV64)), 0);
 
@@ -2056,7 +2035,7 @@ GTEST_TEST(ERFFile30DeflateHeader, findResourceHash) {
 }
 
 GTEST_TEST(ERFFile30DeflateHeader, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -2066,17 +2045,15 @@ GTEST_TEST(ERFFile30DeflateHeader, findResourceName) {
 }
 
 GTEST_TEST(ERFFile30DeflateHeader, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DH));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DH));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V3.0 (DEFLATE, raw) ---
@@ -2116,19 +2093,19 @@ static const byte kERFFile30DR[] = {
 };
 
 GTEST_TEST(ERFFile30DeflateRaw, getNameHashAlgo) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashFNV64);
 }
 
 GTEST_TEST(ERFFile30DeflateRaw, getBuildYear) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	EXPECT_EQ(erf.getBuildYear(), 0);
 }
 
 GTEST_TEST(ERFFile30DeflateRaw, getBuildDay) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	EXPECT_EQ(erf.getBuildDay(), 0);
 }
@@ -2136,7 +2113,7 @@ GTEST_TEST(ERFFile30DeflateRaw, getBuildDay) {
 GTEST_TEST(ERFFile30DeflateRaw, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -2160,7 +2137,7 @@ GTEST_TEST(ERFFile30DeflateRaw, getDescriptionStatic) {
 }
 
 GTEST_TEST(ERFFile30DeflateRaw, getResources) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -2174,7 +2151,7 @@ GTEST_TEST(ERFFile30DeflateRaw, getResources) {
 }
 
 GTEST_TEST(ERFFile30DeflateRaw, getResourceSize) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -2182,7 +2159,7 @@ GTEST_TEST(ERFFile30DeflateRaw, getResourceSize) {
 }
 
 GTEST_TEST(ERFFile30DeflateRaw, findResourceHash) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	EXPECT_EQ(erf.findResource(Common::hashString("ozymandias.txt", Common::kHashFNV64)), 0);
 
@@ -2190,7 +2167,7 @@ GTEST_TEST(ERFFile30DeflateRaw, findResourceHash) {
 }
 
 GTEST_TEST(ERFFile30DeflateRaw, findResourceName) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -2200,17 +2177,15 @@ GTEST_TEST(ERFFile30DeflateRaw, findResourceName) {
 }
 
 GTEST_TEST(ERFFile30DeflateRaw, getResource) {
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30DR));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30DR));
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V3.0 (Blowfish) ---
@@ -2268,21 +2243,21 @@ static const byte kERF30BPassword[] = { 0x32,0x33,0x34,0x32,0x35 };
 
 GTEST_TEST(ERFFile30Blowfish, getNameHashAlgo) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashFNV64);
 }
 
 GTEST_TEST(ERFFile30Blowfish, getBuildYear) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	EXPECT_EQ(erf.getBuildYear(), 0);
 }
 
 GTEST_TEST(ERFFile30Blowfish, getBuildDay) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 0);
 }
@@ -2291,7 +2266,7 @@ GTEST_TEST(ERFFile30Blowfish, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -2316,7 +2291,7 @@ GTEST_TEST(ERFFile30Blowfish, getDescriptionStatic) {
 
 GTEST_TEST(ERFFile30Blowfish, getResources) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -2331,7 +2306,7 @@ GTEST_TEST(ERFFile30Blowfish, getResources) {
 
 GTEST_TEST(ERFFile30Blowfish, getResourceSize) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -2340,7 +2315,7 @@ GTEST_TEST(ERFFile30Blowfish, getResourceSize) {
 
 GTEST_TEST(ERFFile30Blowfish, findResourceHash) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	EXPECT_EQ(erf.findResource(Common::hashString("ozymandias.txt", Common::kHashFNV64)), 0);
 
@@ -2349,7 +2324,7 @@ GTEST_TEST(ERFFile30Blowfish, findResourceHash) {
 
 GTEST_TEST(ERFFile30Blowfish, findResourceName) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -2360,17 +2335,15 @@ GTEST_TEST(ERFFile30Blowfish, findResourceName) {
 
 GTEST_TEST(ERFFile30Blowfish, getResource) {
 	PasswordStore password(kERF30BPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30B), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30B), password);
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- ERF V3.0 (Blowfish + raw DEFLATE) ---
@@ -2413,21 +2386,21 @@ static const byte kERF30BDRPassword[] = { 0x32,0x33,0x34,0x32,0x35 };
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, getNameHashAlgo) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	EXPECT_EQ(erf.getNameHashAlgo(), Common::kHashFNV64);
 }
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, getBuildYear) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	EXPECT_EQ(erf.getBuildYear(), 0);
 }
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, getBuildDay) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	EXPECT_EQ(erf.getBuildDay(), 0);
 }
@@ -2436,7 +2409,7 @@ GTEST_TEST(ERFFile30BlowfishDeflateRaw, getDescription) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	const Aurora::LocString &description = erf.getDescription();
 
@@ -2461,7 +2434,7 @@ GTEST_TEST(ERFFile30BlowfishDeflateRaw, getDescriptionStatic) {
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, getResources) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	const Aurora::ERFFile::ResourceList &resources = erf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -2476,7 +2449,7 @@ GTEST_TEST(ERFFile30BlowfishDeflateRaw, getResources) {
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, getResourceSize) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	EXPECT_EQ(erf.getResourceSize(0), strlen(kFileData));
 
@@ -2485,7 +2458,7 @@ GTEST_TEST(ERFFile30BlowfishDeflateRaw, getResourceSize) {
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, findResourceHash) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	EXPECT_EQ(erf.findResource(Common::hashString("ozymandias.txt", Common::kHashFNV64)), 0);
 
@@ -2494,7 +2467,7 @@ GTEST_TEST(ERFFile30BlowfishDeflateRaw, findResourceHash) {
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, findResourceName) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -2505,15 +2478,13 @@ GTEST_TEST(ERFFile30BlowfishDeflateRaw, findResourceName) {
 
 GTEST_TEST(ERFFile30BlowfishDeflateRaw, getResource) {
 	PasswordStore password(kERF30BDRPassword);
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(kERFFile30BDR), password);
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(kERFFile30BDR), password);
 
-	Common::SeekableReadStream *file = erf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = erf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
