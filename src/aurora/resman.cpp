@@ -69,11 +69,11 @@ ResourceManager::KnownArchive::KnownArchive(ArchiveType t, const Common::UString
 }
 
 
-ResourceManager::OpenedArchive::OpenedArchive() : archive(0), known(0), parent(0) {
+ResourceManager::OpenedArchive::OpenedArchive() : known(0), parent(0) {
 }
 
-void ResourceManager::OpenedArchive::set(KnownArchive &kA, Archive &a) {
-	archive = &a;
+void ResourceManager::OpenedArchive::set(KnownArchive &kA, std::unique_ptr<Archive> a) {
+	archive = std::move(a);
 	known   = &kA;
 
 	if (known->opened)
@@ -195,8 +195,6 @@ void ResourceManager::clearResources() {
 	for (size_t i = 0; i < kArchiveMAX; i++)
 		_knownArchives[i].clear();
 
-	for (OpenedArchives::iterator a = _openedArchives.begin(); a != _openedArchives.end(); ++a)
-		delete a->archive;
 	_openedArchives.clear();
 
 	_resources.clear();
@@ -295,7 +293,7 @@ bool ResourceManager::hasArchive(const Common::UString &file) {
 	return findArchive(file) != 0;
 }
 
-Common::SeekableReadStream *ResourceManager::openArchiveStream(const KnownArchive &archive) const {
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::openArchiveStream(const KnownArchive &archive) const {
 	if (!archive.resource)
 		throw Common::Exception("Archive without resource reference");
 
@@ -316,40 +314,40 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32_t priorit
 	if (changeID)
 		change = newChangeSet(*changeID);
 
-	Common::SeekableReadStream *archiveStream = openArchiveStream(*knownArchive);
+	std::unique_ptr<Common::SeekableReadStream> archiveStream = openArchiveStream(*knownArchive);
 
 	std::unique_ptr<Archive> archive;
 	switch (knownArchive->type) {
 		case kArchiveKEY:
-			indexKEY(archiveStream, priority, change);
+			indexKEY(*archiveStream, priority, change);
 			break;
 
 		case kArchiveNDS:
-			archive = std::make_unique<NDSFile>(archiveStream);
+			archive = std::make_unique<NDSFile>(std::move(archiveStream));
 			break;
 
 		case kArchiveHERF:
-			archive = std::make_unique<HERFFile>(archiveStream);
+			archive = std::make_unique<HERFFile>(std::move(archiveStream));
 			break;
 
 		case kArchiveERF:
-			archive = std::make_unique<ERFFile>(archiveStream, password);
+			archive = std::make_unique<ERFFile>(std::move(archiveStream), password);
 			break;
 
 		case kArchiveRIM:
-			archive = std::make_unique<RIMFile>(archiveStream);
+			archive = std::make_unique<RIMFile>(std::move(archiveStream));
 			break;
 
 		case kArchiveZIP:
-			archive = std::make_unique<ZIPFile>(archiveStream);
+			archive = std::make_unique<ZIPFile>(std::move(archiveStream));
 			break;
 
 		case kArchiveEXE:
-			archive = std::make_unique<PEFile>(archiveStream, _cursorRemap);
+			archive = std::make_unique<PEFile>(std::move(archiveStream), _cursorRemap);
 			break;
 
 		case kArchiveNSBTX:
-			archive = std::make_unique<NSBTXFile>(archiveStream);
+			archive = std::make_unique<NSBTXFile>(std::move(archiveStream));
 			break;
 
 		default:
@@ -357,7 +355,7 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32_t priorit
 	}
 
 	if (archive)
-		indexArchive(*knownArchive, archive.release(), priority, change);
+		indexArchive(*knownArchive, std::move(archive), priority, change);
 }
 
 void ResourceManager::indexArchive(const Common::UString &file, uint32_t priority, Common::ChangeID *changeID) {
@@ -366,27 +364,23 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32_t priorit
 	indexArchive(file, priority, password, changeID);
 }
 
-uint32_t ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
+uint32_t ResourceManager::openKEYBIFs(Common::SeekableReadStream &keyStream,
                                     std::vector<KnownArchive *> &archives,
-                                    std::vector<KEYDataFile *> &keyData) {
+                                    std::vector<std::unique_ptr<KEYDataFile>> &keyData) {
 
 	bool success = false;
 	BOOST_SCOPE_EXIT(&success, &archives, &keyData) {
 		if (!success) {
-			for (std::vector<KEYDataFile *>::iterator b = keyData.begin(); b != keyData.end(); ++b)
-				delete *b;
-
 			keyData.clear();
 			archives.clear();
 		}
 	};
 
-	std::unique_ptr<Common::SeekableReadStream> stream(keyStream);
-	KEYFile key(*keyStream);
+	KEYFile key(keyStream);
 
 	const KEYFile::BIFList &keyBIFs = key.getBIFs();
-	archives.resize(keyBIFs.size(), 0);
-	keyData.resize(keyBIFs.size(), 0);
+	archives.resize(keyBIFs.size());
+	keyData.resize(keyBIFs.size());
 
 	for (uint32_t i = 0; i < keyBIFs.size(); i++) {
 		archives[i] = findArchive(keyBIFs[i], _knownArchives[kArchiveBIF]);
@@ -394,9 +388,9 @@ uint32_t ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 			throw Common::Exception("BIF \"%s\" not found", keyBIFs[i].c_str());
 
 		if (Common::FilePath::getExtension(archives[i]->name).equalsIgnoreCase(".bzf"))
-			keyData[i] = new BZFFile(openArchiveStream(*archives[i]));
+			keyData[i] = std::make_unique<BZFFile>(openArchiveStream(*archives[i]));
 		else
-			keyData[i] = new BIFFile(openArchiveStream(*archives[i]));
+			keyData[i] = std::make_unique<BIFFile>(openArchiveStream(*archives[i]));
 
 		keyData[i]->mergeKEY(key, i);
 	}
@@ -405,17 +399,17 @@ uint32_t ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 	return archives.size();
 }
 
-void ResourceManager::indexKEY(Common::SeekableReadStream *stream, uint32_t priority, Change *change) {
+void ResourceManager::indexKEY(Common::SeekableReadStream &stream, uint32_t priority, Change *change) {
 	std::vector<KnownArchive *> archives;
-	std::vector<KEYDataFile *> keyData;
+	std::vector<std::unique_ptr<KEYDataFile>> keyData;
 
 	const uint32_t count = openKEYBIFs(stream, archives, keyData);
 
 	for (uint32_t i = 0; i < count; i++)
-		indexArchive(*archives[i], keyData[i], priority, change);
+		indexArchive(*archives[i], std::move(keyData[i]), priority, change);
 }
 
-void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
+void ResourceManager::indexArchive(KnownArchive &knownArchive, std::unique_ptr<Archive> archive,
                                    uint32_t priority, Change *change) {
 
 	const Common::HashAlgo hashAlgo = archive->getNameHashAlgo();
@@ -424,23 +418,21 @@ void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
 		                        "algorithm than we do (%d vs. %d)", (int) hashAlgo, (int) _hashAlgo);
 
 	bool couldSet = false;
-	_openedArchives.push_back(OpenedArchive());
+	_openedArchives.emplace_back();
 
-	BOOST_SCOPE_EXIT(this, &couldSet, &archive) {
-		if (!couldSet) {
+	BOOST_SCOPE_EXIT(this, &couldSet) {
+		if (!couldSet)
 			_openedArchives.pop_back();
-			delete archive;
-		}
 	};
 
-	_openedArchives.back().set(knownArchive, *archive);
+	_openedArchives.back().set(knownArchive, std::move(archive));
 	couldSet = true;
 
 	// Add the information of the new archive to the change set
 	if (change)
 		change->_change->openedArchives.push_back(--_openedArchives.end());
 
-	const Archive::ResourceList &resources = archive->getResources();
+	const Archive::ResourceList &resources = _openedArchives.back().archive->getResources();
 	for (Archive::ResourceList::const_iterator resource = resources.begin(); resource != resources.end(); ++resource) {
 		// Build the resource record
 		Resource res;
@@ -562,7 +554,6 @@ void ResourceManager::undo(Common::ChangeID &changeID) {
 				throw Common::Exception("Couldn't find archive in the parent's children list");
 		}
 
-		delete (*oaChange)->archive;
 		_openedArchives.erase(*oaChange);
 	}
 
@@ -716,14 +707,14 @@ uint32_t ResourceManager::getResourceSize(const Resource &res) const {
 	return 0xFFFFFFFF;
 }
 
-Common::SeekableReadStream *ResourceManager::getArchiveResource(const Resource &res, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::getArchiveResource(const Resource &res, bool tryNoCopy) const {
 	if ((res.archive == 0) || (res.archive->archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
 		throw Common::Exception("Archive resource has no archive");
 
 	return res.archive->archive->getResource(res.archiveIndex, tryNoCopy);
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name, FileType type) const {
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::getResource(const Common::UString &name, FileType type) const {
 	std::vector<FileType> types;
 
 	types.push_back(type);
@@ -731,16 +722,16 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	return getResource(name, types);
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name) const {
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::getResource(const Common::UString &name) const {
 	return getResource(TypeMan.setFileType(name, kFileTypeNone), TypeMan.getFileType(name));
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &name,
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::getResource(const Common::UString &name,
 		const std::vector<FileType> &types, FileType *foundType) const {
 
 	const Resource *res = getRes(name, types);
 	if (!res)
-		return 0;
+		return nullptr;
 
 	// Return the actually found type
 	if (foundType)
@@ -749,10 +740,10 @@ Common::SeekableReadStream *ResourceManager::getResource(const Common::UString &
 	return getResource(*res);
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(uint64_t hash, FileType *type) const {
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::getResource(uint64_t hash, FileType *type) const {
 	const Resource *res = getRes(hash);
 	if (!res)
-		return 0;
+		return nullptr;
 
 	// Return the actually found type
 	if (type)
@@ -761,12 +752,12 @@ Common::SeekableReadStream *ResourceManager::getResource(uint64_t hash, FileType
 	return getResource(*res);
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(const Resource &res, bool tryNoCopy) const {
-	Common::SeekableReadStream *stream = 0;
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::getResource(const Resource &res, bool tryNoCopy) const {
+	std::unique_ptr<Common::SeekableReadStream> stream;
 
 	switch (res.source) {
 		case kSourceFile:
-			stream = new Common::ReadFile(res.path);
+			stream = std::make_unique<Common::ReadFile>(res.path);
 			break;
 
 		case kSourceArchive:
@@ -780,23 +771,23 @@ Common::SeekableReadStream *ResourceManager::getResource(const Resource &res, bo
 
 	// Transparently decompress "small" files
 	if (res.isSmall)
-		stream = Small::decompress(stream);
+		stream = Small::decompress(std::move(stream));
 
 	return stream;
 }
 
-Common::SeekableReadStream *ResourceManager::getResource(ResourceType resType,
+std::unique_ptr<Common::SeekableReadStream> ResourceManager::getResource(ResourceType resType,
 		const Common::UString &name, FileType *foundType) const {
 
 	assert((resType >= 0) && (resType < kResourceMAX));
 
 	// Try every known file type for that resource type
-	Common::SeekableReadStream *res;
+	std::unique_ptr<Common::SeekableReadStream> res;
 	if ((res = getResource(name, _resourceTypeTypes[resType], foundType)))
 		return res;
 
 	// No such resource
-	return 0;
+	return nullptr;
 }
 
 void ResourceManager::getAvailableResources(FileType type,

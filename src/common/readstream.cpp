@@ -66,13 +66,13 @@ ReadStream::ReadStream() {
 ReadStream::~ReadStream() {
 }
 
-MemoryReadStream *ReadStream::readStream(size_t dataSize) {
+std::unique_ptr<SeekableReadStream> ReadStream::readStream(size_t dataSize) {
 	std::unique_ptr<byte[]> buf = std::make_unique<byte[]>(dataSize);
 
 	if (read(buf.get(), dataSize) != dataSize)
 		throw Exception(kReadError);
 
-	return new MemoryReadStream(buf.release(), dataSize, true);
+	return std::make_unique<MemoryReadStream>(std::move(buf), dataSize);
 }
 
 
@@ -180,6 +180,12 @@ size_t SeekableSubReadStream::seek(ptrdiff_t offset, Origin whence) {
 	return oldPos;
 }
 
+
+SeekableSubReadStreamEndian::SeekableSubReadStreamEndian(std::unique_ptr<SeekableReadStream> parentStream,
+		size_t begin, size_t end, bool bigEndian) :
+		SeekableSubReadStreamEndian(parentStream.release(), begin, end, bigEndian, true) {
+
+}
 
 SeekableSubReadStreamEndian::SeekableSubReadStreamEndian(SeekableReadStream *parentStream,
 		size_t begin, size_t end, bool bigEndian, bool disposeParentStream) :

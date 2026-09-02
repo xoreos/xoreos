@@ -94,15 +94,13 @@ static const byte kRIMFile[] = {
 };
 
 GTEST_TEST(RIMFile, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kRIMFile);
-	const Aurora::RIMFile rim(stream);
+	const Aurora::RIMFile rim(std::make_unique<Common::MemoryReadStream>(kRIMFile));
 
 	EXPECT_EQ(rim.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(RIMFile, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kRIMFile);
-	const Aurora::RIMFile rim(stream);
+	const Aurora::RIMFile rim(std::make_unique<Common::MemoryReadStream>(kRIMFile));
 
 	const Aurora::RIMFile::ResourceList &resources = rim.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -116,8 +114,7 @@ GTEST_TEST(RIMFile, getResources) {
 }
 
 GTEST_TEST(RIMFile, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kRIMFile);
-	const Aurora::RIMFile rim(stream);
+	const Aurora::RIMFile rim(std::make_unique<Common::MemoryReadStream>(kRIMFile));
 
 	EXPECT_EQ(rim.getResourceSize(0), strlen(kFileData));
 
@@ -125,15 +122,13 @@ GTEST_TEST(RIMFile, getResourceSize) {
 }
 
 GTEST_TEST(RIMFile, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kRIMFile);
-	const Aurora::RIMFile rim(stream);
+	const Aurora::RIMFile rim(std::make_unique<Common::MemoryReadStream>(kRIMFile));
 
 	EXPECT_EQ(rim.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(RIMFile, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kRIMFile);
-	const Aurora::RIMFile rim(stream);
+	const Aurora::RIMFile rim(std::make_unique<Common::MemoryReadStream>(kRIMFile));
 
 	EXPECT_EQ(rim.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -143,16 +138,13 @@ GTEST_TEST(RIMFile, findResourceName) {
 }
 
 GTEST_TEST(RIMFile, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kRIMFile);
-	const Aurora::RIMFile rim(stream);
+	const Aurora::RIMFile rim(std::make_unique<Common::MemoryReadStream>(kRIMFile));
 
-	Common::SeekableReadStream *file = rim.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = rim.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }

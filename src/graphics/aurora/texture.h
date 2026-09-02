@@ -125,13 +125,13 @@ protected:
 	void setMipMapData(GLenum target, size_t layer, size_t mipMap);
 
 	static std::unique_ptr<TXI> loadTXI(const Common::UString &name);
-	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
+	static ImageDecoder *loadImage(std::unique_ptr<Common::SeekableReadStream> imageStream, ::Aurora::FileType type,
 	                               const TXI *txi = nullptr, bool deswizzle = false);
 
 	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType &type, const TXI *txi,
 	                               bool deswizzle = false);
 
-	static Texture *createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream);
+	static Texture *createPLT(const Common::UString &name, Common::SeekableReadStream &imageStream);
 };
 
 } // End of namespace Aurora

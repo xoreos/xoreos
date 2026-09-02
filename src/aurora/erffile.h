@@ -117,7 +117,7 @@ public:
 	 *  In this case, the password is the MD5 of the .nwm file. It is then used
 	 *  to calculate the key to decrypt the .hak file.
 	 */
-	ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &password = std::vector<byte>());
+	ERFFile(std::unique_ptr<Common::SeekableReadStream> erf, const std::vector<byte> &password = std::vector<byte>());
 	~ERFFile();
 
 	/** Return the list of resources. */
@@ -127,7 +127,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 	/** Return the year the ERF was built. */
 	uint32_t getBuildYear() const;
@@ -271,15 +271,13 @@ private:
 	// .--- Encryption
 	void verifyPasswordDigest();
 
-	static Common::MemoryReadStream *decrypt(Common::SeekableReadStream &cryptStream,
-	                                         Encryption encryption, const std::vector<byte> &password);
-	static Common::MemoryReadStream *decrypt(Common::SeekableReadStream *cryptStream,
-	                                         Encryption encryption, const std::vector<byte> &password);
+	static std::unique_ptr<Common::SeekableReadStream> decrypt(Common::SeekableReadStream &cryptStream,
+	                                                           Encryption encryption, const std::vector<byte> &password);
 
-	static Common::SeekableReadStream *decrypt(Common::SeekableReadStream &erf, size_t pos, size_t size,
-	                                           Encryption encryption, const std::vector<byte> &password);
-	static Common::SeekableReadStream *decrypt(Common::SeekableReadStream &erf, size_t size,
-	                                           Encryption encryption, const std::vector<byte> &password);
+	static std::unique_ptr<Common::SeekableReadStream> decrypt(Common::SeekableReadStream &erf, size_t pos, size_t size,
+	                                                           Encryption encryption, const std::vector<byte> &password);
+	static std::unique_ptr<Common::SeekableReadStream> decrypt(Common::SeekableReadStream &erf, size_t size,
+	                                                           Encryption encryption, const std::vector<byte> &password);
 
 	static bool decryptNWNPremiumHeader(Common::SeekableReadStream &erf, ERFHeader &header,
 	                                    const std::vector<byte> &password);
@@ -292,18 +290,21 @@ private:
 	// '---
 
 	// .--- Compression
-	Common::SeekableReadStream *decompress(Common::MemoryReadStream *packedStream,
-	                                       uint32_t unpackedSize) const;
+	std::unique_ptr<Common::SeekableReadStream> decompress(std::unique_ptr<Common::SeekableReadStream> stream,
+	                                                       uint32_t unpackedSize) const;
 
-	Common::SeekableReadStream *decompressBiowareZlib   (Common::MemoryReadStream *packedStream,
-	                                                     uint32_t unpackedSize) const;
-	Common::SeekableReadStream *decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
-	                                                     uint32_t unpackedSize) const;
-	Common::SeekableReadStream *decompressStandardZlib  (Common::MemoryReadStream *packedStream,
-	                                                     uint32_t unpackedSize) const;
+	std::unique_ptr<Common::SeekableReadStream> decompressBiowareZlib   (Common::ReadStream &stream,
+                                                                         size_t packedSize,
+	                                                                     size_t unpackedSize) const;
+	std::unique_ptr<Common::SeekableReadStream> decompressHeaderlessZlib(Common::ReadStream &stream,
+                                                                         size_t packedSize,
+	                                                                     size_t unpackedSize) const;
+	std::unique_ptr<Common::SeekableReadStream> decompressStandardZlib  (Common::ReadStream &stream,
+                                                                         size_t packedSize,
+	                                                                     size_t unpackedSize) const;
 
-	Common::SeekableReadStream *decompressZlib(const byte *compressedData, uint32_t packedSize,
-	                                           uint32_t unpackedSize, int windowBits) const;
+	std::unique_ptr<Common::SeekableReadStream> decompressZlib(Common::ReadStream &stream, size_t packedSize,
+	                                                           size_t unpackedSize, int windowBits) const;
 
 	std::unique_ptr<Common::SeekableReadStream> decompressLZMA(std::unique_ptr<Common::SeekableReadStream> packedStream,
 	                                                           uint32_t unpackedSize) const;

@@ -214,7 +214,7 @@ void readEBMLEntry(std::shared_ptr<Common::SeekableReadStream> &value, Common::S
 	if (stream.size() > 0x10000000)
 		throw Common::Exception("Invalid EBML binary size %u", (int)stream.size());
 
-	value.reset(stream.readStream(stream.size()));
+	value = stream.readStream(stream.size());
 }
 
 void readEBMLEntry(MatroskaElementOffset &value, Common::SeekableReadStream &stream, uint64_t filePos) {
@@ -710,7 +710,7 @@ Common::SeekableReadStream *Matroska::getNextPacket(uint64_t trackNumber, uint64
 
 	// Read in the actual packet
 	_fd->seek(status.nextPacket.offset);
-	std::unique_ptr<Common::SeekableReadStream> packet(_fd->readStream(status.nextPacket.size));
+	std::unique_ptr<Common::SeekableReadStream> packet = _fd->readStream(status.nextPacket.size);
 
 	// Find the next packet
 	findNextPacket(trackNumber, status);

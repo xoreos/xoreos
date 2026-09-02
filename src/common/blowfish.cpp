@@ -336,7 +336,7 @@ static void blowfishECB(BlowfishContext &ctx, Mode mode, const byte *input, byte
 }
 // '--- Blowfish, based on the implementation from mbed TLS ---'
 
-MemoryReadStream *blowfishEBC(SeekableReadStream &input, const std::vector<byte> &key, Mode mode) {
+std::unique_ptr<SeekableReadStream> blowfishEBC(SeekableReadStream &input, const std::vector<byte> &key, Mode mode) {
 	BlowfishContext ctx;
 
 	blowfishSetKey(ctx, &key[0], key.size());
@@ -365,14 +365,14 @@ MemoryReadStream *blowfishEBC(SeekableReadStream &input, const std::vector<byte>
 		inputSize -= toRead;
 	}
 
-	return new MemoryReadStream(output.release(), outputSize, true);
+	return std::make_unique<MemoryReadStream>(std::move(output), outputSize);
 }
 
-MemoryReadStream *encryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key) {
+std::unique_ptr<SeekableReadStream> encryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key) {
 	return blowfishEBC(input, key, kModeEncrypt);
 }
 
-MemoryReadStream *decryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key) {
+std::unique_ptr<SeekableReadStream> decryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key) {
 	if ((input.size() % 8) != 0)
 		throw Exception("Blowfish operates on blocks of 8 bytes (%u)", (uint) input.size());
 

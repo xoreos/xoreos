@@ -61,7 +61,7 @@
 
 namespace Common {
 
-class MemoryReadStream;
+class SeekableReadStream;
 
 /** Generic interface for a readable data stream. */
 class ReadStream {
@@ -251,12 +251,12 @@ public:
 		return convertIEEEDouble(readUint64BE());
 	}
 
-	/** Read the specified amount of data into a new[]'ed buffer
-	 *  which then is wrapped into a MemoryReadStream.
+	/** Read the specified amount of data into a buffer
+	 *  which then is wrapped into a stream.
 	 *
 	 *  When reading fails, a kReadError exception is thrown.
 	 */
-	MemoryReadStream *readStream(size_t dataSize);
+	std::unique_ptr<SeekableReadStream> readStream(size_t dataSize);
 };
 
 
@@ -386,6 +386,8 @@ private:
 	const bool _bigEndian;
 
 public:
+	SeekableSubReadStreamEndian(std::unique_ptr<SeekableReadStream> parentStream, size_t begin, size_t end,
+	                            bool bigEndian = false);
 	SeekableSubReadStreamEndian(SeekableReadStream *parentStream, size_t begin, size_t end,
 	                            bool bigEndian = false, bool disposeParentStream = false);
 	~SeekableSubReadStreamEndian();

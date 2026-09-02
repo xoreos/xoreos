@@ -50,7 +50,7 @@ static const byte kTLKV02[] = {
 };
 
 GTEST_TEST(TalkTable_TLK02, hasEntry) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV02), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV02), Common::kEncodingUTF16LE);
 
 	EXPECT_TRUE (tlk.hasEntry(0));
 	EXPECT_TRUE (tlk.hasEntry(1));
@@ -62,7 +62,7 @@ GTEST_TEST(TalkTable_TLK02, hasEntry) {
 }
 
 GTEST_TEST(TalkTable_TLK02, getString) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV02), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV02), Common::kEncodingUTF16LE);
 
 	EXPECT_STREQ(tlk.getString(0).c_str(), "Foobar");
 	EXPECT_STREQ(tlk.getString(1).c_str(), "");
@@ -74,7 +74,7 @@ GTEST_TEST(TalkTable_TLK02, getString) {
 }
 
 GTEST_TEST(TalkTable_TLK02, getSoundResRef) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV02), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV02), Common::kEncodingUTF16LE);
 
 	EXPECT_STREQ(tlk.getSoundResRef(0).c_str(), "");
 	EXPECT_STREQ(tlk.getSoundResRef(1).c_str(), "");
@@ -86,7 +86,7 @@ GTEST_TEST(TalkTable_TLK02, getSoundResRef) {
 }
 
 GTEST_TEST(TalkTable_TLK02, getSoundID) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV02), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV02), Common::kEncodingUTF16LE);
 
 	EXPECT_EQ(tlk.getSoundID(0), Aurora::kFieldIDInvalid);
 	EXPECT_EQ(tlk.getSoundID(1), Aurora::kFieldIDInvalid);
@@ -98,12 +98,10 @@ GTEST_TEST(TalkTable_TLK02, getSoundID) {
 }
 
 GTEST_TEST(TalkTable_TLK02, fromGeneric) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kTLKV02);
+	std::unique_ptr<Common::SeekableReadStream> stream = std::make_unique<Common::MemoryReadStream>(kTLKV02);
 
-	Aurora::TalkTable *tlk = Aurora::TalkTable::load(stream, Common::kEncodingUTF16LE);
-	EXPECT_NE(dynamic_cast<Aurora::TalkTable_GFF *>(tlk), static_cast<Aurora::TalkTable_GFF *>(0));
-
-	delete tlk;
+	std::unique_ptr<Aurora::TalkTable> tlk = Aurora::TalkTable::load(std::move(stream), Common::kEncodingUTF16LE);
+	EXPECT_NE(dynamic_cast<Aurora::TalkTable_GFF *>(tlk.get()), nullptr);
 }
 
 // --- TLK V0.5 ---
@@ -128,7 +126,7 @@ static const byte kTLKV05[] = {
 };
 
 GTEST_TEST(TalkTable_TLK05, hasEntry) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV05), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV05), Common::kEncodingUTF16LE);
 
 	EXPECT_TRUE (tlk.hasEntry(0));
 	EXPECT_TRUE (tlk.hasEntry(1));
@@ -140,7 +138,7 @@ GTEST_TEST(TalkTable_TLK05, hasEntry) {
 }
 
 GTEST_TEST(TalkTable_TLK05, getString) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV05), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV05), Common::kEncodingUTF16LE);
 
 	EXPECT_STREQ(tlk.getString(0).c_str(), "Foobar");
 	EXPECT_STREQ(tlk.getString(1).c_str(), "");
@@ -152,7 +150,7 @@ GTEST_TEST(TalkTable_TLK05, getString) {
 }
 
 GTEST_TEST(TalkTable_TLK05, getSoundResRef) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV05), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV05), Common::kEncodingUTF16LE);
 
 	EXPECT_STREQ(tlk.getSoundResRef(0).c_str(), "");
 	EXPECT_STREQ(tlk.getSoundResRef(1).c_str(), "");
@@ -164,7 +162,7 @@ GTEST_TEST(TalkTable_TLK05, getSoundResRef) {
 }
 
 GTEST_TEST(TalkTable_TLK05, getSoundID) {
-	Aurora::TalkTable_GFF tlk(new Common::MemoryReadStream(kTLKV05), Common::kEncodingUTF16LE);
+	Aurora::TalkTable_GFF tlk(std::make_unique<Common::MemoryReadStream>(kTLKV05), Common::kEncodingUTF16LE);
 
 	EXPECT_EQ(tlk.getSoundID(0), Aurora::kFieldIDInvalid);
 	EXPECT_EQ(tlk.getSoundID(1), Aurora::kFieldIDInvalid);
@@ -176,10 +174,8 @@ GTEST_TEST(TalkTable_TLK05, getSoundID) {
 }
 
 GTEST_TEST(TalkTable_TLK05, fromGeneric) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kTLKV05);
+	std::unique_ptr<Common::SeekableReadStream> stream = std::make_unique<Common::MemoryReadStream>(kTLKV05);
 
-	Aurora::TalkTable *tlk = Aurora::TalkTable::load(stream, Common::kEncodingUTF16LE);
-	EXPECT_NE(dynamic_cast<Aurora::TalkTable_GFF *>(tlk), static_cast<Aurora::TalkTable_GFF *>(0));
-
-	delete tlk;
+	std::unique_ptr<Aurora::TalkTable> tlk = Aurora::TalkTable::load(std::move(stream), Common::kEncodingUTF16LE);
+	EXPECT_NE(dynamic_cast<Aurora::TalkTable_GFF *>(tlk.get()), nullptr);
 }

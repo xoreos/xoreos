@@ -282,7 +282,7 @@ void ASFStream::parseStreamHeader() {
 	if (typeSpecificSize >= 18) {
 		uint32_t cbSize = _stream->readUint16LE();
 		cbSize = MIN<int>(cbSize, typeSpecificSize - 18);
-		_extraData.reset(_stream->readStream(cbSize));
+		_extraData = _stream->readStream(cbSize);
 	}
 
 	_curAudioStream = createAudioStream();

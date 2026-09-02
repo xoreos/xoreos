@@ -95,7 +95,7 @@ GFF4File::GFF4File(Common::SeekableReadStream *gff4, uint32_t type) :
 GFF4File::GFF4File(const Common::UString &gff4, FileType fileType, uint32_t type) :
 	_topLevelStruct(0) {
 
-	_origStream.reset(ResMan.getResource(gff4, fileType));
+	_origStream = ResMan.getResource(gff4, fileType);
 	if (!_origStream)
 		throw Common::Exception("No such GFF4 \"%s\"", TypeMan.setFileType(gff4, fileType).c_str());
 

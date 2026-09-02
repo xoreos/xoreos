@@ -407,7 +407,7 @@ GTEST_TEST(ERFWriter, WriteEmpty) {
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 0, writeStream);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -423,7 +423,7 @@ GTEST_TEST(ERFWriter, WriteEmptyWithDescription) {
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 0, writeStream, Aurora::ERFWriter::kERFVersion10, Aurora::ERFWriter::kCompressionNone, string);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "ERF File with description");
@@ -443,7 +443,7 @@ GTEST_TEST(ERFWriter, WriteMultiLangDescription) {
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 0, writeStream, Aurora::ERFWriter::kERFVersion10, Aurora::ERFWriter::kCompressionNone, string);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_EQ(erf.getResources().size(), 0);
@@ -461,7 +461,7 @@ GTEST_TEST(ERFWriter, WriteFile) {
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 1, writeStream);
 	erfWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_EQ(erf.getDescription().getString(), "");
@@ -470,7 +470,7 @@ GTEST_TEST(ERFWriter, WriteFile) {
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream = erf.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
 
 	std::unique_ptr<byte[]> fileData = std::make_unique<byte[]>(readStream->size());
@@ -479,8 +479,6 @@ GTEST_TEST(ERFWriter, WriteFile) {
 	for (size_t i = 0; i < kFileDataSize; ++i) {
 		EXPECT_EQ(fileData[i], kFileData[i]);
 	}
-
-	delete readStream;
 }
 
 GTEST_TEST(ERFWriter, WriteMultipleFiles) {
@@ -497,7 +495,7 @@ GTEST_TEST(ERFWriter, WriteMultipleFiles) {
 	erfWriter.add("ozymandias_2", Aurora::kFileTypeTXT, dataStream1);
 	erfWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -510,11 +508,11 @@ GTEST_TEST(ERFWriter, WriteMultipleFiles) {
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeBMP), 2);
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream1 = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream1 = erf.getResource(0);
 	ASSERT_EQ(readStream1->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream2 = erf.getResource(1);
+	std::unique_ptr<Common::SeekableReadStream> readStream2 = erf.getResource(1);
 	ASSERT_EQ(readStream2->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream3 = erf.getResource(2);
+	std::unique_ptr<Common::SeekableReadStream> readStream3 = erf.getResource(2);
 	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
 	std::unique_ptr<byte[]> fileData1 = std::make_unique<byte[]>(readStream1->size());
@@ -533,17 +531,13 @@ GTEST_TEST(ERFWriter, WriteMultipleFiles) {
 	for (size_t i = 0; i < kLogoDataSize; ++i) {
 		EXPECT_EQ(fileData3[i], kLogoData[i]);
 	}
-
-	delete readStream1;
-	delete readStream2;
-	delete readStream3;
 }
 
 GTEST_TEST(ERFWriter, WriteEmptyV20) {
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 0, writeStream, Aurora::ERFWriter::kERFVersion20);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -558,7 +552,7 @@ GTEST_TEST(ERFWriter, WriteFileV20) {
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 1, writeStream, Aurora::ERFWriter::kERFVersion20);
 	erfWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_EQ(erf.getDescription().getString(), "");
@@ -567,7 +561,7 @@ GTEST_TEST(ERFWriter, WriteFileV20) {
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream = erf.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
 
 	std::unique_ptr<byte[]> fileData = std::make_unique<byte[]>(readStream->size());
@@ -576,8 +570,6 @@ GTEST_TEST(ERFWriter, WriteFileV20) {
 	for (size_t i = 0; i < kFileDataSize; ++i) {
 		EXPECT_EQ(fileData[i], kFileData[i]);
 	}
-
-	delete readStream;
 }
 
 GTEST_TEST(ERFWriter, WriteMultipleFilesV20) {
@@ -594,7 +586,7 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV20) {
 	erfWriter.add("ozymandias_2", Aurora::kFileTypeTXT, dataStream1);
 	erfWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -607,11 +599,11 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV20) {
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeBMP), 2);
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream1 = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream1 = erf.getResource(0);
 	ASSERT_EQ(readStream1->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream2 = erf.getResource(1);
+	std::unique_ptr<Common::SeekableReadStream> readStream2 = erf.getResource(1);
 	ASSERT_EQ(readStream2->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream3 = erf.getResource(2);
+	std::unique_ptr<Common::SeekableReadStream> readStream3 = erf.getResource(2);
 	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
 	std::unique_ptr<byte[]> fileData1 = std::make_unique<byte[]>(readStream1->size());
@@ -630,17 +622,13 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV20) {
 	for (size_t i = 0; i < kLogoDataSize; ++i) {
 		EXPECT_EQ(fileData3[i], kLogoData[i]);
 	}
-
-	delete readStream1;
-	delete readStream2;
-	delete readStream3;
 }
 
 GTEST_TEST(ERFWriter, WriteEmptyV22) {
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 0, writeStream, Aurora::ERFWriter::kERFVersion22);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -655,7 +643,7 @@ GTEST_TEST(ERFWriter, WriteFileV22) {
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 1, writeStream, Aurora::ERFWriter::kERFVersion22);
 	erfWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_EQ(erf.getDescription().getString(), "");
@@ -664,7 +652,7 @@ GTEST_TEST(ERFWriter, WriteFileV22) {
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream = erf.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
 
 	std::unique_ptr<byte[]> fileData = std::make_unique<byte[]>(readStream->size());
@@ -673,8 +661,6 @@ GTEST_TEST(ERFWriter, WriteFileV22) {
 	for (size_t i = 0; i < kFileDataSize; ++i) {
 		EXPECT_EQ(fileData[i], kFileData[i]);
 	}
-
-	delete readStream;
 }
 
 GTEST_TEST(ERFWriter, WriteMultipleFilesV22) {
@@ -691,7 +677,7 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22) {
 	erfWriter.add("ozymandias_2", Aurora::kFileTypeTXT, dataStream1);
 	erfWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -704,11 +690,11 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22) {
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeBMP), 2);
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream1 = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream1 = erf.getResource(0);
 	ASSERT_EQ(readStream1->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream2 = erf.getResource(1);
+	std::unique_ptr<Common::SeekableReadStream> readStream2 = erf.getResource(1);
 	ASSERT_EQ(readStream2->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream3 = erf.getResource(2);
+	std::unique_ptr<Common::SeekableReadStream> readStream3 = erf.getResource(2);
 	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
 	std::unique_ptr<byte[]> fileData1 = std::make_unique<byte[]>(readStream1->size());
@@ -727,10 +713,6 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22) {
 	for (size_t i = 0; i < kLogoDataSize; ++i) {
 		EXPECT_EQ(fileData3[i], kLogoData[i]);
 	}
-
-	delete readStream1;
-	delete readStream2;
-	delete readStream3;
 }
 
 GTEST_TEST(ERFWriter, WriteFileV22BiowareZlib) {
@@ -741,7 +723,7 @@ GTEST_TEST(ERFWriter, WriteFileV22BiowareZlib) {
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 1, writeStream, Aurora::ERFWriter::kERFVersion22, Aurora::ERFWriter::kCompressionBiowareZlib);
 	erfWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_EQ(erf.getDescription().getString(), "");
@@ -750,7 +732,7 @@ GTEST_TEST(ERFWriter, WriteFileV22BiowareZlib) {
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream = erf.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
 
 	std::unique_ptr<byte[]> fileData = std::make_unique<byte[]>(readStream->size());
@@ -759,8 +741,6 @@ GTEST_TEST(ERFWriter, WriteFileV22BiowareZlib) {
 	for (size_t i = 0; i < kFileDataSize; ++i) {
 		EXPECT_EQ(fileData[i], kFileData[i]);
 	}
-
-	delete readStream;
 }
 
 GTEST_TEST(ERFWriter, WriteMultipleFilesV22BiowareZlib) {
@@ -777,7 +757,7 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22BiowareZlib) {
 	erfWriter.add("ozymandias_2", Aurora::kFileTypeTXT, dataStream1);
 	erfWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -790,11 +770,11 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22BiowareZlib) {
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeBMP), 2);
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream1 = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream1 = erf.getResource(0);
 	ASSERT_EQ(readStream1->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream2 = erf.getResource(1);
+	std::unique_ptr<Common::SeekableReadStream> readStream2 = erf.getResource(1);
 	ASSERT_EQ(readStream2->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream3 = erf.getResource(2);
+	std::unique_ptr<Common::SeekableReadStream> readStream3 = erf.getResource(2);
 	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
 	std::unique_ptr<byte[]> fileData1 = std::make_unique<byte[]>(readStream1->size());
@@ -813,10 +793,6 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22BiowareZlib) {
 	for (size_t i = 0; i < kLogoDataSize; ++i) {
 		EXPECT_EQ(fileData3[i], kLogoData[i]);
 	}
-
-	delete readStream1;
-	delete readStream2;
-	delete readStream3;
 }
 
 GTEST_TEST(ERFWriter, WriteFileV22HeaderlessZlib) {
@@ -827,7 +803,7 @@ GTEST_TEST(ERFWriter, WriteFileV22HeaderlessZlib) {
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 1, writeStream, Aurora::ERFWriter::kERFVersion22, Aurora::ERFWriter::kCompressionHeaderlessZlib);
 	erfWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_EQ(erf.getDescription().getString(), "");
@@ -836,7 +812,7 @@ GTEST_TEST(ERFWriter, WriteFileV22HeaderlessZlib) {
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream = erf.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
 
 	std::unique_ptr<byte[]> fileData = std::make_unique<byte[]>(readStream->size());
@@ -845,8 +821,6 @@ GTEST_TEST(ERFWriter, WriteFileV22HeaderlessZlib) {
 	for (size_t i = 0; i < kFileDataSize; ++i) {
 		EXPECT_EQ(fileData[i], kFileData[i]);
 	}
-
-	delete readStream;
 }
 
 GTEST_TEST(ERFWriter, WriteMultipleFilesV22HeaderlessZlib) {
@@ -863,7 +837,7 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22HeaderlessZlib) {
 	erfWriter.add("ozymandias_2", Aurora::kFileTypeTXT, dataStream1);
 	erfWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
 
-	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+	const Aurora::ERFFile erf(std::make_unique<Common::MemoryReadStream>(writeStream.getData(), writeStream.size(), true));
 
 	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
 	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
@@ -876,11 +850,11 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22HeaderlessZlib) {
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeBMP), 2);
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
-	Common::SeekableReadStream *readStream1 = erf.getResource(0);
+	std::unique_ptr<Common::SeekableReadStream> readStream1 = erf.getResource(0);
 	ASSERT_EQ(readStream1->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream2 = erf.getResource(1);
+	std::unique_ptr<Common::SeekableReadStream> readStream2 = erf.getResource(1);
 	ASSERT_EQ(readStream2->size(), kFileDataSize);
-	Common::SeekableReadStream *readStream3 = erf.getResource(2);
+	std::unique_ptr<Common::SeekableReadStream> readStream3 = erf.getResource(2);
 	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
 	std::unique_ptr<byte[]> fileData1 = std::make_unique<byte[]>(readStream1->size());
@@ -899,8 +873,4 @@ GTEST_TEST(ERFWriter, WriteMultipleFilesV22HeaderlessZlib) {
 	for (size_t i = 0; i < kLogoDataSize; ++i) {
 		EXPECT_EQ(fileData3[i], kLogoData[i]);
 	}
-
-	delete readStream1;
-	delete readStream2;
-	delete readStream3;
 }

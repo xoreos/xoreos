@@ -52,7 +52,7 @@ namespace Aurora {
 
 class TTFFont : public Graphics::Font {
 public:
-	TTFFont(Common::SeekableReadStream *ttf, int height);
+	TTFFont(Common::SeekableReadStream &ttf, int height);
 	TTFFont(const Common::UString &name, int height);
 	~TTFFont();
 
@@ -117,7 +117,7 @@ private:
 	Shader::ShaderRenderable *_renderable;
 
 
-	void load(Common::SeekableReadStream *ttf, int height);
+	void load(Common::SeekableReadStream &ttf, int height);
 
 	void rebuildPages();
 	void addChar(uint32_t c);

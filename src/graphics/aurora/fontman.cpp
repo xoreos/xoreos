@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "src/common/error.h"
+#include "src/common/readstream.h"
 #include "src/common/string.h"
 #include "src/common/systemfonts.h"
 
@@ -167,7 +168,7 @@ ManagedFont *FontManager::createFont(FontFormat format,
 
 	try {
 		if (name == kSystemFontMono)
-			return new ManagedFont(new TTFFont(Common::getSystemFontMono(), height));
+			return new ManagedFont(new TTFFont(*Common::getSystemFontMono(), height));
 
 		if (format == kFontFormatUnknown)
 			throw Common::Exception("Font format unknown");

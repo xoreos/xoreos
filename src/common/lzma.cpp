@@ -63,7 +63,7 @@ static lzma_allocator kLZMAAllocator = {
 	&lzmaAlloc, &lzmaFree, 0
 };
 
-byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, bool noEndMarker) {
+std::unique_ptr<byte[]> decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, bool noEndMarker) {
 	lzma_filter filters[2] = {
 		{ LZMA_FILTER_LZMA1, 0 },
 		{ LZMA_VLI_UNKNOWN , 0 }
@@ -106,7 +106,7 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
 	lzmaRet = lzma_code(&strm, LZMA_FINISH);
 
 	if (noEndMarker && (lzmaRet == LZMA_OK) && (strm.avail_in == 0) && (strm.avail_out == 0))
-		return outputData.release();
+		return outputData;
 
 	if ((lzmaRet != LZMA_STREAM_END) || (strm.avail_out != 0)) {
 		if (lzmaRet == LZMA_OK)
@@ -118,17 +118,17 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
 		throw Exception("Failed to uncompress LZMA1 data: %d", (int) lzmaRet);
 	}
 
-	return outputData.release();
+	return outputData;
 }
 
-SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker) {
+std::unique_ptr<SeekableReadStream> decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker) {
 	std::unique_ptr<byte[]> inputData = std::make_unique<byte[]>(inputSize);
 	if (input.read(inputData.get(), inputSize) != inputSize)
 		throw Exception(kReadError);
 
-	const byte *outputData = decompressLZMA1(inputData.get(), inputSize, outputSize, noEndMarker);
+	std::unique_ptr<byte[]> outputData = decompressLZMA1(inputData.get(), inputSize, outputSize, noEndMarker);
 
-	return new MemoryReadStream(outputData, outputSize, true);
+	return std::make_unique<MemoryReadStream>(std::move(outputData), outputSize);
 }
 
 std::unique_ptr<SeekableReadStream> decompressERFLZMA(ReadStream &input, size_t inputSize, size_t outputSize) {

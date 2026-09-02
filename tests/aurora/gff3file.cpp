@@ -112,33 +112,33 @@ static const Aurora::GFF3Struct::FieldType kFieldTypesSingle[] = {
 };
 
 GTEST_TEST(GFF3File, getType) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 
 	EXPECT_EQ(gff3.getType(), MKTAG('G', 'F', 'F', ' '));
 }
 
 GTEST_TEST(GFF3File, enforceType) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct), MKTAG('G', 'F', 'F', ' '));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct), MKTAG('G', 'F', 'F', ' '));
 
-	EXPECT_THROW(Aurora::GFF3File gffNope(new Common::MemoryReadStream(kGFF3SingleStruct), MKTAG('N', 'O', 'P', 'E')), Common::Exception);
+	EXPECT_THROW(Aurora::GFF3File gffNope(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct), MKTAG('N', 'O', 'P', 'E')), Common::Exception);
 }
 
 GTEST_TEST(GFF3Struct, getID) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getID(), 23);
 }
 
 GTEST_TEST(GFF3Struct, getFieldCount) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getFieldCount(), std::size(kFieldNamesSingle));
 }
 
 GTEST_TEST(GFF3Struct, hasField) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	for (size_t i = 0; i < std::size(kFieldNamesSingle); i++)
@@ -148,7 +148,7 @@ GTEST_TEST(GFF3Struct, hasField) {
 }
 
 GTEST_TEST(GFF3Struct, getFieldNames) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	const std::vector<Common::UString> &fieldNames = strct.getFieldNames();
@@ -158,7 +158,7 @@ GTEST_TEST(GFF3Struct, getFieldNames) {
 }
 
 GTEST_TEST(GFF3Struct, getFieldType) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	for (size_t i = 0; i < std::size(kFieldNamesSingle); i++)
@@ -166,7 +166,7 @@ GTEST_TEST(GFF3Struct, getFieldType) {
 }
 
 GTEST_TEST(GFF3Struct, getChar) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getChar("FieldChar"), 'x');
@@ -176,7 +176,7 @@ GTEST_TEST(GFF3Struct, getChar) {
 }
 
 GTEST_TEST(GFF3Struct, getUint) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getUint("FieldByte"  ), 23);
@@ -197,7 +197,7 @@ GTEST_TEST(GFF3Struct, getUint) {
 }
 
 GTEST_TEST(GFF3Struct, getSint) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getSint("FieldByte"  ), 23);
@@ -218,7 +218,7 @@ GTEST_TEST(GFF3Struct, getSint) {
 }
 
 GTEST_TEST(GFF3Struct, getBool) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getBool("FieldByte"  ), true);
@@ -240,7 +240,7 @@ GTEST_TEST(GFF3Struct, getBool) {
 }
 
 GTEST_TEST(GFF3Struct, getDouble) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_DOUBLE_EQ(strct.getDouble("FieldFloat" ), 23.5f);
@@ -254,7 +254,7 @@ GTEST_TEST(GFF3Struct, getDouble) {
 GTEST_TEST(GFF3Struct, getString) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_STREQ(strct.getString("FieldExoString").c_str(), "Foobar");
@@ -274,7 +274,7 @@ GTEST_TEST(GFF3Struct, getString) {
 GTEST_TEST(GFF3Struct, getLocString) {
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingUTF8);
 
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	Aurora::LocString locString1;
@@ -293,7 +293,7 @@ GTEST_TEST(GFF3Struct, getLocString) {
 }
 
 GTEST_TEST(GFF3Struct, getVectorFloat) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	float x1 = 0.0f, y1 = 0.0f, z1 = 0.0f;
@@ -315,7 +315,7 @@ GTEST_TEST(GFF3Struct, getVectorFloat) {
 }
 
 GTEST_TEST(GFF3Struct, getVectorDouble) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	double x1 = 0.0, y1 = 0.0, z1 = 0.0;
@@ -337,7 +337,7 @@ GTEST_TEST(GFF3Struct, getVectorDouble) {
 }
 
 GTEST_TEST(GFF3Struct, getOrientationFloat) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	float a1 = 0.0f, b1 = 0.0f, c1 = 0.0f, d1 = 0.0f;
@@ -361,7 +361,7 @@ GTEST_TEST(GFF3Struct, getOrientationFloat) {
 }
 
 GTEST_TEST(GFF3Struct, getOrientationDouble) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	double a1 = 0.0, b1 = 0.0, c1 = 0.0, d1 = 0.0;
@@ -390,34 +390,39 @@ void compareData(Common::SeekableReadStream &data1, const char *data2, size_t n,
 }
 
 GTEST_TEST(GFF3Struct, getData) {
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3SingleStruct));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3SingleStruct));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
-	Common::SeekableReadStream *data1 = strct.getData("FieldVoid");
-	ASSERT_NE(data1, static_cast<Common::SeekableReadStream *>(0));
-	ASSERT_EQ(data1->size(), 6);
+	{
+		std::unique_ptr<Common::SeekableReadStream> data1 = strct.getData("FieldVoid");
+		ASSERT_NE(data1, nullptr);
+		ASSERT_EQ(data1->size(), 6);
 
-	compareData(*data1, "!DATA!", 6, 0);
-	delete data1;
+		compareData(*data1, "!DATA!", 6, 0);
+	}
 
-	Common::SeekableReadStream *data2 = strct.getData("FieldExoString");
-	ASSERT_NE(data2, static_cast<Common::SeekableReadStream *>(0));
-	ASSERT_EQ(data2->size(), 6);
+	{
+		std::unique_ptr<Common::SeekableReadStream> data2 = strct.getData("FieldExoString");
+		ASSERT_NE(data2, nullptr);
+		ASSERT_EQ(data2->size(), 6);
 
-	compareData(*data2, "Foobar", 6, 1);
-	delete data2;
+		compareData(*data2, "Foobar", 6, 1);
+	}
 
-	Common::SeekableReadStream *data3 = strct.getData("FieldResRef");
-	ASSERT_NE(data3, static_cast<Common::SeekableReadStream *>(0));
-	ASSERT_EQ(data3->size(), 6);
+	{
+		std::unique_ptr<Common::SeekableReadStream> data3 = strct.getData("FieldResRef");
+		ASSERT_NE(data3, nullptr);
+		ASSERT_EQ(data3->size(), 6);
 
-	compareData(*data3, "Barfoo", 6, 2);
-	delete data3;
+		compareData(*data3, "Barfoo", 6, 2);
+	}
 
-	Common::SeekableReadStream *data4 = strct.getData("Nope");
-	ASSERT_EQ(data4, static_cast<Common::SeekableReadStream *>(0));
+	{
+		std::unique_ptr<Common::SeekableReadStream> data4 = strct.getData("Nope");
+		ASSERT_EQ(data4, nullptr);
 
-	EXPECT_THROW(strct.getData("FieldUint16"), Common::Exception);
+		EXPECT_THROW(strct.getData("FieldUint16"), Common::Exception);
+	}
 }
 
 // --- GFF3, NWN premium ---
@@ -471,7 +476,7 @@ GTEST_TEST(GFF3File, premiumNWN) {
 		0x00,0x0E,0x00,0x00,0x00,0x0F,0x00,0x00,0x00,0x10,0x00,0x00,0x00
 	};
 
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3Premium), 0xFFFFFFFF, true);
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3Premium), 0xFFFFFFFF, true);
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getUint("FieldUint32"), 25);
@@ -499,7 +504,7 @@ GTEST_TEST(GFF3Struct, getStruct) {
 		0x02,0x00,0x00,0x00,0x03,0x00,0x00,0x00
 	};
 
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3Structs));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3Structs));
 
 	const Aurora::GFF3Struct &strct0 = gff3.getTopLevel();
 	const Aurora::GFF3Struct &strct1 = strct0.getStruct("FieldStruct");
@@ -557,7 +562,7 @@ GTEST_TEST(GFF3Struct, getList) {
 		0x02,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x09,0x00,0x00,0x00
 	};
 
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3Lists));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3Lists));
 	const Aurora::GFF3Struct &strct0 = gff3.getTopLevel();
 
 	EXPECT_EQ(strct0.getFieldCount(), 2);
@@ -648,7 +653,7 @@ GTEST_TEST(GFF3File, GFF3V33) {
 		0x46,0x69,0x65,0x6C,0x64,0x55,0x69,0x6E,0x74,0x33,0x32,0x00,0x00,0x00,0x00,0x00
 	};
 
-	Aurora::GFF3File gff3(new Common::MemoryReadStream(kGFF3V33));
+	Aurora::GFF3File gff3(std::make_unique<Common::MemoryReadStream>(kGFF3V33));
 	const Aurora::GFF3Struct &strct = gff3.getTopLevel();
 
 	EXPECT_EQ(strct.getID(), 23);

@@ -103,7 +103,7 @@ void OBBFile::readResList(Common::SeekableReadStream &index) {
 	}
 }
 
-Common::SeekableReadStream *OBBFile::getIndex(Common::SeekableReadStream &obb) {
+std::unique_ptr<Common::SeekableReadStream> OBBFile::getIndex(Common::SeekableReadStream &obb) {
 	/* Find and decompress the resource index.
 	 *
 	 * It's the last compressed chunk in the OBB file, so we're searching
@@ -165,7 +165,7 @@ uint32_t OBBFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).uncompressedSize;
 }
 
-Common::SeekableReadStream *OBBFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
+std::unique_ptr<Common::SeekableReadStream> OBBFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	/* Decompress a single file.
 	 *
 	 * Files in OBB virtual filesystems are split up in zlib compressed chunks.
@@ -207,7 +207,7 @@ Common::SeekableReadStream *OBBFile::getResource(uint32_t index, bool UNUSED(try
 		bytesLeft -= bytesChunk;
 	}
 
-	return new Common::MemoryReadStream(data.release(), res.uncompressedSize, true);
+	return std::make_unique<Common::MemoryReadStream>(std::move(data), res.uncompressedSize);
 }
 
 } // End of namespace Aurora

@@ -85,8 +85,7 @@ static const byte kDataCompressed[] = {
 };
 
 GTEST_TEST(ZIPFile, getFiles) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kDataCompressed);
-	const Common::ZipFile zip(stream);
+	const Common::ZipFile zip(std::make_unique<Common::MemoryReadStream>(kDataCompressed));
 
 	const Common::ZipFile::FileList &files = zip.getFiles();
 	ASSERT_EQ(files.size(), 1);
@@ -96,8 +95,7 @@ GTEST_TEST(ZIPFile, getFiles) {
 }
 
 GTEST_TEST(ZIPFile, getFileSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kDataCompressed);
-	const Common::ZipFile zip(stream);
+	const Common::ZipFile zip(std::make_unique<Common::MemoryReadStream>(kDataCompressed));
 
 	EXPECT_EQ(zip.getFileSize(0), strlen(kDataUncompressed));
 
@@ -105,22 +103,19 @@ GTEST_TEST(ZIPFile, getFileSize) {
 }
 
 GTEST_TEST(ZIPFile, getFile) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kDataCompressed);
-	const Common::ZipFile zip(stream);
+	const Common::ZipFile zip(std::make_unique<Common::MemoryReadStream>(kDataCompressed));
 
-	Common::SeekableReadStream *file = zip.getFile(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = zip.getFile(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kDataUncompressed));
 
 	for (size_t i = 0; i < strlen(kDataUncompressed); i++)
 		EXPECT_EQ(file->readByte(), kDataUncompressed[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(ZIPFile, brokenZIP) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kDataCompressed, sizeof(kDataCompressed) / 2);
+	std::unique_ptr<Common::SeekableReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataCompressed, sizeof(kDataCompressed) / 2);
 
-	EXPECT_THROW(Common::ZipFile zip(stream), Common::Exception);
+	EXPECT_THROW(Common::ZipFile zip(std::move(stream)), Common::Exception);
 }

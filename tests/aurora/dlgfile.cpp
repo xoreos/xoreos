@@ -187,37 +187,37 @@ protected:
 };
 
 GTEST_TEST_F(DLGFile, getNoZoomIn) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
 	EXPECT_FALSE(dlg.getNoZoomIn());
 }
 
 GTEST_TEST_F(DLGFile, getDelayEntry) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
 	EXPECT_EQ(dlg.getDelayEntry(), 0);
 }
 
 GTEST_TEST_F(DLGFile, getDelayReply) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
 	EXPECT_EQ(dlg.getDelayReply(), 0);
 }
 
 GTEST_TEST_F(DLGFile, hasEnded) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
 	EXPECT_TRUE(dlg.hasEnded());
 }
 
 GTEST_TEST_F(DLGFile, getCurrentEntry) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
-	EXPECT_EQ(dlg.getCurrentEntry(), static_cast<const Aurora::DLGFile::Line *>(0));
+	EXPECT_EQ(dlg.getCurrentEntry(), nullptr);
 }
 
 GTEST_TEST_F(DLGFile, getCurrentReplies) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
 	const std::vector<const Aurora::DLGFile::Line *> &replies = dlg.getCurrentReplies();
 
@@ -225,9 +225,9 @@ GTEST_TEST_F(DLGFile, getCurrentReplies) {
 }
 
 GTEST_TEST_F(DLGFile, getOneLiner) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
-	EXPECT_EQ(dlg.getOneLiner(), static_cast<const Aurora::DLGFile::Line *>(0));
+	EXPECT_EQ(dlg.getOneLiner(), nullptr);
 }
 
 void checkLine(size_t n, const Aurora::DLGFile::Line *entry, uint32_t id,
@@ -249,11 +249,11 @@ void checkLine(size_t n, const Aurora::DLGFile::Line *entry, uint32_t id,
 }
 
 GTEST_TEST_F(DLGFile, startConversation) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
 	dlg.startConversation();
 
-	EXPECT_EQ(dlg.getOneLiner(), static_cast<const Aurora::DLGFile::Line *>(0));
+	EXPECT_EQ(dlg.getOneLiner(), nullptr);
 	EXPECT_FALSE(dlg.hasEnded());
 
 	{
@@ -274,7 +274,7 @@ GTEST_TEST_F(DLGFile, startConversation) {
 
 	dlg.pickReply(1);
 
-	EXPECT_EQ(dlg.getOneLiner(), static_cast<const Aurora::DLGFile::Line *>(0));
+	EXPECT_EQ(dlg.getOneLiner(), nullptr);
 	EXPECT_FALSE(dlg.hasEnded());
 
 	{
@@ -298,7 +298,7 @@ GTEST_TEST_F(DLGFile, startConversation) {
 }
 
 GTEST_TEST_F(DLGFile, abortConversation) {
-	Aurora::DLGFile dlg(new Common::MemoryReadStream(kDLGFile));
+	Aurora::DLGFile dlg(std::make_unique<Common::MemoryReadStream>(kDLGFile));
 
 	dlg.startConversation();
 

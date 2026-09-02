@@ -47,7 +47,7 @@ public:
 	 *  If the Small files is uncompressed, this new stream will be a
 	 *  SeekableSubReadStream simply wrapping the old stream.
 	 */
-	static Common::SeekableReadStream *decompress(Common::SeekableReadStream *small);
+	static std::unique_ptr<Common::SeekableReadStream> decompress(std::unique_ptr<Common::SeekableReadStream> small);
 
 
 	/** "Compress" this stream into an uncompressed small file.

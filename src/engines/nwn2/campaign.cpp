@@ -337,7 +337,7 @@ Common::UString Campaign::getName(const Common::UString &campaign) {
 		const Common::FileList camFiles(getDirectory(campaign, false));
 		const Common::UString  camFile (camFiles.findFirst("campaign.cam", true));
 
-		Aurora::GFF3File cam(new Common::ReadFile(camFile), MKTAG('C', 'A', 'M', ' '));
+		Aurora::GFF3File cam(std::make_unique<Common::ReadFile>(camFile), MKTAG('C', 'A', 'M', ' '));
 
 		return cam.getTopLevel().getString("DisplayName");
 
@@ -352,7 +352,7 @@ Common::UString Campaign::getDescription(const Common::UString &campaign) {
 		const Common::FileList camFiles(getDirectory(campaign, false));
 		const Common::UString  camFile (camFiles.findFirst("campaign.cam", true));
 
-		Aurora::GFF3File cam(new Common::ReadFile(camFile), MKTAG('C', 'A', 'M', ' '));
+		Aurora::GFF3File cam(std::make_unique<Common::ReadFile>(camFile), MKTAG('C', 'A', 'M', ' '));
 
 		return cam.getTopLevel().getString("Description");
 

@@ -81,10 +81,10 @@ NSBTXFile::ReadContext::~ReadContext() {
 }
 
 
-NSBTXFile::NSBTXFile(Common::SeekableReadStream *nsbtx) {
+NSBTXFile::NSBTXFile(std::unique_ptr<Common::SeekableReadStream> nsbtx) {
 	assert(nsbtx);
 
-	_nsbtx.reset(open(nsbtx));
+	_nsbtx = open(std::move(nsbtx));
 
 	load(*_nsbtx);
 }
@@ -324,7 +324,7 @@ void NSBTXFile::getTexture(const ReadContext &ctx) {
 	}
 }
 
-Common::SeekableReadStream *NSBTXFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
+std::unique_ptr<Common::SeekableReadStream> NSBTXFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	if (index >= _textures.size())
 		throw Common::Exception("Texture index out of range (%u/%u)", index, (uint)_textures.size());
 
@@ -337,7 +337,7 @@ Common::SeekableReadStream *NSBTXFile::getResource(uint32_t index, bool UNUSED(t
 	getTexture(ctx);
 
 	stream.setDisposable(false);
-	return new Common::MemoryReadStream(stream.getData(), stream.size(), true);
+	return std::make_unique<Common::MemoryReadStream>(stream.getData(), stream.size(), true);
 }
 
 void NSBTXFile::load(Common::SeekableSubReadStreamEndian &nsbtx) {

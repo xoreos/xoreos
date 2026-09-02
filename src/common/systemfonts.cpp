@@ -20760,8 +20760,8 @@ static const byte kDejaVuSansMonoBold[] = {
 };
 
 
-SeekableReadStream *getSystemFontMono() {
-	return new MemoryReadStream(kDejaVuSansMonoBold);
+std::unique_ptr<SeekableReadStream> getSystemFontMono() {
+	return std::make_unique<MemoryReadStream>(kDejaVuSansMonoBold);
 }
 
 } // End of namespace Common

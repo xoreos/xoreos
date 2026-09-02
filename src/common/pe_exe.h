@@ -99,7 +99,7 @@ enum PEResourceType {
  */
 class PEResources {
 public:
-	PEResources(SeekableReadStream *exe);
+	PEResources(std::unique_ptr<SeekableReadStream> exe);
 	~PEResources();
 
 	PEResources(const PEResources &) = delete;
@@ -115,11 +115,11 @@ public:
 	const std::vector<PEResourceID> getLangList(const PEResourceID &type, const PEResourceID &name) const;
 
 	/** Return a stream to the specified resource, taking the first language found (or 0 if non-existent). */
-	SeekableReadStream *getResource(const PEResourceID &type, const PEResourceID &name);
+	std::unique_ptr<SeekableReadStream> getResource(const PEResourceID &type, const PEResourceID &name);
 
 	/** Return a stream to the specified resource (or 0 if non-existent). */
-	SeekableReadStream *getResource(const PEResourceID &type, const PEResourceID &name,
-	                                const PEResourceID &lang);
+	std::unique_ptr<SeekableReadStream> getResource(const PEResourceID &type, const PEResourceID &name,
+	                                                const PEResourceID &lang);
 
 private:
 	struct Section {

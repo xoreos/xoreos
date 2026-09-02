@@ -59,15 +59,13 @@ Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream 
 	return new Common::SeekableSubReadStreamEndian(&stream, begin, end, bigEndian, false);
 }
 
-Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream *stream) {
-	std::unique_ptr<Common::SeekableReadStream> nitroStream(stream);
+std::unique_ptr<Common::SeekableSubReadStreamEndian> NitroFile::open(std::unique_ptr<Common::SeekableReadStream> stream) {
+	const size_t begin = stream->pos();
+	const size_t end   = stream->size();
 
-	const size_t begin = nitroStream->pos();
-	const size_t end   = nitroStream->size();
+	const bool bigEndian = isBigEndian(*stream);
 
-	const bool bigEndian = isBigEndian(*nitroStream);
-
-	return new Common::SeekableSubReadStreamEndian(nitroStream.release(), begin, end, bigEndian, true);
+	return std::make_unique<Common::SeekableSubReadStreamEndian>(std::move(stream), begin, end, bigEndian);
 }
 
 } // End of namespace Aurora

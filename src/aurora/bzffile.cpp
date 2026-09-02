@@ -43,7 +43,7 @@ static const uint32_t kVersion1  = MKTAG('V', '1', ' ', ' ');
 
 namespace Aurora {
 
-BZFFile::BZFFile(Common::SeekableReadStream *bzf) : _bzf(bzf) {
+BZFFile::BZFFile(std::unique_ptr<Common::SeekableReadStream> bzf) : _bzf(std::move(bzf)) {
 	assert(_bzf);
 
 	load(*_bzf);
@@ -142,7 +142,7 @@ uint32_t BZFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *BZFFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
+std::unique_ptr<Common::SeekableReadStream> BZFFile::getResource(uint32_t index, bool UNUSED(tryNoCopy)) const {
 	const IResource &res = getIResource(index);
 
 	_bzf->seek(res.offset);

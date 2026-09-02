@@ -685,7 +685,7 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	if (tag != kMP4DecSpecificDescTag)
 		return 0;
 
-	sampleDesc->_extraData.reset(_fd->readStream(length));
+	sampleDesc->_extraData = _fd->readStream(length);
 
 	return 0;
 }
@@ -998,7 +998,7 @@ bool QuickTimeDecoder::VideoTrackHandler::decodeNextFrame(Graphics::Surface &sur
 
 	// Get the next packet
 	uint32_t descId;
-	std::unique_ptr<Common::SeekableReadStream> frameData(getNextFramePacket(descId));
+	std::unique_ptr<Common::SeekableReadStream> frameData = getNextFramePacket(descId);
 
 	if (!frameData || !descId || descId > _parent->sampleDescs.size())
 		return false;
@@ -1012,7 +1012,7 @@ bool QuickTimeDecoder::VideoTrackHandler::decodeNextFrame(Graphics::Surface &sur
 	return true;
 }
 
-Common::SeekableReadStream *QuickTimeDecoder::VideoTrackHandler::getNextFramePacket(uint32_t &descId) {
+std::unique_ptr<Common::SeekableReadStream> QuickTimeDecoder::VideoTrackHandler::getNextFramePacket(uint32_t &descId) {
 	// First, we have to track down which chunk holds the sample and which sample in the chunk contains the frame we are looking for.
 	int32_t totalSampleCount = 0;
 	int32_t sampleInChunk = 0;

@@ -171,11 +171,11 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 
 std::unique_ptr<XACTSoundBank> XACTSoundBank::load(const Common::UString &name) {
 	try {
-		std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(name, Aurora::kFileTypeXSB));
+		std::unique_ptr<Common::SeekableReadStream> stream = ResMan.getResource(name, Aurora::kFileTypeXSB);
 		if (stream)
 			return std::make_unique<XACTSoundBank_Binary>(*stream);
 
-		stream.reset(ResMan.getResource(name + "_xsb", Aurora::kFileTypeTXT));
+		stream = ResMan.getResource(name + "_xsb", Aurora::kFileTypeTXT);
 		if (stream)
 			return std::make_unique<XACTSoundBank_ASCII>(*stream);
 
@@ -259,7 +259,7 @@ const XACTWaveBank &XACTSoundBank::getWaveBank(const Common::UString &name) {
 		throw Common::Exception("XACTSoundBank::getWaveBank(): Don't know wave bank \"%s\"", name.c_str());
 
 	if (!bank->second->bank)
-		bank->second->bank.reset(XACTWaveBank::load(name));
+		bank->second->bank = XACTWaveBank::load(name);
 
 	return *bank->second->bank.get();
 }

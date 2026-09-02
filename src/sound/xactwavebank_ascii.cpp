@@ -41,10 +41,8 @@
 
 namespace Sound {
 
-XACTWaveBank_ASCII::XACTWaveBank_ASCII(Common::SeekableReadStream *xwb) {
+XACTWaveBank_ASCII::XACTWaveBank_ASCII(std::unique_ptr<Common::SeekableReadStream> xwb) {
 	assert(xwb);
-
-	std::unique_ptr<Common::SeekableReadStream> stream(xwb);
 
 	load(*xwb);
 }

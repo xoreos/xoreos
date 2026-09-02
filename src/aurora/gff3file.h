@@ -82,7 +82,7 @@ class GFF3Struct;
 class GFF3File : public AuroraFile {
 public:
 	/** Take over this stream and read a GFF3 file out of it. */
-	GFF3File(Common::SeekableReadStream *gff3, uint32_t id = 0xFFFFFFFF, bool repairNWNPremium = false);
+	GFF3File(std::unique_ptr<Common::SeekableReadStream> gff3, uint32_t id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	/** Request this resource from the ResourceManager and read a GFF3 file out of it. */
 	GFF3File(const Common::UString &gff3, FileType type, uint32_t id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	virtual ~GFF3File();
@@ -233,7 +233,7 @@ public:
 	void getOrientation(const Common::UString &field,
 	                    double &a, double &b, double &c, double &d) const;
 
-	Common::SeekableReadStream *getData(const Common::UString &field) const;
+	std::unique_ptr<Common::SeekableReadStream> getData(const Common::UString &field) const;
 	// '---
 
 	// .--- Structs and lists of structs

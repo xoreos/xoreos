@@ -291,7 +291,7 @@ public:
 	 *  @param  type If != 0, that's where the type of the resource is stored.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(uint64_t hash, FileType *type = 0) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint64_t hash, FileType *type = 0) const;
 
 	/** Return a resource.
 	 *
@@ -299,14 +299,14 @@ public:
 	 *  @param  type The resource's type.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(const Common::UString &name, FileType type) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(const Common::UString &name, FileType type) const;
 
 	/** Return a resource.
 	 *
 	 *  @param  name The name (with extension) of the resource.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(const Common::UString &name) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(const Common::UString &name) const;
 
 	/** Return a resource.
 	 *
@@ -318,7 +318,7 @@ public:
 	 *  @param  foundType If != 0, that's where the actually found type is stored.
 	 *  @return The resource stream or 0 if the resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(const Common::UString &name,
+	std::unique_ptr<Common::SeekableReadStream> getResource(const Common::UString &name,
 			const std::vector<FileType> &types, FileType *foundType = 0) const;
 
 	/** Return a resource of a specific type.
@@ -328,7 +328,7 @@ public:
 	 *  @param  foundType If != 0, that's where the actually found type is stored.
 	 *  @return The resource stream or 0 if the music resource doesn't exist.
 	 */
-	Common::SeekableReadStream *getResource(ResourceType resType,
+	std::unique_ptr<Common::SeekableReadStream> getResource(ResourceType resType,
 			const Common::UString &name, FileType *foundType = 0) const;
 
 	/** Return a list of all available resources of the specified type. */
@@ -367,7 +367,7 @@ private:
 
 	struct OpenedArchive {
 		/** The actual archive. */
-		Archive *archive;
+		std::unique_ptr<Archive> archive;
 
 		/** The information we know about this archive. */
 		KnownArchive *known;
@@ -379,7 +379,7 @@ private:
 
 		OpenedArchive();
 
-		void set(KnownArchive &kA, Archive &a);
+		void set(KnownArchive &kA, std::unique_ptr<Archive> a);
 	};
 
 	/** List of all known archive files. */
@@ -506,14 +506,14 @@ private:
 	// '---
 
 	// .--- Indexing archives
-	void indexKEY(Common::SeekableReadStream *stream, uint32_t priority, Change *change);
-	uint32_t openKEYBIFs(Common::SeekableReadStream *keyStream,
-	                   std::vector<KnownArchive *> &archives, std::vector<KEYDataFile *> &keyData);
+	void indexKEY(Common::SeekableReadStream &stream, uint32_t priority, Change *change);
+	uint32_t openKEYBIFs(Common::SeekableReadStream &keyStream,
+	                   std::vector<KnownArchive *> &archives, std::vector<std::unique_ptr<KEYDataFile>> &keyData);
 
-	void indexArchive(KnownArchive &knownArchive, Archive *archive,
+	void indexArchive(KnownArchive &knownArchive, std::unique_ptr<Archive> archive,
 	                  uint32_t priority, Change *change);
 
-	Common::SeekableReadStream *openArchiveStream(const KnownArchive &archive) const;
+	std::unique_ptr<Common::SeekableReadStream> openArchiveStream(const KnownArchive &archive) const;
 	// '---
 
 	// .--- Adding resources
@@ -531,9 +531,9 @@ private:
 	const Resource *getRes(const Common::UString &name, const std::vector<FileType> &types) const;
 	const Resource *getRes(const Common::UString &name, FileType type) const;
 
-	Common::SeekableReadStream *getResource(const Resource &res, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(const Resource &res, bool tryNoCopy = false) const;
 
-	Common::SeekableReadStream *getArchiveResource(const Resource &res, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getArchiveResource(const Resource &res, bool tryNoCopy = false) const;
 
 	uint32_t getResourceSize(const Resource &res) const;
 	// '---

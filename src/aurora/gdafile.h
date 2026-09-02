@@ -83,7 +83,7 @@ public:
 
 
 	/** Take over this stream and read a GDA file out of it. */
-	GDAFile(Common::SeekableReadStream *gda);
+	GDAFile(std::unique_ptr<Common::SeekableReadStream> gda);
 	~GDAFile();
 
 	GDAFile(const GDAFile &) = delete;
@@ -98,7 +98,7 @@ public:
 	 *
 	 *  The ownership stream will be transferred to this GDAFile object.
 	 */
-	void add(Common::SeekableReadStream *gda);
+	void add(std::unique_ptr<Common::SeekableReadStream> gda);
 
 	/** Return the number of columns in the array. */
 	size_t getColumnCount() const;
@@ -159,7 +159,7 @@ private:
 	mutable ColumnNameMap _columnNameMap;
 
 
-	void load(Common::SeekableReadStream *gda);
+	void load(std::unique_ptr<Common::SeekableReadStream> gda);
 
 	Type identifyType(const Columns &columns, const Row &rows, size_t column) const;
 

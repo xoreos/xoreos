@@ -198,11 +198,11 @@ GFXControl::GFXControl(ControlType type) : _type(type) {
 }
 
 GFXFile::GFXFile(const Common::UString &resref, Aurora::ActionScript::AVM &avm) {
-	Common::SeekableReadStream *gfx = ResMan.getResource(resref, kFileTypeGFX);
+	std::unique_ptr<Common::SeekableReadStream> gfx = ResMan.getResource(resref, kFileTypeGFX);
 	if (!gfx)
 		throw Common::Exception("Error creating gfx stream");
 
-	load(gfx, avm);
+	load(std::move(gfx), avm);
 }
 
 uint16_t GFXFile::getExportedAssetId(const Common::UString &id) {
@@ -221,7 +221,7 @@ GFXCharacter GFXFile::getCharacter(uint16_t id) {
 	return iter->second;
 }
 
-void GFXFile::load(Common::SeekableReadStream *gfx, Aurora::ActionScript::AVM &avm) {
+void GFXFile::load(std::unique_ptr<Common::SeekableReadStream> gfx, Aurora::ActionScript::AVM &avm) {
 	/* Read the magic id, which corresponds to CFX, where the C marks a zlib compression, and an appended  0x08,
 	 * which corresponds to the SWF version 8.
 	 */
@@ -235,8 +235,8 @@ void GFXFile::load(Common::SeekableReadStream *gfx, Aurora::ActionScript::AVM &a
 	gfx->skip(4);
 
 	// Decompress the gfx file except for the first 8 bytes with zlib.
-	Common::SeekableSubReadStream gfxSub(gfx, 8, gfx->size());
-	_gfx.reset(Common::decompressDeflateWithoutOutputSize(gfxSub, gfx->size() - 8, Common::kWindowBitsMax));
+	Common::SeekableSubReadStream gfxSub(gfx.get(), 8, gfx->size());
+	_gfx = Common::decompressDeflateWithoutOutputSize(gfxSub, gfx->size() - 8, Common::kWindowBitsMax);
 
 	// Read the compressed part of the header.
 	readHeader();
@@ -739,12 +739,12 @@ Aurora::ActionScript::ASBuffer *GFXFile::readAction() {
 	const size_t stop = _gfx->pos();
 
 	_gfx->seek(start);
-	Common::MemoryReadStream *subReadStream = _gfx->readStream(stop - start);
-	ActionScript::ASBuffer *buffer = new ActionScript::ASBuffer(subReadStream);
+	std::unique_ptr<Common::SeekableReadStream> subReadStream = _gfx->readStream(stop - start);
+	std::unique_ptr<ActionScript::ASBuffer> buffer = std::make_unique<ActionScript::ASBuffer>(subReadStream.release());
 
 	_gfx->seek(stop);
 
-	return buffer;
+	return buffer.release();
 }
 
 void GFXFile::readGFXExporterInfo(RecordHeader header) {

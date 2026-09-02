@@ -43,27 +43,26 @@ TalkTable::TalkTable(Common::Encoding encoding) : _encoding(encoding) {
 TalkTable::~TalkTable() {
 }
 
-TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, Common::Encoding encoding) {
-	std::unique_ptr<Common::SeekableReadStream> tlkStream(tlk);
-	if (!tlkStream)
-		return 0;
+std::unique_ptr<TalkTable> TalkTable::load(std::unique_ptr<Common::SeekableReadStream> tlk, Common::Encoding encoding) {
+	if (!tlk)
+		return nullptr;
 
-	size_t pos = tlkStream->pos();
+	size_t pos = tlk->pos();
 
 	uint32_t id, version;
 	bool utf16le;
 
-	AuroraFile::readHeader(*tlkStream, id, version, utf16le);
+	AuroraFile::readHeader(*tlk, id, version, utf16le);
 
-	tlkStream->seek(pos);
+	tlk->seek(pos);
 
 	if (id == kTLKID)
-		return new TalkTable_TLK(tlkStream.release(), encoding);
+		return std::make_unique<TalkTable_TLK>(std::move(tlk), encoding);
 
 	if (id == kGFFID)
-		return new TalkTable_GFF(tlkStream.release(), encoding);
+		return std::make_unique<TalkTable_GFF>(std::move(tlk), encoding);
 
-	return 0;
+	return nullptr;
 }
 
 } // End of namespace Aurora

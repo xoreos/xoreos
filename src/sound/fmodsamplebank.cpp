@@ -73,7 +73,7 @@ FMODSampleBank::FMODSampleBank(Common::SeekableReadStream *fsb) : _fsb(fsb) {
 }
 
 FMODSampleBank::FMODSampleBank(const Common::UString &name) {
-	_fsb.reset(ResMan.getResource(name, Aurora::kFileTypeFSB));
+	_fsb = ResMan.getResource(name, Aurora::kFileTypeFSB);
 	if (!_fsb)
 		throw Common::Exception("No such FSB resource \"%s\"", name.c_str());
 

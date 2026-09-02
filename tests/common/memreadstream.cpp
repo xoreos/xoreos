@@ -92,13 +92,13 @@ GTEST_TEST(MemoryReadStream, readStream) {
 	static const byte data[3] = { 0x12, 0x34, 0x56 };
 	Common::MemoryReadStream stream(data);
 
-	Common::MemoryReadStream *streamRead = stream.readStream(std::size(data));
+	{
+		std::unique_ptr<Common::SeekableReadStream> streamRead = stream.readStream(std::size(data));
 
-	EXPECT_EQ(streamRead->size(), std::size(data));
-	for (size_t i = 0; i < std::size(data); i++)
-		EXPECT_EQ(streamRead->readByte(), data[i]) << "At index " << i;
-
-	delete streamRead;
+		EXPECT_EQ(streamRead->size(), std::size(data));
+		for (size_t i = 0; i < std::size(data); i++)
+			EXPECT_EQ(streamRead->readByte(), data[i]) << "At index " << i;
+	}
 
 	stream.seek(0);
 

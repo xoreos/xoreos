@@ -126,7 +126,7 @@ namespace Aurora {
 
 Model_NWN::ParserContext::ParserContext(const Common::UString &name,
                                         const Common::UString &t) :
-	mdl(0), state(0), texture(t) {
+	state(0), texture(t) {
 
 	mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL);
 	if (!mdl)
@@ -147,7 +147,6 @@ Model_NWN::ParserContext::ParserContext(const Common::UString &name,
 
 Model_NWN::ParserContext::~ParserContext() {
 	delete tokenize;
-	delete mdl;
 
 	clear();
 }

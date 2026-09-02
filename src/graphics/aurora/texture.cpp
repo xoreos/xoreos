@@ -305,17 +305,8 @@ void Texture::createCubeMapTexture() {
 			setMipMapData(faceTarget[i], i, j);
 }
 
-Texture *Texture::createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream) {
-	Texture *texture = 0;
-	try {
-		texture = new PLTFile(name, *imageStream);
-	} catch (...) {
-		delete imageStream;
-		throw;
-	}
-
-	delete imageStream;
-	return texture;
+Texture *Texture::createPLT(const Common::UString &name, Common::SeekableReadStream &imageStream) {
+	return new PLTFile(name, imageStream);
 }
 
 Texture *Texture::create(const Common::UString &name, bool deswizzle) {
@@ -333,25 +324,25 @@ Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 
 			for (size_t i = 0; i < 6; i++) {
 				const Common::UString side = name + Common::composeString(i);
-				Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, side, &type);
+				std::unique_ptr<Common::SeekableReadStream> imageStream = ResMan.getResource(::Aurora::kResourceImage, side, &type);
 				if (!imageStream)
 					throw Common::Exception("No such cube side image resource \"%s\"", side.c_str());
 
-				layers[i] = loadImage(imageStream, type, txi.get(), deswizzle);
+				layers[i] = loadImage(std::move(imageStream), type, txi.get(), deswizzle);
 			}
 
 			image = new CubeMapCombiner(layers);
 
 		} else {
-			Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
+			std::unique_ptr<Common::SeekableReadStream> imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
 			if (!imageStream)
 				throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
 			// PLT needs extra handling, since they're their own Texture class
 			if (type == ::Aurora::kFileTypePLT)
-				return createPLT(name, imageStream);
+				return createPLT(name, *imageStream);
 
-			image = loadImage(imageStream, type, txi.get(), deswizzle);
+			image = loadImage(std::move(imageStream), type, txi.get(), deswizzle);
 		}
 
 	} catch (Common::Exception &e) {
@@ -379,25 +370,25 @@ Texture *Texture::create(const Common::UString &name, const TXI &txi, bool deswi
 
 			for (size_t i = 0; i < 6; i++) {
 				const Common::UString side = name + Common::composeString(i);
-				Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, side, &type);
+				std::unique_ptr<Common::SeekableReadStream> imageStream = ResMan.getResource(::Aurora::kResourceImage, side, &type);
 				if (!imageStream)
 					throw Common::Exception("No such cube side image resource \"%s\"", side.c_str());
 
-				layers[i] = loadImage(imageStream, type, &txi, deswizzle);
+				layers[i] = loadImage(std::move(imageStream), type, &txi, deswizzle);
 			}
 
 			image = new CubeMapCombiner(layers);
 
 		} else {
-			Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
+			std::unique_ptr<Common::SeekableReadStream> imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
 			if (!imageStream)
 				throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
 			// PLT needs extra handling, since they're their own Texture class
 			if (type == ::Aurora::kFileTypePLT)
-				return createPLT(name, imageStream);
+				return createPLT(name, *imageStream);
 
-			image = loadImage(imageStream, type, &txi, deswizzle);
+			image = loadImage(std::move(imageStream), type, &txi, deswizzle);
 		}
 
 	} catch (Common::Exception &e) {
@@ -469,11 +460,11 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 
 	const bool isFileCubeMap = txi && txi->getFeatures().cube && (txi->getFeatures().fileRange == 6);
 	if (!isFileCubeMap) {
-		Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
+		std::unique_ptr<Common::SeekableReadStream> imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
 		if (!imageStream)
 			throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
-		return loadImage(imageStream, type, txi, deswizzle);
+		return loadImage(std::move(imageStream), type, txi, deswizzle);
 	}
 
 	ImageDecoder *layers[6] = { 0, 0, 0, 0, 0, 0 };
@@ -481,11 +472,11 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 	try {
 		for (size_t i = 0; i < 6; i++) {
 			const Common::UString side = name + Common::composeString(i);
-			Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, side, &type);
+			std::unique_ptr<Common::SeekableReadStream> imageStream = ResMan.getResource(::Aurora::kResourceImage, side, &type);
 			if (!imageStream)
 				throw Common::Exception("No such cube side image resource \"%s\"", side.c_str());
 
-			layers[i] = loadImage(imageStream, type, txi, deswizzle);
+			layers[i] = loadImage(std::move(imageStream), type, txi, deswizzle);
 		}
 
 		return new CubeMapCombiner(layers);
@@ -498,7 +489,7 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 	}
 }
 
-ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
+ImageDecoder *Texture::loadImage(std::unique_ptr<Common::SeekableReadStream> imageStream, ::Aurora::FileType type,
                                  const TXI *txi, bool deswizzle) {
 
 	// Check for a cube map, but only those that don't use a file for each side
@@ -531,12 +522,10 @@ ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Auro
 
 	} catch (...) {
 		delete image;
-		delete imageStream;
 
 		throw;
 	}
 
-	delete imageStream;
 	return image;
 }
 

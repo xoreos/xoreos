@@ -38,15 +38,14 @@ namespace Aurora {
  */
 class SACFile : public GFF3File {
 public:
-	SACFile(Common::SeekableReadStream *stream);
+	SACFile(std::unique_ptr<Common::SeekableReadStream> stream);
 
 	Common::UString getLevelFile() const;
 
 private:
 	Common::UString _levelFile;
-	std::unique_ptr<Common::SeekableReadStream> _stream;
 
-	Common::SeekableReadStream *load(Common::SeekableReadStream *stream);
+	std::unique_ptr<Common::SeekableReadStream> load(std::unique_ptr<Common::SeekableReadStream> stream);
 };
 
 } // End of namespace Aurora

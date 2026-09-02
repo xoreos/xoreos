@@ -33,8 +33,8 @@
 
 namespace Aurora {
 
-GFF3Writer::VoidData::VoidData(Common::SeekableReadStream *stream) {
-	data.reset(stream);
+GFF3Writer::VoidData::VoidData(std::unique_ptr<Common::SeekableReadStream> stream) {
+	data = std::move(stream);
 	data->seek(0);
 }
 
@@ -44,7 +44,7 @@ GFF3Writer::VoidData &GFF3Writer::VoidData::operator=(const VoidData &rhs) {
 	if (!rhs.data)
 		return *this;
 
-	data.reset(rhs.data->readStream(rhs.data->size()));
+	data = rhs.data->readStream(rhs.data->size());
 	rhs.data->seek(0);
 
 	return *this;
@@ -510,10 +510,10 @@ void GFF3WriterStruct::addExoString(const Common::UString &label, const Common::
 	createField(GFF3Struct::kFieldTypeExoString, label)->value.data = value;
 }
 
-void GFF3WriterStruct::addExoString(const Common::UString &label, Common::SeekableReadStream *value) {
+void GFF3WriterStruct::addExoString(const Common::UString &label, std::unique_ptr<Common::SeekableReadStream> value) {
 	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeExoString, label);
 
-	field->value.data = GFF3Writer::VoidData(value);
+	field->value.data = GFF3Writer::VoidData(std::move(value));
 	field->value.isRaw = true;
 }
 
@@ -525,17 +525,17 @@ void GFF3WriterStruct::addResRef(const Common::UString &label, const Common::USt
 	createField(GFF3Struct::kFieldTypeResRef, label)->value.data = value;
 }
 
-void GFF3WriterStruct::addResRef(const Common::UString &label, Common::SeekableReadStream *value) {
+void GFF3WriterStruct::addResRef(const Common::UString &label, std::unique_ptr<Common::SeekableReadStream> value) {
 	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeResRef, label);
 
-	field->value.data = GFF3Writer::VoidData(value);
+	field->value.data = GFF3Writer::VoidData(std::move(value));
 	field->value.isRaw = true;
 }
 
-void GFF3WriterStruct::addVoid(const Common::UString &label, Common::SeekableReadStream *value) {
+void GFF3WriterStruct::addVoid(const Common::UString &label, std::unique_ptr<Common::SeekableReadStream> value) {
 	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeVoid, label);
 
-	field->value.data = GFF3Writer::VoidData(value);
+	field->value.data = GFF3Writer::VoidData(std::move(value));
 	field->value.isRaw = true;
 }
 

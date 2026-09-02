@@ -53,7 +53,7 @@ namespace Aurora {
 class HERFFile : public Archive {
 public:
 	/** Take over this stream and read an HERF file out of it. */
-	HERFFile(Common::SeekableReadStream *herf);
+	HERFFile(std::unique_ptr<Common::SeekableReadStream> herf);
 	~HERFFile();
 
 	/** Return the list of resources. */
@@ -63,7 +63,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 	/** Return with which algorithm the name is hashed. */
 	Common::HashAlgo getNameHashAlgo() const;

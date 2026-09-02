@@ -303,7 +303,7 @@ private:
 
 
 	struct ParserContext {
-		Common::SeekableSubReadStreamEndian *nsbmd;
+		std::unique_ptr<Common::SeekableSubReadStreamEndian> nsbmd;
 
 		// .--- Offsets to different parts of the NSBMD file
 		uint32_t offsetMDL0;

@@ -93,26 +93,15 @@ namespace Aurora {
 
 Model_Jade::ParserContext::ParserContext(const Common::UString &name,
                                          const Common::UString &t) :
-	mdl(0), mdx(0), state(0), texture(t) {
+	state(0), texture(t) {
 
-	try {
-
-		if (!(mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL)))
-			throw Common::Exception("No such MDL \"%s\"", name.c_str());
-		if (!(mdx = ResMan.getResource(name, ::Aurora::kFileTypeMDX)))
-			throw Common::Exception("No such MDX \"%s\"", name.c_str());
-
-	} catch (...) {
-		delete mdl;
-		delete mdx;
-		throw;
-	}
+	if (!(mdl = ResMan.getResource(name, ::Aurora::kFileTypeMDL)))
+		throw Common::Exception("No such MDL \"%s\"", name.c_str());
+	if (!(mdx = ResMan.getResource(name, ::Aurora::kFileTypeMDX)))
+		throw Common::Exception("No such MDX \"%s\"", name.c_str());
 }
 
 Model_Jade::ParserContext::~ParserContext() {
-	delete mdl;
-	delete mdx;
-
 	clear();
 }
 
@@ -706,7 +695,7 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 	}
 
 	Common::UString mabFile = Common::String::format("%d", materialID);
-	Common::SeekableReadStream *mab = ResMan.getResource(mabFile, ::Aurora::kFileTypeMAB);
+	std::unique_ptr<Common::SeekableReadStream> mab = ResMan.getResource(mabFile, ::Aurora::kFileTypeMAB);
 	if (!mab) {
 		textures.clear();
 		return;
@@ -759,14 +748,11 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 		}
 
 	} catch (...) {
-		delete mab;
 		textures.clear();
 
 		Common::exceptionDispatcherWarning();
 		return;
 	}
-
-	delete mab;
 
 	while (!textures.empty() && textures.back().empty())
 		textures.pop_back();

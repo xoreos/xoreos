@@ -59,7 +59,7 @@ namespace Aurora {
 class TalkTable_GFF : public TalkTable {
 public:
 	/** Take over this stream and read a GFF'd TLK out of it. */
-	TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding);
+	TalkTable_GFF(std::unique_ptr<Common::SeekableReadStream> tlk, Common::Encoding encoding);
 	~TalkTable_GFF();
 
 	bool hasEntry(uint32_t strRef) const;
@@ -87,7 +87,7 @@ private:
 
 	mutable Entries _entries;
 
-	void load(Common::SeekableReadStream *tlk);
+	void load(std::unique_ptr<Common::SeekableReadStream> tlk);
 	void load02(const GFF4Struct &top);
 	void load05(const GFF4Struct &top);
 

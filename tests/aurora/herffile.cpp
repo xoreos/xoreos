@@ -95,15 +95,13 @@ static const byte kHERFFileWithoutDict[] = {
 };
 
 GTEST_TEST(HERFFileWithoutDict, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithoutDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithoutDict));
 
 	EXPECT_EQ(herf.getNameHashAlgo(), Common::kHashDJB2);
 }
 
 GTEST_TEST(HERFFileWithoutDict, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithoutDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithoutDict));
 
 	const Aurora::HERFFile::ResourceList &resources = herf.getResources();
 	ASSERT_EQ(resources.size(), 1);
@@ -115,8 +113,7 @@ GTEST_TEST(HERFFileWithoutDict, getResources) {
 }
 
 GTEST_TEST(HERFFileWithoutDict, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithoutDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithoutDict));
 
 	EXPECT_EQ(herf.getResourceSize(0), strlen(kFileData));
 
@@ -124,16 +121,14 @@ GTEST_TEST(HERFFileWithoutDict, getResourceSize) {
 }
 
 GTEST_TEST(HERFFileWithoutDict, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithoutDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithoutDict));
 
 	EXPECT_EQ(herf.findResource(Common::hashStringDJB2("ozymandias.txt")), 0);
 	EXPECT_EQ(herf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(HERFFileWithoutDict, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithoutDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithoutDict));
 
 	EXPECT_EQ(herf.findResource("ozymandias", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 	EXPECT_EQ(herf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
@@ -142,18 +137,15 @@ GTEST_TEST(HERFFileWithoutDict, findResourceName) {
 }
 
 GTEST_TEST(HERFFileWithoutDict, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithoutDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithoutDict));
 
-	Common::SeekableReadStream *file = herf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = herf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 // --- HERF, with dictionary ---
@@ -213,15 +205,13 @@ static const byte kHERFFileWithDict[] = {
 };
 
 GTEST_TEST(HERFFileWithDict, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithDict));
 
 	EXPECT_EQ(herf.getNameHashAlgo(), Common::kHashDJB2);
 }
 
 GTEST_TEST(HERFFileWithDict, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithDict));
 
 	const Aurora::HERFFile::ResourceList &resources = herf.getResources();
 	ASSERT_EQ(resources.size(), 2);
@@ -244,8 +234,7 @@ GTEST_TEST(HERFFileWithDict, getResources) {
 }
 
 GTEST_TEST(HERFFileWithDict, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithDict));
 
 	EXPECT_EQ(herf.getResourceSize(0), strlen(kFileData));
 	EXPECT_EQ(herf.getResourceSize(1), 140);
@@ -254,16 +243,14 @@ GTEST_TEST(HERFFileWithDict, getResourceSize) {
 }
 
 GTEST_TEST(HERFFileWithDict, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithDict));
 
 	EXPECT_EQ(herf.findResource(Common::hashStringDJB2("ozymandias.txt")), 0);
 	EXPECT_EQ(herf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(HERFFileWithDict, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithDict));
 
 	EXPECT_EQ(herf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
 
@@ -273,16 +260,13 @@ GTEST_TEST(HERFFileWithDict, findResourceName) {
 }
 
 GTEST_TEST(HERFFileWithDict, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kHERFFileWithDict);
-	const Aurora::HERFFile herf(stream);
+	const Aurora::HERFFile herf(std::make_unique<Common::MemoryReadStream>(kHERFFileWithDict));
 
-	Common::SeekableReadStream *file = herf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = herf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }

@@ -106,23 +106,20 @@ static const byte kBIF10File[] = {
 };
 
 GTEST_TEST(BIFFile10, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF10File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF10File));
 
 	EXPECT_EQ(bif.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(BIFFile10, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF10File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF10File));
 
 	const Aurora::BIFFile::ResourceList &resources = bif.getResources();
 	EXPECT_EQ(resources.size(), 0);
 }
 
 GTEST_TEST(BIFFile10, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF10File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF10File));
 
 	EXPECT_EQ(bif.getResourceSize(0), strlen(kFileData));
 
@@ -130,15 +127,13 @@ GTEST_TEST(BIFFile10, getResourceSize) {
 }
 
 GTEST_TEST(BIFFile10, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF10File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF10File));
 
 	EXPECT_EQ(bif.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(BIFFile10, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF10File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF10File));
 
 	EXPECT_EQ(bif.findResource("ozymandias", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 	EXPECT_EQ(bif.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
@@ -147,23 +142,19 @@ GTEST_TEST(BIFFile10, findResourceName) {
 }
 
 GTEST_TEST(BIFFile10, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF10File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF10File));
 
-	Common::SeekableReadStream *file = bif.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = bif.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(BIFFile10, mergeKEY) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF10File);
-	Aurora::BIFFile bif(stream);
+	Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF10File));
 
 	Common::MemoryReadStream keyStream(kKEYFile);
 	Aurora::KEYFile key(keyStream);
@@ -232,23 +223,20 @@ static const byte kBIF11File[] = {
 };
 
 GTEST_TEST(BIFFile11, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF11File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF11File));
 
 	EXPECT_EQ(bif.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(BIFFile11, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF11File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF11File));
 
 	const Aurora::BIFFile::ResourceList &resources = bif.getResources();
 	EXPECT_EQ(resources.size(), 0);
 }
 
 GTEST_TEST(BIFFile11, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF11File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF11File));
 
 	EXPECT_EQ(bif.getResourceSize(0), strlen(kFileData));
 
@@ -256,15 +244,13 @@ GTEST_TEST(BIFFile11, getResourceSize) {
 }
 
 GTEST_TEST(BIFFile11, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF11File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF11File));
 
 	EXPECT_EQ(bif.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(BIFFile11, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF11File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF11File));
 
 	EXPECT_EQ(bif.findResource("ozymandias", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 	EXPECT_EQ(bif.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
@@ -273,23 +259,19 @@ GTEST_TEST(BIFFile11, findResourceName) {
 }
 
 GTEST_TEST(BIFFile11, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF11File);
-	const Aurora::BIFFile bif(stream);
+	const Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF11File));
 
-	Common::SeekableReadStream *file = bif.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = bif.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(BIFFile11, mergeKEY) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBIF11File);
-	Aurora::BIFFile bif(stream);
+	Aurora::BIFFile bif(std::make_unique<Common::MemoryReadStream>(kBIF11File));
 
 	Common::MemoryReadStream keyStream(kKEYFile);
 	Aurora::KEYFile key(keyStream);

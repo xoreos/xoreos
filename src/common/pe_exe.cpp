@@ -101,7 +101,7 @@ UString PEResourceID::toString() const {
 	return "";
 }
 
-PEResources::PEResources(SeekableReadStream *exe) : _exe(exe) {
+PEResources::PEResources(std::unique_ptr<SeekableReadStream> exe) : _exe(std::move(exe)) {
 	assert(_exe);
 
 	if (!loadFromEXE(*_exe))
@@ -260,7 +260,7 @@ const std::vector<PEResourceID> PEResources::getLangList(const PEResourceID &typ
 	return array;
 }
 
-SeekableReadStream *PEResources::getResource(const PEResourceID &type, const PEResourceID &name) {
+std::unique_ptr<SeekableReadStream> PEResources::getResource(const PEResourceID &type, const PEResourceID &name) {
 	std::vector<PEResourceID> langList = getLangList(type, name);
 
 	if (langList.empty())
@@ -271,8 +271,8 @@ SeekableReadStream *PEResources::getResource(const PEResourceID &type, const PER
 	return _exe->readStream(resource.size);
 }
 
-SeekableReadStream *PEResources::getResource(const PEResourceID &type, const PEResourceID &name,
-                                             const PEResourceID &lang) {
+std::unique_ptr<SeekableReadStream> PEResources::getResource(const PEResourceID &type, const PEResourceID &name,
+                                                             const PEResourceID &lang) {
 
 	if (_resources.find(type) == _resources.end())
 		return 0;

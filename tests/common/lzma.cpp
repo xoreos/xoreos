@@ -81,14 +81,12 @@ GTEST_TEST(LZMA1, decompressBuf) {
 	static const size_t kSizeCompressed   = sizeof(kDataCompressed);
 	static const size_t kSizeDecompressed = strlen(kDataUncompressed);
 
-	const byte *decompressed =
+	std::unique_ptr<byte[]> decompressed =
 		Common::decompressLZMA1(kDataCompressed, kSizeCompressed, kSizeDecompressed);
-	ASSERT_NE(decompressed, static_cast<const byte *>(0));
+	ASSERT_NE(decompressed, nullptr);
 
 	for (size_t i = 0; i < kSizeDecompressed; i++)
 		EXPECT_EQ(decompressed[i], kDataUncompressed[i]) << "At index " << i;
-
-	delete[] decompressed;
 }
 
 GTEST_TEST(LZMA1, decompressStream) {
@@ -97,16 +95,14 @@ GTEST_TEST(LZMA1, decompressStream) {
 
 	Common::MemoryReadStream compressed(kDataCompressed);
 
-	Common::SeekableReadStream *decompressed =
+	std::unique_ptr<Common::SeekableReadStream> decompressed =
 		Common::decompressLZMA1(compressed, kSizeCompressed, kSizeDecompressed);
-	ASSERT_NE(decompressed, static_cast<Common::SeekableReadStream *>(0));
+	ASSERT_NE(decompressed, nullptr);
 
 	ASSERT_EQ(decompressed->size(), kSizeDecompressed);
 
 	for (size_t i = 0; i < kSizeDecompressed; i++)
 		EXPECT_EQ(decompressed->readByte(), kDataUncompressed[i]) << "At index " << i;
-
-	delete decompressed;
 }
 
 GTEST_TEST(LZMA1, decompressFailOutputSmall) {

@@ -42,7 +42,7 @@ static const uint32_t kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 
-BIFFile::BIFFile(Common::SeekableReadStream *bif) : _bif(bif) {
+BIFFile::BIFFile(std::unique_ptr<Common::SeekableReadStream> bif) : _bif(std::move(bif)) {
 	assert(_bif);
 
 	load(*_bif);
@@ -138,11 +138,11 @@ uint32_t BIFFile::getResourceSize(uint32_t index) const {
 	return getIResource(index).size;
 }
 
-Common::SeekableReadStream *BIFFile::getResource(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<Common::SeekableReadStream> BIFFile::getResource(uint32_t index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy)
-		return new Common::SeekableSubReadStream(_bif.get(), res.offset, res.offset + res.size);
+		return std::make_unique<Common::SeekableSubReadStream>(_bif.get(), res.offset, res.offset + res.size);
 
 	_bif->seek(res.offset);
 

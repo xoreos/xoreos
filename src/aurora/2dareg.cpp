@@ -129,41 +129,31 @@ void TwoDARegistry::removeGDA(const Common::UString &name) {
 }
 
 std::unique_ptr<TwoDAFile> TwoDARegistry::load2DA(const Common::UString &name) {
-	std::unique_ptr<Common::SeekableReadStream> twodaFile;
-	std::unique_ptr<TwoDAFile> twoda;
-
 	try {
-		twodaFile.reset(ResMan.getResource(name, kFileType2DA));
+		std::unique_ptr<Common::SeekableReadStream> twodaFile = ResMan.getResource(name, kFileType2DA);
 		if (!twodaFile)
 			throw Common::Exception("No such 2DA");
 
-		twoda = std::make_unique<TwoDAFile>(*twodaFile);
+		return std::make_unique<TwoDAFile>(*twodaFile);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed loading 2DA \"%s\"", name.c_str());
 		throw;
 	}
-
-	return twoda;
 }
 
 std::unique_ptr<GDAFile> TwoDARegistry::loadGDA(const Common::UString &name) {
-	std::unique_ptr<Common::SeekableReadStream> gdaFile;
-	std::unique_ptr<GDAFile> gda;
-
 	try {
-		gdaFile.reset(ResMan.getResource(name, kFileTypeGDA));
+		std::unique_ptr<Common::SeekableReadStream> gdaFile = ResMan.getResource(name, kFileTypeGDA);
 		if (!gdaFile)
 			throw Common::Exception("No such GDA");
 
-		gda = std::make_unique<GDAFile>(gdaFile.release());
+		return std::make_unique<GDAFile>(std::move(gdaFile));
 
 	} catch (Common::Exception &e) {
 		e.add("Failed loading GDA \"%s\"", name.c_str());
 		throw;
 	}
-
-	return gda;
 }
 
 std::unique_ptr<GDAFile> TwoDARegistry::loadMGDA(Common::UString prefix) {
@@ -193,9 +183,9 @@ std::unique_ptr<GDAFile> TwoDARegistry::loadMGDA(Common::UString prefix) {
 
 			// If this is the first GDA, plain load it. Otherwise, merge it into the first one
 			if (!gda)
-				gda = std::make_unique<GDAFile>(stream.release());
+				gda = std::make_unique<GDAFile>(std::move(stream));
 			else
-				gda->add(stream.release());
+				gda->add(std::move(stream));
 		}
 
 		if (!gda)

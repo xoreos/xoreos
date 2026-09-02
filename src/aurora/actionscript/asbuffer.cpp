@@ -662,7 +662,7 @@ void ASBuffer::actionDefineFunction2() {
 	_stack.push(
 			ObjectPtr(
 					new ScriptedFunction(
-							_script->readStream(codeSize),
+							_script->readStream(codeSize).release(),
 							_constants,
 							parameterIds,
 							registerCount,
@@ -842,7 +842,7 @@ void ASBuffer::actionDefineFunction() {
 	}
 
 	uint16_t codeSize = _script->readUint16LE();
-	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, std::vector<uint8_t>(), 0, false, false, false, false)));
+	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize).release(), _constants, std::vector<uint8_t>(), 0, false, false, false, false)));
 
 	_seeked = codeSize;
 

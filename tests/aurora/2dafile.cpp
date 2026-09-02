@@ -694,7 +694,7 @@ GTEST_TEST(TwoDAFile, fromGDA) {
 		0x00,0x00,0x02,0x00,0x00,0x00
 	};
 
-	const Aurora::GDAFile gda(new Common::MemoryReadStream(kGDA));
+	const Aurora::GDAFile gda(std::make_unique<Common::MemoryReadStream>(kGDA));
 	const Aurora::TwoDAFile twoda(gda);
 
 	EXPECT_EQ(twoda.getColumnCount(), 2);

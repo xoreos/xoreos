@@ -92,23 +92,20 @@ static const byte kBZFFile[] = {
 };
 
 GTEST_TEST(BZFFile, getNameHashAlgo) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBZFFile);
-	const Aurora::BZFFile bzf(stream);
+	const Aurora::BZFFile bzf(std::make_unique<Common::MemoryReadStream>(kBZFFile));
 
 	EXPECT_EQ(bzf.getNameHashAlgo(), Common::kHashNone);
 }
 
 GTEST_TEST(BZFFile, getResources) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBZFFile);
-	const Aurora::BZFFile bzf(stream);
+	const Aurora::BZFFile bzf(std::make_unique<Common::MemoryReadStream>(kBZFFile));
 
 	const Aurora::BZFFile::ResourceList &resources = bzf.getResources();
 	EXPECT_EQ(resources.size(), 0);
 }
 
 GTEST_TEST(BZFFile, getResourceSize) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBZFFile);
-	const Aurora::BZFFile bzf(stream);
+	const Aurora::BZFFile bzf(std::make_unique<Common::MemoryReadStream>(kBZFFile));
 
 	EXPECT_EQ(bzf.getResourceSize(0), strlen(kFileData));
 
@@ -116,15 +113,13 @@ GTEST_TEST(BZFFile, getResourceSize) {
 }
 
 GTEST_TEST(BZFFile, findResourceHash) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBZFFile);
-	const Aurora::BZFFile bzf(stream);
+	const Aurora::BZFFile bzf(std::make_unique<Common::MemoryReadStream>(kBZFFile));
 
 	EXPECT_EQ(bzf.findResource(0), 0xFFFFFFFF);
 }
 
 GTEST_TEST(BZFFile, findResourceName) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBZFFile);
-	const Aurora::BZFFile bzf(stream);
+	const Aurora::BZFFile bzf(std::make_unique<Common::MemoryReadStream>(kBZFFile));
 
 	EXPECT_EQ(bzf.findResource("ozymandias", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 	EXPECT_EQ(bzf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
@@ -133,23 +128,19 @@ GTEST_TEST(BZFFile, findResourceName) {
 }
 
 GTEST_TEST(BZFFile, getResource) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBZFFile);
-	const Aurora::BZFFile bzf(stream);
+	const Aurora::BZFFile bzf(std::make_unique<Common::MemoryReadStream>(kBZFFile));
 
-	Common::SeekableReadStream *file = bzf.getResource(0);
-	ASSERT_NE(file, static_cast<Common::SeekableReadStream *>(0));
+	std::unique_ptr<Common::SeekableReadStream> file = bzf.getResource(0);
+	ASSERT_NE(file, nullptr);
 
 	ASSERT_EQ(file->size(), strlen(kFileData));
 
 	for (size_t i = 0; i < strlen(kFileData); i++)
 		EXPECT_EQ(file->readByte(), kFileData[i]) << "At index " << i;
-
-	delete file;
 }
 
 GTEST_TEST(BZFFile, mergeKEY) {
-	Common::MemoryReadStream *stream = new Common::MemoryReadStream(kBZFFile);
-	Aurora::BZFFile bzf(stream);
+	Aurora::BZFFile bzf(std::make_unique<Common::MemoryReadStream>(kBZFFile));
 
 	Common::MemoryReadStream keyStream(kKEYFile);
 	Aurora::KEYFile key(keyStream);

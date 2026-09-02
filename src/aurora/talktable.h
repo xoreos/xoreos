@@ -62,7 +62,7 @@ public:
 	virtual uint32_t getSoundID(uint32_t strRef) const = 0;
 
 	/** Take over this stream and read a talk table (of either format) out of it. */
-	static TalkTable *load(Common::SeekableReadStream *tlk, Common::Encoding encoding);
+	static std::unique_ptr<TalkTable> load(std::unique_ptr<Common::SeekableReadStream> tlk, Common::Encoding encoding);
 
 
 protected:

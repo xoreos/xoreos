@@ -167,7 +167,7 @@ private:
 	/** Return the actual real directory for this campaign. */
 	static Common::UString getDirectory(const Common::UString &campaign);
 	/** Open the MMD campaign file for this campaign. */
-	static Common::SeekableReadStream *openMMD(const Common::UString &campaign);
+	static std::unique_ptr<Common::SeekableReadStream> openMMD(const Common::UString &campaign);
 };
 
 } // End of namespace Witcher

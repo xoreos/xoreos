@@ -34,7 +34,7 @@
 
 namespace Common {
 
-ZipFile::ZipFile(SeekableReadStream *zip) : _zip(zip) {
+ZipFile::ZipFile(std::unique_ptr<SeekableReadStream> zip) : _zip(std::move(zip)) {
 	assert(_zip);
 
 	load(*_zip);
@@ -158,7 +158,7 @@ size_t ZipFile::getFileSize(uint32_t index) const {
 	return getIFile(index).size;
 }
 
-SeekableReadStream *ZipFile::getFile(uint32_t index, bool tryNoCopy) const {
+std::unique_ptr<SeekableReadStream> ZipFile::getFile(uint32_t index, bool tryNoCopy) const {
 	const IFile &file = getIFile(index);
 
 	uint16_t compMethod;
@@ -168,12 +168,12 @@ SeekableReadStream *ZipFile::getFile(uint32_t index, bool tryNoCopy) const {
 	getFileProperties(*_zip, file, compMethod, compSize, realSize);
 
 	if (tryNoCopy && (compMethod == 0))
-		return new SeekableSubReadStream(_zip.get(), _zip->pos(), _zip->pos() + compSize);
+		return std::make_unique<SeekableSubReadStream>(_zip.get(), _zip->pos(), _zip->pos() + compSize);
 
 	return decompressFile(*_zip, compMethod, compSize, realSize);
 }
 
-SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32_t method,
+std::unique_ptr<SeekableReadStream> ZipFile::decompressFile(SeekableReadStream &zip, uint32_t method,
 		uint32_t compSize, uint32_t realSize) {
 
 	if (method == 0) {

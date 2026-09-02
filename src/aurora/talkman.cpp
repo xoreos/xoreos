@@ -55,15 +55,15 @@ void TalkManager::clear() {
 	_tablesAlt.clear();
 }
 
-static TalkTable *loadTable(const Common::UString &name, Common::Encoding encoding) {
+static std::unique_ptr<TalkTable> loadTable(const Common::UString &name, Common::Encoding encoding) {
 	if (name.empty())
 		return 0;
 
-	Common::SeekableReadStream *tlk = ResMan.getResource(name, kFileTypeTLK);
+	std::unique_ptr<Common::SeekableReadStream> tlk = ResMan.getResource(name, kFileTypeTLK);
 	if (!tlk)
 		return 0;
 
-	return TalkTable::load(tlk, encoding);
+	return TalkTable::load(std::move(tlk), encoding);
 }
 
 static void loadTables(const Common::UString &nameM, const Common::UString &nameF,

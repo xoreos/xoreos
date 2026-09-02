@@ -46,7 +46,7 @@ GTEST_TEST(NWN2Creature, creature1) {
 	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataCreature1);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('G', 'I', 'T', ' '));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(std::move(stream), MKTAG('G', 'I', 'T', ' '));
 
 	// Get the creature list
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
@@ -112,7 +112,7 @@ GTEST_TEST(NWN2Creature, creature2) {
 	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataCreature2);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('B', 'I', 'C', ' '));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(std::move(stream), MKTAG('B', 'I', 'C', ' '));
 
 	// Load the PC
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
@@ -168,7 +168,7 @@ GTEST_TEST(NWN2Creature, inventory) {
 	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataCreature3);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('R', 'O', 'S', ' '));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(std::move(stream), MKTAG('R', 'O', 'S', ' '));
 
 	// Load the PC
 	const Aurora::GFF3Struct &top = gff->getTopLevel();

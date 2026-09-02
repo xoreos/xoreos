@@ -225,11 +225,11 @@ Common::UString Area::getName(const Common::UString &resRef, const Common::UStri
 	if (!rimFile.empty()) {
 
 		try {
-			Common::SeekableReadStream *rimStream = ResMan.getResource(rimFile, Aurora::kFileTypeRIM);
+			std::unique_ptr<Common::SeekableReadStream> rimStream = ResMan.getResource(rimFile, Aurora::kFileTypeRIM);
 			if (!rimStream)
 				throw 0;
 
-			const Aurora::RIMFile rim(rimStream);
+			const Aurora::RIMFile rim(std::move(rimStream));
 			const uint32_t areIndex = rim.findResource(resRef, Aurora::kFileTypeARE);
 
 			const GFF3File are(rim.getResource(areIndex), kAREID);

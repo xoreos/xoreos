@@ -443,7 +443,7 @@ private:
 	/** Finished those paletted textures. */
 	void finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts);
 
-	static Aurora::GFF3File *openPC(const Common::UString &bic, bool local);
+	static std::unique_ptr<Aurora::GFF3File> openPC(const Common::UString &bic, bool local);
 	static void getClassString(const std::vector<Class> &classes, Common::UString &str);
 
 	/** Create an empty tooltip. */

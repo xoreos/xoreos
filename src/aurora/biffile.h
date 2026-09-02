@@ -71,7 +71,7 @@ class KEYFile;
 class BIFFile : public KEYDataFile, public AuroraFile {
 public:
 	/** Take over this stream and read a BIF file out of it. */
-	BIFFile(Common::SeekableReadStream *bif);
+	BIFFile(std::unique_ptr<Common::SeekableReadStream> bif);
 	~BIFFile();
 
 	/** Return the list of resources. */
@@ -81,7 +81,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 	/** Merge information from the KEY into the data file.
 	 *

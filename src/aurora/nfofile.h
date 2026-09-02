@@ -31,7 +31,7 @@ namespace Aurora {
 
 class NFOFile {
 public:
-	NFOFile(Common::SeekableReadStream *stream);
+	NFOFile(std::unique_ptr<Common::SeekableReadStream> stream);
 	~NFOFile();
 
 	/** Get the player portrait. */

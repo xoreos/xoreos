@@ -281,7 +281,7 @@ NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _script(ncs) {
 }
 
 NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs) {
-	_script.reset(ResMan.getResource(ncs, kFileTypeNCS));
+	_script = ResMan.getResource(ncs, kFileTypeNCS);
 	if (!_script)
 		throw Common::Exception("No such NCS \"%s\"", ncs.c_str());
 

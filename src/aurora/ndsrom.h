@@ -47,7 +47,7 @@ public:
 	/** Over this file in the filesystem and read a NDS file out of it. */
 	NDSFile(const Common::UString &fileName);
 	/** Take over this stream and read a NDS file out of it. */
-	NDSFile(Common::SeekableReadStream *nds);
+	NDSFile(std::unique_ptr<Common::SeekableReadStream> nds);
 	~NDSFile();
 
 	/** Does the Nintendo DS ROM contain a certain resource? */
@@ -60,7 +60,7 @@ public:
 	uint32_t getResourceSize(uint32_t index) const;
 
 	/** Return a stream of the resource's contents. */
-	Common::SeekableReadStream *getResource(uint32_t index, bool tryNoCopy = false) const;
+	std::unique_ptr<Common::SeekableReadStream> getResource(uint32_t index, bool tryNoCopy = false) const override;
 
 	/** Return the game title string stored in the NDS header. */
 	const Common::UString &getTitle() const;

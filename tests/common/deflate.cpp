@@ -77,14 +77,12 @@ GTEST_TEST(DEFLATE, decompressBuf) {
 	static const size_t kSizeCompressed   = sizeof(kDataCompressed);
 	static const size_t kSizeDecompressed = strlen(kDataUncompressed);
 
-	const byte *decompressed =
+	std::unique_ptr<byte[]> decompressed =
 		Common::decompressDeflate(kDataCompressed, kSizeCompressed, kSizeDecompressed, Common::kWindowBitsMaxRaw);
-	ASSERT_NE(decompressed, static_cast<const byte *>(0));
+	ASSERT_NE(decompressed, nullptr);
 
 	for (size_t i = 0; i < kSizeDecompressed; i++)
 		EXPECT_EQ(decompressed[i], kDataUncompressed[i]) << "At index " << i;
-
-	delete[] decompressed;
 }
 
 GTEST_TEST(DEFLATE, decompressBufWithoutDecompressedSize) {
@@ -92,15 +90,13 @@ GTEST_TEST(DEFLATE, decompressBufWithoutDecompressedSize) {
 	static const size_t kSizeDecompressed = strlen(kDataUncompressed);
 
 	size_t size = 0;
-	const byte *decompressed =
+	std::unique_ptr<byte[]> decompressed =
 		Common::decompressDeflateWithoutOutputSize(kDataCompressed, kSizeCompressed, size, Common::kWindowBitsMaxRaw, 128);
-	ASSERT_NE(decompressed, static_cast<const byte *>(0));
+	ASSERT_NE(decompressed, nullptr);
 	ASSERT_EQ(size, kSizeDecompressed);
 
 	for (size_t i = 0; i < kSizeDecompressed; i++)
 		EXPECT_EQ(decompressed[i], kDataUncompressed[i]) << "At index " << i;
-
-	delete[] decompressed;
 }
 
 GTEST_TEST(DEFLATE, decompressBufWithoutDecompressedSizeFrameSizeEvenDivide) {
@@ -108,15 +104,13 @@ GTEST_TEST(DEFLATE, decompressBufWithoutDecompressedSizeFrameSizeEvenDivide) {
 	static const size_t kSizeDecompressed = strlen(kDataUncompressed);
 
 	size_t size = 0;
-	const byte *decompressed =
+	std::unique_ptr<byte[]> decompressed =
 		Common::decompressDeflateWithoutOutputSize(kDataCompressed, kSizeCompressed, size, Common::kWindowBitsMaxRaw, 89);
-	ASSERT_NE(decompressed, static_cast<const byte *>(0));
+	ASSERT_NE(decompressed, nullptr);
 	ASSERT_EQ(size, kSizeDecompressed);
 
 	for (size_t i = 0; i < kSizeDecompressed; i++)
 		EXPECT_EQ(decompressed[i], kDataUncompressed[i]) << "At index " << i;
-
-	delete[] decompressed;
 }
 
 GTEST_TEST(DEFLATE, decompressStream) {
@@ -125,16 +119,14 @@ GTEST_TEST(DEFLATE, decompressStream) {
 
 	Common::MemoryReadStream compressed(kDataCompressed);
 
-	Common::SeekableReadStream *decompressed =
+	std::unique_ptr<Common::SeekableReadStream> decompressed =
 		Common::decompressDeflate(compressed, kSizeCompressed, kSizeDecompressed, Common::kWindowBitsMaxRaw);
-	ASSERT_NE(decompressed, static_cast<Common::SeekableReadStream *>(0));
+	ASSERT_NE(decompressed, nullptr);
 
 	ASSERT_EQ(decompressed->size(), kSizeDecompressed);
 
 	for (size_t i = 0; i < kSizeDecompressed; i++)
 		EXPECT_EQ(decompressed->readByte(), kDataUncompressed[i]) << "At index " << i;
-
-	delete decompressed;
 }
 
 GTEST_TEST(DEFLATE, decompressStreamWithoutDecompressedSize) {
@@ -143,16 +135,14 @@ GTEST_TEST(DEFLATE, decompressStreamWithoutDecompressedSize) {
 
 	Common::MemoryReadStream compressed(kDataCompressed);
 
-	Common::SeekableReadStream *decompressed =
+	std::unique_ptr<Common::SeekableReadStream> decompressed =
 			Common::decompressDeflateWithoutOutputSize(compressed, kSizeCompressed, Common::kWindowBitsMaxRaw, 128);
-	ASSERT_NE(decompressed, static_cast<Common::SeekableReadStream *>(0));
+	ASSERT_NE(decompressed, nullptr);
 
 	ASSERT_EQ(decompressed->size(), kSizeDecompressed);
 
 	for (size_t i = 0; i < kSizeDecompressed; i++)
 		EXPECT_EQ(decompressed->readByte(), kDataUncompressed[i]) << "At index " << i;
-
-	delete decompressed;
 }
 
 GTEST_TEST(DEFLATE, decompressFailOutputSmall) {
